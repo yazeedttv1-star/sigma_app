@@ -1,657 +1,1099 @@
-// Database Live State Engine
-let dbState = {
-    splash: { title: "سنتر سيجما التعليمي", sub: "أهلاً بك في منصتنا التعليمية المتكاملة", logo: "" },
-    structure: {},
-    news: [],
-    schedule: [],
-    materials: [],
-    notifications: []
+// ============================================
+// الملف الرئيسي للتطبيق - سنتر سيجما
+// ============================================
+
+import {
+  auth,
+  database,
+  storage,
+  googleProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  ref,
+  onValue,
+  push,
+  set,
+  update,
+  remove,
+  get,
+  child,
+  storageRef,
+  uploadBytes,
+  getDownloadURL
+} from './firebase-config.js';
+
+// ============================================
+// حالة التطبيق (State Management)
+// ============================================
+const AppState = {
+  currentUser: null,
+  currentPage: 'welcome',
+  userRole: null, // 'student' أو 'admin'
+  studentData: null,
+  subjects: [],
+  schedule: [],
+  news: [],
+  notifications: [],
+  materials: [],
+  selectedStage: '',
+  selectedGrade: '',
+  selectedSubject: ''
 };
 
-let currentUser = {
-    email: "",
-    selectedStage: "",
-    selectedGrade: "",
-    selectedSubjects: []
-};
+// ============================================
+// دوال التنقل بين الصفحات
+// ============================================
+function navigateTo(page, data = null) {
+  const pages = {
+    welcome: showWelcomePage,
+    login: showLoginPage,
+    register: showRegisterPage,
+    studentDashboard: showStudentDashboard,
+    adminDashboard: showAdminDashboard,
+    subjects: showSubjectsPage,
+    materials: showMaterialsPage,
+    notifications: showNotificationsPage,
+    schedule: showSchedulePage,
+    addSubject: showAddSubjectPage,
+    addSchedule: showAddSchedulePage,
+    addNotification: showAddNotificationPage,
+    manageUsers: showManageUsersPage
+  };
 
-let isAdminAuthenticated = false;
-
-// ====== 0. المزامنة والاستماع اللحظي والحقيقي 100% (Firebase Live Sync) ======
-window.addEventListener('DOMContentLoaded', () => {
-    initFirebaseRealtimeSync();
-});
-
-function initFirebaseRealtimeSync() {
-    if (typeof firebase === 'undefined' || !firebase.apps.length) return;
-
-    const db = firebase.database();
-
-    // 1. مزامنة شاشة الترحيب فورياً
-    db.ref('splash').on('value', (snapshot) => {
-        const val = snapshot.val();
-        if (val) {
-            dbState.splash = val;
-            updateSplashUI();
-        }
-    });
-
-    // 2. مزامنة الهيكل الأكاديمي فورياً
-    db.ref('structure').on('value', (snapshot) => {
-        dbState.structure = snapshot.val() || {};
-        renderAcademicDropdowns();
-        renderAdminAcademicDropdowns();
-        renderAdminAcademicTreeList();
-    });
-
-    // 3. مزامنة الأخبار والتنبيهات فورياً
-    db.ref('news').on('value', (snapshot) => {
-        const data = snapshot.val();
-        dbState.news = [];
-        if (data) {
-            Object.keys(data).forEach(key => dbState.news.push({ id: key, ...data[key] }));
-            dbState.news.reverse();
-        }
-        renderAdminNewsList();
-        if (document.getElementById('home-screen').classList.contains('active')) renderHome();
-    });
-
-    // 4. مزامنة الجدول الأسبوعي فورياً
-    db.ref('schedule').on('value', (snapshot) => {
-        const data = snapshot.val();
-        dbState.schedule = [];
-        if (data) {
-            Object.keys(data).forEach(key => dbState.schedule.push({ id: key, ...data[key] }));
-        }
-        renderAdminScheduleList();
-        if (document.getElementById('home-screen').classList.contains('active')) renderHome();
-    });
-
-    // 5. مزامنة المذكرات والملفات فورياً
-    db.ref('materials').on('value', (snapshot) => {
-        const data = snapshot.val();
-        dbState.materials = [];
-        if (data) {
-            Object.keys(data).forEach(key => dbState.materials.push({ id: key, ...data[key] }));
-        }
-        updateMaterialsFilterOptions();
-        renderAdminMaterialsList();
-        if (document.getElementById('materials-screen').classList.contains('active')) renderMaterials();
-    });
-
-    // 6. مزامنة الإشعارات فورياً
-    db.ref('notifications').on('value', (snapshot) => {
-        const data = snapshot.val();
-        dbState.notifications = [];
-        if (data) {
-            Object.keys(data).forEach(key => dbState.notifications.push({ id: key, ...data[key] }));
-            dbState.notifications.reverse();
-        }
-        renderAdminNotifList();
-        if (document.getElementById('notifications-screen').classList.contains('active')) renderNotifications();
-    });
+  AppState.currentPage = page;
+  if (pages[page]) {
+    pages[page](data);
+  }
+  updateActiveNav(page);
 }
 
-// دالة عامة موحدة للإرسال والحذف الفوري في Firebase
-function sendRealtimeUpdate(path, data, successMessage) {
-    if (typeof firebase === 'undefined' || !firebase.apps.length) {
-        alert("تنبيه: Firebase غير مصل بشكل كامل، سيتم إجراء العملية محلياً.");
-        return;
-    }
-
-    const dbRef = firebase.database().ref(path);
-    let promise;
-
-    if (data === null) {
-        promise = dbRef.remove();
-    } else if (typeof data === 'object' && !data.id && path.includes('/')) {
-        promise = dbRef.set(data);
-    } else if (typeof data === 'object' && !data.id) {
-        promise = dbRef.push(data);
-    } else {
-        promise = dbRef.set(data);
-    }
-
-    promise.then(() => {
-        if (successMessage) alert(successMessage);
-    }).catch(err => {
-        alert("خطأ في الإرسال الفوري: " + err.message);
-    });
+// ============================================
+// شاشة الترحيب
+// ============================================
+function showWelcomePage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="welcome-page">
+      <div class="welcome-container">
+        <div class="logo-container">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234F46E5'/%3E%3Ctext x='50' y='58' font-size='30' text-anchor='middle' fill='white' font-weight='bold'%3EΣ%3C/text%3E%3C/svg%3E" alt="Sigma Logo" class="logo-img">
+        </div>
+        <h1 class="welcome-title">مرحباً بك في</h1>
+        <h2 class="welcome-subtitle">سنتر سيجما</h2>
+        <p class="welcome-desc">منصة التعلم المتكاملة</p>
+        <div class="welcome-buttons">
+          <button onclick="navigateTo('login')" class="btn-primary btn-lg">
+            تسجيل الدخول
+          </button>
+          <button onclick="navigateTo('register')" class="btn-secondary btn-lg">
+            إنشاء حساب
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
-function updateSplashUI() {
-    document.getElementById('splash-title').textContent = dbState.splash.title || "سنتر سيجما التعليمي";
-    document.getElementById('splash-sub').textContent = dbState.splash.sub || "أهلاً بك في منصتنا التعليمية المتكاملة";
+// ============================================
+// شاشة تسجيل الدخول
+// ============================================
+function showLoginPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="auth-page">
+      <div class="auth-container">
+        <h2 class="auth-title">تسجيل الدخول</h2>
+        <button onclick="handleGoogleSignIn()" class="btn-google">
+          <svg class="google-icon" viewBox="0 0 48 48">
+            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+            <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+          </svg>
+          تسجيل الدخول بجوجل
+        </button>
+        <div class="divider">
+          <span>أو</span>
+        </div>
+        <form id="loginForm" onsubmit="handleEmailLogin(event)">
+          <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" required>
+          <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
+          <button type="submit" class="btn-primary">دخول</button>
+        </form>
+        <p class="auth-link">
+          ليس لديك حساب؟ <a href="#" onclick="navigateTo('register')">إنشاء حساب</a>
+        </p>
+        <p class="auth-error" id="loginError"></p>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// شاشة إنشاء حساب
+// ============================================
+function showRegisterPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="auth-page">
+      <div class="auth-container">
+        <h2 class="auth-title">إنشاء حساب جديد</h2>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <input type="text" id="registerName" placeholder="الاسم الكامل" required>
+          <input type="email" id="registerEmail" placeholder="البريد الإلكتروني" required>
+          <input type="password" id="registerPassword" placeholder="كلمة المرور" required>
+          <select id="registerRole" required>
+            <option value="">اختر الدور</option>
+            <option value="student">طالب</option>
+            <option value="admin">أدمن</option>
+          </select>
+          <button type="submit" class="btn-primary">إنشاء حساب</button>
+        </form>
+        <p class="auth-link">
+          لديك حساب بالفعل؟ <a href="#" onclick="navigateTo('login')">تسجيل الدخول</a>
+        </p>
+        <p class="auth-error" id="registerError"></p>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// لوحة تحكم الطالب
+// ============================================
+function showStudentDashboard() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      <nav class="navbar">
+        <div class="nav-container">
+          <div class="nav-logo">
+            <span class="logo-text">Σ سنتر سيجما</span>
+          </div>
+          <div class="nav-links">
+            <button onclick="navigateTo('studentDashboard')" class="nav-link active">الرئيسية</button>
+            <button onclick="navigateTo('subjects')" class="nav-link">المواد</button>
+            <button onclick="navigateTo('schedule')" class="nav-link">الجدول</button>
+            <button onclick="navigateTo('materials')" class="nav-link">المذكرات</button>
+            <button onclick="navigateTo('notifications')" class="nav-link">الإشعارات</button>
+          </div>
+          <div class="nav-user">
+            <span class="user-name">${AppState.currentUser?.displayName || 'طالب'}</span>
+            <button onclick="handleLogout()" class="btn-logout">تسجيل خروج</button>
+          </div>
+        </div>
+      </nav>
+      
+      <div class="dashboard-content">
+        <div class="welcome-banner">
+          <h1>مرحباً بك في سنتر سيجما</h1>
+          <p>${new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        </div>
+        
+        <div class="dashboard-grid">
+          <!-- آخر الأخبار -->
+          <div class="card card-news">
+            <h3 class="card-title">📰 آخر الأخبار</h3>
+            <div id="newsList" class="news-list"></div>
+          </div>
+          
+          <!-- الجدول الأسبوعي -->
+          <div class="card card-schedule">
+            <h3 class="card-title">📅 الجدول الأسبوعي</h3>
+            <div id="scheduleList" class="schedule-grid"></div>
+          </div>
+          
+          <!-- المواد المشترك فيها -->
+          <div class="card card-subjects">
+            <h3 class="card-title">📚 المواد المشترك فيها</h3>
+            <div id="studentSubjects" class="subjects-tags"></div>
+          </div>
+        </div>
+        
+        <!-- الإشعارات السريعة -->
+        <div class="card quick-notifications">
+          <h3 class="card-title">🔔 آخر الإشعارات</h3>
+          <div id="quickNotifications" class="notifications-list"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // تحميل البيانات
+  loadStudentData();
+  loadNews();
+  loadSchedule();
+  loadStudentSubjects();
+  loadNotifications();
+}
+
+// ============================================
+// لوحة تحكم الأدمن
+// ============================================
+function showAdminDashboard() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      <nav class="navbar admin-nav">
+        <div class="nav-container">
+          <div class="nav-logo">
+            <span class="logo-text">Σ سنتر سيجما - أدمن</span>
+          </div>
+          <div class="nav-links">
+            <button onclick="navigateTo('adminDashboard')" class="nav-link active">لوحة التحكم</button>
+            <button onclick="navigateTo('addSubject')" class="nav-link">إضافة مادة</button>
+            <button onclick="navigateTo('addSchedule')" class="nav-link">إضافة جدول</button>
+            <button onclick="navigateTo('addNotification')" class="nav-link">إضافة إشعار</button>
+            <button onclick="navigateTo('manageUsers')" class="nav-link">إدارة المستخدمين</button>
+          </div>
+          <div class="nav-user">
+            <span class="user-name">أدمن</span>
+            <button onclick="handleLogout()" class="btn-logout">تسجيل خروج</button>
+          </div>
+        </div>
+      </nav>
+      
+      <div class="dashboard-content">
+        <div class="admin-stats">
+          <div class="stat-card">
+            <h3>عدد الطلاب</h3>
+            <p id="studentCount">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>عدد المواد</h3>
+            <p id="subjectCount">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>عدد الإشعارات</h3>
+            <p id="notificationCount">0</p>
+          </div>
+        </div>
+        
+        <div class="admin-quick-actions">
+          <h2>إجراءات سريعة</h2>
+          <div class="action-grid">
+            <button onclick="navigateTo('addSubject')" class="action-btn">➕ إضافة مادة</button>
+            <button onclick="navigateTo('addSchedule')" class="action-btn">📅 إضافة جدول</button>
+            <button onclick="navigateTo('addNotification')" class="action-btn">🔔 إضافة إشعار</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>آخر الإشعارات المرسلة</h3>
+          <div id="adminNotificationsList"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  loadAdminStats();
+  loadAllNotifications();
+}
+
+// ============================================
+// دوال إدارة المواد
+// ============================================
+function showAddSubjectPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      ${getAdminNav()}
+      <div class="dashboard-content">
+        <div class="form-container card">
+          <h2>إضافة مادة جديدة</h2>
+          <form id="addSubjectForm" onsubmit="handleAddSubject(event)">
+            <input type="text" id="subjectName" placeholder="اسم المادة" required>
+            <select id="subjectStage" required>
+              <option value="">اختر المرحلة</option>
+              <option value="الابتدائية">الابتدائية</option>
+              <option value="المتوسطة">المتوسطة</option>
+              <option value="الثانوية">الثانوية</option>
+            </select>
+            <input type="text" id="subjectGrade" placeholder="الصف (مثال: 6)" required>
+            <input type="text" id="subjectTeacher" placeholder="اسم المدرس">
+            <button type="submit" class="btn-primary">إضافة المادة</button>
+          </form>
+          <div id="subjectsList" class="items-list"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  loadAllSubjects();
+}
+
+// ============================================
+// دوال إدارة الجدول
+// ============================================
+function showAddSchedulePage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      ${getAdminNav()}
+      <div class="dashboard-content">
+        <div class="form-container card">
+          <h2>إضافة موعد في الجدول</h2>
+          <form id="addScheduleForm" onsubmit="handleAddSchedule(event)">
+            <select id="scheduleDay" required>
+              <option value="">اختر اليوم</option>
+              <option value="الأحد">الأحد</option>
+              <option value="الإثنين">الإثنين</option>
+              <option value="الثلاثاء">الثلاثاء</option>
+              <option value="الأربعاء">الأربعاء</option>
+              <option value="الخميس">الخميس</option>
+              <option value="الجمعة">الجمعة</option>
+              <option value="السبت">السبت</option>
+            </select>
+            <input type="text" id="scheduleSubject" placeholder="اسم المادة" required>
+            <input type="time" id="scheduleTime" required>
+            <select id="scheduleStage" required>
+              <option value="">اختر المرحلة</option>
+              <option value="الابتدائية">الابتدائية</option>
+              <option value="المتوسطة">المتوسطة</option>
+              <option value="الثانوية">الثانوية</option>
+            </select>
+            <input type="text" id="scheduleGrade" placeholder="الصف">
+            <button type="submit" class="btn-primary">إضافة الموعد</button>
+          </form>
+          <div id="scheduleList" class="items-list"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  loadAllSchedule();
+}
+
+// ============================================
+// دوال إدارة الإشعارات
+// ============================================
+function showAddNotificationPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      ${getAdminNav()}
+      <div class="dashboard-content">
+        <div class="form-container card">
+          <h2>إضافة إشعار جديد</h2>
+          <form id="addNotificationForm" onsubmit="handleAddNotification(event)">
+            <input type="text" id="notificationTitle" placeholder="عنوان الإشعار" required>
+            <textarea id="notificationContent" placeholder="محتوى الإشعار" required></textarea>
+            <select id="notificationTarget" required>
+              <option value="all">الكل</option>
+              <option value="stage">مرحلة معينة</option>
+              <option value="grade">صف معين</option>
+              <option value="subject">مادة معينة</option>
+            </select>
+            <div id="targetFields">
+              <select id="notificationStage">
+                <option value="">اختر المرحلة</option>
+                <option value="الابتدائية">الابتدائية</option>
+                <option value="المتوسطة">المتوسطة</option>
+                <option value="الثانوية">الثانوية</option>
+              </select>
+              <input type="text" id="notificationGrade" placeholder="الصف">
+              <input type="text" id="notificationSubject" placeholder="المادة">
+            </div>
+            <button type="submit" class="btn-primary">إرسال الإشعار</button>
+          </form>
+          <div id="notificationsList" class="items-list"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  loadAllNotifications();
+}
+
+// ============================================
+// دوال عرض المواد والجدول والمذكرات
+// ============================================
+function showSubjectsPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      ${getStudentNav()}
+      <div class="dashboard-content">
+        <div class="card">
+          <h2>📚 المواد الدراسية</h2>
+          <div id="allSubjectsList" class="subjects-grid"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  loadAllSubjects();
+}
+
+function showSchedulePage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      ${getStudentNav()}
+      <div class="dashboard-content">
+        <div class="card">
+          <h2>📅 الجدول الأسبوعي</h2>
+          <div id="fullSchedule" class="schedule-table"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  loadFullSchedule();
+}
+
+function showMaterialsPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      ${getStudentNav()}
+      <div class="dashboard-content">
+        <div class="card">
+          <h2>📄 المذكرات والصور</h2>
+          <div id="materialsList" class="materials-grid"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  loadMaterials();
+}
+
+function showNotificationsPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      ${getStudentNav()}
+      <div class="dashboard-content">
+        <div class="card">
+          <h2>🔔 جميع الإشعارات</h2>
+          <div id="allNotifications" class="notifications-list"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  loadAllNotifications();
+}
+
+function showManageUsersPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="dashboard-page">
+      ${getAdminNav()}
+      <div class="dashboard-content">
+        <div class="card">
+          <h2>👥 إدارة المستخدمين</h2>
+          <div id="usersList" class="users-list"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  loadUsers();
+}
+
+// ============================================
+// دوال مساعدة للتنقل (Navbars)
+// ============================================
+function getStudentNav() {
+  return `
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">Σ سنتر سيجما</span>
+        </div>
+        <div class="nav-links">
+          <button onclick="navigateTo('studentDashboard')" class="nav-link">الرئيسية</button>
+          <button onclick="navigateTo('subjects')" class="nav-link active">المواد</button>
+          <button onclick="navigateTo('schedule')" class="nav-link">الجدول</button>
+          <button onclick="navigateTo('materials')" class="nav-link">المذكرات</button>
+          <button onclick="navigateTo('notifications')" class="nav-link">الإشعارات</button>
+        </div>
+        <div class="nav-user">
+          <span class="user-name">${AppState.currentUser?.displayName || 'طالب'}</span>
+          <button onclick="handleLogout()" class="btn-logout">تسجيل خروج</button>
+        </div>
+      </div>
+    </nav>
+  `;
+}
+
+function getAdminNav() {
+  return `
+    <nav class="navbar admin-nav">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">Σ سنتر سيجما - أدمن</span>
+        </div>
+        <div class="nav-links">
+          <button onclick="navigateTo('adminDashboard')" class="nav-link">لوحة التحكم</button>
+          <button onclick="navigateTo('addSubject')" class="nav-link">إضافة مادة</button>
+          <button onclick="navigateTo('addSchedule')" class="nav-link">إضافة جدول</button>
+          <button onclick="navigateTo('addNotification')" class="nav-link">إضافة إشعار</button>
+          <button onclick="navigateTo('manageUsers')" class="nav-link">إدارة المستخدمين</button>
+        </div>
+        <div class="nav-user">
+          <span class="user-name">أدمن</span>
+          <button onclick="handleLogout()" class="btn-logout">تسجيل خروج</button>
+        </div>
+      </div>
+    </nav>
+  `;
+}
+
+function updateActiveNav(page) {
+  // تحديث حالة التنقل النشط
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+  });
+}
+
+// ============================================
+// دوال المصادقة (Authentication)
+// ============================================
+
+// تسجيل الدخول بجوجل
+window.handleGoogleSignIn = async function() {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    AppState.currentUser = user;
     
-    if (dbState.splash.logo) {
-        document.getElementById('splash-logo').src = dbState.splash.logo;
-        document.getElementById('splash-logo').style.display = 'block';
-        document.getElementById('splash-logo-placeholder').style.display = 'none';
+    // التحقق من دور المستخدم
+    const userRef = ref(database, `users/${user.uid}`);
+    const snapshot = await get(userRef);
+    const userData = snapshot.val();
+    
+    if (userData?.role === 'admin') {
+      AppState.userRole = 'admin';
+      navigateTo('adminDashboard');
     } else {
-        document.getElementById('splash-logo').style.display = 'none';
-        document.getElementById('splash-logo-placeholder').style.display = 'flex';
+      AppState.userRole = 'student';
+      navigateTo('studentDashboard');
     }
+  } catch (error) {
+    document.getElementById('loginError').textContent = error.message;
+  }
+};
 
-    const adminTitle = document.getElementById('admin-splash-title');
-    const adminSub = document.getElementById('admin-splash-sub');
-    const adminLogo = document.getElementById('admin-splash-logo');
-    if (adminTitle && !adminTitle.value) adminTitle.value = dbState.splash.title || "";
-    if (adminSub && !adminSub.value) adminSub.value = dbState.splash.sub || "";
-    if (adminLogo && !adminLogo.value) adminLogo.value = dbState.splash.logo || "";
-}
-
-// ====== 1. التنقل بين الشاشات والنظام الأمني ======
-function goToScreen(screenId) {
-    // حماية الشاشات: تمنع وصول أي طالب لشاشة الأدمن بدون كلمة المرور الصحيحة
-    if (screenId === 'admin-dashboard-screen' && !isAdminAuthenticated) {
-        alert("🔒 محاولة غير مصرح بها! يجب كتابة كلمة مرور الإدارة أولاً.");
-        goToScreen('admin-login-screen');
-        return;
-    }
-
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const target = document.getElementById(screenId);
-    if (target) target.classList.add('active');
-
-    const bottomBar = document.getElementById('bottom-bar');
-    const mainScreens = ['home-screen', 'materials-screen', 'notifications-screen'];
-
-    if (mainScreens.includes(screenId)) {
-        bottomBar.style.display = 'flex';
-        updateNavState(screenId);
+// تسجيل الدخول بالبريد وكلمة المرور
+window.handleEmailLogin = async function(event) {
+  event.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    const user = result.user;
+    AppState.currentUser = user;
+    
+    // التحقق من دور المستخدم
+    const userRef = ref(database, `users/${user.uid}`);
+    const snapshot = await get(userRef);
+    const userData = snapshot.val();
+    
+    if (userData?.role === 'admin') {
+      AppState.userRole = 'admin';
+      navigateTo('adminDashboard');
     } else {
-        bottomBar.style.display = 'none';
+      AppState.userRole = 'student';
+      navigateTo('studentDashboard');
     }
+  } catch (error) {
+    document.getElementById('loginError').textContent = error.message;
+  }
+};
 
-    if (screenId === 'home-screen') renderHome();
-    if (screenId === 'materials-screen') renderMaterials();
-    if (screenId === 'notifications-screen') renderNotifications();
-}
-
-function updateNavState(screenId) {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    if (screenId === 'home-screen') document.getElementById('nav-home').classList.add('active');
-    if (screenId === 'materials-screen') document.getElementById('nav-materials').classList.add('active');
-    if (screenId === 'notifications-screen') document.getElementById('nav-notifs').classList.add('active');
-}
-
-// ====== 2. تسجيل دخول الطلاب ======
-function handleEmailLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const pass = document.getElementById('login-password').value;
-
-    if (typeof firebase !== 'undefined' && firebase.apps.length) {
-        firebase.auth().signInWithEmailAndPassword(email, pass)
-            .then(res => {
-                currentUser.email = res.user.email;
-                goToScreen('selection-screen');
-            })
-            .catch(err => alert("خطأ في تسجيل دخول الطالب: " + err.message));
-    } else {
-        currentUser.email = email;
-        goToScreen('selection-screen');
-    }
-}
-
-function handleGoogleLogin() {
-    if (typeof firebase !== 'undefined' && firebase.apps.length) {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider)
-            .then(res => {
-                currentUser.email = res.user.email;
-                goToScreen('selection-screen');
-            })
-            .catch(err => alert("خطأ في دخول Google: " + err.message));
-    } else {
-        currentUser.email = "student-google@gmail.com";
-        goToScreen('selection-screen');
-    }
-}
-
-// ====== 3. اختيار المواد والصف للطلاب ======
-function renderAcademicDropdowns() {
-    const select = document.getElementById('stage-select');
-    if (!select) return;
-    select.innerHTML = '<option value="" disabled selected>اختر المرحلة...</option>';
-    Object.keys(dbState.structure).forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s;
-        select.appendChild(opt);
+// إنشاء حساب جديد
+window.handleRegister = async function(event) {
+  event.preventDefault();
+  const name = document.getElementById('registerName').value;
+  const email = document.getElementById('registerEmail').value;
+  const password = document.getElementById('registerPassword').value;
+  const role = document.getElementById('registerRole').value;
+  
+  try {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    const user = result.user;
+    
+    // حفظ بيانات المستخدم في قاعدة البيانات
+    await set(ref(database, `users/${user.uid}`), {
+      name: name,
+      email: email,
+      role: role,
+      createdAt: new Date().toISOString()
     });
-}
-
-function updateGradesDropdown() {
-    const stage = document.getElementById('stage-select').value;
-    const gradeSelect = document.getElementById('grade-select');
-    gradeSelect.innerHTML = '<option value="" disabled selected>اختر الصف...</option>';
-    gradeSelect.disabled = false;
-
-    if (dbState.structure[stage]) {
-        Object.keys(dbState.structure[stage]).forEach(grade => {
-            const opt = document.createElement('option');
-            opt.value = grade;
-            opt.textContent = grade;
-            gradeSelect.appendChild(opt);
-        });
-    }
-}
-
-function updateSubjectsDropdown() {
-    const stage = document.getElementById('stage-select').value;
-    const grade = document.getElementById('grade-select').value;
-    const container = document.getElementById('subjects-checkboxes');
-    container.innerHTML = '';
-
-    if (dbState.structure[stage] && dbState.structure[stage][grade]) {
-        dbState.structure[stage][grade].forEach((sub, i) => {
-            const div = document.createElement('div');
-            div.className = 'checkbox-item';
-            div.innerHTML = `<input type="checkbox" value="${sub}" id="sub-${i}"> <label for="sub-${i}">${sub}</label>`;
-            container.appendChild(div);
-        });
+    
+    // تحديث الاسم في حساب Firebase
+    await updateProfile(user, { displayName: name });
+    
+    AppState.currentUser = user;
+    AppState.userRole = role;
+    
+    if (role === 'admin') {
+      navigateTo('adminDashboard');
     } else {
-        container.innerHTML = '<p class="empty-msg">لا توجد مواد مضافة لهذا الصف بعد</p>';
+      navigateTo('studentDashboard');
     }
+  } catch (error) {
+    document.getElementById('registerError').textContent = error.message;
+  }
+};
+
+// تسجيل الخروج
+window.handleLogout = async function() {
+  try {
+    await signOut(auth);
+    AppState.currentUser = null;
+    AppState.userRole = null;
+    navigateTo('welcome');
+  } catch (error) {
+    alert('حدث خطأ أثناء تسجيل الخروج: ' + error.message);
+  }
+};
+
+// ============================================
+// دوال تحميل البيانات من Firebase
+// ============================================
+
+// تحميل بيانات الطالب
+function loadStudentData() {
+  if (!AppState.currentUser) return;
+  
+  const userRef = ref(database, `students/${AppState.currentUser.uid}`);
+  onValue(userRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      AppState.studentData = data;
+    }
+  });
 }
 
-function handleSelectionSubmit(e) {
-    e.preventDefault();
-    currentUser.selectedStage = document.getElementById('stage-select').value;
-    currentUser.selectedGrade = document.getElementById('grade-select').value;
-    currentUser.selectedSubjects = [];
-
-    document.querySelectorAll('#subjects-checkboxes input:checked').forEach(cb => {
-        currentUser.selectedSubjects.push(cb.value);
-    });
-
-    goToScreen('home-screen');
+// تحميل الأخبار
+function loadNews() {
+  const newsRef = ref(database, 'news');
+  onValue(newsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      AppState.news = Object.values(data).reverse();
+      renderNews();
+    }
+  });
 }
 
-// ====== 4. شاشات تصفح الطالب ======
-function renderHome() {
-    document.getElementById('user-display-name').textContent = currentUser.email || "طالب";
-
-    const chips = document.getElementById('enrolled-subjects');
-    chips.innerHTML = '';
-    if (currentUser.selectedSubjects.length) {
-        currentUser.selectedSubjects.forEach(s => {
-            const chip = document.createElement('span');
-            chip.className = 'chip';
-            chip.textContent = s;
-            chips.appendChild(chip);
-        });
-    } else {
-        chips.innerHTML = '<p class="empty-msg">لم تقم باختيار أي مواد مسجلة</p>';
-    }
-
-    const newsContainer = document.getElementById('news-list');
-    newsContainer.innerHTML = '';
-    if (dbState.news.length) {
-        dbState.news.forEach(n => {
-            const div = document.createElement('div');
-            div.className = 'news-card';
-            div.innerHTML = `<div><h5 style="color:#1e3c72; margin-bottom:4px;">${n.title}</h5><p style="font-size:12px; color:#444;">${n.body}</p></div>`;
-            newsContainer.appendChild(div);
-        });
-    } else {
-        newsContainer.innerHTML = '<p class="empty-msg">لا توجد أخبار تنبيهية حالياً</p>';
-    }
-
-    const tbody = document.getElementById('schedule-tbody');
-    tbody.innerHTML = '';
-    if (dbState.schedule.length) {
-        dbState.schedule.forEach(s => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td><b>${s.day}</b></td><td>${s.subject}</td><td>${s.time}</td><td>${s.room}</td>`;
-            tbody.appendChild(tr);
-        });
-    } else {
-        tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">الجدول الدراسي فارغ حالياً</td></tr>';
-    }
+function renderNews() {
+  const newsList = document.getElementById('newsList');
+  if (!newsList) return;
+  
+  if (AppState.news.length === 0) {
+    newsList.innerHTML = '<p class="empty-message">لا توجد أخبار حالياً</p>';
+    return;
+  }
+  
+  newsList.innerHTML = AppState.news.slice(0, 5).map(news => `
+    <div class="news-item">
+      <h4>${news.title}</h4>
+      <p>${news.content}</p>
+      <span class="news-date">${news.date || new Date().toLocaleDateString('ar-EG')}</span>
+    </div>
+  `).join('');
 }
 
-function updateMaterialsFilterOptions() {
-    const filter = document.getElementById('material-filter');
-    if (!filter) return;
-    filter.innerHTML = '<option value="ALL">جميع المواد</option>';
-    const subjects = [...new Set(dbState.materials.map(m => m.subject))];
-    subjects.forEach(sub => {
-        const opt = document.createElement('option');
-        opt.value = sub;
-        opt.textContent = sub;
-        filter.appendChild(opt);
-    });
+// تحميل الجدول
+function loadSchedule() {
+  const scheduleRef = ref(database, 'schedule');
+  onValue(scheduleRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      AppState.schedule = Object.values(data);
+      renderSchedule();
+    }
+  });
 }
 
-function renderMaterials() {
-    const filter = document.getElementById('material-filter').value;
-    const container = document.getElementById('materials-container');
-    container.innerHTML = '';
+function renderSchedule() {
+  const scheduleList = document.getElementById('scheduleList');
+  if (!scheduleList) return;
+  
+  if (AppState.schedule.length === 0) {
+    scheduleList.innerHTML = '<p class="empty-message">لا يوجد جدول حالياً</p>';
+    return;
+  }
+  
+  const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const scheduleGrid = {};
+  
+  days.forEach(day => {
+    scheduleGrid[day] = AppState.schedule.filter(s => s.day === day);
+  });
+  
+  scheduleList.innerHTML = days.map(day => `
+    <div class="schedule-day">
+      <div class="day-header">${day}</div>
+      <div class="day-items">
+        ${scheduleGrid[day].length > 0 ? 
+          scheduleGrid[day].map(s => `<span class="schedule-item">${s.subject} - ${s.time || ''}</span>`).join('') :
+          '<span class="schedule-empty">-</span>'
+        }
+      </div>
+    </div>
+  `).join('');
+}
 
-    const list = filter === 'ALL' ? dbState.materials : dbState.materials.filter(m => m.subject === filter);
-
-    if (list.length) {
-        list.forEach(m => {
-            const div = document.createElement('div');
-            div.className = 'item-card';
-            div.innerHTML = `
-                <div>
-                    <h5 style="color:#1e3c72;">${m.title}</h5>
-                    <p style="font-size:12px; color:gray;">المادة: ${m.subject}</p>
-                </div>
-                <a href="${m.url}" target="_blank" class="btn-primary" style="padding:6px 12px; font-size:12px; text-decoration:none; width:auto;">فتح PDF 📥</a>
-            `;
-            container.appendChild(div);
-        });
-    } else {
-        container.innerHTML = '<p class="empty-msg">لا توجد مذكرات متاحة حالياً</p>';
+// تحميل مواد الطالب
+function loadStudentSubjects() {
+  if (!AppState.currentUser) return;
+  
+  const subjectsRef = ref(database, `students/${AppState.currentUser.uid}/subjects`);
+  onValue(subjectsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const subjectsList = document.getElementById('studentSubjects');
+      if (subjectsList) {
+        const subjects = Object.values(data);
+        subjectsList.innerHTML = subjects.map(s => `
+          <span class="subject-tag">${s.name || s}</span>
+        `).join('');
+      }
     }
+  });
+}
+
+// تحميل الإشعارات
+function loadNotifications() {
+  const notificationsRef = ref(database, 'notifications');
+  onValue(notificationsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      AppState.notifications = Object.values(data).reverse();
+      renderNotifications();
+    }
+  });
 }
 
 function renderNotifications() {
-    const container = document.getElementById('notifications-container');
-    container.innerHTML = '';
+  const quickNotif = document.getElementById('quickNotifications');
+  if (quickNotif) {
+    const recent = AppState.notifications.slice(0, 3);
+    quickNotif.innerHTML = recent.length > 0 ?
+      recent.map(n => `
+        <div class="notification-item">
+          <h4>${n.title}</h4>
+          <p>${n.content}</p>
+          <span class="notif-date">${n.date || new Date().toLocaleDateString('ar-EG')}</span>
+        </div>
+      `).join('') :
+      '<p class="empty-message">لا توجد إشعارات</p>';
+  }
+}
 
-    if (dbState.notifications.length) {
-        document.getElementById('notif-badge').textContent = dbState.notifications.length;
-        dbState.notifications.forEach(n => {
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.style.margin = "0 0 10px 0";
-            div.innerHTML = `<h5 style="color:#1e3c72; margin-bottom:5px;">🔔 ${n.title}</h5><p style="font-size:12px; color:#555;">${n.body}</p>`;
-            container.appendChild(div);
-        });
-    } else {
-        document.getElementById('notif-badge').textContent = '0';
-        container.innerHTML = '<p class="empty-msg">لا توجد إشعارات جديدة</p>';
+// تحميل جميع المواد (للأدمن)
+function loadAllSubjects() {
+  const subjectsRef = ref(database, 'subjects');
+  onValue(subjectsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const subjects = Object.values(data);
+      const subjectsList = document.getElementById('subjectsList') || document.getElementById('allSubjectsList');
+      if (subjectsList) {
+        subjectsList.innerHTML = subjects.map((s, index) => `
+          <div class="item-card">
+            <span>${s.name}</span>
+            <span class="badge">${s.stage || ''} - ${s.grade || ''}</span>
+            <button onclick="deleteItem('subjects', '${Object.keys(data)[index]}')" class="btn-delete">×</button>
+          </div>
+        `).join('');
+      }
+      
+      // تحديث عدد المواد
+      const countEl = document.getElementById('subjectCount');
+      if (countEl) countEl.textContent = subjects.length;
     }
+  });
 }
 
-// ====== 5. لوحة التحكم المقسمة إلى شاشات وحمايتها بالباسورد ======
-function handleAdminLogin(e) {
-    e.preventDefault();
-    const pass = document.getElementById('admin-pass-input').value;
-    
-    // كلمة المرور السرية لفتح لوحة التحكم (يمكنك تغييرها من هنا)
-    if (pass === "admin123") {
-        isAdminAuthenticated = true;
-        goToScreen('admin-dashboard-screen');
-        renderAdminAcademicDropdowns();
-        renderAdminAcademicTreeList();
-        renderAdminNewsList();
-        renderAdminScheduleList();
-        renderAdminMaterialsList();
-        renderAdminNotifList();
-    } else {
-        alert("❌ كلمة مرور الإدارة غير صحيحة!");
+// تحميل الجدول كامل
+function loadFullSchedule() {
+  const scheduleRef = ref(database, 'schedule');
+  onValue(scheduleRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const schedule = Object.values(data);
+      const container = document.getElementById('fullSchedule');
+      if (container) {
+        const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        container.innerHTML = `
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                ${days.map(day => `<th>${day}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                ${days.map(day => `
+                  <td>
+                    ${schedule.filter(s => s.day === day).map(s => `
+                      <div class="schedule-cell">
+                        <strong>${s.subject}</strong>
+                        <span>${s.time || ''}</span>
+                      </div>
+                    `).join('') || '-'}
+                  </td>
+                `).join('')}
+              </tr>
+            </tbody>
+          </table>
+        `;
+      }
     }
+  });
 }
 
-function logoutAdmin() {
-    isAdminAuthenticated = false;
-    document.getElementById('admin-pass-input').value = '';
-    goToScreen('login-screen');
+// تحميل المذكرات
+function loadMaterials() {
+  const materialsRef = ref(database, 'materials');
+  onValue(materialsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const materials = Object.values(data);
+      const container = document.getElementById('materialsList');
+      if (container) {
+        container.innerHTML = materials.map(m => `
+          <div class="material-card">
+            <h4>${m.name}</h4>
+            <p>${m.subject || ''}</p>
+            ${m.pdfUrl ? `<a href="${m.pdfUrl}" target="_blank" class="btn-download">📄 تحميل PDF</a>` : ''}
+            ${m.imageUrl ? `<img src="${m.imageUrl}" alt="${m.name}" class="material-image">` : ''}
+          </div>
+        `).join('');
+      }
+    }
+  });
 }
 
-function switchAdminTab(tabId) {
-    document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.admin-tab-page').forEach(page => page.classList.remove('active'));
-
-    const activeBtn = Array.from(document.querySelectorAll('.admin-tab-btn'))
-        .find(b => b.getAttribute('onclick').includes(tabId));
-    if (activeBtn) activeBtn.classList.add('active');
-
-    const targetPage = document.getElementById(tabId);
-    if (targetPage) targetPage.classList.add('active');
+// تحميل جميع الإشعارات
+function loadAllNotifications() {
+  const notificationsRef = ref(database, 'notifications');
+  onValue(notificationsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const notifications = Object.values(data).reverse();
+      const container = document.getElementById('allNotifications') || document.getElementById('adminNotificationsList') || document.getElementById('notificationsList');
+      if (container) {
+        container.innerHTML = notifications.map(n => `
+          <div class="notification-item">
+            <h4>${n.title}</h4>
+            <p>${n.content}</p>
+            <span class="notif-date">${n.date || new Date().toLocaleDateString('ar-EG')}</span>
+            ${n.target ? `<span class="badge">${n.target}</span>` : ''}
+          </div>
+        `).join('');
+      }
+      
+      // تحديث عدد الإشعارات
+      const countEl = document.getElementById('notificationCount');
+      if (countEl) countEl.textContent = notifications.length;
+    }
+  });
 }
 
-// وظائف التحكم الفوري
-function saveSplashSettings(e) {
-    e.preventDefault();
-    const title = document.getElementById('admin-splash-title').value.trim();
-    const sub = document.getElementById('admin-splash-sub').value.trim();
-    const logo = document.getElementById('admin-splash-logo').value.trim();
-
-    sendRealtimeUpdate('splash', { title, sub, logo }, "⚡ تم تحديث السنتر واللوجو فوراً!");
+// تحميل الجدول كامل (للأدمن)
+function loadAllSchedule() {
+  const scheduleRef = ref(database, 'schedule');
+  onValue(scheduleRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const schedule = Object.values(data);
+      const container = document.getElementById('scheduleList');
+      if (container) {
+        container.innerHTML = schedule.map((s, index) => `
+          <div class="item-card">
+            <span>${s.day} - ${s.subject}</span>
+            <span class="badge">${s.time || ''}</span>
+            <button onclick="deleteItem('schedule', '${Object.keys(data)[index]}')" class="btn-delete">×</button>
+          </div>
+        `).join('');
+      }
+    }
+  });
 }
 
-function renderAdminAcademicDropdowns() {
-    const stageGradeSelect = document.getElementById('admin-stage-dropdown-for-grade');
-    const stageSubSelect = document.getElementById('admin-stage-dropdown-for-subject');
-    if (!stageGradeSelect || !stageSubSelect) return;
+// تحميل المستخدمين
+function loadUsers() {
+  const usersRef = ref(database, 'users');
+  onValue(usersRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const users = Object.values(data);
+      const container = document.getElementById('usersList');
+      if (container) {
+        container.innerHTML = users.map(u => `
+          <div class="user-card">
+            <div class="user-info">
+              <strong>${u.name}</strong>
+              <span>${u.email}</span>
+              <span class="badge">${u.role || 'طالب'}</span>
+            </div>
+          </div>
+        `).join('');
+        
+        // تحديث عدد الطلاب
+        const countEl = document.getElementById('studentCount');
+        if (countEl) countEl.textContent = users.filter(u => u.role !== 'admin').length;
+      }
+    }
+  });
+}
 
-    stageGradeSelect.innerHTML = '<option value="" disabled selected>اختر المرحلة...</option>';
-    stageSubSelect.innerHTML = '<option value="" disabled selected>اختر المرحلة...</option>';
+// تحميل إحصائيات الأدمن
+function loadAdminStats() {
+  loadAllSubjects();
+  loadAllNotifications();
+  loadUsers();
+}
 
-    Object.keys(dbState.structure).forEach(stg => {
-        const opt1 = document.createElement('option');
-        opt1.value = stg;
-        opt1.textContent = stg;
-        stageGradeSelect.appendChild(opt1);
+// ============================================
+// دوال إدارة البيانات (CRUD)
+// ============================================
 
-        const opt2 = document.createElement('option');
-        opt2.value = stg;
-        opt2.textContent = stg;
-        stageSubSelect.appendChild(opt2);
+// إضافة مادة
+window.handleAddSubject = async function(event) {
+  event.preventDefault();
+  const name = document.getElementById('subjectName').value;
+  const stage = document.getElementById('subjectStage').value;
+  const grade = document.getElementById('subjectGrade').value;
+  const teacher = document.getElementById('subjectTeacher').value;
+  
+  try {
+    const newRef = push(ref(database, 'subjects'));
+    await set(newRef, {
+      name,
+      stage,
+      grade,
+      teacher,
+      createdAt: new Date().toISOString()
     });
-}
+    alert('تم إضافة المادة بنجاح!');
+    document.getElementById('addSubjectForm').reset();
+  } catch (error) {
+    alert('حدث خطأ: ' + error.message);
+  }
+};
 
-function updateAdminGradesDropdown() {
-    const stg = document.getElementById('admin-stage-dropdown-for-subject').value;
-    const gradeSubSelect = document.getElementById('admin-grade-dropdown-for-subject');
-    gradeSubSelect.innerHTML = '<option value="" disabled selected>اختر الصف...</option>';
-    gradeSubSelect.disabled = false;
-
-    if (dbState.structure[stg]) {
-        Object.keys(dbState.structure[stg]).forEach(grd => {
-            const opt = document.createElement('option');
-            opt.value = grd;
-            opt.textContent = grd;
-            gradeSubSelect.appendChild(opt);
-        });
-    }
-}
-
-function addStageOnly(e) {
-    e.preventDefault();
-    const stg = document.getElementById('admin-new-stage-input').value.trim();
-    if (!stg) return;
-    if (!dbState.structure[stg]) dbState.structure[stg] = {};
-
-    sendRealtimeUpdate('structure', dbState.structure, `⚡ تمت إضافة المرحلة "${stg}" فوراً!`);
-    document.getElementById('admin-new-stage-input').value = '';
-}
-
-function addGradeOnly(e) {
-    e.preventDefault();
-    const stg = document.getElementById('admin-stage-dropdown-for-grade').value;
-    const grd = document.getElementById('admin-new-grade-input').value.trim();
-    if (!stg || !grd) return;
-
-    if (!dbState.structure[stg]) dbState.structure[stg] = {};
-    if (!dbState.structure[stg][grd]) dbState.structure[stg][grd] = [];
-
-    sendRealtimeUpdate('structure', dbState.structure, `⚡ تمت إضافة الصف "${grd}" فوراً!`);
-    document.getElementById('admin-new-grade-input').value = '';
-}
-
-function addSubjectOnly(e) {
-    e.preventDefault();
-    const stg = document.getElementById('admin-stage-dropdown-for-subject').value;
-    const grd = document.getElementById('admin-grade-dropdown-for-subject').value;
-    const sbj = document.getElementById('admin-new-subject-input').value.trim();
-    if (!stg || !grd || !sbj) return;
-
-    if (!dbState.structure[stg][grd].includes(sbj)) {
-        dbState.structure[stg][grd].push(sbj);
-    }
-
-    sendRealtimeUpdate('structure', dbState.structure, `⚡ تمت إضافة المادة "${sbj}" فوراً!`);
-    document.getElementById('admin-new-subject-input').value = '';
-}
-
-function renderAdminAcademicTreeList() {
-    const container = document.getElementById('admin-academic-tree-list');
-    if (!container) return;
-    container.innerHTML = '';
-
-    Object.keys(dbState.structure).forEach(stg => {
-        const stageDiv = document.createElement('div');
-        stageDiv.className = 'admin-delete-item';
-        stageDiv.innerHTML = `<span>🏛️ <b>${stg}</b></span><button class="btn-danger-sm" onclick="deleteStage('${stg}')">حذف المرحلة</button>`;
-        container.appendChild(stageDiv);
-
-        Object.keys(dbState.structure[stg] || {}).forEach(grd => {
-            const gradeDiv = document.createElement('div');
-            gradeDiv.className = 'admin-delete-item';
-            gradeDiv.style.marginRight = '15px';
-            gradeDiv.innerHTML = `<span>📚 ${grd}</span><button class="btn-danger-sm" onclick="deleteGrade('${stg}', '${grd}')">حذف الصف</button>`;
-            container.appendChild(gradeDiv);
-
-            (dbState.structure[stg][grd] || []).forEach(sbj => {
-                const subDiv = document.createElement('div');
-                subDiv.className = 'admin-delete-item';
-                subDiv.style.marginRight = '30px';
-                subDiv.style.background = '#fff';
-                subDiv.innerHTML = `<span>📝 ${sbj}</span><button class="btn-danger-sm" onclick="deleteSubject('${stg}', '${grd}', '${sbj}')">حذف المادة</button>`;
-                container.appendChild(subDiv);
-            });
-        });
+// إضافة موعد في الجدول
+window.handleAddSchedule = async function(event) {
+  event.preventDefault();
+  const day = document.getElementById('scheduleDay').value;
+  const subject = document.getElementById('scheduleSubject').value;
+  const time = document.getElementById('scheduleTime').value;
+  const stage = document.getElementById('scheduleStage').value;
+  const grade = document.getElementById('scheduleGrade').value;
+  
+  try {
+    const newRef = push(ref(database, 'schedule'));
+    await set(newRef, {
+      day,
+      subject,
+      time,
+      stage,
+      grade,
+      createdAt: new Date().toISOString()
     });
-}
+    alert('تم إضافة الموعد بنجاح!');
+    document.getElementById('addScheduleForm').reset();
+  } catch (error) {
+    alert('حدث خطأ: ' + error.message);
+  }
+};
 
-function deleteStage(stg) {
-    if (confirm(`هل تريد حذف مرحلة "${stg}" بالكامل فوراً؟`)) {
-        delete dbState.structure[stg];
-        sendRealtimeUpdate('structure', dbState.structure, "⚡ تم حذف المرحلة فوراً");
-    }
-}
-
-function deleteGrade(stg, grd) {
-    if (confirm(`هل تريد حذف صف "${grd}" فوراً؟`)) {
-        delete dbState.structure[stg][grd];
-        sendRealtimeUpdate('structure', dbState.structure, "⚡ تم حذف الصف فوراً");
-    }
-}
-
-function deleteSubject(stg, grd, sbj) {
-    if (confirm(`هل تريد حذف مادة "${sbj}" فوراً؟`)) {
-        dbState.structure[stg][grd] = dbState.structure[stg][grd].filter(s => s !== sbj);
-        sendRealtimeUpdate('structure', dbState.structure, "⚡ تم حذف المادة فوراً");
-    }
-}
-
-function addNewsItem(e) {
-    e.preventDefault();
-    const title = document.getElementById('admin-news-title').value;
-    const body = document.getElementById('admin-news-body').value;
-    
-    sendRealtimeUpdate('news', { title, body, timestamp: Date.now() }, "⚡ تم نشر الخبر فوراً!");
-    document.getElementById('admin-news-title').value = '';
-    document.getElementById('admin-news-body').value = '';
-}
-
-function renderAdminNewsList() {
-    const container = document.getElementById('admin-news-manage-list');
-    if (!container) return;
-    container.innerHTML = '';
-    dbState.news.forEach(n => {
-        const div = document.createElement('div');
-        div.className = 'admin-delete-item';
-        div.innerHTML = `<span><b>${n.title}</b></span><button class="btn-danger-sm" onclick="deleteNewsItem('${n.id}')">حذف الخبر</button>`;
-        container.appendChild(div);
+// إضافة إشعار
+window.handleAddNotification = async function(event) {
+  event.preventDefault();
+  const title = document.getElementById('notificationTitle').value;
+  const content = document.getElementById('notificationContent').value;
+  const target = document.getElementById('notificationTarget').value;
+  const stage = document.getElementById('notificationStage').value;
+  const grade = document.getElementById('notificationGrade').value;
+  const subject = document.getElementById('notificationSubject').value;
+  
+  try {
+    const newRef = push(ref(database, 'notifications'));
+    await set(newRef, {
+      title,
+      content,
+      target,
+      stage,
+      grade,
+      subject,
+      date: new Date().toLocaleDateString('ar-EG'),
+      createdAt: new Date().toISOString()
     });
-}
+    alert('تم إرسال الإشعار بنجاح!');
+    document.getElementById('addNotificationForm').reset();
+  } catch (error) {
+    alert('حدث خطأ: ' + error.message);
+  }
+};
 
-function deleteNewsItem(id) {
-    if (confirm("هل تريد حذف هذا الخبر فوراً؟")) {
-        sendRealtimeUpdate('news/' + id, null, "⚡ تم حذف الخبر فوراً");
-    }
-}
+// حذف عنصر
+window.deleteItem = async function(collection, id) {
+  if (!confirm('هل أنت متأكد من حذف هذا العنصر؟')) return;
+  
+  try {
+    await remove(ref(database, `${collection}/${id}`));
+    alert('تم الحذف بنجاح!');
+  } catch (error) {
+    alert('حدث خطأ: ' + error.message);
+  }
+};
 
-function addScheduleEntry(e) {
-    e.preventDefault();
-    const day = document.getElementById('admin-sched-day').value;
-    const subject = document.getElementById('admin-sched-subject').value;
-    const time = document.getElementById('admin-sched-time').value;
-    const room = document.getElementById('admin-sched-room').value;
-    
-    sendRealtimeUpdate('schedule', { day, subject, time, room }, "⚡ تم إضافة الحصة للجدول فوراً!");
-}
-
-function renderAdminScheduleList() {
-    const container = document.getElementById('admin-schedule-manage-list');
-    if (!container) return;
-    container.innerHTML = '';
-    dbState.schedule.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'admin-delete-item';
-        div.innerHTML = `<span><b>${s.day}</b> - ${s.subject} (${s.time})</span><button class="btn-danger-sm" onclick="deleteScheduleItem('${s.id}')">حذف</button>`;
-        container.appendChild(div);
+// ============================================
+// مراقبة حالة المصادقة
+// ============================================
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    AppState.currentUser = user;
+    // التحقق من دور المستخدم
+    const userRef = ref(database, `users/${user.uid}`);
+    get(userRef).then((snapshot) => {
+      const userData = snapshot.val();
+      if (userData?.role === 'admin') {
+        AppState.userRole = 'admin';
+        if (AppState.currentPage !== 'adminDashboard') {
+          navigateTo('adminDashboard');
+        }
+      } else {
+        AppState.userRole = 'student';
+        if (AppState.currentPage !== 'studentDashboard' && 
+            AppState.currentPage !== 'subjects' && 
+            AppState.currentPage !== 'schedule' && 
+            AppState.currentPage !== 'materials' && 
+            AppState.currentPage !== 'notifications') {
+          navigateTo('studentDashboard');
+        }
+      }
     });
-}
-
-function deleteScheduleItem(id) {
-    if (confirm("هل تريد حذف هذه الحصة فوراً؟")) {
-        sendRealtimeUpdate('schedule/' + id, null, "⚡ تم حذف الحصة فوراً");
+  } else {
+    AppState.currentUser = null;
+    AppState.userRole = null;
+    if (AppState.currentPage !== 'welcome' && 
+        AppState.currentPage !== 'login' && 
+        AppState.currentPage !== 'register') {
+      navigateTo('welcome');
     }
-}
+  }
+});
 
-function addMaterialItem(e) {
-    e.preventDefault();
-    const title = document.getElementById('admin-mat-title').value;
-    const subject = document.getElementById('admin-mat-subject').value;
-    const url = document.getElementById('admin-mat-url').value;
+// ============================================
+// تهيئة التطبيق
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  navigateTo('welcome');
+});
 
-    sendRealtimeUpdate('materials', { title, subject, url }, "⚡ تم نشر المذكرة فوراً!");
-    document.getElementById('admin-mat-title').value = '';
-    document.getElementById('admin-mat-url').value = '';
-}
-
-function renderAdminMaterialsList() {
-    const container = document.getElementById('admin-materials-manage-list');
-    if (!container) return;
-    container.innerHTML = '';
-    dbState.materials.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'admin-delete-item';
-        div.innerHTML = `<span><b>${m.title}</b> (${m.subject})</span><button class="btn-danger-sm" onclick="deleteMaterialItem('${m.id}')">حذف</button>`;
-        container.appendChild(div);
-    });
-}
-
-function deleteMaterialItem(id) {
-    if (confirm("هل تريد حذف هذه المذكرة فوراً؟")) {
-        sendRealtimeUpdate('materials/' + id, null, "⚡ تم حذف المذكرة فوراً");
-    }
-}
-
-function sendNotificationItem(e) {
-    e.preventDefault();
-    const title = document.getElementById('admin-notif-title').value;
-    const body = document.getElementById('admin-notif-body').value;
-
-    sendRealtimeUpdate('notifications', { title, body, timestamp: Date.now() }, "⚡ تم بث الإشعار فوراً للطلاب!");
-    document.getElementById('admin-notif-title').value = '';
-    document.getElementById('admin-notif-body').value = '';
-}
-
-function renderAdminNotifList() {
-    const container = document.getElementById('admin-notif-manage-list');
-    if (!container) return;
-    container.innerHTML = '';
-    dbState.notifications.forEach(n => {
-        const div = document.createElement('div');
-        div.className = 'admin-delete-item';
-        div.innerHTML = `<span><b>${n.title}</b></span><button class="btn-danger-sm" onclick="deleteNotifItem('${n.id}')">حذف</button>`;
-        container.appendChild(div);
-    });
-}
-
-function deleteNotifItem(id) {
-    if (confirm("هل تريد حذف هذا الإشعار فوراً؟")) {
-        sendRealtimeUpdate('notifications/' + id, null, "⚡ تم حذف الإشعار فوراً");
-    }
-}
+// جعل الدوال عامة للاستخدام في HTML
+window.navigateTo = navigateTo;
+window.handleGoogleSignIn = handleGoogleSignIn;
+window.handleEmailLogin = handleEmailLogin;
+window.handleRegister = handleRegister;
+window.handleLogout = handleLogout;
+window.handleAddSubject = handleAddSubject;
+window.handleAddSchedule = handleAddSchedule;
+window.handleAddNotification = handleAddNotification;
+window.deleteItem = deleteItem;
