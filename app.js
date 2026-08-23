@@ -1,6 +1,6 @@
-// Database Live State
+// Database Live State Engine
 let dbState = {
-    splash: { title: "سنتر سيجما", sub: "أهلاً بك في تطبيقنا التعليمي", logo: "" },
+    splash: { title: "سنتر سيجما التعليمي", sub: "أهلاً بك في منصتنا التعليمية المتكاملة", logo: "" },
     structure: {},
     news: [],
     schedule: [],
@@ -17,7 +17,7 @@ let currentUser = {
 
 let isAdminAuthenticated = false;
 
-// ====== 0. المزامنة والاستماع الحقيقي اللحظي (Firebase Live Sync) ======
+// ====== 0. المزامنة والاستماع اللحظي والحقيقي 100% (Firebase Live Sync) ======
 window.addEventListener('DOMContentLoaded', () => {
     initFirebaseRealtimeSync();
 });
@@ -27,7 +27,7 @@ function initFirebaseRealtimeSync() {
 
     const db = firebase.database();
 
-    // 1. مزامنة شاشة الترحيب
+    // 1. مزامنة شاشة الترحيب فورياً
     db.ref('splash').on('value', (snapshot) => {
         const val = snapshot.val();
         if (val) {
@@ -36,7 +36,7 @@ function initFirebaseRealtimeSync() {
         }
     });
 
-    // 2. مزامنة الهيكل الأكاديمي
+    // 2. مزامنة الهيكل الأكاديمي فورياً
     db.ref('structure').on('value', (snapshot) => {
         dbState.structure = snapshot.val() || {};
         renderAcademicDropdowns();
@@ -44,7 +44,7 @@ function initFirebaseRealtimeSync() {
         renderAdminAcademicTreeList();
     });
 
-    // 3. مزامنة الأخبار
+    // 3. مزامنة الأخبار والتنبيهات فورياً
     db.ref('news').on('value', (snapshot) => {
         const data = snapshot.val();
         dbState.news = [];
@@ -56,7 +56,7 @@ function initFirebaseRealtimeSync() {
         if (document.getElementById('home-screen').classList.contains('active')) renderHome();
     });
 
-    // 4. مزامنة الجدول الأسبوعي
+    // 4. مزامنة الجدول الأسبوعي فورياً
     db.ref('schedule').on('value', (snapshot) => {
         const data = snapshot.val();
         dbState.schedule = [];
@@ -67,7 +67,7 @@ function initFirebaseRealtimeSync() {
         if (document.getElementById('home-screen').classList.contains('active')) renderHome();
     });
 
-    // 5. مزامنة المذكرات والملفات
+    // 5. مزامنة المذكرات والملفات فورياً
     db.ref('materials').on('value', (snapshot) => {
         const data = snapshot.val();
         dbState.materials = [];
@@ -79,7 +79,7 @@ function initFirebaseRealtimeSync() {
         if (document.getElementById('materials-screen').classList.contains('active')) renderMaterials();
     });
 
-    // 6. مزامنة الإشعارات
+    // 6. مزامنة الإشعارات فورياً
     db.ref('notifications').on('value', (snapshot) => {
         const data = snapshot.val();
         dbState.notifications = [];
@@ -92,9 +92,36 @@ function initFirebaseRealtimeSync() {
     });
 }
 
+// دالة عامة موحدة للإرسال والحذف الفوري في Firebase
+function sendRealtimeUpdate(path, data, successMessage) {
+    if (typeof firebase === 'undefined' || !firebase.apps.length) {
+        alert("تنبيه: Firebase غير مصل بشكل كامل، سيتم إجراء العملية محلياً.");
+        return;
+    }
+
+    const dbRef = firebase.database().ref(path);
+    let promise;
+
+    if (data === null) {
+        promise = dbRef.remove();
+    } else if (typeof data === 'object' && !data.id && path.includes('/')) {
+        promise = dbRef.set(data);
+    } else if (typeof data === 'object' && !data.id) {
+        promise = dbRef.push(data);
+    } else {
+        promise = dbRef.set(data);
+    }
+
+    promise.then(() => {
+        if (successMessage) alert(successMessage);
+    }).catch(err => {
+        alert("خطأ في الإرسال الفوري: " + err.message);
+    });
+}
+
 function updateSplashUI() {
-    document.getElementById('splash-title').textContent = dbState.splash.title || "سنتر سيجما";
-    document.getElementById('splash-sub').textContent = dbState.splash.sub || "أهلاً بك في تطبيقنا التعليمي";
+    document.getElementById('splash-title').textContent = dbState.splash.title || "سنتر سيجما التعليمي";
+    document.getElementById('splash-sub').textContent = dbState.splash.sub || "أهلاً بك في منصتنا التعليمية المتكاملة";
     
     if (dbState.splash.logo) {
         document.getElementById('splash-logo').src = dbState.splash.logo;
@@ -105,7 +132,6 @@ function updateSplashUI() {
         document.getElementById('splash-logo-placeholder').style.display = 'flex';
     }
 
-    // تعبئة البيانات في لوحة تحكم الأدمن
     const adminTitle = document.getElementById('admin-splash-title');
     const adminSub = document.getElementById('admin-splash-sub');
     const adminLogo = document.getElementById('admin-splash-logo');
@@ -114,11 +140,11 @@ function updateSplashUI() {
     if (adminLogo && !adminLogo.value) adminLogo.value = dbState.splash.logo || "";
 }
 
-// ====== 1. التنقل والأمان بين الشاشات ======
+// ====== 1. التنقل بين الشاشات والنظام الأمني ======
 function goToScreen(screenId) {
-    // حماية لوحة التحكم: تمنع فتح شاشة الأدمن بدون تسجيل دخول الأدمن
+    // حماية الشاشات: تمنع وصول أي طالب لشاشة الأدمن بدون كلمة المرور الصحيحة
     if (screenId === 'admin-dashboard-screen' && !isAdminAuthenticated) {
-        alert("محاولة غير مصرح بها! يجب إدخال باسورد الإدارة أولاً.");
+        alert("🔒 محاولة غير مصرح بها! يجب كتابة كلمة مرور الإدارة أولاً.");
         goToScreen('admin-login-screen');
         return;
     }
@@ -149,7 +175,7 @@ function updateNavState(screenId) {
     if (screenId === 'notifications-screen') document.getElementById('nav-notifs').classList.add('active');
 }
 
-// ====== 2. تسجيل دخول الطلاب (إيميل أو Google) ======
+// ====== 2. تسجيل دخول الطلاب ======
 function handleEmailLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
@@ -161,7 +187,7 @@ function handleEmailLogin(e) {
                 currentUser.email = res.user.email;
                 goToScreen('selection-screen');
             })
-            .catch(err => alert("خطأ في الدخول: " + err.message));
+            .catch(err => alert("خطأ في تسجيل دخول الطالب: " + err.message));
     } else {
         currentUser.email = email;
         goToScreen('selection-screen');
@@ -176,14 +202,14 @@ function handleGoogleLogin() {
                 currentUser.email = res.user.email;
                 goToScreen('selection-screen');
             })
-            .catch(err => alert("خطأ دخول Google: " + err.message));
+            .catch(err => alert("خطأ في دخول Google: " + err.message));
     } else {
-        currentUser.email = "google-user@gmail.com";
+        currentUser.email = "student-google@gmail.com";
         goToScreen('selection-screen');
     }
 }
 
-// ====== 3. اختيار المواد للطلاب ======
+// ====== 3. اختيار المواد والصف للطلاب ======
 function renderAcademicDropdowns() {
     const select = document.getElementById('stage-select');
     if (!select) return;
@@ -243,7 +269,7 @@ function handleSelectionSubmit(e) {
     goToScreen('home-screen');
 }
 
-// ====== 4. شاشات الطلاب ======
+// ====== 4. شاشات تصفح الطالب ======
 function renderHome() {
     document.getElementById('user-display-name').textContent = currentUser.email || "طالب";
 
@@ -257,7 +283,7 @@ function renderHome() {
             chips.appendChild(chip);
         });
     } else {
-        chips.innerHTML = '<p class="empty-msg">لم تقم باختيار مواد</p>';
+        chips.innerHTML = '<p class="empty-msg">لم تقم باختيار أي مواد مسجلة</p>';
     }
 
     const newsContainer = document.getElementById('news-list');
@@ -266,11 +292,11 @@ function renderHome() {
         dbState.news.forEach(n => {
             const div = document.createElement('div');
             div.className = 'news-card';
-            div.innerHTML = `<div><h5>${n.title}</h5><p style="font-size:12px;">${n.body}</p></div>`;
+            div.innerHTML = `<div><h5 style="color:#1e3c72; margin-bottom:4px;">${n.title}</h5><p style="font-size:12px; color:#444;">${n.body}</p></div>`;
             newsContainer.appendChild(div);
         });
     } else {
-        newsContainer.innerHTML = '<p class="empty-msg">لا توجد أخبار حالياً</p>';
+        newsContainer.innerHTML = '<p class="empty-msg">لا توجد أخبار تنبيهية حالياً</p>';
     }
 
     const tbody = document.getElementById('schedule-tbody');
@@ -278,11 +304,11 @@ function renderHome() {
     if (dbState.schedule.length) {
         dbState.schedule.forEach(s => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${s.day}</td><td>${s.subject}</td><td>${s.time}</td><td>${s.room}</td>`;
+            tr.innerHTML = `<td><b>${s.day}</b></td><td>${s.subject}</td><td>${s.time}</td><td>${s.room}</td>`;
             tbody.appendChild(tr);
         });
     } else {
-        tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">الجدول فارغ حالياً</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">الجدول الدراسي فارغ حالياً</td></tr>';
     }
 }
 
@@ -312,15 +338,15 @@ function renderMaterials() {
             div.className = 'item-card';
             div.innerHTML = `
                 <div>
-                    <h5>${m.title}</h5>
-                    <p style="font-size:11px; color:gray;">${m.subject}</p>
+                    <h5 style="color:#1e3c72;">${m.title}</h5>
+                    <p style="font-size:12px; color:gray;">المادة: ${m.subject}</p>
                 </div>
-                <a href="${m.url}" target="_blank" class="btn-primary" style="padding:4px 10px; font-size:12px; text-decoration:none;">فتح</a>
+                <a href="${m.url}" target="_blank" class="btn-primary" style="padding:6px 12px; font-size:12px; text-decoration:none; width:auto;">فتح PDF 📥</a>
             `;
             container.appendChild(div);
         });
     } else {
-        container.innerHTML = '<p class="empty-msg">لا توجد مذكرات متاحة</p>';
+        container.innerHTML = '<p class="empty-msg">لا توجد مذكرات متاحة حالياً</p>';
     }
 }
 
@@ -333,7 +359,8 @@ function renderNotifications() {
         dbState.notifications.forEach(n => {
             const div = document.createElement('div');
             div.className = 'card';
-            div.innerHTML = `<h5>${n.title}</h5><p style="font-size:12px; color:#555;">${n.body}</p>`;
+            div.style.margin = "0 0 10px 0";
+            div.innerHTML = `<h5 style="color:#1e3c72; margin-bottom:5px;">🔔 ${n.title}</h5><p style="font-size:12px; color:#555;">${n.body}</p>`;
             container.appendChild(div);
         });
     } else {
@@ -342,12 +369,12 @@ function renderNotifications() {
     }
 }
 
-// ====== 5. نظام شاشات تبويبات وحماية الأدمن ======
+// ====== 5. لوحة التحكم المقسمة إلى شاشات وحمايتها بالباسورد ======
 function handleAdminLogin(e) {
     e.preventDefault();
     const pass = document.getElementById('admin-pass-input').value;
     
-    // كلمة المرور السرية للوحة التحكم (يمكنك تغييرها من هنا)
+    // كلمة المرور السرية لفتح لوحة التحكم (يمكنك تغييرها من هنا)
     if (pass === "admin123") {
         isAdminAuthenticated = true;
         goToScreen('admin-dashboard-screen');
@@ -358,7 +385,7 @@ function handleAdminLogin(e) {
         renderAdminMaterialsList();
         renderAdminNotifList();
     } else {
-        alert("كلمة مرور الإدارة غير صحيحة!");
+        alert("❌ كلمة مرور الإدارة غير صحيحة!");
     }
 }
 
@@ -380,15 +407,14 @@ function switchAdminTab(tabId) {
     if (targetPage) targetPage.classList.add('active');
 }
 
-// عمليات الإدارة الحقيقية المربوطة بـ Firebase
+// وظائف التحكم الفوري
 function saveSplashSettings(e) {
     e.preventDefault();
     const title = document.getElementById('admin-splash-title').value.trim();
     const sub = document.getElementById('admin-splash-sub').value.trim();
     const logo = document.getElementById('admin-splash-logo').value.trim();
 
-    firebase.database().ref('splash').set({ title, sub, logo })
-        .then(() => alert("تم التحديث الفوري وبث التعديلات بنجاح!"));
+    sendRealtimeUpdate('splash', { title, sub, logo }, "⚡ تم تحديث السنتر واللوجو فوراً!");
 }
 
 function renderAdminAcademicDropdowns() {
@@ -434,11 +460,8 @@ function addStageOnly(e) {
     if (!stg) return;
     if (!dbState.structure[stg]) dbState.structure[stg] = {};
 
-    firebase.database().ref('structure').set(dbState.structure)
-        .then(() => {
-            alert(`تمت إضافة مرحلة ${stg}`);
-            document.getElementById('admin-new-stage-input').value = '';
-        });
+    sendRealtimeUpdate('structure', dbState.structure, `⚡ تمت إضافة المرحلة "${stg}" فوراً!`);
+    document.getElementById('admin-new-stage-input').value = '';
 }
 
 function addGradeOnly(e) {
@@ -450,11 +473,8 @@ function addGradeOnly(e) {
     if (!dbState.structure[stg]) dbState.structure[stg] = {};
     if (!dbState.structure[stg][grd]) dbState.structure[stg][grd] = [];
 
-    firebase.database().ref('structure').set(dbState.structure)
-        .then(() => {
-            alert(`تمت إضافة صف ${grd}`);
-            document.getElementById('admin-new-grade-input').value = '';
-        });
+    sendRealtimeUpdate('structure', dbState.structure, `⚡ تمت إضافة الصف "${grd}" فوراً!`);
+    document.getElementById('admin-new-grade-input').value = '';
 }
 
 function addSubjectOnly(e) {
@@ -468,11 +488,8 @@ function addSubjectOnly(e) {
         dbState.structure[stg][grd].push(sbj);
     }
 
-    firebase.database().ref('structure').set(dbState.structure)
-        .then(() => {
-            alert(`تمت إضافة مادة ${sbj}`);
-            document.getElementById('admin-new-subject-input').value = '';
-        });
+    sendRealtimeUpdate('structure', dbState.structure, `⚡ تمت إضافة المادة "${sbj}" فوراً!`);
+    document.getElementById('admin-new-subject-input').value = '';
 }
 
 function renderAdminAcademicTreeList() {
@@ -506,23 +523,23 @@ function renderAdminAcademicTreeList() {
 }
 
 function deleteStage(stg) {
-    if (confirm(`تأكيد حذف مرحلة "${stg}"؟`)) {
+    if (confirm(`هل تريد حذف مرحلة "${stg}" بالكامل فوراً؟`)) {
         delete dbState.structure[stg];
-        firebase.database().ref('structure').set(dbState.structure);
+        sendRealtimeUpdate('structure', dbState.structure, "⚡ تم حذف المرحلة فوراً");
     }
 }
 
 function deleteGrade(stg, grd) {
-    if (confirm(`تأكيد حذف صف "${grd}"؟`)) {
+    if (confirm(`هل تريد حذف صف "${grd}" فوراً؟`)) {
         delete dbState.structure[stg][grd];
-        firebase.database().ref('structure').set(dbState.structure);
+        sendRealtimeUpdate('structure', dbState.structure, "⚡ تم حذف الصف فوراً");
     }
 }
 
 function deleteSubject(stg, grd, sbj) {
-    if (confirm(`تأكيد حذف مادة "${sbj}"؟`)) {
+    if (confirm(`هل تريد حذف مادة "${sbj}" فوراً؟`)) {
         dbState.structure[stg][grd] = dbState.structure[stg][grd].filter(s => s !== sbj);
-        firebase.database().ref('structure').set(dbState.structure);
+        sendRealtimeUpdate('structure', dbState.structure, "⚡ تم حذف المادة فوراً");
     }
 }
 
@@ -530,12 +547,10 @@ function addNewsItem(e) {
     e.preventDefault();
     const title = document.getElementById('admin-news-title').value;
     const body = document.getElementById('admin-news-body').value;
-    firebase.database().ref('news').push({ title, body, timestamp: Date.now() })
-        .then(() => {
-            alert("تم إرسال الخبر بنجاح!");
-            document.getElementById('admin-news-title').value = '';
-            document.getElementById('admin-news-body').value = '';
-        });
+    
+    sendRealtimeUpdate('news', { title, body, timestamp: Date.now() }, "⚡ تم نشر الخبر فوراً!");
+    document.getElementById('admin-news-title').value = '';
+    document.getElementById('admin-news-body').value = '';
 }
 
 function renderAdminNewsList() {
@@ -545,13 +560,15 @@ function renderAdminNewsList() {
     dbState.news.forEach(n => {
         const div = document.createElement('div');
         div.className = 'admin-delete-item';
-        div.innerHTML = `<span><b>${n.title}</b></span><button class="btn-danger-sm" onclick="deleteNewsItem('${n.id}')">حذف</button>`;
+        div.innerHTML = `<span><b>${n.title}</b></span><button class="btn-danger-sm" onclick="deleteNewsItem('${n.id}')">حذف الخبر</button>`;
         container.appendChild(div);
     });
 }
 
 function deleteNewsItem(id) {
-    if (confirm("حذف الخبر؟")) firebase.database().ref('news/' + id).remove();
+    if (confirm("هل تريد حذف هذا الخبر فوراً؟")) {
+        sendRealtimeUpdate('news/' + id, null, "⚡ تم حذف الخبر فوراً");
+    }
 }
 
 function addScheduleEntry(e) {
@@ -560,8 +577,8 @@ function addScheduleEntry(e) {
     const subject = document.getElementById('admin-sched-subject').value;
     const time = document.getElementById('admin-sched-time').value;
     const room = document.getElementById('admin-sched-room').value;
-    firebase.database().ref('schedule').push({ day, subject, time, room })
-        .then(() => alert("تم التحديث بنجاح!"));
+    
+    sendRealtimeUpdate('schedule', { day, subject, time, room }, "⚡ تم إضافة الحصة للجدول فوراً!");
 }
 
 function renderAdminScheduleList() {
@@ -571,13 +588,15 @@ function renderAdminScheduleList() {
     dbState.schedule.forEach(s => {
         const div = document.createElement('div');
         div.className = 'admin-delete-item';
-        div.innerHTML = `<span>${s.day} - ${s.subject}</span><button class="btn-danger-sm" onclick="deleteScheduleItem('${s.id}')">حذف</button>`;
+        div.innerHTML = `<span><b>${s.day}</b> - ${s.subject} (${s.time})</span><button class="btn-danger-sm" onclick="deleteScheduleItem('${s.id}')">حذف</button>`;
         container.appendChild(div);
     });
 }
 
 function deleteScheduleItem(id) {
-    if (confirm("حذف الحصة؟")) firebase.database().ref('schedule/' + id).remove();
+    if (confirm("هل تريد حذف هذه الحصة فوراً؟")) {
+        sendRealtimeUpdate('schedule/' + id, null, "⚡ تم حذف الحصة فوراً");
+    }
 }
 
 function addMaterialItem(e) {
@@ -585,8 +604,10 @@ function addMaterialItem(e) {
     const title = document.getElementById('admin-mat-title').value;
     const subject = document.getElementById('admin-mat-subject').value;
     const url = document.getElementById('admin-mat-url').value;
-    firebase.database().ref('materials').push({ title, subject, url })
-        .then(() => alert("تم إضافة المذكرة بنجاح!"));
+
+    sendRealtimeUpdate('materials', { title, subject, url }, "⚡ تم نشر المذكرة فوراً!");
+    document.getElementById('admin-mat-title').value = '';
+    document.getElementById('admin-mat-url').value = '';
 }
 
 function renderAdminMaterialsList() {
@@ -602,15 +623,19 @@ function renderAdminMaterialsList() {
 }
 
 function deleteMaterialItem(id) {
-    if (confirm("حذف المذكرة؟")) firebase.database().ref('materials/' + id).remove();
+    if (confirm("هل تريد حذف هذه المذكرة فوراً؟")) {
+        sendRealtimeUpdate('materials/' + id, null, "⚡ تم حذف المذكرة فوراً");
+    }
 }
 
 function sendNotificationItem(e) {
     e.preventDefault();
     const title = document.getElementById('admin-notif-title').value;
     const body = document.getElementById('admin-notif-body').value;
-    firebase.database().ref('notifications').push({ title, body, timestamp: Date.now() })
-        .then(() => alert("تم إرسال الإشعار بنجاح!"));
+
+    sendRealtimeUpdate('notifications', { title, body, timestamp: Date.now() }, "⚡ تم بث الإشعار فوراً للطلاب!");
+    document.getElementById('admin-notif-title').value = '';
+    document.getElementById('admin-notif-body').value = '';
 }
 
 function renderAdminNotifList() {
@@ -626,5 +651,7 @@ function renderAdminNotifList() {
 }
 
 function deleteNotifItem(id) {
-    if (confirm("حذف الإشعار؟")) firebase.database().ref('notifications/' + id).remove();
+    if (confirm("هل تريد حذف هذا الإشعار فوراً؟")) {
+        sendRealtimeUpdate('notifications/' + id, null, "⚡ تم حذف الإشعار فوراً");
+    }
 }
