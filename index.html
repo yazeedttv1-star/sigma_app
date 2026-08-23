@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سنتر سيجما التعليمي</title>
+    <title>تطبيق السنتر التعليمي</title>
     <link rel="stylesheet" href="style.css">
     
     <!-- Firebase SDKs -->
@@ -20,21 +20,21 @@
         <div id="splash-screen" class="screen active">
             <div class="splash-content">
                 <div id="splash-logo-placeholder" class="logo-box">SIGMA</div>
-                <img id="splash-logo" src="" alt="Logo" style="display:none; max-width:120px; margin-bottom:15px;">
+                <img id="splash-logo" src="" alt="Logo" style="display:none; max-width:120px; margin-bottom:15px; border-radius:10px;">
                 <h1 id="splash-title">سنتر سيجما</h1>
                 <p id="splash-sub">أهلاً بك في تطبيقنا التعليمي</p>
-                <button class="btn-primary" onclick="goToScreen('login-screen')">ابدأ الآن</button>
+                <button class="btn-primary" style="margin-top:20px;" onclick="goToScreen('login-screen')">ابدأ الآن</button>
             </div>
         </div>
 
-        <!-- 2. شاشة تسجيل الدخول (Login Screen) -->
+        <!-- 2. شاشة تسجيل الدخول للطلاب -->
         <div id="login-screen" class="screen">
             <div class="card">
-                <h2>تسجيل الدخول</h2>
+                <h2>تسجيل دخول الطالب</h2>
                 <form onsubmit="handleEmailLogin(event)">
                     <div class="form-group">
                         <label>البريد الإلكتروني:</label>
-                        <input type="email" id="login-email" required placeholder="example@mail.com">
+                        <input type="email" id="login-email" required placeholder="student@example.com">
                     </div>
                     <div class="form-group">
                         <label>كلمة المرور:</label>
@@ -46,11 +46,11 @@
                 <button class="btn-google" onclick="handleGoogleLogin()">الدخول بواسطة Google</button>
                 
                 <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
-                <button class="btn-secondary" onclick="goToScreen('admin-login-screen')">دخول الأدمن / لوحة التحكم</button>
+                <button class="btn-secondary" onclick="goToScreen('admin-login-screen')">دخول لوحة التحكم (للإدارة فقط)</button>
             </div>
         </div>
 
-        <!-- 3. شاشة اختيار المرحلة والصف والمواد (Selection Screen) -->
+        <!-- 3. شاشة اختيار البيانات الأكاديمية للطالب -->
         <div id="selection-screen" class="screen">
             <div class="card">
                 <h3>تحديد البيانات الأكاديمية</h3>
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <!-- 4. الشاشة الرئيسية (Home Screen) -->
+        <!-- 4. الشاشة الرئيسية للطالب -->
         <div id="home-screen" class="screen">
             <div class="header">
                 <div>
@@ -87,19 +87,16 @@
                 </div>
             </div>
 
-            <!-- المواد المسجلة -->
             <div class="section">
                 <h5>موادك الدراسية:</h5>
                 <div id="enrolled-subjects" class="chips-container"></div>
             </div>
 
-            <!-- الأخبار والتنبيهات -->
             <div class="section">
                 <h5>الأخبار والتنبيهات العامة</h5>
                 <div id="news-list" class="cards-list"></div>
             </div>
 
-            <!-- الجدول الأسبوعي -->
             <div class="section">
                 <h5>جدول المواعيد الأسبوعي</h5>
                 <div class="table-responsive">
@@ -118,12 +115,12 @@
             </div>
         </div>
 
-        <!-- 5. شاشة المذكرات والملفات (Materials Screen) -->
+        <!-- 5. شاشة المذكرات -->
         <div id="materials-screen" class="screen">
             <div class="header">
                 <h4>المذكرات والملفات الدراسية</h4>
             </div>
-            <div class="form-group" style="padding: 0 15px;">
+            <div class="form-group" style="padding: 15px 15px 0 15px;">
                 <label>تصفية حسب المادة:</label>
                 <select id="material-filter" onchange="renderMaterials()">
                     <option value="ALL">جميع المواد</option>
@@ -132,7 +129,7 @@
             <div id="materials-container" class="cards-list" style="padding: 15px;"></div>
         </div>
 
-        <!-- 6. شاشة الإشعارات (Notifications Screen) -->
+        <!-- 6. شاشة الإشعارات -->
         <div id="notifications-screen" class="screen">
             <div class="header">
                 <h4>الإشعارات التنبيهية</h4>
@@ -140,179 +137,158 @@
             <div id="notifications-container" class="cards-list" style="padding: 15px;"></div>
         </div>
 
-        <!-- 7. شاشة دخول الأدمن (Admin Login Screen) -->
+        <!-- 7. شاشة تسجيل دخول الأدمن بكلمة مرور السرية -->
         <div id="admin-login-screen" class="screen">
             <div class="card">
-                <h3>دخول لوحة التحكم</h3>
+                <h3>دخول لوحة التحكم الأمني</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">يرجى كتابة باسورد الإدارة المشفر للتحكم بالكامل</p>
                 <form onsubmit="handleAdminLogin(event)">
                     <div class="form-group">
-                        <label>كلمة المرور الخاصة بالإدارة:</label>
+                        <label>كلمة المرور الإدارية:</label>
                         <input type="password" id="admin-pass-input" placeholder="أدخل كلمة المرور" required>
                     </div>
-                    <button type="submit" class="btn-primary">دخول للوحة التحكم</button>
+                    <button type="submit" class="btn-primary">دخول وتشغيل التحكم</button>
                     <button type="button" class="btn-secondary" style="margin-top:10px;" onclick="goToScreen('login-screen')">إلغاء وعودة</button>
                 </form>
             </div>
         </div>
 
-        <!-- 8. شاشة لوحة تحكم الأدمن (Admin Dashboard Screen) -->
+        <!-- 8. شاشة لوحة تحكم الأدمن (نظام شاشات وتبويبات مقسمة) -->
         <div id="admin-dashboard-screen" class="screen">
             <div class="header d-flex-between">
-                <h4>لوحة التحكم للإدارة</h4>
-                <button class="btn-danger-sm" onclick="logoutAdmin()">خروج</button>
+                <h4>لوحة التحكم الشاملة</h4>
+                <button class="btn-danger-sm" onclick="logoutAdmin()">خروج وتأمين</button>
             </div>
 
-            <div class="admin-content" style="padding: 15px;">
+            <!-- قائمة التبويبات الداخلية للوحة التحكم -->
+            <div class="admin-tabs-nav">
+                <button class="admin-tab-btn active" onclick="switchAdminTab('tab-center')">🏛️ السنتر</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tab-academic')">📚 الهيكل</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tab-news-sched')">📰 الأخبار والجدول</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tab-mat-notif')">📁 الملفات والإشعارات</button>
+            </div>
+
+            <div class="admin-tab-content-container" style="padding: 15px;">
                 
-                <!-- إعدادات شاشة الترحيب -->
-                <div class="card" style="margin-bottom: 15px;">
-                    <h4>تعديل شاشة الترحيب</h4>
-                    <form onsubmit="saveSplashSettings(event)">
-                        <div class="form-group">
-                            <label>عنوان التطبيق الرئيسي:</label>
-                            <input type="text" id="admin-splash-title" placeholder="سنتر سيجما">
-                        </div>
-                        <div class="form-group">
-                            <label>الوصف الفرعي:</label>
-                            <input type="text" id="admin-splash-sub" placeholder="أهلاً بك...">
-                        </div>
-                        <div class="form-group">
-                            <label>رابط الشعار (Logo URL):</label>
-                            <input type="url" id="admin-splash-logo" placeholder="https://...">
-                        </div>
-                        <button type="submit" class="btn-primary">حفظ وتحديث فوراً</button>
-                    </form>
+                <!-- تبويب 1: السنتر والترحيب -->
+                <div id="tab-center" class="admin-tab-page active">
+                    <div class="card">
+                        <h4>إعدادات السنتر وتطوير شاشة الترحيب</h4>
+                        <form onsubmit="saveSplashSettings(event)">
+                            <div class="form-group">
+                                <label>اسم السنتر الرئيسي:</label>
+                                <input type="text" id="admin-splash-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>الوصف الفرعي:</label>
+                                <input type="text" id="admin-splash-sub" required>
+                            </div>
+                            <div class="form-group">
+                                <label>رابط الشعار / اللوجو (Logo URL):</label>
+                                <input type="url" id="admin-splash-logo" placeholder="https://example.com/logo.png">
+                            </div>
+                            <button type="submit" class="btn-primary">حفظ وإرسال حقيقي للمستخدمين</button>
+                        </form>
+                    </div>
                 </div>
 
-                <!-- إضافة الهيكل الأكاديمي -->
-                <div class="card" style="margin-bottom: 15px;">
-                    <h4>إدارة الهيكل الأكاديمي (إضافة)</h4>
-                    
-                    <form onsubmit="addStageOnly(event)" style="margin-bottom: 15px;">
-                        <div class="form-group">
-                            <label>1. إضافة مرحلة جديدة:</label>
-                            <input type="text" id="admin-new-stage-input" placeholder="مثال: المرحلة الإعدادية" required>
-                        </div>
-                        <button type="submit" class="btn-primary">إضافة المرحلة</button>
-                    </form>
-                    <hr>
+                <!-- تبويب 2: الهيكل الأكاديمي -->
+                <div id="tab-academic" class="admin-tab-page">
+                    <div class="card" style="margin-bottom: 15px;">
+                        <h4>إضافة العناصر الأكاديمية</h4>
+                        <form onsubmit="addStageOnly(event)" style="margin-bottom: 12px;">
+                            <div class="form-group">
+                                <label>1. إضافة مرحلة تعليمية:</label>
+                                <input type="text" id="admin-new-stage-input" placeholder="مثال: المرحلة الثانوية" required>
+                            </div>
+                            <button type="submit" class="btn-primary">إضافة مرحلة</button>
+                        </form>
+                        <hr style="margin: 10px 0;">
 
-                    <form onsubmit="addGradeOnly(event)" style="margin-bottom: 15px;">
-                        <div class="form-group">
-                            <label>2. إضافة صف لمرحلة قائمة:</label>
-                            <select id="admin-stage-dropdown-for-grade" required>
-                                <option value="" disabled selected>اختر المرحلة...</option>
-                            </select>
-                            <input type="text" id="admin-new-grade-input" placeholder="مثال: الصف الأول الإعدادي" style="margin-top:5px;" required>
-                        </div>
-                        <button type="submit" class="btn-primary">إضافة الصف</button>
-                    </form>
-                    <hr>
+                        <form onsubmit="addGradeOnly(event)" style="margin-bottom: 12px;">
+                            <div class="form-group">
+                                <label>2. إضافة صف لمرحلة:</label>
+                                <select id="admin-stage-dropdown-for-grade" required></select>
+                                <input type="text" id="admin-new-grade-input" placeholder="مثال: الصف الثالث الثانوي" style="margin-top:5px;" required>
+                            </div>
+                            <button type="submit" class="btn-primary">إضافة صف</button>
+                        </form>
+                        <hr style="margin: 10px 0;">
 
-                    <form onsubmit="addSubjectOnly(event)">
-                        <div class="form-group">
-                            <label>3. إضافة مادة لصف معين:</label>
-                            <select id="admin-stage-dropdown-for-subject" onchange="updateAdminGradesDropdown()" required>
-                                <option value="" disabled selected>اختر المرحلة...</option>
-                            </select>
-                            <select id="admin-grade-dropdown-for-subject" style="margin-top:5px;" required disabled>
-                                <option value="" disabled selected>اختر الصف...</option>
-                            </select>
-                            <input type="text" id="admin-new-subject-input" placeholder="مثال: الرياضيات" style="margin-top:5px;" required>
-                        </div>
-                        <button type="submit" class="btn-primary">إضافة المادة</button>
-                    </form>
+                        <form onsubmit="addSubjectOnly(event)">
+                            <div class="form-group">
+                                <label>3. إضافة مادة لصف معين:</label>
+                                <select id="admin-stage-dropdown-for-subject" onchange="updateAdminGradesDropdown()" required></select>
+                                <select id="admin-grade-dropdown-for-subject" style="margin-top:5px;" required disabled></select>
+                                <input type="text" id="admin-new-subject-input" placeholder="مثال: الكيمياء" style="margin-top:5px;" required>
+                            </div>
+                            <button type="submit" class="btn-primary">إضافة مادة</button>
+                        </form>
+                    </div>
+
+                    <div class="card" style="border: 1px solid #ffcdd2;">
+                        <h4 style="color: #c62828;">إدارة وحذف الهيكل الأكاديمي</h4>
+                        <div id="admin-academic-tree-list"></div>
+                    </div>
                 </div>
 
-                <!-- مسح وإزالة العناصر من الهيكل الأكاديمي -->
-                <div class="card" style="margin-bottom: 15px; border: 1px solid #ffcdd2;">
-                    <h4 style="color: #c62828;">حذف من الهيكل الأكاديمي</h4>
-                    <div id="admin-academic-tree-list"></div>
+                <!-- تبويب 3: الأخبار والجدول -->
+                <div id="tab-news-sched" class="admin-tab-page">
+                    <div class="card" style="margin-bottom:15px;">
+                        <h4>إضافة خبر جديد</h4>
+                        <form onsubmit="addNewsItem(event)">
+                            <div class="form-group">
+                                <label>عنوان الخبر:</label>
+                                <input type="text" id="admin-news-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>التفاصيل:</label>
+                                <textarea id="admin-news-body" rows="2" required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">نشر الخبر فوراً</button>
+                        </form>
+                        <h5 style="margin-top:15px;">الأخبار المتاحة (حذف):</h5>
+                        <div id="admin-news-manage-list"></div>
+                    </div>
+
+                    <div class="card">
+                        <h4>إضافة حصة للجدول الأسبوعي</h4>
+                        <form onsubmit="addScheduleEntry(event)">
+                            <div class="form-group"><label>اليوم:</label><input type="text" id="admin-sched-day" required placeholder="السبت"></div>
+                            <div class="form-group"><label>المادة:</label><input type="text" id="admin-sched-subject" required placeholder="فيزياء"></div>
+                            <div class="form-group"><label>الموعد:</label><input type="text" id="admin-sched-time" required placeholder="05:00 مساءً"></div>
+                            <div class="form-group"><label>القاعة:</label><input type="text" id="admin-sched-room" required placeholder="قاعة 2"></div>
+                            <button type="submit" class="btn-primary">تحديث الجدول فوراً</button>
+                        </form>
+                        <h5 style="margin-top:15px;">الحصص الحالية (حذف):</h5>
+                        <div id="admin-schedule-manage-list"></div>
+                    </div>
                 </div>
 
-                <!-- إضافة الأخبار وحذفها -->
-                <div class="card" style="margin-bottom: 15px;">
-                    <h4>إدارة الأخبار والتنبيهات</h4>
-                    <form onsubmit="addNewsItem(event)">
-                        <div class="form-group">
-                            <label>عنوان الخبر:</label>
-                            <input type="text" id="admin-news-title" required>
-                        </div>
-                        <div class="form-group">
-                            <label>تفاصيل الخبر:</label>
-                            <textarea id="admin-news-body" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="btn-primary">نشر الخبر فوراً</button>
-                    </form>
-                    <hr>
-                    <h5 style="margin-top:10px;">الأخبار الحالية (حذف):</h5>
-                    <div id="admin-news-manage-list"></div>
-                </div>
+                <!-- تبويب 4: الملفات والإشعارات -->
+                <div id="tab-mat-notif" class="admin-tab-page">
+                    <div class="card" style="margin-bottom:15px;">
+                        <h4>رفع مذكرة / ملف جديد</h4>
+                        <form onsubmit="addMaterialItem(event)">
+                            <div class="form-group"><label>عنوان المذكرة:</label><input type="text" id="admin-mat-title" required></div>
+                            <div class="form-group"><label>المادة:</label><input type="text" id="admin-mat-subject" required></div>
+                            <div class="form-group"><label>رابط Google Drive / PDF:</label><input type="url" id="admin-mat-url" required></div>
+                            <button type="submit" class="btn-primary">إضافة المذكرة</button>
+                        </form>
+                        <h5 style="margin-top:15px;">المذكرات المتاحة (حذف):</h5>
+                        <div id="admin-materials-manage-list"></div>
+                    </div>
 
-                <!-- إدارة الجدول الحالية -->
-                <div class="card" style="margin-bottom: 15px;">
-                    <h4>إدارة الجدول الأسبوعي</h4>
-                    <form onsubmit="addScheduleEntry(event)">
-                        <div class="form-group">
-                            <label>اليوم:</label>
-                            <input type="text" id="admin-sched-day" placeholder="السبت" required>
-                        </div>
-                        <div class="form-group">
-                            <label>المادة:</label>
-                            <input type="text" id="admin-sched-subject" placeholder="فيزياء" required>
-                        </div>
-                        <div class="form-group">
-                            <label>الموعد:</label>
-                            <input type="text" id="admin-sched-time" placeholder="04:00 مساءً" required>
-                        </div>
-                        <div class="form-group">
-                            <label>القاعة / القاعة الدراسية:</label>
-                            <input type="text" id="admin-sched-room" placeholder="قاعة 1" required>
-                        </div>
-                        <button type="submit" class="btn-primary">إضافة الحصة للجدول</button>
-                    </form>
-                    <hr>
-                    <h5 style="margin-top:10px;">الحصص الحالية (حذف):</h5>
-                    <div id="admin-schedule-manage-list"></div>
-                </div>
-
-                <!-- إضافة المذكرات وحذفها -->
-                <div class="card" style="margin-bottom: 15px;">
-                    <h4>إدارة المذكرات والملفات</h4>
-                    <form onsubmit="addMaterialItem(event)">
-                        <div class="form-group">
-                            <label>عنوان المذكرة:</label>
-                            <input type="text" id="admin-mat-title" required>
-                        </div>
-                        <div class="form-group">
-                            <label>اسم المادة:</label>
-                            <input type="text" id="admin-mat-subject" required>
-                        </div>
-                        <div class="form-group">
-                            <label>رابط التحميل / Drive URL:</label>
-                            <input type="url" id="admin-mat-url" required>
-                        </div>
-                        <button type="submit" class="btn-primary">إضافة المذكرة</button>
-                    </form>
-                    <hr>
-                    <h5 style="margin-top:10px;">المذكرات الحالية (حذف):</h5>
-                    <div id="admin-materials-manage-list"></div>
-                </div>
-
-                <!-- إرسال الإشعارات -->
-                <div class="card" style="margin-bottom: 15px;">
-                    <h4>إرسال إشعار عام للجميع</h4>
-                    <form onsubmit="sendNotificationItem(event)">
-                        <div class="form-group">
-                            <label>عنوان الإشعار:</label>
-                            <input type="text" id="admin-notif-title" required>
-                        </div>
-                        <div class="form-group">
-                            <label>محتوى الإشعار:</label>
-                            <textarea id="admin-notif-body" rows="2" required></textarea>
-                        </div>
-                        <button type="submit" class="btn-primary">إرسال الإشعار فوراً</button>
-                    </form>
+                    <div class="card">
+                        <h4>إرسال إشعار فوري للطلاب</h4>
+                        <form onsubmit="sendNotificationItem(event)">
+                            <div class="form-group"><label>عنوان الإشعار:</label><input type="text" id="admin-notif-title" required></div>
+                            <div class="form-group"><label>محتوى الرسالة:</label><textarea id="admin-notif-body" rows="2" required></textarea></div>
+                            <button type="submit" class="btn-primary">بث الإشعار فوراً</button>
+                        </form>
+                        <h5 style="margin-top:15px;">الإشعارات السابقة (حذف):</h5>
+                        <div id="admin-notif-manage-list"></div>
+                    </div>
                 </div>
 
             </div>
@@ -320,15 +296,10 @@
 
         <!-- شريط التنقل السفلي للطلاب -->
         <div id="bottom-bar" class="bottom-bar" style="display: none;">
-            <button id="nav-home" class="nav-btn" onclick="goToScreen('home-screen')">
-                <span>الرئيسية</span>
-            </button>
-            <button id="nav-materials" class="nav-btn" onclick="goToScreen('materials-screen')">
-                <span>المذكرات</span>
-            </button>
+            <button id="nav-home" class="nav-btn" onclick="goToScreen('home-screen')">الرئيسية</button>
+            <button id="nav-materials" class="nav-btn" onclick="goToScreen('materials-screen')">المذكرات</button>
             <button id="nav-notifs" class="nav-btn" onclick="goToScreen('notifications-screen')">
-                <span>الإشعارات</span>
-                <span id="notif-badge" class="badge">0</span>
+                الإشعارات <span id="notif-badge" class="badge">0</span>
             </button>
         </div>
 
