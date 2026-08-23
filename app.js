@@ -1,4 +1,4 @@
-// Database State
+// Database Live State
 let dbState = {
     splash: { title: "سنتر سيجما", sub: "أهلاً بك في تطبيقنا التعليمي", logo: "" },
     structure: {},
@@ -15,17 +15,19 @@ let currentUser = {
     selectedSubjects: []
 };
 
-// ====== 0. المزامنة والاستماع اللحظي للبيانات من Firebase ======
+let isAdminAuthenticated = false;
+
+// ====== 0. المزامنة والاستماع الحقيقي اللحظي (Firebase Live Sync) ======
 window.addEventListener('DOMContentLoaded', () => {
-    initFirebaseSync();
+    initFirebaseRealtimeSync();
 });
 
-function initFirebaseSync() {
+function initFirebaseRealtimeSync() {
     if (typeof firebase === 'undefined' || !firebase.apps.length) return;
 
     const db = firebase.database();
 
-    // 1. شاشة الترحيب
+    // 1. مزامنة شاشة الترحيب
     db.ref('splash').on('value', (snapshot) => {
         const val = snapshot.val();
         if (val) {
@@ -34,7 +36,7 @@ function initFirebaseSync() {
         }
     });
 
-    // 2. الهيكل الأكاديمي
+    // 2. مزامنة الهيكل الأكاديمي
     db.ref('structure').on('value', (snapshot) => {
         dbState.structure = snapshot.val() || {};
         renderAcademicDropdowns();
@@ -42,75 +44,85 @@ function initFirebaseSync() {
         renderAdminAcademicTreeList();
     });
 
-    // 3. الأخبار
+    // 3. مزامنة الأخبار
     db.ref('news').on('value', (snapshot) => {
         const data = snapshot.val();
         dbState.news = [];
         if (data) {
-            Object.keys(data).forEach(key => {
-                dbState.news.push({ id: key, ...data[key] });
-            });
+            Object.keys(data).forEach(key => dbState.news.push({ id: key, ...data[key] }));
             dbState.news.reverse();
         }
         renderAdminNewsList();
-        if (document.getElementById('home-screen').classList.contains('active')) {
-            renderHome();
-        }
+        if (document.getElementById('home-screen').classList.contains('active')) renderHome();
     });
 
-    // 4. الجدول الأسبوعي
+    // 4. مزامنة الجدول الأسبوعي
     db.ref('schedule').on('value', (snapshot) => {
         const data = snapshot.val();
         dbState.schedule = [];
         if (data) {
-            Object.keys(data).forEach(key => {
-                dbState.schedule.push({ id: key, ...data[key] });
-            });
+            Object.keys(data).forEach(key => dbState.schedule.push({ id: key, ...data[key] }));
         }
         renderAdminScheduleList();
-        if (document.getElementById('home-screen').classList.contains('active')) {
-            renderHome();
-        }
+        if (document.getElementById('home-screen').classList.contains('active')) renderHome();
     });
 
-    // 5. المذكرات
+    // 5. مزامنة المذكرات والملفات
     db.ref('materials').on('value', (snapshot) => {
         const data = snapshot.val();
         dbState.materials = [];
         if (data) {
-            Object.keys(data).forEach(key => {
-                dbState.materials.push({ id: key, ...data[key] });
-            });
+            Object.keys(data).forEach(key => dbState.materials.push({ id: key, ...data[key] }));
         }
         updateMaterialsFilterOptions();
         renderAdminMaterialsList();
-        if (document.getElementById('materials-screen').classList.contains('active')) {
-            renderMaterials();
-        }
+        if (document.getElementById('materials-screen').classList.contains('active')) renderMaterials();
     });
 
-    // 6. الإشعارات
+    // 6. مزامنة الإشعارات
     db.ref('notifications').on('value', (snapshot) => {
         const data = snapshot.val();
-        dbState.notifications = data ? Object.values(data).reverse() : [];
-        if (document.getElementById('notifications-screen').classList.contains('active')) {
-            renderNotifications();
+        dbState.notifications = [];
+        if (data) {
+            Object.keys(data).forEach(key => dbState.notifications.push({ id: key, ...data[key] }));
+            dbState.notifications.reverse();
         }
+        renderAdminNotifList();
+        if (document.getElementById('notifications-screen').classList.contains('active')) renderNotifications();
     });
 }
 
 function updateSplashUI() {
     document.getElementById('splash-title').textContent = dbState.splash.title || "سنتر سيجما";
     document.getElementById('splash-sub').textContent = dbState.splash.sub || "أهلاً بك في تطبيقنا التعليمي";
+    
     if (dbState.splash.logo) {
         document.getElementById('splash-logo').src = dbState.splash.logo;
         document.getElementById('splash-logo').style.display = 'block';
         document.getElementById('splash-logo-placeholder').style.display = 'none';
+    } else {
+        document.getElementById('splash-logo').style.display = 'none';
+        document.getElementById('splash-logo-placeholder').style.display = 'flex';
     }
+
+    // تعبئة البيانات في لوحة تحكم الأدمن
+    const adminTitle = document.getElementById('admin-splash-title');
+    const adminSub = document.getElementById('admin-splash-sub');
+    const adminLogo = document.getElementById('admin-splash-logo');
+    if (adminTitle && !adminTitle.value) adminTitle.value = dbState.splash.title || "";
+    if (adminSub && !adminSub.value) adminSub.value = dbState.splash.sub || "";
+    if (adminLogo && !adminLogo.value) adminLogo.value = dbState.splash.logo || "";
 }
 
-// ====== 1. إدارة التنقل بين الشاشات ======
+// ====== 1. التنقل والأمان بين الشاشات ======
 function goToScreen(screenId) {
+    // حماية لوحة التحكم: تمنع فتح شاشة الأدمن بدون تسجيل دخول الأدمن
+    if (screenId === 'admin-dashboard-screen' && !isAdminAuthenticated) {
+        alert("محاولة غير مصرح بها! يجب إدخال باسورد الإدارة أولاً.");
+        goToScreen('admin-login-screen');
+        return;
+    }
+
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(screenId);
     if (target) target.classList.add('active');
@@ -137,7 +149,7 @@ function updateNavState(screenId) {
     if (screenId === 'notifications-screen') document.getElementById('nav-notifs').classList.add('active');
 }
 
-// ====== 2. المصادقة وتسجيل الدخول ======
+// ====== 2. تسجيل دخول الطلاب (إيميل أو Google) ======
 function handleEmailLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
@@ -149,7 +161,7 @@ function handleEmailLogin(e) {
                 currentUser.email = res.user.email;
                 goToScreen('selection-screen');
             })
-            .catch(err => alert("خطأ في تسجيل الدخول: " + err.message));
+            .catch(err => alert("خطأ في الدخول: " + err.message));
     } else {
         currentUser.email = email;
         goToScreen('selection-screen');
@@ -164,14 +176,14 @@ function handleGoogleLogin() {
                 currentUser.email = res.user.email;
                 goToScreen('selection-screen');
             })
-            .catch(err => alert("خطأ: " + err.message));
+            .catch(err => alert("خطأ دخول Google: " + err.message));
     } else {
         currentUser.email = "google-user@gmail.com";
         goToScreen('selection-screen');
     }
 }
 
-// ====== 3. القوائم المنسدلة للطلاب ======
+// ====== 3. اختيار المواد للطلاب ======
 function renderAcademicDropdowns() {
     const select = document.getElementById('stage-select');
     if (!select) return;
@@ -231,7 +243,7 @@ function handleSelectionSubmit(e) {
     goToScreen('home-screen');
 }
 
-// ====== 4. العرض والواجهات للطلاب ======
+// ====== 4. شاشات الطلاب ======
 function renderHome() {
     document.getElementById('user-display-name').textContent = currentUser.email || "طالب";
 
@@ -258,7 +270,7 @@ function renderHome() {
             newsContainer.appendChild(div);
         });
     } else {
-        newsContainer.innerHTML = '<p class="empty-msg">لا توجد أخبار تنبيهية حالياً</p>';
+        newsContainer.innerHTML = '<p class="empty-msg">لا توجد أخبار حالياً</p>';
     }
 
     const tbody = document.getElementById('schedule-tbody');
@@ -321,7 +333,6 @@ function renderNotifications() {
         dbState.notifications.forEach(n => {
             const div = document.createElement('div');
             div.className = 'card';
-            div.style.marginBottom = '8px';
             div.innerHTML = `<h5>${n.title}</h5><p style="font-size:12px; color:#555;">${n.body}</p>`;
             container.appendChild(div);
         });
@@ -331,31 +342,58 @@ function renderNotifications() {
     }
 }
 
-// ====== 5. لوحة تحكم الأدمن (إضافة ومسح فوري) ======
+// ====== 5. نظام شاشات تبويبات وحماية الأدمن ======
 function handleAdminLogin(e) {
     e.preventDefault();
     const pass = document.getElementById('admin-pass-input').value;
+    
+    // كلمة المرور السرية للوحة التحكم (يمكنك تغييرها من هنا)
     if (pass === "admin123") {
+        isAdminAuthenticated = true;
         goToScreen('admin-dashboard-screen');
         renderAdminAcademicDropdowns();
         renderAdminAcademicTreeList();
         renderAdminNewsList();
         renderAdminScheduleList();
         renderAdminMaterialsList();
+        renderAdminNotifList();
     } else {
-        alert("كلمة المرور غير صحيحة!");
+        alert("كلمة مرور الإدارة غير صحيحة!");
     }
 }
 
 function logoutAdmin() {
+    isAdminAuthenticated = false;
     document.getElementById('admin-pass-input').value = '';
     goToScreen('login-screen');
+}
+
+function switchAdminTab(tabId) {
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.admin-tab-page').forEach(page => page.classList.remove('active'));
+
+    const activeBtn = Array.from(document.querySelectorAll('.admin-tab-btn'))
+        .find(b => b.getAttribute('onclick').includes(tabId));
+    if (activeBtn) activeBtn.classList.add('active');
+
+    const targetPage = document.getElementById(tabId);
+    if (targetPage) targetPage.classList.add('active');
+}
+
+// عمليات الإدارة الحقيقية المربوطة بـ Firebase
+function saveSplashSettings(e) {
+    e.preventDefault();
+    const title = document.getElementById('admin-splash-title').value.trim();
+    const sub = document.getElementById('admin-splash-sub').value.trim();
+    const logo = document.getElementById('admin-splash-logo').value.trim();
+
+    firebase.database().ref('splash').set({ title, sub, logo })
+        .then(() => alert("تم التحديث الفوري وبث التعديلات بنجاح!"));
 }
 
 function renderAdminAcademicDropdowns() {
     const stageGradeSelect = document.getElementById('admin-stage-dropdown-for-grade');
     const stageSubSelect = document.getElementById('admin-stage-dropdown-for-subject');
-    
     if (!stageGradeSelect || !stageSubSelect) return;
 
     stageGradeSelect.innerHTML = '<option value="" disabled selected>اختر المرحلة...</option>';
@@ -377,7 +415,6 @@ function renderAdminAcademicDropdowns() {
 function updateAdminGradesDropdown() {
     const stg = document.getElementById('admin-stage-dropdown-for-subject').value;
     const gradeSubSelect = document.getElementById('admin-grade-dropdown-for-subject');
-    
     gradeSubSelect.innerHTML = '<option value="" disabled selected>اختر الصف...</option>';
     gradeSubSelect.disabled = false;
 
@@ -391,22 +428,19 @@ function updateAdminGradesDropdown() {
     }
 }
 
-// 1. إضافة مرحلة
 function addStageOnly(e) {
     e.preventDefault();
     const stg = document.getElementById('admin-new-stage-input').value.trim();
     if (!stg) return;
-
     if (!dbState.structure[stg]) dbState.structure[stg] = {};
 
     firebase.database().ref('structure').set(dbState.structure)
         .then(() => {
-            alert(`تمت إضافة المرحلة "${stg}" بنجاح!`);
+            alert(`تمت إضافة مرحلة ${stg}`);
             document.getElementById('admin-new-stage-input').value = '';
         });
 }
 
-// 2. إضافة صف
 function addGradeOnly(e) {
     e.preventDefault();
     const stg = document.getElementById('admin-stage-dropdown-for-grade').value;
@@ -418,12 +452,11 @@ function addGradeOnly(e) {
 
     firebase.database().ref('structure').set(dbState.structure)
         .then(() => {
-            alert(`تمت إضافة الصف "${grd}" بنجاح!`);
+            alert(`تمت إضافة صف ${grd}`);
             document.getElementById('admin-new-grade-input').value = '';
         });
 }
 
-// 3. إضافة مادة
 function addSubjectOnly(e) {
     e.preventDefault();
     const stg = document.getElementById('admin-stage-dropdown-for-subject').value;
@@ -431,49 +464,33 @@ function addSubjectOnly(e) {
     const sbj = document.getElementById('admin-new-subject-input').value.trim();
     if (!stg || !grd || !sbj) return;
 
-    if (!dbState.structure[stg]) dbState.structure[stg] = {};
-    if (!dbState.structure[stg][grd]) dbState.structure[stg][grd] = [];
-
     if (!dbState.structure[stg][grd].includes(sbj)) {
         dbState.structure[stg][grd].push(sbj);
     }
 
     firebase.database().ref('structure').set(dbState.structure)
         .then(() => {
-            alert(`تمت إضافة المادة "${sbj}" بنجاح!`);
+            alert(`تمت إضافة مادة ${sbj}`);
             document.getElementById('admin-new-subject-input').value = '';
         });
 }
 
-// 4. حذف وحفظ الهيكل الأكاديمي
 function renderAdminAcademicTreeList() {
     const container = document.getElementById('admin-academic-tree-list');
     if (!container) return;
     container.innerHTML = '';
 
-    if (!Object.keys(dbState.structure).length) {
-        container.innerHTML = '<p class="empty-msg">لا توجد مراحل مضافة بعد</p>';
-        return;
-    }
-
     Object.keys(dbState.structure).forEach(stg => {
         const stageDiv = document.createElement('div');
         stageDiv.className = 'admin-delete-item';
-        stageDiv.style.fontWeight = 'bold';
-        stageDiv.innerHTML = `
-            <span>🏛️ ${stg}</span>
-            <button class="btn-danger-sm" onclick="deleteStage('${stg}')">حذف المرحلة بالكامل</button>
-        `;
+        stageDiv.innerHTML = `<span>🏛️ <b>${stg}</b></span><button class="btn-danger-sm" onclick="deleteStage('${stg}')">حذف المرحلة</button>`;
         container.appendChild(stageDiv);
 
         Object.keys(dbState.structure[stg] || {}).forEach(grd => {
             const gradeDiv = document.createElement('div');
             gradeDiv.className = 'admin-delete-item';
             gradeDiv.style.marginRight = '15px';
-            gradeDiv.innerHTML = `
-                <span>📚 ${grd}</span>
-                <button class="btn-danger-sm" onclick="deleteGrade('${stg}', '${grd}')">حذف الصف</button>
-            `;
+            gradeDiv.innerHTML = `<span>📚 ${grd}</span><button class="btn-danger-sm" onclick="deleteGrade('${stg}', '${grd}')">حذف الصف</button>`;
             container.appendChild(gradeDiv);
 
             (dbState.structure[stg][grd] || []).forEach(sbj => {
@@ -481,10 +498,7 @@ function renderAdminAcademicTreeList() {
                 subDiv.className = 'admin-delete-item';
                 subDiv.style.marginRight = '30px';
                 subDiv.style.background = '#fff';
-                subDiv.innerHTML = `
-                    <span>📝 ${sbj}</span>
-                    <button class="btn-danger-sm" onclick="deleteSubject('${stg}', '${grd}', '${sbj}')">حذف المادة</button>
-                `;
+                subDiv.innerHTML = `<span>📝 ${sbj}</span><button class="btn-danger-sm" onclick="deleteSubject('${stg}', '${grd}', '${sbj}')">حذف المادة</button>`;
                 container.appendChild(subDiv);
             });
         });
@@ -492,51 +506,33 @@ function renderAdminAcademicTreeList() {
 }
 
 function deleteStage(stg) {
-    if (confirm(`هل أنت تأكد من حذف مرحلة "${stg}" بالكامل؟`)) {
+    if (confirm(`تأكيد حذف مرحلة "${stg}"؟`)) {
         delete dbState.structure[stg];
         firebase.database().ref('structure').set(dbState.structure);
     }
 }
 
 function deleteGrade(stg, grd) {
-    if (confirm(`هل أنت تأكد من حذف الصف "${grd}"؟`)) {
+    if (confirm(`تأكيد حذف صف "${grd}"؟`)) {
         delete dbState.structure[stg][grd];
         firebase.database().ref('structure').set(dbState.structure);
     }
 }
 
 function deleteSubject(stg, grd, sbj) {
-    if (confirm(`هل أنت تأكد من حذف المادة "${sbj}"؟`)) {
+    if (confirm(`تأكيد حذف مادة "${sbj}"؟`)) {
         dbState.structure[stg][grd] = dbState.structure[stg][grd].filter(s => s !== sbj);
         firebase.database().ref('structure').set(dbState.structure);
     }
-}
-
-// 5. إدارة الأخبار والجدول والمذكرات والإشعارات
-function saveSplashSettings(e) {
-    e.preventDefault();
-    const title = document.getElementById('admin-splash-title').value;
-    const sub = document.getElementById('admin-splash-sub').value;
-    const logo = document.getElementById('admin-splash-logo').value;
-
-    const splashData = {
-        title: title || dbState.splash.title,
-        sub: sub || dbState.splash.sub,
-        logo: logo || dbState.splash.logo
-    };
-
-    firebase.database().ref('splash').set(splashData)
-        .then(() => alert("تم تحديث شاشة الترحيب فوراً!"));
 }
 
 function addNewsItem(e) {
     e.preventDefault();
     const title = document.getElementById('admin-news-title').value;
     const body = document.getElementById('admin-news-body').value;
-
     firebase.database().ref('news').push({ title, body, timestamp: Date.now() })
         .then(() => {
-            alert("تم نشر الخبر فوراً!");
+            alert("تم إرسال الخبر بنجاح!");
             document.getElementById('admin-news-title').value = '';
             document.getElementById('admin-news-body').value = '';
         });
@@ -546,22 +542,16 @@ function renderAdminNewsList() {
     const container = document.getElementById('admin-news-manage-list');
     if (!container) return;
     container.innerHTML = '';
-
     dbState.news.forEach(n => {
         const div = document.createElement('div');
         div.className = 'admin-delete-item';
-        div.innerHTML = `
-            <span><b>${n.title}</b></span>
-            <button class="btn-danger-sm" onclick="deleteNewsItem('${n.id}')">حذف</button>
-        `;
+        div.innerHTML = `<span><b>${n.title}</b></span><button class="btn-danger-sm" onclick="deleteNewsItem('${n.id}')">حذف</button>`;
         container.appendChild(div);
     });
 }
 
 function deleteNewsItem(id) {
-    if (confirm("حذف هذا الخبر؟")) {
-        firebase.database().ref('news/' + id).remove();
-    }
+    if (confirm("حذف الخبر؟")) firebase.database().ref('news/' + id).remove();
 }
 
 function addScheduleEntry(e) {
@@ -570,37 +560,24 @@ function addScheduleEntry(e) {
     const subject = document.getElementById('admin-sched-subject').value;
     const time = document.getElementById('admin-sched-time').value;
     const room = document.getElementById('admin-sched-room').value;
-
     firebase.database().ref('schedule').push({ day, subject, time, room })
-        .then(() => {
-            alert("تمت إضافة الحصة للجدول فوراً!");
-            document.getElementById('admin-sched-day').value = '';
-            document.getElementById('admin-sched-subject').value = '';
-            document.getElementById('admin-sched-time').value = '';
-            document.getElementById('admin-sched-room').value = '';
-        });
+        .then(() => alert("تم التحديث بنجاح!"));
 }
 
 function renderAdminScheduleList() {
     const container = document.getElementById('admin-schedule-manage-list');
     if (!container) return;
     container.innerHTML = '';
-
     dbState.schedule.forEach(s => {
         const div = document.createElement('div');
         div.className = 'admin-delete-item';
-        div.innerHTML = `
-            <span>${s.day} - ${s.subject} (${s.time})</span>
-            <button class="btn-danger-sm" onclick="deleteScheduleItem('${s.id}')">حذف</button>
-        `;
+        div.innerHTML = `<span>${s.day} - ${s.subject}</span><button class="btn-danger-sm" onclick="deleteScheduleItem('${s.id}')">حذف</button>`;
         container.appendChild(div);
     });
 }
 
 function deleteScheduleItem(id) {
-    if (confirm("حذف هذه الحصة من الجدول؟")) {
-        firebase.database().ref('schedule/' + id).remove();
-    }
+    if (confirm("حذف الحصة؟")) firebase.database().ref('schedule/' + id).remove();
 }
 
 function addMaterialItem(e) {
@@ -608,47 +585,46 @@ function addMaterialItem(e) {
     const title = document.getElementById('admin-mat-title').value;
     const subject = document.getElementById('admin-mat-subject').value;
     const url = document.getElementById('admin-mat-url').value;
-
     firebase.database().ref('materials').push({ title, subject, url })
-        .then(() => {
-            alert("تم إرسال المذكرة للطلاب فوراً!");
-            document.getElementById('admin-mat-title').value = '';
-            document.getElementById('admin-mat-subject').value = '';
-            document.getElementById('admin-mat-url').value = '';
-        });
+        .then(() => alert("تم إضافة المذكرة بنجاح!"));
 }
 
 function renderAdminMaterialsList() {
     const container = document.getElementById('admin-materials-manage-list');
     if (!container) return;
     container.innerHTML = '';
-
     dbState.materials.forEach(m => {
         const div = document.createElement('div');
         div.className = 'admin-delete-item';
-        div.innerHTML = `
-            <span><b>${m.title}</b> (${m.subject})</span>
-            <button class="btn-danger-sm" onclick="deleteMaterialItem('${m.id}')">حذف</button>
-        `;
+        div.innerHTML = `<span><b>${m.title}</b> (${m.subject})</span><button class="btn-danger-sm" onclick="deleteMaterialItem('${m.id}')">حذف</button>`;
         container.appendChild(div);
     });
 }
 
 function deleteMaterialItem(id) {
-    if (confirm("حذف هذه المذكرة؟")) {
-        firebase.database().ref('materials/' + id).remove();
-    }
+    if (confirm("حذف المذكرة؟")) firebase.database().ref('materials/' + id).remove();
 }
 
 function sendNotificationItem(e) {
     e.preventDefault();
     const title = document.getElementById('admin-notif-title').value;
     const body = document.getElementById('admin-notif-body').value;
-
     firebase.database().ref('notifications').push({ title, body, timestamp: Date.now() })
-        .then(() => {
-            alert("تم إرسال الإشعار فوراً!");
-            document.getElementById('admin-notif-title').value = '';
-            document.getElementById('admin-notif-body').value = '';
-        });
+        .then(() => alert("تم إرسال الإشعار بنجاح!"));
+}
+
+function renderAdminNotifList() {
+    const container = document.getElementById('admin-notif-manage-list');
+    if (!container) return;
+    container.innerHTML = '';
+    dbState.notifications.forEach(n => {
+        const div = document.createElement('div');
+        div.className = 'admin-delete-item';
+        div.innerHTML = `<span><b>${n.title}</b></span><button class="btn-danger-sm" onclick="deleteNotifItem('${n.id}')">حذف</button>`;
+        container.appendChild(div);
+    });
+}
+
+function deleteNotifItem(id) {
+    if (confirm("حذف الإشعار؟")) firebase.database().ref('notifications/' + id).remove();
 }
