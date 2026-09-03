@@ -1,1 +1,590 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق سنتر سيجما التعليمي</title>
+  
+  <!-- Tailwind CSS & Font Awesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts (Cairo) -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 
+  <!-- Firebase SDK Modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Firebase Config provided by User
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
+      authDomain: "sigma-6f162.firebaseapp.com",
+      databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
+      projectId: "sigma-6f162",
+      storageBucket: "sigma-6f162.firebasestorage.app",
+      messagingSenderId: "420365348074",
+      appId: "1:420365348074:web:0aaecb71ec613bb32abb93",
+      measurementId: "G-BTSLXSPXM1"
+    };
+
+    // Initialize Firebase Services
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Make references globally available
+    window.db = db;
+    window.storage = storage;
+    window.auth = auth;
+    window.provider = provider;
+    window.push = push;
+    window.ref = ref;
+    window.onValue = onValue;
+    window.remove = remove;
+    window.set = set;
+    window.storageRef = storageRef;
+    window.uploadBytes = uploadBytes;
+    window.getDownloadURL = getDownloadURL;
+    window.signInWithPopup = signInWithPopup;
+    window.signOut = signOut;
+  </script>
+</head>
+<body class="bg-slate-100 min-h-screen flex justify-center text-slate-800">
+
+  <!-- Mobile Screen Container -->
+  <div class="w-full max-w-md bg-slate-50 min-h-screen shadow-2xl relative flex flex-col pb-20 border-x border-slate-200">
+
+    <!-- Header -->
+    <header id="mainHeader" class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-30 transition-colors">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-extrabold text-xl border border-white/30">
+            Σ
+          </div>
+          <div>
+            <h1 class="font-extrabold text-base leading-tight">سنتر سيجما التعليمي</h1>
+            <p class="text-[10px] text-blue-100 opacity-90">المركز المتكامل للتعليم والتميز</p>
+          </div>
+        </div>
+        <button onclick="switchTab('notifications')" class="relative p-2 rounded-full hover:bg-white/10">
+          <i class="fa-solid fa-bell text-xl"></i>
+          <span id="notifBadge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Sections -->
+    <main class="flex-1 p-4 space-y-4 overflow-y-auto">
+
+      <!-- TAB 1: HOME -->
+      <section id="tab-home" class="space-y-4">
+        <!-- User Status / Google Login Card -->
+        <div id="userCard" class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-4 text-white shadow-md text-center">
+          <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i class="fa-solid fa-user text-xl"></i>
+          </div>
+          <h2 class="font-bold text-base">مرحباً بك في منصة سيجما</h2>
+          <p class="text-xs text-blue-100 mt-1 mb-3">سجل دخولك ليصلك تنبيه بحصصك ومذكراتك الدراسية</p>
+          <button onclick="loginGoogle()" class="w-full bg-white text-slate-800 font-bold py-2 px-4 rounded-xl shadow hover:bg-slate-100 flex items-center justify-center gap-2 text-xs">
+            <i class="fa-brands fa-google text-red-500 text-sm"></i>
+            تسجيل الدخول مع جوجل
+          </button>
+        </div>
+
+        <!-- Dashboard Shortcut Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div onclick="switchTab('schedule')" class="cursor-pointer p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+              <i class="fa-solid fa-calendar-days text-lg"></i>
+            </div>
+            <h3 class="font-bold text-xs text-slate-800">جدول الحصص</h3>
+            <p class="text-[10px] text-slate-500">اليوم، غداً والأسبوع</p>
+          </div>
+          <div onclick="switchTab('library')" class="cursor-pointer p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-2">
+              <i class="fa-solid fa-book-open text-lg"></i>
+            </div>
+            <h3 class="font-bold text-xs text-slate-800">المكتبة الرقمية</h3>
+            <p class="text-[10px] text-slate-500">تحميل المذكرات والصور</p>
+          </div>
+        </div>
+
+        <!-- Latest News List -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-newspaper text-blue-600"></i> آخر الأخبار
+            </h3>
+            <button onclick="switchTab('news')" class="text-xs text-blue-600 font-bold">عرض الكل</button>
+          </div>
+          <div id="homeNewsContainer" class="space-y-3">
+            <p class="text-xs text-slate-400 text-center py-4">جاري تحميل الأخبار...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: SCHEDULE -->
+      <section id="tab-schedule" class="hidden space-y-4">
+        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-calendar-days text-blue-600"></i> جدول المحاضرات
+        </h2>
+        
+        <!-- Day Filters -->
+        <div class="flex bg-slate-200/80 p-1 rounded-xl text-xs font-bold text-slate-600">
+          <button onclick="filterSchedule('today')" id="btnSchedToday" class="flex-1 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm">اليوم</button>
+          <button onclick="filterSchedule('tomorrow')" id="btnSchedTomorrow" class="flex-1 py-1.5 rounded-lg">غداً</button>
+          <button onclick="filterSchedule('all')" id="btnSchedAll" class="flex-1 py-1.5 rounded-lg">الأسبوع</button>
+        </div>
+
+        <div id="scheduleContainer" class="space-y-3">
+          <p class="text-xs text-slate-400 text-center py-4">جاري تحميل الحصص...</p>
+        </div>
+      </section>
+
+      <!-- TAB 3: LIBRARY -->
+      <section id="tab-library" class="hidden space-y-4">
+        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-book-open text-purple-600"></i> مذكرات وملفات السنتر
+        </h2>
+        <div id="libraryContainer" class="space-y-3">
+          <p class="text-xs text-slate-400 text-center py-4">جاري تحميل المكتبة...</p>
+        </div>
+      </section>
+
+      <!-- TAB 4: NEWS -->
+      <section id="tab-news" class="hidden space-y-4">
+        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-newspaper text-blue-600"></i> الأخبار والإعلانات
+        </h2>
+        <div id="allNewsContainer" class="space-y-3">
+          <p class="text-xs text-slate-400 text-center py-4">جاري تحميل الإعلانات...</p>
+        </div>
+      </section>
+
+      <!-- TAB 5: NOTIFICATIONS -->
+      <section id="tab-notifications" class="hidden space-y-4">
+        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-bell text-amber-500"></i> مركز الإشعارات
+        </h2>
+        <div id="notificationsContainer" class="space-y-3">
+          <p class="text-xs text-slate-400 text-center py-4">لا توجد إشعارات حالياً</p>
+        </div>
+      </section>
+
+      <!-- TAB 6: ADMIN DASHBOARD -->
+      <section id="tab-admin" class="hidden space-y-4">
+        <!-- Auth Form -->
+        <div id="adminLoginForm" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="text-center space-y-1">
+            <div class="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center mx-auto">
+              <i class="fa-solid fa-lock text-lg"></i>
+            </div>
+            <h3 class="font-bold text-sm text-slate-800">لوحة تحكم السنتر</h3>
+            <p class="text-[10px] text-slate-400">سجل الدخول لإدارة التطبيق</p>
+          </div>
+          <input type="text" id="admUser" placeholder="اسم المستخدم (@admincenter)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+          <input type="password" id="admPass" placeholder="كلمة السر (admin1234)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+          <button onclick="loginAdmin()" class="w-full bg-slate-900 text-white font-bold py-2 rounded-xl text-xs hover:bg-slate-800">تسجيل الدخول</button>
+        </div>
+
+        <!-- Dashboard Panel -->
+        <div id="adminPanel" class="hidden space-y-4">
+          <div class="flex items-center justify-between bg-slate-900 text-white p-3 rounded-2xl text-xs">
+            <span class="font-bold"><i class="fa-solid fa-user-shield text-blue-400"></i> متصل كـ مدير</span>
+            <button onclick="logoutAdmin()" class="bg-red-600 px-3 py-1 rounded-lg text-[10px] font-bold">خروج</button>
+          </div>
+
+          <!-- Add Schedule Class with Photo/Text -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
+            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-plus text-blue-600"></i> إضافة حصة بالجدول</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <select id="schDay" class="p-2 bg-slate-50 border rounded-xl text-xs">
+                <option value="الأحد">الأحد</option>
+                <option value="الإثنين">الإثنين</option>
+                <option value="الثلاثاء">الثلاثاء</option>
+                <option value="الأربعاء">الأربعاء</option>
+                <option value="الخميس">الخميس</option>
+                <option value="الجمعة">الجمعة</option>
+                <option value="السبت">السبت</option>
+              </select>
+              <input type="text" id="schSubject" placeholder="اسم المادة" class="p-2 bg-slate-50 border rounded-xl text-xs">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="schTeacher" placeholder="اسم المدرس" class="p-2 bg-slate-50 border rounded-xl text-xs">
+              <input type="text" id="schTime" placeholder="الوقت (مثال: 04:00 م)" class="p-2 bg-slate-50 border rounded-xl text-xs">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="schRoom" placeholder="القاعة" class="p-2 bg-slate-50 border rounded-xl text-xs">
+              <select id="schStage" class="p-2 bg-slate-50 border rounded-xl text-xs">
+                <option value="ثانوي">ثانوي</option>
+                <option value="إعدادي">إعدادي</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-500 font-bold">صورة توضيحية للحصة (اختياري):</label>
+              <input type="file" id="schImageFile" accept="image/*" class="w-full text-xs mt-1">
+            </div>
+            <button onclick="addScheduleItem()" class="w-full bg-blue-600 text-white font-bold py-2 rounded-xl text-xs">حفظ الحصة</button>
+          </div>
+
+          <!-- Add News with Image Upload -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
+            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر جديد (مع صورة)</h4>
+            <input type="text" id="newsTitle" placeholder="عنوان الخبر" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+            <textarea id="newsContent" placeholder="تفاصيل الخبر..." class="w-full p-2 bg-slate-50 border rounded-xl text-xs h-16"></textarea>
+            <div>
+              <label class="text-[10px] text-slate-500 font-bold">رفع صورة الخبر:</label>
+              <input type="file" id="newsImageFile" accept="image/*" class="w-full text-xs mt-1">
+            </div>
+            <button onclick="addNewsItem()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs">نشر الخبر</button>
+          </div>
+
+          <!-- Upload Materials / PDF / Images -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
+            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة أو ملف (PDF/صورة)</h4>
+            <input type="text" id="matTitle" placeholder="اسم المذكرة أو الملف" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="matSubject" placeholder="المادة" class="p-2 bg-slate-50 border rounded-xl text-xs">
+              <select id="matType" class="p-2 bg-slate-50 border rounded-xl text-xs">
+                <option value="pdf">مستند PDF</option>
+                <option value="image">صورة / مخطط</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] text-slate-500 font-bold">اختيار الملف للرفع الحقيقي:</label>
+              <input type="file" id="matFile" class="w-full text-xs mt-1">
+            </div>
+            <button onclick="uploadMaterialFile()" class="w-full bg-purple-600 text-white font-bold py-2 rounded-xl text-xs">رفع الملف لقاعدة البيانات</button>
+          </div>
+
+          <!-- Send Notification -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
+            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار موجه للطلاب</h4>
+            <input type="text" id="notifTitle" placeholder="عنوان التنبيه" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+            <textarea id="notifBody" placeholder="نص التنبيه..." class="w-full p-2 bg-slate-50 border rounded-xl text-xs h-16"></textarea>
+            <button onclick="sendNotification()" class="w-full bg-amber-500 text-white font-bold py-2 rounded-xl text-xs">إرسال التنبيه</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 py-2 px-3 flex justify-around items-center z-30">
+      <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[10px] font-bold text-blue-600">
+        <i class="fa-solid fa-house text-base"></i> الرئيسة
+      </button>
+      <button onclick="switchTab('schedule')" id="nav-schedule" class="flex flex-col items-center text-[10px] font-bold text-slate-400">
+        <i class="fa-solid fa-calendar-days text-base"></i> الجدول
+      </button>
+      <button onclick="switchTab('library')" id="nav-library" class="flex flex-col items-center text-[10px] font-bold text-slate-400">
+        <i class="fa-solid fa-book-open text-base"></i> المكتبة
+      </button>
+      <button onclick="switchTab('news')" id="nav-news" class="flex flex-col items-center text-[10px] font-bold text-slate-400">
+        <i class="fa-solid fa-newspaper text-base"></i> الأخبار
+      </button>
+      <button onclick="switchTab('admin')" id="nav-admin" class="flex flex-col items-center text-[10px] font-bold text-slate-400">
+        <i class="fa-solid fa-user-shield text-base"></i> الإدارة
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- App Script Execution -->
+  <script>
+    let scheduleData = [];
+    let currentScheduleFilter = 'today';
+
+    // TAB SWITCHING LOGIC
+    function switchTab(tabId) {
+      const tabs = ['home', 'schedule', 'library', 'news', 'notifications', 'admin'];
+      tabs.forEach(t => {
+        const elem = document.getElementById(`tab-${t}`);
+        const nav = document.getElementById(`nav-${t}`);
+        if(elem) elem.classList.add('hidden');
+        if(nav) {
+          nav.classList.remove('text-blue-600');
+          nav.classList.add('text-slate-400');
+        }
+      });
+
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if(activeNav) {
+        activeNav.classList.remove('text-slate-400');
+        activeNav.classList.add('text-blue-600');
+      }
+    }
+
+    // GOOGLE AUTHENTICATION
+    function loginGoogle() {
+      window.signInWithPopup(window.auth, window.provider).then((result) => {
+        const user = result.user;
+        document.getElementById('userCard').innerHTML = `
+          <div class="flex items-center gap-3 text-right">
+            <img src="${user.photoURL}" class="w-12 h-12 rounded-full border-2 border-white">
+            <div>
+              <h3 class="font-bold text-sm">${user.displayName}</h3>
+              <p class="text-[10px] text-blue-100">${user.email}</p>
+              <span class="inline-block mt-1 bg-green-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold">حساب موثق</span>
+            </div>
+          </div>
+        `;
+      }).catch(err => alert("خطأ في تسجيل الدخول: " + err.message));
+    }
+
+    // ADMIN AUTHENTICATION
+    function loginAdmin() {
+      const u = document.getElementById('admUser').value;
+      const p = document.getElementById('admPass').value;
+      if (u === '@admincenter' && p === 'admin1234') {
+        document.getElementById('adminLoginForm').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+      } else {
+        alert('بيانات الدخول غير صحيحة!');
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById('adminLoginForm').classList.remove('hidden');
+      document.getElementById('adminPanel').classList.add('hidden');
+    }
+
+    // FIREBASE REALTIME LISTENERS
+    window.addEventListener('load', () => {
+      // 1. Listen for Schedule
+      const schRef = window.ref(window.db, 'schedules');
+      window.onValue(schRef, (snapshot) => {
+        const data = snapshot.val();
+        scheduleData = [];
+        if (data) {
+          Object.keys(data).forEach(key => scheduleData.push({ id: key, ...data[key] }));
+        }
+        renderSchedule();
+      });
+
+      // 2. Listen for News
+      const newsRef = window.ref(window.db, 'news');
+      window.onValue(newsRef, (snapshot) => {
+        const data = snapshot.val();
+        const container = document.getElementById('homeNewsContainer');
+        const allContainer = document.getElementById('allNewsContainer');
+        container.innerHTML = '';
+        allContainer.innerHTML = '';
+
+        if (!data) {
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center py-2">لا توجد أخبار حالياً</p>';
+          allContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-2">لا توجد أخبار حالياً</p>';
+          return;
+        }
+
+        Object.keys(data).reverse().forEach((key, index) => {
+          const item = data[key];
+          const html = `
+            <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+              ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-36 object-cover">` : ''}
+              <div class="p-3">
+                <span class="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold">${item.date || 'الآن'}</span>
+                <h4 class="font-bold text-xs text-slate-800 mt-1">${item.title}</h4>
+                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">${item.content}</p>
+              </div>
+            </div>
+          `;
+          if (index < 2) container.innerHTML += html;
+          allContainer.innerHTML += html;
+        });
+      });
+
+      // 3. Listen for Library Files
+      const matRef = window.ref(window.db, 'materials');
+      window.onValue(matRef, (snapshot) => {
+        const data = snapshot.val();
+        const container = document.getElementById('libraryContainer');
+        container.innerHTML = '';
+
+        if (!data) {
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center py-2">لا توجد ملفات بالمكتبة</p>';
+          return;
+        }
+
+        Object.keys(data).reverse().forEach(key => {
+          const item = data[key];
+          const icon = item.type === 'pdf' ? 'fa-file-pdf text-red-500' : 'fa-file-image text-green-500';
+          container.innerHTML += `
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                  <i class="fa-solid ${icon} text-lg"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-xs text-slate-800">${item.title}</h4>
+                  <p class="text-[10px] text-slate-400">${item.subject} • ${item.date || ''}</p>
+                </div>
+              </div>
+              <a href="${item.fileUrl}" target="_blank" class="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-xl text-xs">تحميل</a>
+            </div>
+          `;
+        });
+      });
+
+      // 4. Listen for Notifications
+      const notifRef = window.ref(window.db, 'notifications');
+      window.onValue(notifRef, (snapshot) => {
+        const data = snapshot.val();
+        const container = document.getElementById('notificationsContainer');
+        const badge = document.getElementById('notifBadge');
+        container.innerHTML = '';
+
+        if (!data) {
+          badge.classList.add('hidden');
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center py-2">لا توجد إشعارات</p>';
+          return;
+        }
+
+        badge.classList.remove('hidden');
+        Object.keys(data).reverse().forEach(key => {
+          const item = data[key];
+          container.innerHTML += `
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 space-y-1">
+              <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-bell text-amber-500"></i> ${item.title}</h4>
+              <p class="text-[11px] text-slate-600">${item.body}</p>
+            </div>
+          `;
+        });
+      });
+    });
+
+    // SCHEDULE RENDER LOGIC
+    function filterSchedule(type) {
+      currentScheduleFilter = type;
+      ['Today', 'Tomorrow', 'All'].forEach(t => {
+        const btn = document.getElementById(`btnSched${t}`);
+        if (btn) {
+          btn.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+        }
+      });
+      const activeBtn = document.getElementById(`btnSched${type.charAt(0).toUpperCase() + type.slice(1)}`);
+      if (activeBtn) activeBtn.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+      renderSchedule();
+    }
+
+    function renderSchedule() {
+      const container = document.getElementById('scheduleContainer');
+      container.innerHTML = '';
+
+      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      const todayIdx = new Date().getDay();
+      const todayDay = days[todayIdx] || 'الأحد';
+      const tomorrowDay = days[(todayIdx + 1) % 7] || 'الإثنين';
+
+      let items = scheduleData;
+      if (currentScheduleFilter === 'today') items = scheduleData.filter(i => i.day === todayDay);
+      if (currentScheduleFilter === 'tomorrow') items = scheduleData.filter(i => i.day === tomorrowDay);
+
+      if (items.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">لا توجد حصص مجدولة لهذا خيار</p>';
+        return;
+      }
+
+      items.forEach(item => {
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm space-y-2">
+            ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-28 object-cover rounded-xl mb-2">` : ''}
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.day} • ${item.stage}</span>
+                <h3 class="font-bold text-xs text-slate-800 mt-1">${item.subject}</h3>
+              </div>
+              <span class="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-lg border border-amber-200 font-bold">${item.room || 'قاعة'}</span>
+            </div>
+            <div class="flex justify-between items-center text-[11px] text-slate-500 pt-2 border-t">
+              <span><i class="fa-solid fa-chalkboard-user"></i> ${item.teacher}</span>
+              <span class="font-bold text-slate-700"><i class="fa-regular fa-clock"></i> ${item.time}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // ADMIN ACTIONS (UPLOAD REAL FILES TO FIREBASE STORAGE & REALTIME DB)
+    async function uploadFileToStorage(file, path) {
+      const fileRef = window.storageRef(window.storage, `${path}/${Date.now()}_${file.name}`);
+      await window.uploadBytes(fileRef, file);
+      return await window.getDownloadURL(fileRef);
+    }
+
+    async function addScheduleItem() {
+      const day = document.getElementById('schDay').value;
+      const subject = document.getElementById('schSubject').value;
+      const teacher = document.getElementById('schTeacher').value;
+      const time = document.getElementById('schTime').value;
+      const room = document.getElementById('schRoom').value;
+      const stage = document.getElementById('schStage').value;
+      const imgFile = document.getElementById('schImageFile').files[0];
+
+      if (!subject || !teacher) return alert('برجاء تعبئة البيانات الأساسية!');
+
+      let imageUrl = "";
+      if (imgFile) {
+        imageUrl = await uploadFileToStorage(imgFile, 'schedules');
+      }
+
+      window.push(window.ref(window.db, 'schedules'), { day, subject, teacher, time, room, stage, imageUrl });
+      alert('تم إضافة الحصة بنجاح!');
+    }
+
+    async function addNewsItem() {
+      const title = document.getElementById('newsTitle').value;
+      const content = document.getElementById('newsContent').value;
+      const imgFile = document.getElementById('newsImageFile').files[0];
+
+      if (!title || !content) return alert('يرجى كتابة عنوان وتفاصيل الخبر!');
+
+      let imageUrl = "";
+      if (imgFile) {
+        imageUrl = await uploadFileToStorage(imgFile, 'news');
+      }
+
+      const date = new Date().toLocaleDateString('ar-EG');
+      window.push(window.ref(window.db, 'news'), { title, content, imageUrl, date });
+      alert('تم نشر الخبر بنجاح!');
+    }
+
+    async function uploadMaterialFile() {
+      const title = document.getElementById('matTitle').value;
+      const subject = document.getElementById('matSubject').value;
+      const type = document.getElementById('matType').value;
+      const file = document.getElementById('matFile').files[0];
+
+      if (!title || !file) return alert('يرجى إدخال اسم المذكرة واختيار الملف!');
+
+      const fileUrl = await uploadFileToStorage(file, 'materials');
+      const date = new Date().toLocaleDateString('ar-EG');
+
+      window.push(window.ref(window.db, 'materials'), { title, subject, type, fileUrl, date });
+      alert('تم رفع الملف بنجاح وإضافته للمكتبة!');
+    }
+
+    function sendNotification() {
+      const title = document.getElementById('notifTitle').value;
+      const body = document.getElementById('notifBody').value;
+
+      if (!title || !body) return alert('يرجى تعبئة نص الإشعار!');
+
+      window.push(window.ref(window.db, 'notifications'), { title, body, date: new Date().toLocaleDateString('ar-EG') });
+      alert('تم إرسال الإشعار للجميع!');
+    }
+  </script>
+</body>
+  </html>
