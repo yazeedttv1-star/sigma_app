@@ -1508,5 +1508,208 @@ function toggleDarkMode() {
 
 console.log('✅ سنتر سيجما - جاهز للتشغيل الفوري!');
 </script>
+  <!-- ===== إضافة نظام الإشعارات التلقائية ===== -->
+<script>
+// ============================================
+// نظام الإشعارات التلقائية
+// ============================================
+
+// دالة لإرسال إشعار لجميع المستخدمين عند إضافة شيء جديد
+async function sendAutoNotification(type, title, details) {
+  try {
+    // تحديد نوع الإشعار
+    const notificationTypes = {
+      'schedule': {
+        icon: '📚',
+        title: '📚 حصة جديدة مضافة!',
+        body: `تم إضافة حصة جديدة: ${title}`
+      },
+      'news': {
+        icon: '📰',
+        title: '📰 خبر جديد!',
+        body: `تم نشر خبر جديد: ${title}`
+      },
+      'material': {
+        icon: '📄',
+        title: '📄 ملف جديد!',
+        body: `تم رفع ملف جديد: ${title}`
+      },
+      'notification': {
+        icon: '🔔',
+        title: '🔔 إشعار جديد!',
+        body: `تم إرسال إشعار جديد: ${title}`
+      },
+      'contact': {
+        icon: '📞',
+        title: '📞 رقم جديد!',
+        body: `تم إضافة رقم تواصل جديد: ${title}`
+      },
+      'complaint': {
+        icon: '💬',
+        title: '💬 شكوى جديدة!',
+        body: `تم استلام شكوى جديدة من: ${title}`
+      }
+    };
+
+    // الحصول على بيانات الإشعار
+    const notifData = notificationTypes[type] || notificationTypes['notification'];
+    
+    // حفظ الإشعار في قاعدة البيانات
+    await window.push(window.ref(window.db, 'notifications'), {
+      title: notifData.title,
+      body: `${notifData.body}\n📌 ${details}`,
+      stage: 'الكل',
+      grade: 'الكل',
+      subject: '',
+      imageData: '',
+      date: new Date().toLocaleDateString('ar-EG'),
+      time: new Date().toLocaleTimeString('ar-EG'),
+      createdAt: new Date().toISOString(),
+      isAuto: true,
+      type: type
+    });
+
+    console.log(`✅ تم إرسال إشعار تلقائي: ${notifData.title}`);
+    
+    // عرض رسالة للمستخدم الحالي
+    showToast(`🔔 تم إرسال إشعار للجميع: ${notifData.title}`, 'info');
+    
+  } catch (error) {
+    console.error('❌ فشل إرسال الإشعار التلقائي:', error);
+  }
+}
+
+// ===== تعديل دوال الإضافة لإرسال إشعارات تلقائية =====
+
+// تعديل دالة إضافة حصة
+const originalAddSchedule = addSchedule;
+addSchedule = async function() {
+  try {
+    // تنفيذ الدالة الأصلية
+    await originalAddSchedule.call(this);
+    
+    // بعد الإضافة بنجاح، نرسل إشعار
+    const subject = document.getElementById('schSubject')?.value || 'حصة جديدة';
+    const day = document.getElementById('schDay')?.value || '';
+    const teacher = document.getElementById('schTeacher')?.value || '';
+    
+    await sendAutoNotification('schedule', subject, `${subject} - يوم ${day} - مدرس: ${teacher}`);
+  } catch (error) {
+    console.error('❌ خطأ في إضافة الحصة:', error);
+  }
+};
+
+// تعديل دالة نشر خبر
+const originalAddNews = addNews;
+addNews = async function() {
+  try {
+    await originalAddNews.call(this);
+    const title = document.getElementById('newsTitle')?.value || 'خبر جديد';
+    await sendAutoNotification('news', title, title);
+  } catch (error) {
+    console.error('❌ خطأ في نشر الخبر:', error);
+  }
+};
+
+// تعديل دالة رفع مذكرة
+const originalUploadMat = uploadMat;
+uploadMat = async function() {
+  try {
+    await originalUploadMat.call(this);
+    const title = document.getElementById('matTitle')?.value || 'ملف جديد';
+    const subject = document.getElementById('matSubject')?.value || '';
+    await sendAutoNotification('material', title, `${title} - ${subject}`);
+  } catch (error) {
+    console.error('❌ خطأ في رفع المذكرة:', error);
+  }
+};
+
+// تعديل دالة إرسال إشعار (يدوي)
+const originalSendNotif = sendNotif;
+sendNotif = async function() {
+  try {
+    await originalSendNotif.call(this);
+    const title = document.getElementById('notifTitle')?.value || 'إشعار جديد';
+    await sendAutoNotification('notification', title, title);
+  } catch (error) {
+    console.error('❌ خطأ في إرسال الإشعار:', error);
+  }
+};
+
+// تعديل دالة إضافة رقم
+const originalAddContact = addContact;
+addContact = async function() {
+  try {
+    await originalAddContact.call(this);
+    const number = document.getElementById('newContact')?.value || 'رقم جديد';
+    await sendAutoNotification('contact', number, `تم إضافة رقم: ${number}`);
+  } catch (error) {
+    console.error('❌ خطأ في إضافة الرقم:', error);
+  }
+};
+
+// تعديل دالة إرسال شكوى (للمدير فقط)
+const originalSendComplaint = sendComplaint;
+sendComplaint = async function() {
+  try {
+    await originalSendComplaint.call(this);
+    const name = currentUser?.displayName || 'طالب';
+    await sendAutoNotification('complaint', name, `شكوى من: ${name}`);
+  } catch (error) {
+    console.error('❌ خطأ في إرسال الشكوى:', error);
+  }
+};
+
+console.log('✅ تم تفعيل نظام الإشعارات التلقائية');
+
+// ============================================
+// عرض عدد الإشعارات غير المقروءة في الشاشة الرئيسية
+// ============================================
+
+// تحديث عداد الإشعارات
+function updateNotificationCounter() {
+  const badge = document.getElementById('notifBadge');
+  const notifCount = document.getElementById('notifCount');
+  
+  if (!badge || !notifCount) return;
+  
+  window.onValue(window.ref(window.db, 'notifications'), (snapshot) => {
+    const data = snapshot.val();
+    if (!data) {
+      badge.classList.add('hidden');
+      return;
+    }
+    
+    // حساب عدد الإشعارات الموجهة للمستخدم
+    let count = 0;
+    const keys = Object.keys(data);
+    
+    keys.forEach(key => {
+      const item = data[key];
+      let isTargeted = true;
+      
+      if (userData) {
+        if (item.stage !== 'الكل' && item.stage !== userData.stage) isTargeted = false;
+        if (item.grade !== 'الكل' && item.grade !== userData.grade) isTargeted = false;
+      }
+      
+      if (isTargeted) count++;
+    });
+    
+    if (count > 0) {
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  });
+}
+
+// استدعاء الدالة بعد تحميل البيانات
+setTimeout(updateNotificationCounter, 1000);
+
+console.log('🚀 جميع الإشعارات التلقائية مفعلة!');
+</script>
+<script src="app.js"></script>
+<!-- ===== نهاية الكود ===== -->
 </body>
 </html>
