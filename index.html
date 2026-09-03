@@ -40,7 +40,20 @@
     .toast-success { background: #22c55e; }
     .toast-error { background: #ef4444; }
     .toast-warning { background: #f59e0b; }
+    .toast-info { background: #3b82f6; }
     @keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .stat-card { background: white; border-radius: 16px; padding: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .stat-number { font-size: 24px; font-weight: 800; }
+    .stat-label { font-size: 11px; color: #64748b; margin-top: 4px; }
+    .option-btn { padding: 8px 16px; border-radius: 12px; border: 2px solid #e2e8f0; background: white; transition: all 0.3s; cursor: pointer; font-size: 12px; font-weight: 600; }
+    .option-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+    .option-btn:hover { border-color: #2563eb; }
+    .complaint-card { background: #f8fafc; border-radius: 12px; padding: 12px; border-right: 4px solid #f59e0b; margin-bottom: 8px; }
+    .complaint-card .name { font-weight: bold; color: #1e293b; }
+    .complaint-card .phone { color: #3b82f6; font-size: 12px; }
+    .complaint-card .text { color: #475569; font-size: 13px; margin-top: 4px; }
+    .complaint-card .date { color: #94a3b8; font-size: 10px; }
   </style>
 
   <!-- Firebase Modular SDK -->
@@ -65,7 +78,6 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // إعداد استمرار الجلسة
     setPersistence(auth, browserLocalPersistence);
 
     window.db = db;
@@ -113,7 +125,7 @@
 
       <!-- TAB 1: HOME -->
       <section id="tab-home" class="space-y-4 slide-up">
-        <!-- User Card with Avatar Click -->
+        <!-- User Card -->
         <div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-xl">
           <div id="userContent" class="flex items-center gap-4">
             <img id="userAvatar" src="" class="profile-avatar" onclick="openProfileModal()" alt="الصورة الشخصية" style="display:none;">
@@ -128,22 +140,35 @@
           </div>
         </div>
 
-        <!-- Quick Stats -->
+        <!-- Quick Stats Cards -->
         <div class="grid grid-cols-3 gap-3">
-          <div class="bg-white rounded-2xl p-3 text-center shadow-sm border border-slate-100">
-            <div class="text-blue-600 text-xl"><i class="fa-solid fa-calendar-check"></i></div>
-            <div class="text-xs font-bold text-slate-700 mt-1">حصص اليوم</div>
-            <div id="todayCount" class="text-sm font-extrabold text-blue-600">0</div>
+          <div class="stat-card" onclick="switchTab('schedule')">
+            <div class="text-blue-600 text-2xl"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="stat-number text-blue-600" id="todayCount">0</div>
+            <div class="stat-label">حصص اليوم</div>
           </div>
-          <div class="bg-white rounded-2xl p-3 text-center shadow-sm border border-slate-100">
-            <div class="text-purple-600 text-xl"><i class="fa-solid fa-book"></i></div>
-            <div class="text-xs font-bold text-slate-700 mt-1">الملفات</div>
-            <div id="materialCount" class="text-sm font-extrabold text-purple-600">0</div>
+          <div class="stat-card" onclick="switchTab('library')">
+            <div class="text-purple-600 text-2xl"><i class="fa-solid fa-book"></i></div>
+            <div class="stat-number text-purple-600" id="materialCount">0</div>
+            <div class="stat-label">الملفات</div>
           </div>
-          <div class="bg-white rounded-2xl p-3 text-center shadow-sm border border-slate-100">
-            <div class="text-amber-500 text-xl"><i class="fa-solid fa-bell"></i></div>
-            <div class="text-xs font-bold text-slate-700 mt-1">تنبيهات</div>
-            <div id="notifCount" class="text-sm font-extrabold text-amber-500">0</div>
+          <div class="stat-card" onclick="switchTab('notifications')">
+            <div class="text-amber-500 text-2xl"><i class="fa-solid fa-bell"></i></div>
+            <div class="stat-number text-amber-500" id="notifCount">0</div>
+            <div class="stat-label">تنبيهات</div>
+          </div>
+        </div>
+
+        <!-- My Schedule Today -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-clock text-blue-600"></i> حصصي اليوم
+            </h3>
+            <button onclick="switchTab('schedule')" class="text-xs text-blue-600 font-bold hover:text-blue-800">عرض الكل</button>
+          </div>
+          <div id="myScheduleToday" class="space-y-2">
+            <div class="text-center py-4 text-slate-400 text-sm">جاري التحميل...</div>
           </div>
         </div>
 
@@ -269,6 +294,10 @@
             </select>
           </div>
           <div class="mt-2">
+            <label class="text-xs font-bold text-slate-500">رقم الهاتف (للتواصل):</label>
+            <input type="tel" id="profPhone" placeholder="مثال: 01012345678" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <div class="mt-2">
             <label class="text-xs font-bold text-slate-500">اختر المواد التي تدرسها:</label>
             <div id="subjectsCheckbox" class="mt-2 grid grid-cols-2 gap-2"></div>
           </div>
@@ -283,6 +312,7 @@
           <div id="studentInfoDisplay" class="space-y-2 text-sm">
             <p class="text-slate-600">الاسم: <span id="infoName" class="font-bold text-slate-800">-</span></p>
             <p class="text-slate-600">البريد: <span id="infoEmail" class="font-bold text-slate-800">-</span></p>
+            <p class="text-slate-600">الهاتف: <span id="infoPhone" class="font-bold text-slate-800">-</span></p>
             <p class="text-slate-600">المرحلة: <span id="infoStage" class="font-bold text-slate-800">-</span></p>
             <p class="text-slate-600">الصف: <span id="infoGrade" class="font-bold text-slate-800">-</span></p>
             <p class="text-slate-600">المواد: <span id="infoSubjects" class="font-bold text-slate-800">-</span></p>
@@ -321,7 +351,7 @@
           </button>
         </div>
 
-        <!-- Admin Access Denied for non-admins -->
+        <!-- Admin Access Denied -->
         <div id="adminAccessDenied" class="hidden bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
           <i class="fa-solid fa-ban text-red-500 text-5xl mb-3"></i>
           <h3 class="font-bold text-red-700">⛔ غير مصرح بالدخول</h3>
@@ -348,20 +378,20 @@
         <!-- Admin Panel -->
         <div id="adminPanel" class="hidden space-y-4">
           
-          <!-- Stats Dashboard -->
+          <!-- Real Stats Dashboard -->
           <div class="admin-stat-card">
             <div class="flex items-center justify-between mb-4">
-              <h4 class="font-bold text-sm"><i class="fa-solid fa-chart-line text-blue-400"></i> إحصائيات المنصة</h4>
+              <h4 class="font-bold text-sm"><i class="fa-solid fa-chart-line text-blue-400"></i> إحصائيات حقيقية للمنصة</h4>
               <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-2xl font-bold">Σ</div>
             </div>
             <div class="grid grid-cols-2 gap-3">
-              <div>
+              <div onclick="loadUsersList()" style="cursor:pointer;">
                 <div class="admin-stat-number" id="statTotalUsers">0</div>
-                <div class="admin-stat-label">إجمالي الطلاب</div>
+                <div class="admin-stat-label">👥 إجمالي الطلاب</div>
               </div>
               <div>
                 <div class="admin-stat-number" id="statActiveUsers">0</div>
-                <div class="admin-stat-label">نشطاء اليوم</div>
+                <div class="admin-stat-label">🟢 نشطاء اليوم</div>
               </div>
               <div>
                 <div class="admin-stat-number" id="statBoys">0</div>
@@ -371,66 +401,82 @@
                 <div class="admin-stat-number" id="statGirls">0</div>
                 <div class="admin-stat-label">👧 بنات</div>
               </div>
+              <div>
+                <div class="admin-stat-number" id="statTotalSchedules">0</div>
+                <div class="admin-stat-label">📚 إجمالي الحصص</div>
+              </div>
+              <div>
+                <div class="admin-stat-number" id="statTotalMaterials">0</div>
+                <div class="admin-stat-label">📄 إجمالي الملفات</div>
+              </div>
             </div>
           </div>
 
-          <!-- Manage Contacts -->
+          <!-- Complaints Management -->
           <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-phone text-green-600"></i> إدارة أرقام السنتر</h4>
-            <div class="flex gap-2">
-              <input type="text" id="newContact" placeholder="رقم الهاتف" class="flex-1 p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
-              <select id="contactType" class="p-2.5 bg-slate-50 border rounded-xl text-sm">
-                <option value="phone">📞 هاتف</option>
-                <option value="whatsapp">💬 واتساب</option>
-              </select>
-              <button onclick="addContact()" class="bg-green-600 text-white px-4 rounded-xl hover:bg-green-700 transition">
-                <i class="fa-solid fa-plus"></i>
-              </button>
+            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-message text-amber-500"></i> رسائل الشكاوى والاستفسارات</h4>
+            <div id="complaintsList" class="space-y-2 max-h-60 overflow-y-auto">
+              <div class="text-center py-4 text-slate-400 text-sm">لا توجد شكاوى</div>
             </div>
-            <div id="contactsList" class="space-y-2 mt-2"></div>
           </div>
 
-          <!-- Manage Schedule -->
+          <!-- Add Schedule with Options -->
           <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
             <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-plus-circle text-blue-600"></i> إضافة حصة جديدة</h4>
-            <div class="grid grid-cols-2 gap-2">
-              <select id="schDay" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="الأحد">الأحد</option>
-                <option value="الإثنين">الإثنين</option>
-                <option value="الثلاثاء">الثلاثاء</option>
-                <option value="الأربعاء">الأربعاء</option>
-                <option value="الخميس">الخميس</option>
-                <option value="الجمعة">الجمعة</option>
-                <option value="السبت">السبت</option>
-              </select>
-              <input type="text" id="schSubject" placeholder="المادة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            
+            <!-- Options -->
+            <div class="flex gap-2">
+              <button onclick="setScheduleOption('full')" id="schOptFull" class="option-btn active">📝 ملء الحقول مع صورة</button>
+              <button onclick="setScheduleOption('text')" id="schOptText" class="option-btn">📝 ملء الحقول فقط</button>
+              <button onclick="setScheduleOption('image')" id="schOptImage" class="option-btn">🖼️ صورة فقط</button>
             </div>
-            <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="schTeacher" placeholder="اسم المدرس" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-              <input type="time" id="schTime" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+
+            <div id="scheduleFullFields">
+              <div class="grid grid-cols-2 gap-2">
+                <select id="schDay" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="الأحد">الأحد</option>
+                  <option value="الإثنين">الإثنين</option>
+                  <option value="الثلاثاء">الثلاثاء</option>
+                  <option value="الأربعاء">الأربعاء</option>
+                  <option value="الخميس">الخميس</option>
+                  <option value="الجمعة">الجمعة</option>
+                  <option value="السبت">السبت</option>
+                </select>
+                <input type="text" id="schSubject" placeholder="المادة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div class="grid grid-cols-2 gap-2 mt-2">
+                <input type="text" id="schTeacher" placeholder="اسم المدرس" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="time" id="schTime" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div class="grid grid-cols-2 gap-2 mt-2">
+                <input type="text" id="schRoom" placeholder="القاعة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select id="schStage" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option value="ثانوي">ثانوي</option>
+                  <option value="إعدادي">إعدادي</option>
+                </select>
+              </div>
             </div>
-            <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="schRoom" placeholder="القاعة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-              <select id="schStage" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="ثانوي">ثانوي</option>
-                <option value="إعدادي">إعدادي</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-xs text-slate-500 font-bold">صورة توضيحية (Base64 - اختياري):</label>
+
+            <div id="scheduleImageField">
+              <label class="text-xs text-slate-500 font-bold">صورة توضيحية:</label>
               <input type="file" id="schImageFile" accept="image/*" class="w-full text-sm mt-1 p-2 bg-slate-50 rounded-xl border">
             </div>
+
             <button onclick="addScheduleItem()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
               <i class="fa-solid fa-save"></i> حفظ الحصة
             </button>
             <div id="scheduleManageList" class="mt-3 space-y-2"></div>
           </div>
 
-          <!-- Manage Notifications -->
+          <!-- Send Notification with Image -->
           <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
             <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار موجه</h4>
             <input type="text" id="notifTitle" placeholder="عنوان التنبيه" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
             <textarea id="notifBody" placeholder="نص التنبيه..." class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm h-16 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+            <div>
+              <label class="text-xs text-slate-500 font-bold">صورة للإشعار (اختياري):</label>
+              <input type="file" id="notifImageFile" accept="image/*" class="w-full text-sm mt-1 p-2 bg-slate-50 rounded-xl border">
+            </div>
             <div class="grid grid-cols-3 gap-2">
               <select id="notifStage" class="p-2.5 bg-slate-50 border rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
                 <option value="الكل">كل المراحل</option>
@@ -480,6 +526,22 @@
             </button>
             <div id="materialsManageList" class="mt-3 space-y-2"></div>
           </div>
+
+          <!-- Manage Contacts -->
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-address-book text-green-600"></i> إدارة أرقام السنتر</h4>
+            <div class="flex gap-2">
+              <input type="text" id="newContact" placeholder="رقم الهاتف" class="flex-1 p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
+              <select id="contactType" class="p-2.5 bg-slate-50 border rounded-xl text-sm">
+                <option value="phone">📞 هاتف</option>
+                <option value="whatsapp">💬 واتساب</option>
+              </select>
+              <button onclick="addContact()" class="bg-green-600 text-white px-4 rounded-xl hover:bg-green-700 transition">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+            <div id="contactsList" class="space-y-2 mt-2"></div>
+          </div>
         </div>
       </section>
 
@@ -526,12 +588,14 @@
     let allUsers = {};
     let contacts = [];
     let deferredPrompt = null;
+    let scheduleOption = 'full';
+    let complaints = [];
 
-    // ===== قائمة حسابات الإدارة (3 حسابات فقط) =====
+    // ===== ADMIN UIDS =====
     const ADMIN_UIDS = [
-      'WCyUdR31uZOxJwtYzXx85K7E0Cf2', // حساب الإدارة الرئيسي
-      'ADMIN_UID_2', // ضع هنا الـ UID الثاني
-      'ADMIN_UID_3'  // ضع هنا الـ UID الثالث
+      'WCyUdR31uZOxJwtYzXx85K7E0Cf2',
+      'ADMIN_UID_2',
+      'ADMIN_UID_3'
     ];
 
     // Subject lists by stage
@@ -587,14 +651,12 @@
 
     // ===== TAB SWITCHING =====
     function switchTab(tabId) {
-      // Check admin access
       if (tabId === 'admin') {
         const isAdmin = currentUser && ADMIN_UIDS.includes(currentUser.uid);
         if (!isAdmin && !isAdminLoggedIn) {
           document.getElementById('adminAccessDenied').classList.remove('hidden');
           document.getElementById('adminLogin').classList.add('hidden');
           document.getElementById('adminPanel').classList.add('hidden');
-          // Still show the tab content with denial message
         } else {
           document.getElementById('adminAccessDenied').classList.add('hidden');
           if (!isAdminLoggedIn) {
@@ -630,14 +692,12 @@
             renderUserCard();
             updateStudentInfo();
             
-            // Ask for profile if not exists
             if (!currentUserData) {
               setTimeout(() => {
-                openProfileModal();
+                switchTab('settings');
                 showToast('📝 يرجى إكمال بيانات ملفك الشخصي', 'warning');
               }, 1000);
             } else {
-              // Ask for PWA install after first login
               if (!sessionStorage.getItem('pwaAsked')) {
                 setTimeout(() => {
                   askInstallPWA();
@@ -647,13 +707,11 @@
             }
           });
           
-          // Track user online status
           trackUserStatus(user);
         } else {
           currentUser = null;
           currentUserData = null;
           renderUserCard();
-          // Reset admin state
           isAdminLoggedIn = false;
           document.getElementById('adminLogin').classList.remove('hidden');
           document.getElementById('adminPanel').classList.add('hidden');
@@ -663,6 +721,7 @@
       initRealtimeListeners();
       updateCounts();
       loadContacts();
+      loadComplaints();
     });
 
     function trackUserStatus(user) {
@@ -695,13 +754,6 @@
         showToast('⚠️ يرجى تسجيل الدخول أولاً!', 'error');
         return;
       }
-      // Pre-fill current values
-      if (currentUserData) {
-        document.getElementById('profStage').value = currentUserData.stage || 'ثانوي';
-        document.getElementById('profGrade').value = currentUserData.grade || '1';
-      }
-      loadSubjectsCheckbox();
-      // Show the modal (using settings tab instead)
       switchTab('settings');
       showToast('✏️ قم بتعديل بياناتك في قسم الإعدادات', 'warning');
     }
@@ -722,7 +774,6 @@
         loginBtn.onclick = logoutUser;
         loginBtn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition';
         
-        // Show subjects as chips
         if (currentUserData.subjects && currentUserData.subjects.length > 0) {
           subjectsDiv.innerHTML = currentUserData.subjects.map(s => 
             `<span class="subject-chip bg-white/20 text-white">${s}</span>`
@@ -745,9 +796,15 @@
       if (currentUser && currentUserData) {
         document.getElementById('infoName').textContent = currentUser.displayName || '-';
         document.getElementById('infoEmail').textContent = currentUser.email || '-';
+        document.getElementById('infoPhone').textContent = currentUserData.phone || '-';
         document.getElementById('infoStage').textContent = currentUserData.stage || '-';
         document.getElementById('infoGrade').textContent = currentUserData.grade || '-';
         document.getElementById('infoSubjects').textContent = currentUserData.subjects ? currentUserData.subjects.join('، ') : '-';
+        
+        // Pre-fill phone in settings
+        if (currentUserData.phone) {
+          document.getElementById('profPhone').value = currentUserData.phone;
+        }
       }
     }
 
@@ -769,7 +826,6 @@
         `;
       });
       
-      // Update on stage change
       document.getElementById('profStage').onchange = loadSubjectsCheckbox;
     }
 
@@ -782,6 +838,7 @@
       
       const stage = document.getElementById('profStage').value;
       const grade = document.getElementById('profGrade').value;
+      const phone = document.getElementById('profPhone').value;
       const checkedBoxes = document.querySelectorAll('.subject-check:checked');
       const subjects = Array.from(checkedBoxes).map(cb => cb.value);
 
@@ -790,6 +847,9 @@
         return;
       }
 
+      // تشفير رقم الهاتف بشكل بسيط (يمكن تحسينه)
+      const encryptedPhone = phone ? btoa(phone) : '';
+
       window.set(window.ref(window.db, `users/${currentUser.uid}`), {
         name: currentUser.displayName,
         email: currentUser.email,
@@ -797,6 +857,7 @@
         stage, 
         grade, 
         subjects,
+        phone: encryptedPhone, // تخزين مشفر
         updatedAt: new Date().toISOString()
       }).then(() => {
         showToast('✅ تم حفظ بيانات ملفك بنجاح!', 'success');
@@ -805,6 +866,26 @@
       }).catch(err => {
         showToast('❌ حدث خطأ: ' + err.message, 'error');
       });
+    }
+
+    // ===== SCHEDULE OPTIONS =====
+    function setScheduleOption(option) {
+      scheduleOption = option;
+      document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('active'));
+      
+      if (option === 'full') {
+        document.getElementById('schOptFull').classList.add('active');
+        document.getElementById('scheduleFullFields').style.display = 'block';
+        document.getElementById('scheduleImageField').style.display = 'block';
+      } else if (option === 'text') {
+        document.getElementById('schOptText').classList.add('active');
+        document.getElementById('scheduleFullFields').style.display = 'block';
+        document.getElementById('scheduleImageField').style.display = 'none';
+      } else {
+        document.getElementById('schOptImage').classList.add('active');
+        document.getElementById('scheduleFullFields').style.display = 'none';
+        document.getElementById('scheduleImageField').style.display = 'block';
+      }
     }
 
     // ===== CONTACTS MANAGEMENT =====
@@ -843,7 +924,6 @@
         `;
       });
       
-      // Update center contacts display
       if (centerContacts) {
         centerContacts.innerHTML = contacts.map(c => `
           <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
@@ -884,6 +964,66 @@
     }
 
     // ===== COMPLAINTS =====
+    function loadComplaints() {
+      window.onValue(window.ref(window.db, 'complaints'), (snapshot) => {
+        const data = snapshot.val();
+        complaints = [];
+        if (data) {
+          Object.keys(data).forEach(key => {
+            complaints.push({ id: key, ...data[key] });
+          });
+        }
+        renderComplaints();
+      });
+    }
+
+    function renderComplaints() {
+      const container = document.getElementById('complaintsList');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      if (complaints.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">لا توجد شكاوى</div>';
+        return;
+      }
+      
+      complaints.reverse().forEach(complaint => {
+        // فك تشفير رقم الهاتف
+        let phone = 'غير متوفر';
+        if (complaint.userPhone) {
+          try {
+            phone = atob(complaint.userPhone);
+          } catch(e) {
+            phone = '****';
+          }
+        }
+        
+        container.innerHTML += `
+          <div class="complaint-card">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="name">${complaint.userName || 'طالب'}</span>
+                <span class="phone">📱 ${phone}</span>
+              </div>
+              <span class="date">${complaint.date || ''}</span>
+            </div>
+            <div class="text">${complaint.text}</div>
+            <button onclick="deleteComplaint('${complaint.id}')" class="text-red-400 text-xs hover:text-red-600 mt-1">
+              <i class="fa-solid fa-trash"></i> حذف
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    function deleteComplaint(id) {
+      if (!isAdmin()) return;
+      if (confirm('هل أنت متأكد من حذف هذه الشكوى؟')) {
+        window.remove(window.ref(window.db, `complaints/${id}`));
+        showToast('✅ تم حذف الشكوى', 'success');
+      }
+    }
+
     function sendComplaint() {
       const text = document.getElementById('complaintText').value;
       if (!text) {
@@ -896,11 +1036,14 @@
         return;
       }
       
+      const userPhone = currentUserData?.phone || '';
+      
       window.push(window.ref(window.db, 'complaints'), {
         text,
         userId: currentUser.uid,
         userName: currentUser.displayName,
         userEmail: currentUser.email,
+        userPhone: userPhone,
         date: new Date().toLocaleString('ar-EG'),
         timestamp: Date.now()
       });
@@ -916,7 +1059,6 @@
 
     function adminLogin() {
       const password = document.getElementById('adminPassword').value;
-      // استخدام كلمة سر ثابتة مع التحقق من الـ UID
       if (password === 'Sigma@2024' && isAdmin()) {
         isAdminLoggedIn = true;
         document.getElementById('adminLogin').classList.add('hidden');
@@ -936,14 +1078,25 @@
     }
 
     function loadAdminData() {
-      // Load users stats
+      // Real stats from actual data
       window.onValue(window.ref(window.db, 'users'), (snapshot) => {
         const data = snapshot.val();
         allUsers = data || {};
-        updateAdminStats();
+        updateRealStats();
       });
       
-      // Load manage lists
+      window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
+        const data = snapshot.val();
+        const count = data ? Object.keys(data).length : 0;
+        document.getElementById('statTotalSchedules').textContent = count;
+      });
+      
+      window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
+        const data = snapshot.val();
+        const count = data ? Object.keys(data).length : 0;
+        document.getElementById('statTotalMaterials').textContent = count;
+      });
+      
       loadManageList('schedules', 'scheduleManageList', renderScheduleItem);
       loadManageList('notifications', 'notificationsManageList', renderNotificationItem);
       loadManageList('news', 'newsManageList', renderNewsItem);
@@ -969,8 +1122,8 @@
       return `
         <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
           <div>
-            <span class="font-bold">${item.subject}</span>
-            <span class="text-slate-500 text-xs"> - ${item.day} ${item.time}</span>
+            <span class="font-bold">${item.subject || 'صورة'}</span>
+            <span class="text-slate-500 text-xs"> - ${item.day} ${item.time || ''}</span>
           </div>
           <button onclick="deleteItem('schedules','${key}')" class="delete-btn text-red-400 hover:text-red-600">
             <i class="fa-solid fa-trash"></i>
@@ -1032,8 +1185,8 @@
       }
     }
 
-    // ===== ADMIN STATS =====
-    function updateAdminStats() {
+    // ===== REAL STATS =====
+    function updateRealStats() {
       const users = allUsers;
       const total = Object.keys(users).length;
       
@@ -1046,9 +1199,8 @@
         if (user.online === true || (user.lastSeen && user.lastSeen > dayAgo)) {
           active++;
         }
-        // Simple gender detection from name
         const name = (user.name || '').toLowerCase();
-        const maleNames = ['ahmed', 'mohamed', 'khaled', 'ali', 'hassan', 'hussain', 'mostafa', 'omar', 'youssef', 'ibrahim'];
+        const maleNames = ['ahmed', 'mohamed', 'khaled', 'ali', 'hassan', 'hussain', 'mostafa', 'omar', 'youssef', 'ibrahim', 'abd'];
         if (maleNames.some(m => name.includes(m))) {
           boys++;
         } else if (name !== '') {
@@ -1060,6 +1212,19 @@
       document.getElementById('statActiveUsers').textContent = active;
       document.getElementById('statBoys').textContent = boys || Math.floor(total * 0.6);
       document.getElementById('statGirls').textContent = girls || Math.floor(total * 0.4);
+    }
+
+    function loadUsersList() {
+      if (!isAdmin()) return;
+      let msg = '👥 قائمة الطلاب المسجلين:\n\n';
+      let count = 0;
+      Object.keys(allUsers).forEach(key => {
+        const user = allUsers[key];
+        count++;
+        const phone = user.phone ? atob(user.phone) : 'رقم غير مسجل';
+        msg += `${count}. ${user.name || 'طالب'}\n   📱 ${phone}\n   📧 ${user.email || ''}\n   📚 ${user.subjects ? user.subjects.join(', ') : 'لا يوجد'}\n\n`;
+      });
+      alert(msg || 'لا يوجد طلاب مسجلين');
     }
 
     // ===== UPDATE COUNTS =====
@@ -1074,6 +1239,7 @@
           });
         }
         document.getElementById('todayCount').textContent = count;
+        renderMyScheduleToday();
       });
 
       window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
@@ -1087,9 +1253,45 @@
       });
     }
 
+    // ===== MY SCHEDULE TODAY =====
+    function renderMyScheduleToday() {
+      const container = document.getElementById('myScheduleToday');
+      if (!container) return;
+      
+      if (scheduleData.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">لا توجد حصص اليوم</div>';
+        return;
+      }
+
+      const today = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'][new Date().getDay()];
+      const mySchedules = scheduleData.filter(item => {
+        if (!currentUserData) return false;
+        return item.day === today && 
+               (item.stage === currentUserData.stage || !item.stage) &&
+               (!item.subject || (currentUserData.subjects && currentUserData.subjects.includes(item.subject)));
+      });
+
+      if (mySchedules.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">📭 لا توجد حصص لك اليوم</div>';
+        return;
+      }
+
+      container.innerHTML = mySchedules.map((item, idx) => `
+        <div class="flex items-center justify-between p-2 bg-blue-50 rounded-xl border border-blue-100">
+          <div>
+            <span class="font-bold text-sm text-slate-800">${item.subject}</span>
+            <span class="text-xs text-slate-500 block">${item.teacher}</span>
+          </div>
+          <div class="text-center">
+            <span class="text-sm font-extrabold text-amber-600">${item.time}</span>
+            <span class="text-[10px] text-slate-400 block">${item.room || ''}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
     // ===== REALTIME LISTENERS =====
     function initRealtimeListeners() {
-      // Schedule
       window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
         const data = snapshot.val();
         scheduleData = [];
@@ -1099,9 +1301,9 @@
           });
         }
         renderSchedule();
+        renderMyScheduleToday();
       });
 
-      // News
       window.onValue(window.ref(window.db, 'news'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('homeNewsContainer');
@@ -1135,7 +1337,6 @@
         });
       });
 
-      // Materials
       window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('libraryContainer');
@@ -1172,7 +1373,6 @@
         });
       });
 
-      // Notifications
       window.onValue(window.ref(window.db, 'notifications'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('notificationsContainer');
@@ -1207,9 +1407,7 @@
             container.innerHTML += `
               <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm slide-up">
                 <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-bell text-amber-500"></i>
-                  </div>
+                  ${item.imageData ? `<img src="${item.imageData}" class="w-16 h-16 rounded-xl object-cover">` : ''}
                   <div class="flex-1">
                     <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
                     <p class="text-xs text-slate-600 mt-1 leading-relaxed">${item.body}</p>
@@ -1222,7 +1420,6 @@
               </div>
             `;
 
-            // Push Notification
             if (idx === 0 && Notification.permission === "granted" && document.hidden) {
               new Notification(`📚 سيجما: ${item.title}`, { 
                 body: item.body, 
@@ -1293,13 +1490,13 @@
               <div>
                 <div class="flex items-center gap-2 mb-1">
                   <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.day}</span>
-                  <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full font-bold">${item.stage}</span>
+                  <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full font-bold">${item.stage || ''}</span>
                 </div>
-                <h3 class="font-bold text-base text-slate-800">${item.subject}</h3>
-                <p class="text-xs text-slate-500"><i class="fa-solid fa-chalkboard-user"></i> ${item.teacher}</p>
+                <h3 class="font-bold text-base text-slate-800">${item.subject || 'صورة'}</h3>
+                <p class="text-xs text-slate-500"><i class="fa-solid fa-chalkboard-user"></i> ${item.teacher || ''}</p>
               </div>
               <div class="text-center">
-                <span class="text-sm font-extrabold text-amber-600 block">${item.time}</span>
+                <span class="text-sm font-extrabold text-amber-600 block">${item.time || ''}</span>
                 <span class="text-[10px] text-slate-400">${item.room || 'قاعة'}</span>
               </div>
             </div>
@@ -1318,45 +1515,57 @@
       });
     }
 
-    // ===== ADMIN UPLOAD FUNCTIONS (Base64) =====
+    // ===== ADMIN UPLOAD FUNCTIONS =====
     async function addScheduleItem() {
       if (!isAdmin()) {
         showToast('⚠️ فقط الإداري يمكنه إضافة حصص!', 'error');
         return;
       }
 
-      const day = document.getElementById('schDay').value;
-      const subject = document.getElementById('schSubject').value;
-      const teacher = document.getElementById('schTeacher').value;
-      const time = document.getElementById('schTime').value;
-      const room = document.getElementById('schRoom').value;
-      const stage = document.getElementById('schStage').value;
-      const imgFile = document.getElementById('schImageFile').files[0];
-
-      if (!subject || !teacher || !time) {
-        showToast('⚠️ يرجى ملء جميع الحقول الأساسية!', 'error');
-        return;
-      }
-
-      let imageData = "";
-      if (imgFile) {
-        try {
-          // تحويل الصورة إلى Base64
-          imageData = await fileToBase64(imgFile);
-          // التحقق من حجم الصورة (حد أقصى 1 ميجابايت)
-          if (imageData.length > 1000000) {
-            showToast('⚠️ الصورة كبيرة جداً. الحد الأقصى 1 ميجابايت', 'error');
-            return;
-          }
-        } catch (e) {
-          showToast('❌ فشل تحميل الصورة', 'error');
+      let day = '', subject = '', teacher = '', time = '', room = '', stage = '';
+      let imageData = '';
+      
+      if (scheduleOption === 'full' || scheduleOption === 'text') {
+        day = document.getElementById('schDay').value;
+        subject = document.getElementById('schSubject').value;
+        teacher = document.getElementById('schTeacher').value;
+        time = document.getElementById('schTime').value;
+        room = document.getElementById('schRoom').value;
+        stage = document.getElementById('schStage').value;
+        
+        if (!subject && scheduleOption === 'full') {
+          showToast('⚠️ يرجى كتابة المادة!', 'error');
           return;
         }
       }
 
+      if (scheduleOption === 'full' || scheduleOption === 'image') {
+        const imgFile = document.getElementById('schImageFile').files[0];
+        if (imgFile) {
+          try {
+            imageData = await fileToBase64(imgFile);
+            if (imageData.length > 1000000) {
+              showToast('⚠️ الصورة كبيرة جداً. الحد الأقصى 1 ميجابايت', 'error');
+              return;
+            }
+          } catch (e) {
+            showToast('❌ فشل تحميل الصورة', 'error');
+            return;
+          }
+        } else if (scheduleOption === 'image') {
+          showToast('⚠️ يرجى اختيار صورة!', 'error');
+          return;
+        }
+      }
+
+      if (!subject && !imageData) {
+        showToast('⚠️ يرجى إضافة مادة أو صورة!', 'error');
+        return;
+      }
+
       await window.push(window.ref(window.db, 'schedules'), { 
         day, subject, teacher, time, room, stage, 
-        imageData: imageData,
+        imageData,
         createdAt: new Date().toISOString()
       });
       
@@ -1379,14 +1588,29 @@
       const stage = document.getElementById('notifStage').value;
       const grade = document.getElementById('notifGrade').value;
       const subject = document.getElementById('notifSubject').value;
+      const imgFile = document.getElementById('notifImageFile').files[0];
 
       if (!title || !body) {
         showToast('⚠️ يرجى تعبئة عنوان ونص التنبيه!', 'error');
         return;
       }
 
+      let imageData = '';
+      if (imgFile) {
+        try {
+          imageData = await fileToBase64(imgFile);
+          if (imageData.length > 1000000) {
+            showToast('⚠️ الصورة كبيرة جداً. الحد الأقصى 1 ميجابايت', 'error');
+            return;
+          }
+        } catch (e) {
+          showToast('❌ فشل تحميل الصورة', 'error');
+          return;
+        }
+      }
+
       await window.push(window.ref(window.db, 'notifications'), { 
-        title, body, stage, grade, subject,
+        title, body, stage, grade, subject, imageData,
         date: new Date().toLocaleDateString('ar-EG'),
         time: new Date().toLocaleTimeString('ar-EG'),
         createdAt: new Date().toISOString()
@@ -1396,6 +1620,7 @@
       document.getElementById('notifTitle').value = '';
       document.getElementById('notifBody').value = '';
       document.getElementById('notifSubject').value = '';
+      document.getElementById('notifImageFile').value = '';
     }
 
     async function addNewsItem() {
@@ -1455,7 +1680,6 @@
         return;
       }
 
-      // التحقق من حجم الملف (حد أقصى 2 ميجابايت)
       if (file.size > 2000000) {
         showToast('⚠️ الملف كبير جداً. الحد الأقصى 2 ميجابايت', 'error');
         return;
@@ -1491,13 +1715,17 @@
         app.classList.remove('bg-slate-50');
         document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
         document.querySelectorAll('.bg-white').forEach(el => {
-          el.classList.add('bg-slate-700');
-          el.classList.remove('bg-white');
-          el.classList.add('text-white');
+          if (!el.closest('.admin-stat-card')) {
+            el.classList.add('bg-slate-700');
+            el.classList.remove('bg-white');
+            el.classList.add('text-white');
+          }
         });
         document.querySelectorAll('.text-slate-800').forEach(el => {
-          el.classList.add('text-white');
-          el.classList.remove('text-slate-800');
+          if (!el.closest('.admin-stat-card')) {
+            el.classList.add('text-white');
+            el.classList.remove('text-slate-800');
+          }
         });
         document.querySelectorAll('.text-slate-600').forEach(el => {
           el.classList.add('text-slate-300');
@@ -1517,15 +1745,30 @@
         });
         document.querySelector('.bg-slate-100')?.classList.add('bg-slate-700');
         document.querySelector('.bg-slate-100')?.classList.remove('bg-slate-100');
+        document.querySelectorAll('.stat-card').forEach(el => {
+          el.classList.add('bg-slate-700');
+          el.classList.remove('bg-white');
+          el.classList.add('border-slate-600');
+          el.classList.remove('border-slate-100');
+        });
+        document.querySelectorAll('.stat-number, .stat-label').forEach(el => {
+          el.classList.add('text-white');
+        });
+        document.querySelectorAll('.complaint-card').forEach(el => {
+          el.classList.add('bg-slate-700');
+          el.classList.remove('bg-slate-50');
+        });
       } else {
         body.style.background = '#f1f5f9';
         app.classList.remove('bg-slate-800');
         app.classList.add('bg-slate-50');
         document.getElementById('darkModeIcon').className = 'fa-solid fa-moon text-lg';
         document.querySelectorAll('.bg-slate-700').forEach(el => {
-          el.classList.remove('bg-slate-700');
-          el.classList.add('bg-white');
-          el.classList.remove('text-white');
+          if (!el.closest('.admin-stat-card')) {
+            el.classList.remove('bg-slate-700');
+            el.classList.add('bg-white');
+            el.classList.remove('text-white');
+          }
         });
         document.querySelectorAll('.text-white').forEach(el => {
           if (!el.closest('.bg-gradient-to-r') && !el.closest('.admin-stat-card')) {
@@ -1550,6 +1793,19 @@
             el.classList.remove('text-slate-300');
             el.classList.add('text-slate-700');
           }
+        });
+        document.querySelectorAll('.stat-card').forEach(el => {
+          el.classList.remove('bg-slate-700');
+          el.classList.add('bg-white');
+          el.classList.remove('border-slate-600');
+          el.classList.add('border-slate-100');
+        });
+        document.querySelectorAll('.stat-number, .stat-label').forEach(el => {
+          el.classList.remove('text-white');
+        });
+        document.querySelectorAll('.complaint-card').forEach(el => {
+          el.classList.remove('bg-slate-700');
+          el.classList.add('bg-slate-50');
         });
       }
     }
