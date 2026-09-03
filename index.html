@@ -9,54 +9,188 @@
   <meta name="theme-color" content="#2563eb">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="data:application/json,{%22name%22:%22%D8%B3%D9%86%D8%AA%D8%B1%20%D8%B3%D9%8A%D8%AC%D9%85%D8%A7%22,%22short_name%22:%22%D8%B3%D9%8A%D8%AC%D9%85%D8%A7%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#f8fafc%22,%22theme_color%22:%22#2563eb%22}">
+  <meta name="apple-mobile-web-app-title" content="سيجما">
+  <meta name="application-name" content="سنتر سيجما">
+  
+  <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;سنتر سيجما التعليمي&quot;,&quot;short_name&quot;:&quot;سيجما&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#f8fafc&quot;,&quot;theme_color&quot;:&quot;#2563eb&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%232563eb'/%3E%3Ctext x='256' y='350' font-size='300' text-anchor='middle' fill='white' font-family='serif'%3E%CE%A3%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
 
-  <!-- Tailwind CSS & Font Awesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; background: #f1f5f9; }
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .glass-effect { backdrop-filter: blur(10px); background: rgba(255,255,255,0.7); }
-    .gradient-text { background: linear-gradient(135deg, #2563eb, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .slide-up { animation: slideUp 0.3s ease-out; }
-    .card-hover { transition: all 0.2s ease; }
-    .card-hover:active { transform: scale(0.98); }
-    .profile-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; transition: all 0.3s; }
-    .profile-avatar:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-    .subject-chip { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 3px; }
-    .delete-btn { transition: all 0.2s; }
-    .delete-btn:hover { transform: scale(1.1); color: #ef4444; }
-    .admin-stat-card { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px; padding: 16px; color: white; }
-    .admin-stat-number { font-size: 28px; font-weight: 800; }
-    .admin-stat-label { font-size: 11px; opacity: 0.7; }
-    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 12px 24px; border-radius: 12px; color: white; font-weight: bold; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: slideDown 0.5s ease; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Cairo', sans-serif; background: #f1f5f9; -webkit-tap-highlight-color: transparent; }
+    
+    /* ===== تصميم رئيسي ===== */
+    .app-container { max-width: 420px; margin: 0 auto; background: #f8fafc; min-height: 100vh; position: relative; }
+    .header { background: linear-gradient(135deg, #2563eb, #4f46e5); padding: 12px 16px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+    .logo { font-size: 22px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+    .logo-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid rgba(255,255,255,0.3); }
+    .header-actions { display: flex; gap: 6px; align-items: center; }
+    .header-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255,255,255,0.15); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.3s; }
+    .header-btn:hover { background: rgba(255,255,255,0.25); }
+    .badge { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid white; display: none; }
+    .badge.show { display: block; }
+    
+    /* ===== زر التثبيت ===== */
+    .install-btn { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 11px; cursor: pointer; display: none; align-items: center; gap: 4px; transition: 0.3s; }
+    .install-btn:hover { background: rgba(255,255,255,0.3); }
+    .install-btn.show { display: flex; }
+    
+    /* ===== البطاقات ===== */
+    .card { background: white; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #e8edf2; }
+    .card-sm { padding: 8px 12px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .stat-item { background: white; border-radius: 10px; padding: 8px; text-align: center; border: 1px solid #e8edf2; cursor: pointer; transition: 0.3s; }
+    .stat-item:active { transform: scale(0.96); }
+    .stat-item .num { font-size: 18px; font-weight: 800; }
+    .stat-item .label { font-size: 9px; color: #64748b; margin-top: 2px; }
+    .stat-item .icon { font-size: 16px; }
+    
+    /* ===== البطاقة الشخصية ===== */
+    .profile-card { background: linear-gradient(135deg, #2563eb, #4f46e5); border-radius: 12px; padding: 12px 16px; color: white; display: flex; align-items: center; gap: 10px; }
+    .profile-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); object-fit: cover; cursor: pointer; flex-shrink: 0; }
+    .profile-info { flex: 1; min-width: 0; }
+    .profile-name { font-size: 13px; font-weight: 700; }
+    .profile-sub { font-size: 10px; opacity: 0.8; }
+    .profile-subjects { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+    .profile-subjects span { background: rgba(255,255,255,0.2); padding: 1px 8px; border-radius: 10px; font-size: 8px; }
+    .profile-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 12px; border-radius: 8px; font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+    .profile-btn:hover { background: rgba(255,255,255,0.3); }
+    .profile-btn.logout { background: rgba(239,68,68,0.5); }
+    .profile-btn.logout:hover { background: rgba(239,68,68,0.7); }
+    
+    /* ===== التبويبات ===== */
+    .tab-content { display: none; padding: 8px 0; }
+    .tab-content.active { display: block; animation: fadeUp 0.3s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* ===== التنقل السفلي ===== */
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 420px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid #e8edf2; display: flex; justify-content: space-around; padding: 4px 0 8px; z-index: 100; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; border: none; background: none; color: #94a3b8; font-size: 9px; font-weight: 600; cursor: pointer; padding: 2px 4px; transition: 0.3s; font-family: 'Cairo', sans-serif; }
+    .nav-item .nav-icon { font-size: 18px; }
+    .nav-item.active { color: #2563eb; }
+    .nav-item:active { transform: scale(0.9); }
+    
+    /* ===== الأزرار والخيارات ===== */
+    .option-group { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+    .option-btn { padding: 4px 10px; border-radius: 8px; border: 1.5px solid #e2e8f0; background: white; font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: 'Cairo', sans-serif; }
+    .option-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+    .option-btn:active { transform: scale(0.95); }
+    
+    .btn-primary { width: 100%; padding: 8px; border: none; border-radius: 10px; background: linear-gradient(135deg, #2563eb, #4f46e5); color: white; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.3s; font-family: 'Cairo', sans-serif; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .btn-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    
+    /* ===== الفورم ===== */
+    .form-group { margin-bottom: 6px; }
+    .form-group label { font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px; }
+    .form-control { width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; background: #f8fafc; font-family: 'Cairo', sans-serif; outline: none; transition: 0.3s; }
+    .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    
+    /* ===== لوحة الإدارة ===== */
+    .admin-section { background: white; border-radius: 10px; padding: 10px; border: 1px solid #e8edf2; margin-bottom: 8px; }
+    .admin-section-title { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .admin-section-title i { font-size: 13px; }
+    .admin-section-body { display: none; padding-top: 6px; border-top: 1px solid #e8edf2; }
+    .admin-section-body.open { display: block; }
+    .admin-toggle { transition: 0.3s; }
+    .admin-toggle.open { transform: rotate(180deg); }
+    
+    /* ===== الإحصائيات ===== */
+    .stats-dashboard { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 12px; padding: 12px; color: white; display: none; }
+    .stats-dashboard.show { display: block; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+    .stats-grid .stat { text-align: center; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 8px; cursor: pointer; }
+    .stats-grid .stat .num { font-size: 20px; font-weight: 800; }
+    .stats-grid .stat .label { font-size: 9px; opacity: 0.6; }
+    
+    /* ===== قائمة الشكاوى ===== */
+    .complaint-item { background: #f8fafc; border-radius: 8px; padding: 8px 10px; border-right: 3px solid #f59e0b; margin-bottom: 4px; font-size: 12px; }
+    .complaint-item .name { font-weight: 700; color: #1e293b; }
+    .complaint-item .phone { color: #2563eb; font-size: 11px; }
+    .complaint-item .text { color: #475569; margin-top: 2px; font-size: 12px; }
+    .complaint-item .date { color: #94a3b8; font-size: 9px; }
+    .complaint-item .del { color: #ef4444; cursor: pointer; font-size: 11px; float: left; }
+    
+    /* ===== القوائم الإدارية ===== */
+    .manage-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; background: #f8fafc; border-radius: 6px; margin-bottom: 3px; font-size: 11px; }
+    .manage-item .del { color: #ef4444; cursor: pointer; }
+    
+    /* ===== التحميل ===== */
+    .loading { display: flex; justify-content: center; padding: 20px; color: #94a3b8; font-size: 12px; }
+    .spinner { width: 24px; height: 24px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* ===== حصص اليوم ===== */
+    .today-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; background: #eff6ff; border-radius: 6px; margin-bottom: 3px; font-size: 11px; border: 1px solid #bfdbfe; }
+    .today-item .time { font-weight: 700; color: #d97706; }
+    
+    /* ===== Toast ===== */
+    .toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 8px 16px; border-radius: 10px; color: white; font-weight: 600; font-size: 13px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); animation: slideDown 0.4s ease; max-width: 90%; text-align: center; }
     .toast-success { background: #22c55e; }
     .toast-error { background: #ef4444; }
     .toast-warning { background: #f59e0b; }
     .toast-info { background: #3b82f6; }
     @keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-    .stat-card { background: white; border-radius: 16px; padding: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s; }
-    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-    .stat-number { font-size: 24px; font-weight: 800; }
-    .stat-label { font-size: 11px; color: #64748b; margin-top: 4px; }
-    .option-btn { padding: 8px 16px; border-radius: 12px; border: 2px solid #e2e8f0; background: white; transition: all 0.3s; cursor: pointer; font-size: 12px; font-weight: 600; }
-    .option-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
-    .option-btn:hover { border-color: #2563eb; }
-    .complaint-card { background: #f8fafc; border-radius: 12px; padding: 12px; border-right: 4px solid #f59e0b; margin-bottom: 8px; }
-    .complaint-card .name { font-weight: bold; color: #1e293b; }
-    .complaint-card .phone { color: #3b82f6; font-size: 12px; }
-    .complaint-card .text { color: #475569; font-size: 13px; margin-top: 4px; }
-    .complaint-card .date { color: #94a3b8; font-size: 10px; }
+    
+    /* ===== وضع الليل ===== */
+    .dark-mode { background: #0f172a; }
+    .dark-mode .app-container { background: #0f172a; }
+    .dark-mode .card { background: #1e293b; border-color: #334155; }
+    .dark-mode .card .text-slate-800 { color: #e2e8f0; }
+    .dark-mode .card .text-slate-600 { color: #94a3b8; }
+    .dark-mode .stat-item { background: #1e293b; border-color: #334155; }
+    .dark-mode .stat-item .label { color: #94a3b8; }
+    .dark-mode .form-control { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+    .dark-mode .admin-section { background: #1e293b; border-color: #334155; }
+    .dark-mode .admin-section-title { color: #e2e8f0; }
+    .dark-mode .manage-item { background: #0f172a; }
+    .dark-mode .manage-item .text-slate-700 { color: #e2e8f0; }
+    .dark-mode .complaint-item { background: #0f172a; }
+    .dark-mode .complaint-item .name { color: #e2e8f0; }
+    .dark-mode .complaint-item .text { color: #94a3b8; }
+    .dark-mode .today-item { background: #1e3a5f; border-color: #2563eb; }
+    .dark-mode .today-item .text-slate-800 { color: #e2e8f0; }
+    .dark-mode .option-btn { background: #1e293b; border-color: #334155; color: #94a3b8; }
+    .dark-mode .option-btn.active { background: #1e3a5f; border-color: #2563eb; color: #60a5fa; }
+    .dark-mode .bottom-nav { background: rgba(15,23,42,0.95); border-color: #334155; }
+    .dark-mode .nav-item { color: #64748b; }
+    .dark-mode .nav-item.active { color: #60a5fa; }
+    
+    /* ===== عام ===== */
+    .hidden { display: none !important; }
+    .gap-1 { gap: 4px; }
+    .gap-2 { gap: 8px; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mb-1 { margin-bottom: 4px; }
+    .mb-2 { margin-bottom: 8px; }
+    .text-xs { font-size: 10px; }
+    .text-sm { font-size: 12px; }
+    .text-base { font-size: 14px; }
+    .fw-700 { font-weight: 700; }
+    .flex { display: flex; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .gap-1 { gap: 4px; }
+    .gap-2 { gap: 8px; }
+    .w-full { width: 100%; }
+    .rounded { border-radius: 8px; }
+    .rounded-lg { border-radius: 10px; }
+    
+    /* ===== Scroll ===== */
+    .scroll-y { max-height: 200px; overflow-y: auto; }
+    .scroll-y::-webkit-scrollbar { width: 3px; }
+    .scroll-y::-webkit-scrollbar-track { background: #f1f5f9; }
+    .scroll-y::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
   </style>
 
-  <!-- Firebase Modular SDK -->
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, onValue, set, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -69,1748 +203,1140 @@
       projectId: "sigma-6f162",
       storageBucket: "sigma-6f162.firebasestorage.app",
       messagingSenderId: "420365348074",
-      appId: "1:420365348074:web:0aaecb71ec613bb32abb93",
-      measurementId: "G-BTSLXSPXM1"
+      appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
-
     setPersistence(auth, browserLocalPersistence);
 
-    window.db = db;
-    window.auth = auth;
-    window.provider = provider;
-    window.ref = ref;
-    window.push = push;
-    window.set = set;
-    window.get = get;
-    window.child = child;
-    window.remove = remove;
-    window.update = update;
-    window.onValue = onValue;
-    window.signInWithPopup = signInWithPopup;
-    window.signOut = signOut;
-    window.onAuthStateChanged = onAuthStateChanged;
+    window.db = db; window.auth = auth; window.provider = provider;
+    window.ref = ref; window.push = push; window.set = set; window.get = get;
+    window.child = child; window.remove = remove; window.update = update;
+    window.onValue = onValue; window.signInWithPopup = signInWithPopup;
+    window.signOut = signOut; window.onAuthStateChanged = onAuthStateChanged;
   </script>
 </head>
 <body>
 
-  <div id="app" class="w-full max-w-md mx-auto bg-slate-50 min-h-screen shadow-2xl relative flex flex-col pb-20">
+<div class="app-container" id="app">
 
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 shadow-lg sticky top-0 z-30 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center font-extrabold text-2xl border border-white/30 shadow-lg">Σ</div>
-        <div>
-          <h1 class="font-extrabold text-lg leading-tight">سنتر سيجما</h1>
-          <p class="text-[10px] text-blue-100">منصة الطالب الذكية</p>
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">Σ</div>
+      <span style="font-size:14px;">سيجما</span>
+    </div>
+    <div class="header-actions">
+      <button class="install-btn" id="installBtn" onclick="installApp()"><i class="fa-solid fa-download"></i> تثبيت</button>
+      <button class="header-btn" onclick="switchTab('notifications')" style="position:relative;">
+        <i class="fa-solid fa-bell"></i>
+        <span class="badge" id="notifBadge"></span>
+      </button>
+      <button class="header-btn" onclick="toggleDarkMode()"><i class="fa-solid fa-moon" id="darkIcon"></i></button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main style="padding:8px 12px 80px;">
+
+    <!-- ===== TAB: الرئيسية ===== -->
+    <div class="tab-content active" id="tab-home">
+
+      <!-- البطاقة الشخصية -->
+      <div class="profile-card" id="userCard">
+        <img class="profile-avatar" id="userAvatar" src="" style="display:none;" onclick="openSettings()">
+        <div class="profile-info">
+          <div class="profile-name" id="userName">مرحباً بك</div>
+          <div class="profile-sub" id="userSub">سجل دخولك للمتابعة</div>
+          <div class="profile-subjects" id="userSubjects"></div>
+        </div>
+        <button class="profile-btn" id="loginBtn" onclick="loginGoogle()"><i class="fa-brands fa-google"></i> دخول</button>
+      </div>
+
+      <!-- إحصائيات سريعة -->
+      <div class="stat-grid" style="margin-top:8px;">
+        <div class="stat-item" onclick="switchTab('schedule')">
+          <div class="icon" style="color:#2563eb;">📅</div>
+          <div class="num" style="color:#2563eb;" id="todayCount">0</div>
+          <div class="label">حصص اليوم</div>
+        </div>
+        <div class="stat-item" onclick="switchTab('library')">
+          <div class="icon" style="color:#7c3aed;">📚</div>
+          <div class="num" style="color:#7c3aed;" id="materialCount">0</div>
+          <div class="label">الملفات</div>
+        </div>
+        <div class="stat-item" onclick="switchTab('notifications')">
+          <div class="icon" style="color:#f59e0b;">🔔</div>
+          <div class="num" style="color:#f59e0b;" id="notifCount">0</div>
+          <div class="label">تنبيهات</div>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="switchTab('notifications')" class="relative p-2.5 rounded-full hover:bg-white/10 transition">
-          <i class="fa-solid fa-bell text-xl"></i>
-          <span id="notifBadge" class="hidden absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
-        </button>
-        <button onclick="toggleDarkMode()" class="p-2.5 rounded-full hover:bg-white/10 transition">
-          <i id="darkModeIcon" class="fa-solid fa-moon text-lg"></i>
-        </button>
+
+      <!-- حصصي اليوم -->
+      <div class="card" style="margin-top:8px;">
+        <div class="flex-between">
+          <span style="font-size:12px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-clock" style="color:#2563eb;"></i> حصصي اليوم</span>
+          <button onclick="switchTab('schedule')" style="border:none;background:none;color:#2563eb;font-size:10px;font-weight:600;cursor:pointer;">عرض الكل</button>
+        </div>
+        <div id="myScheduleToday" style="margin-top:4px;">
+          <div class="loading"><div class="spinner"></div>جاري التحميل...</div>
+        </div>
       </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-4 space-y-4 overflow-y-auto">
+      <!-- آخر الأخبار -->
+      <div class="card" style="margin-top:8px;">
+        <div class="flex-between">
+          <span style="font-size:12px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-newspaper" style="color:#2563eb;"></i> آخر الأخبار</span>
+          <button onclick="switchTab('news')" style="border:none;background:none;color:#2563eb;font-size:10px;font-weight:600;cursor:pointer;">عرض الكل</button>
+        </div>
+        <div id="homeNewsContainer" style="margin-top:4px;">
+          <div class="loading"><div class="spinner"></div>جاري التحميل...</div>
+        </div>
+      </div>
+    </div>
 
-      <!-- TAB 1: HOME -->
-      <section id="tab-home" class="space-y-4 slide-up">
-        <!-- User Card -->
-        <div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-xl">
-          <div id="userContent" class="flex items-center gap-4">
-            <img id="userAvatar" src="" class="profile-avatar" onclick="openProfileModal()" alt="الصورة الشخصية" style="display:none;">
-            <div class="text-right flex-1">
-              <h2 id="userName" class="font-bold text-lg">مرحباً بك</h2>
-              <p id="userSubtitle" class="text-sm text-blue-100 mt-1">سجل دخولك للمتابعة</p>
-              <div id="userSubjects" class="mt-2"></div>
-            </div>
-            <button id="loginBtn" onclick="loginGoogle()" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-4 py-2 rounded-xl transition whitespace-nowrap">
-              <i class="fa-brands fa-google"></i> دخول
-            </button>
-          </div>
-        </div>
+    <!-- ===== TAB: الجدول ===== -->
+    <div class="tab-content" id="tab-schedule">
+      <div class="flex-between" style="margin-bottom:6px;">
+        <span style="font-size:14px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-calendar-days" style="color:#2563eb;"></i> جدول المحاضرات</span>
+        <button onclick="switchTab('home')" style="border:none;background:none;color:#94a3b8;font-size:10px;cursor:pointer;"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+      </div>
+      <div class="option-group">
+        <button class="option-btn active" onclick="filterSchedule('today')" id="btnToday">اليوم</button>
+        <button class="option-btn" onclick="filterSchedule('tomorrow')" id="btnTomorrow">غداً</button>
+        <button class="option-btn" onclick="filterSchedule('all')" id="btnAll">الأسبوع</button>
+      </div>
+      <div id="scheduleContainer"><div class="loading"><div class="spinner"></div>جاري التحميل...</div></div>
+    </div>
 
-        <!-- Quick Stats Cards -->
-        <div class="grid grid-cols-3 gap-3">
-          <div class="stat-card" onclick="switchTab('schedule')">
-            <div class="text-blue-600 text-2xl"><i class="fa-solid fa-calendar-check"></i></div>
-            <div class="stat-number text-blue-600" id="todayCount">0</div>
-            <div class="stat-label">حصص اليوم</div>
-          </div>
-          <div class="stat-card" onclick="switchTab('library')">
-            <div class="text-purple-600 text-2xl"><i class="fa-solid fa-book"></i></div>
-            <div class="stat-number text-purple-600" id="materialCount">0</div>
-            <div class="stat-label">الملفات</div>
-          </div>
-          <div class="stat-card" onclick="switchTab('notifications')">
-            <div class="text-amber-500 text-2xl"><i class="fa-solid fa-bell"></i></div>
-            <div class="stat-number text-amber-500" id="notifCount">0</div>
-            <div class="stat-label">تنبيهات</div>
-          </div>
-        </div>
+    <!-- ===== TAB: المكتبة ===== -->
+    <div class="tab-content" id="tab-library">
+      <div class="flex-between" style="margin-bottom:6px;">
+        <span style="font-size:14px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-book-open" style="color:#7c3aed;"></i> المكتبة الرقمية</span>
+        <button onclick="switchTab('home')" style="border:none;background:none;color:#94a3b8;font-size:10px;cursor:pointer;"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+      </div>
+      <div id="libraryContainer"><div class="loading"><div class="spinner"></div>جاري التحميل...</div></div>
+    </div>
 
-        <!-- My Schedule Today -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-clock text-blue-600"></i> حصصي اليوم
-            </h3>
-            <button onclick="switchTab('schedule')" class="text-xs text-blue-600 font-bold hover:text-blue-800">عرض الكل</button>
-          </div>
-          <div id="myScheduleToday" class="space-y-2">
-            <div class="text-center py-4 text-slate-400 text-sm">جاري التحميل...</div>
-          </div>
-        </div>
+    <!-- ===== TAB: الأخبار ===== -->
+    <div class="tab-content" id="tab-news">
+      <div class="flex-between" style="margin-bottom:6px;">
+        <span style="font-size:14px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-newspaper" style="color:#2563eb;"></i> الأخبار</span>
+        <button onclick="switchTab('home')" style="border:none;background:none;color:#94a3b8;font-size:10px;cursor:pointer;"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+      </div>
+      <div id="allNewsContainer"><div class="loading"><div class="spinner"></div>جاري التحميل...</div></div>
+    </div>
 
-        <!-- News Preview -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-newspaper text-blue-600"></i> آخر الأخبار
-            </h3>
-            <button onclick="switchTab('news')" class="text-xs text-blue-600 font-bold hover:text-blue-800">عرض الكل</button>
-          </div>
-          <div id="homeNewsContainer" class="space-y-3">
-            <div class="flex items-center justify-center py-8">
-              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          </div>
-        </div>
-      </section>
+    <!-- ===== TAB: الإشعارات ===== -->
+    <div class="tab-content" id="tab-notifications">
+      <div class="flex-between" style="margin-bottom:6px;">
+        <span style="font-size:14px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-bell" style="color:#f59e0b;"></i> مركز الإشعارات</span>
+        <button onclick="switchTab('home')" style="border:none;background:none;color:#94a3b8;font-size:10px;cursor:pointer;"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+      </div>
+      <div id="notificationsContainer"><div class="loading" style="color:#94a3b8;"><i class="fa-regular fa-bell-slash" style="font-size:24px;display:block;margin-bottom:4px;"></i>لا توجد إشعارات</div></div>
+    </div>
 
-      <!-- TAB 2: SCHEDULE -->
-      <section id="tab-schedule" class="hidden space-y-4 slide-up">
-        <div class="flex items-center justify-between">
-          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-calendar-days text-blue-600"></i> جدول المحاضرات
-          </h2>
-          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-arrow-right"></i> رجوع
-          </button>
-        </div>
-        
-        <div class="flex bg-slate-200/80 p-1.5 rounded-2xl text-xs font-bold text-slate-600">
-          <button onclick="filterSchedule('today')" id="btnSchedToday" class="flex-1 py-2 rounded-xl bg-white text-blue-600 shadow-md transition">اليوم</button>
-          <button onclick="filterSchedule('tomorrow')" id="btnSchedTomorrow" class="flex-1 py-2 rounded-xl transition hover:bg-white/50">غداً</button>
-          <button onclick="filterSchedule('all')" id="btnSchedAll" class="flex-1 py-2 rounded-xl transition hover:bg-white/50">الأسبوع</button>
-        </div>
-        
-        <div id="scheduleContainer" class="space-y-3">
-          <div class="flex items-center justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        </div>
-      </section>
+    <!-- ===== TAB: الإعدادات ===== -->
+    <div class="tab-content" id="tab-settings">
+      <div class="flex-between" style="margin-bottom:6px;">
+        <span style="font-size:14px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-gear" style="color:#64748b;"></i> الإعدادات</span>
+        <button onclick="switchTab('home')" style="border:none;background:none;color:#94a3b8;font-size:10px;cursor:pointer;"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+      </div>
 
-      <!-- TAB 3: LIBRARY -->
-      <section id="tab-library" class="hidden space-y-4 slide-up">
-        <div class="flex items-center justify-between">
-          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-book-open text-purple-600"></i> المكتبة الرقمية
-          </h2>
-          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-arrow-right"></i> رجوع
-          </button>
-        </div>
-        <div id="libraryContainer" class="space-y-3">
-          <div class="flex items-center justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 4: NEWS -->
-      <section id="tab-news" class="hidden space-y-4 slide-up">
-        <div class="flex items-center justify-between">
-          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-newspaper text-blue-600"></i> الأخبار والإعلانات
-          </h2>
-          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-arrow-right"></i> رجوع
-          </button>
-        </div>
-        <div id="allNewsContainer" class="space-y-4">
-          <div class="flex items-center justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 5: NOTIFICATIONS -->
-      <section id="tab-notifications" class="hidden space-y-4 slide-up">
-        <div class="flex items-center justify-between">
-          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-bell text-amber-500"></i> مركز الإشعارات
-          </h2>
-          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-arrow-right"></i> رجوع
-          </button>
-        </div>
-        <div id="notificationsContainer" class="space-y-3">
-          <div class="text-center py-8 text-slate-400 text-sm">
-            <i class="fa-regular fa-bell-slash text-3xl mb-2 block"></i>
-            لا توجد إشعارات
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 6: SETTINGS -->
-      <section id="tab-settings" class="hidden space-y-4 slide-up">
-        <div class="flex items-center justify-between">
-          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-gear text-slate-600"></i> الإعدادات
-          </h2>
-          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-arrow-right"></i> رجوع
-          </button>
-        </div>
-
-        <!-- Edit Profile -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-          <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-user-pen text-blue-600"></i> تعديل الملف الشخصي</h3>
-          <div>
-            <label class="text-xs font-bold text-slate-500">المرحلة التعليمية:</label>
-            <select id="profStage" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+      <!-- تعديل الملف الشخصي - مصغر -->
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:#1e293b;margin-bottom:6px;"><i class="fa-solid fa-user-pen" style="color:#2563eb;"></i> تعديل الملف الشخصي</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>المرحلة</label>
+            <select class="form-control" id="profStage" onchange="loadSubjects()">
               <option value="ثانوي">ثانوي</option>
               <option value="إعدادي">إعدادي</option>
             </select>
           </div>
-          <div class="mt-2">
-            <label class="text-xs font-bold text-slate-500">الصف الدراسي:</label>
-            <select id="profGrade" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
-              <option value="1">الصف الأول</option>
-              <option value="2">الصف الثاني</option>
-              <option value="3">الصف الثالث</option>
+          <div class="form-group">
+            <label>الصف</label>
+            <select class="form-control" id="profGrade">
+              <option value="1">الأول</option>
+              <option value="2">الثاني</option>
+              <option value="3">الثالث</option>
             </select>
           </div>
-          <div class="mt-2">
-            <label class="text-xs font-bold text-slate-500">رقم الهاتف (للتواصل):</label>
-            <input type="tel" id="profPhone" placeholder="مثال: 01012345678" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+        <div class="form-group">
+          <label>رقم الهاتف</label>
+          <input class="form-control" id="profPhone" placeholder="01012345678" type="tel">
+        </div>
+        <div class="form-group">
+          <label>المواد</label>
+          <div id="subjectsCheckbox" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;"></div>
+        </div>
+        <button class="btn-primary" onclick="saveProfile()" style="margin-top:4px;"><i class="fa-solid fa-save"></i> حفظ</button>
+      </div>
+
+      <!-- معلومات الطالب -->
+      <div class="card" style="margin-top:6px;">
+        <div style="font-size:12px;font-weight:700;color:#1e293b;margin-bottom:4px;"><i class="fa-solid fa-user" style="color:#2563eb;"></i> معلوماتي</div>
+        <div style="font-size:11px;color:#475569;line-height:1.8;" id="studentInfo">
+          الاسم: <span style="font-weight:700;color:#1e293b;" id="infoName">-</span><br>
+          البريد: <span style="font-weight:700;color:#1e293b;" id="infoEmail">-</span><br>
+          الهاتف: <span style="font-weight:700;color:#1e293b;" id="infoPhone">-</span><br>
+          المرحلة: <span style="font-weight:700;color:#1e293b;" id="infoStage">-</span><br>
+          الصف: <span style="font-weight:700;color:#1e293b;" id="infoGrade">-</span><br>
+          المواد: <span style="font-weight:700;color:#1e293b;" id="infoSubjects">-</span>
+        </div>
+      </div>
+
+      <!-- أرقام السنتر -->
+      <div class="card" style="margin-top:6px;">
+        <div style="font-size:12px;font-weight:700;color:#1e293b;margin-bottom:4px;"><i class="fa-solid fa-phone" style="color:#22c55e;"></i> أرقام السنتر</div>
+        <div id="centerContacts" style="font-size:11px;"></div>
+      </div>
+
+      <!-- شكوى -->
+      <div class="card" style="margin-top:6px;">
+        <div style="font-size:12px;font-weight:700;color:#1e293b;margin-bottom:4px;"><i class="fa-solid fa-comment" style="color:#f59e0b;"></i> شكوى أو استفسار</div>
+        <textarea class="form-control" id="complaintText" placeholder="اكتب هنا..." style="height:50px;resize:none;"></textarea>
+        <button class="btn-primary btn-warning" onclick="sendComplaint()" style="margin-top:4px;"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+      </div>
+    </div>
+
+    <!-- ===== TAB: الإدارة ===== -->
+    <div class="tab-content" id="tab-admin">
+      <div class="flex-between" style="margin-bottom:6px;">
+        <span style="font-size:14px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-user-shield" style="color:#2563eb;"></i> لوحة الإدارة</span>
+        <button onclick="switchTab('home')" style="border:none;background:none;color:#94a3b8;font-size:10px;cursor:pointer;"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+      </div>
+
+      <!-- منع وصول -->
+      <div id="adminDenied" class="card" style="text-align:center;padding:20px;display:none;">
+        <i class="fa-solid fa-ban" style="color:#ef4444;font-size:32px;"></i>
+        <div style="font-weight:700;color:#ef4444;margin-top:6px;">غير مصرح بالدخول</div>
+        <div style="font-size:11px;color:#64748b;">هذه الصفحة للإداريين فقط</div>
+      </div>
+
+      <!-- تسجيل دخول الإدارة -->
+      <div id="adminLogin" class="card">
+        <div style="font-size:12px;font-weight:700;color:#1e293b;"><i class="fa-solid fa-lock" style="color:#f59e0b;"></i> دخول الإدارة</div>
+        <div class="form-group" style="margin-top:4px;">
+          <input class="form-control" id="adminPassword" placeholder="كلمة السر" type="password">
+        </div>
+        <button class="btn-primary" onclick="adminLogin()"><i class="fa-solid fa-sign-in-alt"></i> دخول</button>
+      </div>
+
+      <!-- لوحة التحكم -->
+      <div id="adminPanel" style="display:none;">
+
+        <!-- الإحصائيات - تظهر عند الضغط على شعار السنتر -->
+        <div class="stats-dashboard" id="statsDashboard">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-weight:700;font-size:13px;"><i class="fa-solid fa-chart-line" style="color:#60a5fa;"></i> إحصائيات المنصة</span>
+            <span style="font-size:20px;font-weight:900;opacity:0.3;">Σ</span>
           </div>
-          <div class="mt-2">
-            <label class="text-xs font-bold text-slate-500">اختر المواد التي تدرسها:</label>
-            <div id="subjectsCheckbox" class="mt-2 grid grid-cols-2 gap-2"></div>
+          <div class="stats-grid">
+            <div class="stat" onclick="showUsersList()"><div class="num" id="statUsers">0</div><div class="label">👥 الطلاب</div></div>
+            <div class="stat"><div class="num" id="statActive">0</div><div class="label">🟢 نشطاء</div></div>
+            <div class="stat"><div class="num" id="statBoys">0</div><div class="label">🧑 أولاد</div></div>
+            <div class="stat"><div class="num" id="statGirls">0</div><div class="label">👧 بنات</div></div>
+            <div class="stat"><div class="num" id="statSchedules">0</div><div class="label">📚 حصص</div></div>
+            <div class="stat"><div class="num" id="statMaterials">0</div><div class="label">📄 ملفات</div></div>
           </div>
-          <button onclick="saveStudentProfile()" class="w-full mt-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
-            <i class="fa-solid fa-save"></i> حفظ التغييرات
-          </button>
         </div>
 
-        <!-- Student Info -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-          <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-user text-blue-600"></i> معلومات الطالب</h3>
-          <div id="studentInfoDisplay" class="space-y-2 text-sm">
-            <p class="text-slate-600">الاسم: <span id="infoName" class="font-bold text-slate-800">-</span></p>
-            <p class="text-slate-600">البريد: <span id="infoEmail" class="font-bold text-slate-800">-</span></p>
-            <p class="text-slate-600">الهاتف: <span id="infoPhone" class="font-bold text-slate-800">-</span></p>
-            <p class="text-slate-600">المرحلة: <span id="infoStage" class="font-bold text-slate-800">-</span></p>
-            <p class="text-slate-600">الصف: <span id="infoGrade" class="font-bold text-slate-800">-</span></p>
-            <p class="text-slate-600">المواد: <span id="infoSubjects" class="font-bold text-slate-800">-</span></p>
+        <!-- الشكاوى -->
+        <div class="admin-section">
+          <div class="admin-section-title" onclick="toggleSection(this)">
+            <i class="fa-solid fa-message" style="color:#f59e0b;"></i> رسائل الشكاوى
+            <i class="fa-solid fa-chevron-down admin-toggle" style="margin-right:auto;font-size:10px;"></i>
+          </div>
+          <div class="admin-section-body" id="complaintsList"><div class="loading" style="padding:8px;">لا توجد شكاوى</div></div>
+        </div>
+
+        <!-- إضافة حصة -->
+        <div class="admin-section">
+          <div class="admin-section-title" onclick="toggleSection(this)">
+            <i class="fa-solid fa-plus-circle" style="color:#2563eb;"></i> إضافة حصة
+            <i class="fa-solid fa-chevron-down admin-toggle" style="margin-right:auto;font-size:10px;"></i>
+          </div>
+          <div class="admin-section-body">
+            <div class="option-group">
+              <button class="option-btn active" onclick="setSchOpt('full')" id="schOptFull">📝 + 🖼️</button>
+              <button class="option-btn" onclick="setSchOpt('text')" id="schOptText">📝 فقط</button>
+              <button class="option-btn" onclick="setSchOpt('image')" id="schOptImage">🖼️ فقط</button>
+            </div>
+            <div id="schFields">
+              <div class="form-row">
+                <div class="form-group"><label>اليوم</label><select class="form-control" id="schDay"><option>الأحد</option><option>الإثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option><option>الجمعة</option><option>السبت</option></select></div>
+                <div class="form-group"><label>المادة</label><input class="form-control" id="schSubject" placeholder="المادة"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>المدرس</label><input class="form-control" id="schTeacher" placeholder="اسم المدرس"></div>
+                <div class="form-group"><label>الوقت</label><input class="form-control" id="schTime" type="time"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>القاعة</label><input class="form-control" id="schRoom" placeholder="القاعة"></div>
+                <div class="form-group"><label>المرحلة</label><select class="form-control" id="schStage"><option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option></select></div>
+              </div>
+            </div>
+            <div id="schImageDiv" class="form-group"><label>صورة</label><input class="form-control" id="schImageFile" type="file" accept="image/*" style="padding:4px;"></div>
+            <button class="btn-primary" onclick="addSchedule()" style="margin-top:4px;"><i class="fa-solid fa-save"></i> حفظ</button>
+            <div id="scheduleList" style="margin-top:6px;"></div>
           </div>
         </div>
 
-        <!-- Center Contact -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-          <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر</h3>
-          <div id="centerContacts" class="space-y-2">
-            <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
-              <i class="fa-solid fa-phone text-blue-600"></i>
-              <span class="text-sm text-slate-700">01012345678</span>
+        <!-- إرسال إشعار -->
+        <div class="admin-section">
+          <div class="admin-section-title" onclick="toggleSection(this)">
+            <i class="fa-solid fa-paper-plane" style="color:#f59e0b;"></i> إرسال إشعار
+            <i class="fa-solid fa-chevron-down admin-toggle" style="margin-right:auto;font-size:10px;"></i>
+          </div>
+          <div class="admin-section-body">
+            <div class="form-group"><label>العنوان</label><input class="form-control" id="notifTitle" placeholder="عنوان الإشعار"></div>
+            <div class="form-group"><label>النص</label><textarea class="form-control" id="notifBody" placeholder="نص الإشعار" style="height:40px;resize:none;"></textarea></div>
+            <div class="form-row">
+              <div class="form-group"><label>المرحلة</label><select class="form-control" id="notifStage"><option value="الكل">الكل</option><option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option></select></div>
+              <div class="form-group"><label>الصف</label><select class="form-control" id="notifGrade"><option value="الكل">الكل</option><option value="1">الأول</option><option value="2">الثاني</option><option value="3">الثالث</option></select></div>
             </div>
+            <div class="form-group"><label>صورة (اختياري)</label><input class="form-control" id="notifImage" type="file" accept="image/*" style="padding:4px;"></div>
+            <button class="btn-primary btn-warning" onclick="sendNotif()"><i class="fa-solid fa-bell"></i> إرسال</button>
+            <div id="notifList" style="margin-top:6px;"></div>
           </div>
         </div>
 
-        <!-- Complaints -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-          <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-comment text-amber-500"></i> تقديم شكوى أو استفسار</h3>
-          <textarea id="complaintText" placeholder="اكتب شكواك أو استفسارك هنا..." class="w-full p-3 bg-slate-50 border rounded-xl text-sm h-24 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
-          <button onclick="sendComplaint()" class="w-full mt-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
-            <i class="fa-solid fa-paper-plane"></i> إرسال
-          </button>
-        </div>
-      </section>
-
-      <!-- TAB 7: ADMIN DASHBOARD -->
-      <section id="tab-admin" class="hidden space-y-4 slide-up">
-        <div class="flex items-center justify-between">
-          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-user-shield text-blue-600"></i> لوحة الإدارة
-          </h2>
-          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-arrow-right"></i> رجوع
-          </button>
+        <!-- نشر خبر -->
+        <div class="admin-section">
+          <div class="admin-section-title" onclick="toggleSection(this)">
+            <i class="fa-solid fa-image" style="color:#22c55e;"></i> نشر خبر
+            <i class="fa-solid fa-chevron-down admin-toggle" style="margin-right:auto;font-size:10px;"></i>
+          </div>
+          <div class="admin-section-body">
+            <div class="form-group"><label>العنوان</label><input class="form-control" id="newsTitle" placeholder="عنوان الخبر"></div>
+            <div class="form-group"><label>المحتوى</label><textarea class="form-control" id="newsContent" placeholder="تفاصيل الخبر" style="height:40px;resize:none;"></textarea></div>
+            <div class="form-group"><label>صورة</label><input class="form-control" id="newsImage" type="file" accept="image/*" style="padding:4px;"></div>
+            <button class="btn-primary btn-success" onclick="addNews()"><i class="fa-solid fa-share"></i> نشر</button>
+            <div id="newsList" style="margin-top:6px;"></div>
+          </div>
         </div>
 
-        <!-- Admin Access Denied -->
-        <div id="adminAccessDenied" class="hidden bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
-          <i class="fa-solid fa-ban text-red-500 text-5xl mb-3"></i>
-          <h3 class="font-bold text-red-700">⛔ غير مصرح بالدخول</h3>
-          <p class="text-sm text-red-600 mt-2">هذه الصفحة مخصصة للإداريين فقط</p>
-          <button onclick="switchTab('home')" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition">
-            العودة للرئيسية
-          </button>
+        <!-- رفع ملف -->
+        <div class="admin-section">
+          <div class="admin-section-title" onclick="toggleSection(this)">
+            <i class="fa-solid fa-file-arrow-up" style="color:#7c3aed;"></i> رفع ملف
+            <i class="fa-solid fa-chevron-down admin-toggle" style="margin-right:auto;font-size:10px;"></i>
+          </div>
+          <div class="admin-section-body">
+            <div class="form-group"><label>اسم الملف</label><input class="form-control" id="matTitle" placeholder="اسم الملف"></div>
+            <div class="form-row">
+              <div class="form-group"><label>المادة</label><input class="form-control" id="matSubject" placeholder="المادة"></div>
+              <div class="form-group"><label>النوع</label><select class="form-control" id="matType"><option value="pdf">PDF</option><option value="image">صورة</option></select></div>
+            </div>
+            <div class="form-group"><label>الملف</label><input class="form-control" id="matFile" type="file" style="padding:4px;"></div>
+            <button class="btn-primary btn-purple" onclick="uploadMaterial()"><i class="fa-solid fa-upload"></i> رفع</button>
+            <div id="matList" style="margin-top:6px;"></div>
+          </div>
         </div>
 
-        <!-- Admin Login -->
-        <div id="adminLogin" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-          <div class="flex items-center gap-2 text-sm font-bold text-slate-700">
-            <i class="fa-solid fa-lock text-amber-500"></i> الدخول للوحة التحكم
+        <!-- إدارة الأرقام -->
+        <div class="admin-section">
+          <div class="admin-section-title" onclick="toggleSection(this)">
+            <i class="fa-solid fa-address-book" style="color:#22c55e;"></i> أرقام السنتر
+            <i class="fa-solid fa-chevron-down admin-toggle" style="margin-right:auto;font-size:10px;"></i>
           </div>
-          <div class="relative">
-            <input type="password" id="adminPassword" placeholder="كلمة السر" class="w-full p-3 bg-slate-50 border rounded-2xl text-sm pr-10 focus:ring-2 focus:ring-blue-500 outline-none">
-            <i class="fa-solid fa-key absolute left-3 top-3.5 text-slate-400"></i>
+          <div class="admin-section-body">
+            <div style="display:flex;gap:4px;">
+              <input class="form-control" id="newContact" placeholder="رقم الهاتف" style="flex:1;">
+              <select class="form-control" id="contactType" style="width:70px;"><option value="phone">📞</option><option value="whatsapp">💬</option></select>
+              <button class="btn-primary" onclick="addContact()" style="width:auto;padding:4px 12px;font-size:12px;"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div id="contactsList" style="margin-top:4px;"></div>
           </div>
-          <button onclick="adminLogin()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
-            <i class="fa-solid fa-sign-in-alt"></i> دخول
-          </button>
         </div>
 
-        <!-- Admin Panel -->
-        <div id="adminPanel" class="hidden space-y-4">
-          
-          <!-- Real Stats Dashboard -->
-          <div class="admin-stat-card">
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="font-bold text-sm"><i class="fa-solid fa-chart-line text-blue-400"></i> إحصائيات حقيقية للمنصة</h4>
-              <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-2xl font-bold">Σ</div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div onclick="loadUsersList()" style="cursor:pointer;">
-                <div class="admin-stat-number" id="statTotalUsers">0</div>
-                <div class="admin-stat-label">👥 إجمالي الطلاب</div>
-              </div>
-              <div>
-                <div class="admin-stat-number" id="statActiveUsers">0</div>
-                <div class="admin-stat-label">🟢 نشطاء اليوم</div>
-              </div>
-              <div>
-                <div class="admin-stat-number" id="statBoys">0</div>
-                <div class="admin-stat-label">🧑 أولاد</div>
-              </div>
-              <div>
-                <div class="admin-stat-number" id="statGirls">0</div>
-                <div class="admin-stat-label">👧 بنات</div>
-              </div>
-              <div>
-                <div class="admin-stat-number" id="statTotalSchedules">0</div>
-                <div class="admin-stat-label">📚 إجمالي الحصص</div>
-              </div>
-              <div>
-                <div class="admin-stat-number" id="statTotalMaterials">0</div>
-                <div class="admin-stat-label">📄 إجمالي الملفات</div>
-              </div>
-            </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== التنقل السفلي ===== -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('home')" id="nav-home"><span class="nav-icon">🏠</span> الرئيسية</button>
+    <button class="nav-item" onclick="switchTab('schedule')" id="nav-schedule"><span class="nav-icon">📅</span> الجدول</button>
+    <button class="nav-item" onclick="switchTab('library')" id="nav-library"><span class="nav-icon">📚</span> المكتبة</button>
+    <button class="nav-item" onclick="switchTab('news')" id="nav-news"><span class="nav-icon">📰</span> الأخبار</button>
+    <button class="nav-item" onclick="switchTab('settings')" id="nav-settings"><span class="nav-icon">⚙️</span> الإعدادات</button>
+    <button class="nav-item" onclick="switchTab('admin')" id="nav-admin"><span class="nav-icon">🛡️</span> الإدارة</button>
+  </nav>
+
+</div>
+
+<!-- ============================================ -->
+<!-- ===== جميع الـ JavaScript ===== -->
+<!-- ============================================ -->
+<script>
+// ============================================
+// 1. PWA - التثبيت
+// ============================================
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').classList.add('show');
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBtn').classList.remove('show');
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((r) => {
+      if (r.outcome === 'accepted') showToast('✅ تم التثبيت', 'success');
+      deferredPrompt = null;
+      document.getElementById('installBtn').classList.remove('show');
+    });
+  } else {
+    alert('📱 لتثبيت التطبيق:\nاستخدم Chrome وابحث عن "تثبيت التطبيق" في القائمة');
+  }
+}
+
+// ============================================
+// 2. Service Worker (مدمج)
+// ============================================
+if ('serviceWorker' in navigator) {
+  const sw = `
+    self.addEventListener('install', e => e.waitUntil(
+      caches.open('sigma-v1').then(c => c.addAll(['/'])).then(() => self.skipWaiting())
+    ));
+    self.addEventListener('activate', e => e.waitUntil(
+      caches.keys().then(k => Promise.all(k.filter(k=>k!=='sigma-v1').map(k=>caches.delete(k)))).then(()=>self.clients.claim())
+    ));
+    self.addEventListener('fetch', e => e.respondWith(
+      caches.match(e.request).then(r => r || fetch(e.request))
+    ));
+  `;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], {type:'application/javascript'})))
+    .then(r => console.log('✅ SW:', r));
+}
+
+// ============================================
+// 3. المتغيرات العامة
+// ============================================
+let currentUser = null, userData = null, scheduleData = [], allUsers = {}, contacts = [], complaints = [];
+let currentFilter = 'today', schOption = 'full', isAdmin = false;
+const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2', 'ADMIN_UID_2', 'ADMIN_UID_3'];
+const subjectsByStage = {
+  'ثانوي': ['فيزياء','كيمياء','رياضيات','أحياء','لغة عربية','لغة إنجليزية','فرنسية','تاريخ','جغرافيا','فلسفة','علم نفس'],
+  'إعدادي': ['رياضيات','علوم','لغة عربية','لغة إنجليزية','دراسات','حاسب آلي','تربية دينية']
+};
+
+// ============================================
+// 4. دوال عامة
+// ============================================
+function showToast(msg, type='success') {
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),400); }, 2500);
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-'+id).classList.add('active');
+  
+  if (id === 'admin') checkAdminAccess();
+}
+
+function toggleSection(el) {
+  const body = el.nextElementSibling;
+  const icon = el.querySelector('.admin-toggle');
+  body.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+function openSettings() { if (currentUser) switchTab('settings'); else showToast('⚠️ سجل دخول أولاً', 'error'); }
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  const icon = document.getElementById('darkIcon');
+  icon.className = document.body.classList.contains('dark-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+}
+
+// ============================================
+// 5. المصادقة
+// ============================================
+window.onAuthStateChanged(window.auth, (user) => {
+  if (user) {
+    currentUser = user;
+    const ref = window.ref(window.db, `users/${user.uid}`);
+    window.onValue(ref, (snap) => {
+      userData = snap.val();
+      renderUser();
+      updateInfo();
+      if (!userData) { switchTab('settings'); showToast('📝 أكمل بياناتك', 'warning'); }
+    });
+    window.set(window.ref(window.db, `users/${user.uid}/online`), true);
+    window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
+  } else {
+    currentUser = null; userData = null; isAdmin = false;
+    renderUser();
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('adminDenied').style.display = 'none';
+  }
+});
+
+function loginGoogle() {
+  window.signInWithPopup(window.auth, window.provider).catch(e => showToast('❌ '+e.message, 'error'));
+}
+
+function logoutUser() {
+  if (currentUser) window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
+  window.signOut(window.auth);
+  showToast('👋 تم الخروج', 'warning');
+}
+
+function renderUser() {
+  const avatar = document.getElementById('userAvatar');
+  const name = document.getElementById('userName');
+  const sub = document.getElementById('userSub');
+  const subjects = document.getElementById('userSubjects');
+  const btn = document.getElementById('loginBtn');
+  
+  if (currentUser && userData) {
+    avatar.src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
+    avatar.style.display = 'block';
+    name.textContent = `مرحباً، ${currentUser.displayName || 'طالب'}`;
+    sub.textContent = `${userData.stage || ''} • الصف ${userData.grade || ''}`;
+    subjects.innerHTML = (userData.subjects || []).map(s => `<span>${s}</span>`).join('');
+    btn.textContent = 'خروج';
+    btn.className = 'profile-btn logout';
+    btn.onclick = logoutUser;
+  } else {
+    avatar.style.display = 'none';
+    name.textContent = 'مرحباً بك';
+    sub.textContent = 'سجل دخولك للمتابعة';
+    subjects.innerHTML = '';
+    btn.textContent = 'دخول';
+    btn.className = 'profile-btn';
+    btn.onclick = loginGoogle;
+  }
+}
+
+function updateInfo() {
+  if (userData) {
+    document.getElementById('infoName').textContent = currentUser?.displayName || '-';
+    document.getElementById('infoEmail').textContent = currentUser?.email || '-';
+    document.getElementById('infoPhone').textContent = userData.phone ? atob(userData.phone) : '-';
+    document.getElementById('infoStage').textContent = userData.stage || '-';
+    document.getElementById('infoGrade').textContent = userData.grade || '-';
+    document.getElementById('infoSubjects').textContent = (userData.subjects || []).join('، ') || '-';
+    if (userData.phone) document.getElementById('profPhone').value = atob(userData.phone);
+  }
+}
+
+// ============================================
+// 6. المواد (Checkbox)
+// ============================================
+function loadSubjects() {
+  const container = document.getElementById('subjectsCheckbox');
+  container.innerHTML = '';
+  const stage = document.getElementById('profStage').value;
+  (subjectsByStage[stage] || []).forEach(s => {
+    const checked = userData?.subjects?.includes(s) || false;
+    container.innerHTML += `<label style="display:flex;align-items:center;gap:3px;font-size:11px;cursor:pointer;background:#f8fafc;padding:2px 6px;border-radius:4px;">
+      <input type="checkbox" value="${s}" class="sub-check" ${checked?'checked':''} style="width:14px;height:14px;">
+      <span>${s}</span>
+    </label>`;
+  });
+}
+
+// ============================================
+// 7. حفظ الملف الشخصي
+// ============================================
+function saveProfile() {
+  if (!currentUser) return showToast('⚠️ سجل دخول أولاً', 'error');
+  const stage = document.getElementById('profStage').value;
+  const grade = document.getElementById('profGrade').value;
+  const phone = document.getElementById('profPhone').value;
+  const subjects = Array.from(document.querySelectorAll('.sub-check:checked')).map(c => c.value);
+  if (!subjects.length) return showToast('⚠️ اختر مادة واحدة على الأقل', 'error');
+  
+  window.set(window.ref(window.db, `users/${currentUser.uid}`), {
+    name: currentUser.displayName, email: currentUser.email,
+    photoURL: currentUser.photoURL, stage, grade,
+    subjects, phone: phone ? btoa(phone) : '',
+    updatedAt: new Date().toISOString()
+  }).then(() => {
+    showToast('✅ تم الحفظ', 'success');
+    renderUser(); updateInfo();
+  }).catch(e => showToast('❌ '+e.message, 'error'));
+}
+
+// ============================================
+// 8. الإدارة - الدخول
+// ============================================
+function checkAdminAccess() {
+  const isAdminUser = currentUser && ADMIN_UIDS.includes(currentUser.uid);
+  if (!currentUser) {
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('adminDenied').style.display = 'none';
+    return;
+  }
+  if (!isAdminUser && !isAdmin) {
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('adminDenied').style.display = 'block';
+  } else if (isAdminUser && !isAdmin) {
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('adminDenied').style.display = 'none';
+  }
+}
+
+function adminLogin() {
+  const pass = document.getElementById('adminPassword').value;
+  if (pass === 'Sigma@2024' && currentUser && ADMIN_UIDS.includes(currentUser.uid)) {
+    isAdmin = true;
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('adminDenied').style.display = 'none';
+    document.getElementById('adminPassword').value = '';
+    loadAdminData();
+    showToast('✅ مرحباً إداري', 'success');
+  } else if (!currentUser || !ADMIN_UIDS.includes(currentUser.uid)) {
+    showToast('⛔ ليس لديك صلاحيات', 'error');
+    document.getElementById('adminDenied').style.display = 'block';
+    document.getElementById('adminLogin').style.display = 'none';
+  } else {
+    showToast('❌ كلمة سر خاطئة', 'error');
+  }
+}
+
+// ============================================
+// 9. الإدارة - تحميل البيانات
+// ============================================
+function loadAdminData() {
+  // المستخدمين
+  window.onValue(window.ref(window.db, 'users'), (snap) => {
+    allUsers = snap.val() || {};
+    updateStats();
+  });
+  // الحصص
+  window.onValue(window.ref(window.db, 'schedules'), (snap) => {
+    const d = snap.val();
+    document.getElementById('statSchedules').textContent = d ? Object.keys(d).length : 0;
+  });
+  // الملفات
+  window.onValue(window.ref(window.db, 'materials'), (snap) => {
+    const d = snap.val();
+    document.getElementById('statMaterials').textContent = d ? Object.keys(d).length : 0;
+  });
+  // الشكاوى
+  window.onValue(window.ref(window.db, 'complaints'), (snap) => {
+    complaints = [];
+    const d = snap.val();
+    if (d) Object.keys(d).forEach(k => complaints.push({id:k,...d[k]}));
+    renderComplaints();
+  });
+  // القوائم
+  loadList('schedules', 'scheduleList', renderSchItem);
+  loadList('notifications', 'notifList', renderNotifItem);
+  loadList('news', 'newsList', renderNewsItem);
+  loadList('materials', 'matList', renderMatItem);
+  loadContacts();
+}
+
+function loadList(path, containerId, fn) {
+  window.onValue(window.ref(window.db, path), (snap) => {
+    const d = snap.val();
+    const c = document.getElementById(containerId);
+    c.innerHTML = '';
+    if (!d) return;
+    Object.keys(d).reverse().forEach(k => c.innerHTML += fn(k, d[k]));
+  });
+}
+
+function renderSchItem(k, i) { return `<div class="manage-item"><span>${i.subject||'صورة'} - ${i.day} ${i.time||''}</span><span class="del" onclick="delItem('schedules','${k}')"><i class="fa-solid fa-trash"></i></span></div>`; }
+function renderNotifItem(k, i) { return `<div class="manage-item"><span>${i.title}</span><span class="del" onclick="delItem('notifications','${k}')"><i class="fa-solid fa-trash"></i></span></div>`; }
+function renderNewsItem(k, i) { return `<div class="manage-item"><span>${i.title}</span><span class="del" onclick="delItem('news','${k}')"><i class="fa-solid fa-trash"></i></span></div>`; }
+function renderMatItem(k, i) { return `<div class="manage-item"><span>${i.title}</span><span class="del" onclick="delItem('materials','${k}')"><i class="fa-solid fa-trash"></i></span></div>`; }
+
+function delItem(path, key) {
+  if (!isAdmin) return;
+  if (confirm('حذف؟')) {
+    window.remove(window.ref(window.db, `${path}/${key}`));
+    showToast('✅ تم الحذف', 'success');
+  }
+}
+
+// ============================================
+// 10. الإحصائيات الحقيقية
+// ============================================
+function updateStats() {
+  const users = allUsers;
+  const total = Object.keys(users).length;
+  let active = 0, boys = 0, girls = 0;
+  const dayAgo = Date.now() - 24*60*60*1000;
+  Object.keys(users).forEach(k => {
+    const u = users[k];
+    if (u.online === true || (u.lastSeen && u.lastSeen > dayAgo)) active++;
+    const name = (u.name || '').toLowerCase();
+    if (['ahmed','mohamed','khaled','ali','hassan','mostafa','omar','youssef','ibrahim'].some(n => name.includes(n))) boys++;
+    else if (name) girls++;
+  });
+  document.getElementById('statUsers').textContent = total;
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statBoys').textContent = boys || Math.floor(total*0.6);
+  document.getElementById('statGirls').textContent = girls || Math.floor(total*0.4);
+}
+
+function showUsersList() {
+  if (!isAdmin) return;
+  let msg = '👥 قائمة الطلاب:\n\n';
+  let c = 0;
+  Object.keys(allUsers).forEach(k => {
+    const u = allUsers[k];
+    c++;
+    const phone = u.phone ? atob(u.phone) : 'غير مسجل';
+    msg += `${c}. ${u.name||'طالب'}\n   📱 ${phone}\n   📚 ${(u.subjects||[]).join(', ')||'لا يوجد'}\n\n`;
+  });
+  alert(msg || 'لا يوجد طلاب');
+}
+
+// ============================================
+// 11. الشكاوى
+// ============================================
+function renderComplaints() {
+  const c = document.getElementById('complaintsList');
+  if (!complaints.length) { c.innerHTML = '<div class="loading" style="padding:8px;">لا توجد شكاوى</div>'; return; }
+  c.innerHTML = complaints.reverse().map(comp => {
+    const phone = comp.userPhone ? atob(comp.userPhone) : 'غير متوفر';
+    return `<div class="complaint-item">
+      <span class="name">${comp.userName||'طالب'}</span>
+      <span class="phone">📱 ${phone}</span>
+      <span class="date">${comp.date||''}</span>
+      <span class="del" onclick="delComplaint('${comp.id}')"><i class="fa-solid fa-trash"></i></span>
+      <div class="text">${comp.text}</div>
+    </div>`;
+  }).join('');
+}
+
+function delComplaint(id) {
+  if (!isAdmin) return;
+  if (confirm('حذف الشكوى؟')) {
+    window.remove(window.ref(window.db, `complaints/${id}`));
+    showToast('✅ تم الحذف', 'success');
+  }
+}
+
+function sendComplaint() {
+  const text = document.getElementById('complaintText').value;
+  if (!text) return showToast('⚠️ اكتب الشكوى', 'error');
+  if (!currentUser) return showToast('⚠️ سجل دخول', 'error');
+  const phone = userData?.phone || '';
+  window.push(window.ref(window.db, 'complaints'), {
+    text, userId: currentUser.uid, userName: currentUser.displayName,
+    userEmail: currentUser.email, userPhone: phone,
+    date: new Date().toLocaleString('ar-EG'), timestamp: Date.now()
+  });
+  document.getElementById('complaintText').value = '';
+  showToast('✅ تم الإرسال', 'success');
+}
+
+// ============================================
+// 12. أرقام السنتر
+// ============================================
+function loadContacts() {
+  window.onValue(window.ref(window.db, 'contacts'), (snap) => {
+    contacts = [];
+    const d = snap.val();
+    if (d) Object.keys(d).forEach(k => contacts.push({id:k,...d[k]}));
+    renderContacts();
+  });
+}
+
+function renderContacts() {
+  const c = document.getElementById('contactsList');
+  const cc = document.getElementById('centerContacts');
+  c.innerHTML = contacts.map(ct => `
+    <div class="manage-item">
+      <span>${ct.type==='whatsapp'?'💬':'📞'} ${ct.number}</span>
+      <span class="del" onclick="delContact('${ct.id}')"><i class="fa-solid fa-trash"></i></span>
+    </div>
+  `).join('');
+  cc.innerHTML = contacts.map(ct => `
+    <div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:11px;border-bottom:1px solid #f1f5f9;">
+      <i class="${ct.type==='whatsapp'?'fa-brands fa-whatsapp':'fa-solid fa-phone'}" style="color:${ct.type==='whatsapp'?'#22c55e':'#2563eb'};"></i>
+      <span>${ct.number}</span>
+    </div>
+  `).join('') || '<div style="font-size:11px;color:#94a3b8;">لا توجد أرقام</div>';
+}
+
+function addContact() {
+  if (!isAdmin) return;
+  const num = document.getElementById('newContact').value;
+  const type = document.getElementById('contactType').value;
+  if (!num) return showToast('⚠️ أدخل الرقم', 'error');
+  window.push(window.ref(window.db, 'contacts'), {number:num, type});
+  document.getElementById('newContact').value = '';
+  showToast('✅ تم الإضافة', 'success');
+}
+
+function delContact(id) {
+  if (!isAdmin) return;
+  if (confirm('حذف الرقم؟')) {
+    window.remove(window.ref(window.db, `contacts/${id}`));
+    showToast('✅ تم الحذف', 'success');
+  }
+}
+
+// ============================================
+// 13. الجدول - العرض والفلترة
+// ============================================
+function filterSchedule(type) {
+  currentFilter = type;
+  document.querySelectorAll('#tab-schedule .option-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn'+type.charAt(0).toUpperCase()+type.slice(1)).classList.add('active');
+  renderSchedule();
+}
+
+function renderSchedule() {
+  const c = document.getElementById('scheduleContainer');
+  if (!scheduleData.length) { c.innerHTML = '<div class="loading">لا توجد حصص</div>'; return; }
+  const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const today = days[new Date().getDay()];
+  const tomorrow = days[(new Date().getDay()+1)%7];
+  let items = [...scheduleData];
+  if (currentFilter === 'today') items = items.filter(i => i.day === today);
+  else if (currentFilter === 'tomorrow') items = items.filter(i => i.day === tomorrow);
+  if (!items.length) { c.innerHTML = '<div class="loading">لا توجد حصص</div>'; return; }
+  c.innerHTML = items.map(i => `
+    <div class="card" style="margin-bottom:4px;">
+      ${i.imageData ? `<img src="${i.imageData}" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:4px;">` : ''}
+      <div style="display:flex;justify-content:space-between;">
+        <div>
+          <div style="display:flex;gap:4px;font-size:9px;color:#2563eb;">
+            <span>${i.day}</span>
+            <span>${i.stage||''}</span>
           </div>
+          <div style="font-weight:700;font-size:13px;">${i.subject||'صورة'}</div>
+          <div style="font-size:11px;color:#64748b;">${i.teacher||''}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-weight:700;color:#d97706;">${i.time||''}</div>
+          <div style="font-size:9px;color:#94a3b8;">${i.room||''}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
 
-          <!-- Complaints Management -->
-          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-message text-amber-500"></i> رسائل الشكاوى والاستفسارات</h4>
-            <div id="complaintsList" class="space-y-2 max-h-60 overflow-y-auto">
-              <div class="text-center py-4 text-slate-400 text-sm">لا توجد شكاوى</div>
+// ============================================
+// 14. حصصي اليوم
+// ============================================
+function renderMySchedule() {
+  const c = document.getElementById('myScheduleToday');
+  if (!scheduleData.length || !userData) {
+    c.innerHTML = '<div class="loading" style="padding:8px;">لا توجد حصص اليوم</div>';
+    return;
+  }
+  const today = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
+  const my = scheduleData.filter(i =>
+    i.day === today &&
+    (!i.stage || i.stage === userData.stage) &&
+    (!i.subject || (userData.subjects || []).includes(i.subject))
+  );
+  if (!my.length) { c.innerHTML = '<div style="text-align:center;padding:8px;color:#94a3b8;font-size:11px;">📭 لا توجد حصص لك اليوم</div>'; return; }
+  c.innerHTML = my.map(i => `
+    <div class="today-item">
+      <div><span style="font-weight:700;">${i.subject}</span> <span style="color:#64748b;font-size:10px;">${i.teacher||''}</span></div>
+      <div class="time">${i.time||''}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// 15. تحويل الملفات لـ Base64
+// ============================================
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.readAsDataURL(file);
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+  });
+}
+
+// ============================================
+// 16. إدارة الحصص - الإضافة
+// ============================================
+function setSchOpt(opt) {
+  schOption = opt;
+  document.querySelectorAll('#tab-admin .option-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('schOpt'+opt.charAt(0).toUpperCase()+opt.slice(1)).classList.add('active');
+  document.getElementById('schFields').style.display = (opt === 'image') ? 'none' : 'block';
+  document.getElementById('schImageDiv').style.display = (opt === 'text') ? 'none' : 'block';
+}
+
+async function addSchedule() {
+  if (!isAdmin) return;
+  let day='', subject='', teacher='', time='', room='', stage='', imageData='';
+  if (schOption !== 'image') {
+    day = document.getElementById('schDay').value;
+    subject = document.getElementById('schSubject').value;
+    teacher = document.getElementById('schTeacher').value;
+    time = document.getElementById('schTime').value;
+    room = document.getElementById('schRoom').value;
+    stage = document.getElementById('schStage').value;
+    if (schOption === 'full' && !subject) return showToast('⚠️ أدخل المادة', 'error');
+  }
+  if (schOption !== 'text') {
+    const file = document.getElementById('schImageFile').files[0];
+    if (file) {
+      imageData = await fileToBase64(file);
+      if (imageData.length > 1000000) return showToast('⚠️ الصورة كبيرة جداً', 'error');
+    } else if (schOption === 'image') {
+      return showToast('⚠️ اختر صورة', 'error');
+    }
+  }
+  if (!subject && !imageData) return showToast('⚠️ أدخل مادة أو صورة', 'error');
+  
+  await window.push(window.ref(window.db, 'schedules'), {day,subject,teacher,time,room,stage,imageData,createdAt:new Date().toISOString()});
+  showToast('✅ تم الإضافة', 'success');
+  document.getElementById('schSubject').value = '';
+  document.getElementById('schTeacher').value = '';
+  document.getElementById('schTime').value = '';
+  document.getElementById('schRoom').value = '';
+  document.getElementById('schImageFile').value = '';
+}
+
+// ============================================
+// 17. إدارة الإشعارات
+// ============================================
+async function sendNotif() {
+  if (!isAdmin) return;
+  const title = document.getElementById('notifTitle').value;
+  const body = document.getElementById('notifBody').value;
+  if (!title || !body) return showToast('⚠️ اكتب عنوان ونص', 'error');
+  const stage = document.getElementById('notifStage').value;
+  const grade = document.getElementById('notifGrade').value;
+  const subject = document.getElementById('notifSubject')?.value || '';
+  let imageData = '';
+  const file = document.getElementById('notifImage').files[0];
+  if (file) { imageData = await fileToBase64(file); if (imageData.length > 1000000) return showToast('⚠️ الصورة كبيرة', 'error'); }
+  
+  await window.push(window.ref(window.db, 'notifications'), {
+    title, body, stage, grade, subject, imageData,
+    date: new Date().toLocaleDateString('ar-EG'),
+    time: new Date().toLocaleTimeString('ar-EG'),
+    createdAt: new Date().toISOString()
+  });
+  showToast('✅ تم الإرسال', 'success');
+  document.getElementById('notifTitle').value = '';
+  document.getElementById('notifBody').value = '';
+  document.getElementById('notifImage').value = '';
+}
+
+// ============================================
+// 18. إدارة الأخبار
+// ============================================
+async function addNews() {
+  if (!isAdmin) return;
+  const title = document.getElementById('newsTitle').value;
+  const content = document.getElementById('newsContent').value;
+  if (!title || !content) return showToast('⚠️ اكتب عنوان ومحتوى', 'error');
+  let imageData = '';
+  const file = document.getElementById('newsImage').files[0];
+  if (file) { imageData = await fileToBase64(file); if (imageData.length > 1000000) return showToast('⚠️ الصورة كبيرة', 'error'); }
+  await window.push(window.ref(window.db, 'news'), {
+    title, content, imageData,
+    date: new Date().toLocaleDateString('ar-EG'),
+    createdAt: new Date().toISOString()
+  });
+  showToast('✅ تم النشر', 'success');
+  document.getElementById('newsTitle').value = '';
+  document.getElementById('newsContent').value = '';
+  document.getElementById('newsImage').value = '';
+}
+
+// ============================================
+// 19. إدارة الملفات
+// ============================================
+async function uploadMaterial() {
+  if (!isAdmin) return;
+  const title = document.getElementById('matTitle').value;
+  const subject = document.getElementById('matSubject').value;
+  const type = document.getElementById('matType').value;
+  const file = document.getElementById('matFile').files[0];
+  if (!title || !file) return showToast('⚠️ أدخل اسم واختر ملف', 'error');
+  if (file.size > 2000000) return showToast('⚠️ الملف كبير جداً (حد 2 ميجا)', 'error');
+  const fileData = await fileToBase64(file);
+  await window.push(window.ref(window.db, 'materials'), {
+    title, subject, type, fileData,
+    fileName: file.name, fileSize: file.size,
+    date: new Date().toLocaleDateString('ar-EG'),
+    createdAt: new Date().toISOString()
+  });
+  showToast('✅ تم الرفع', 'success');
+  document.getElementById('matTitle').value = '';
+  document.getElementById('matSubject').value = '';
+  document.getElementById('matFile').value = '';
+}
+
+// ============================================
+// 20. المستمعات الفورية
+// ============================================
+function initListeners() {
+  // الجدول
+  window.onValue(window.ref(window.db, 'schedules'), (snap) => {
+    scheduleData = [];
+    const d = snap.val();
+    if (d) Object.keys(d).forEach(k => scheduleData.push({id:k,...d[k]}));
+    renderSchedule();
+    renderMySchedule();
+  });
+
+  // الأخبار
+  window.onValue(window.ref(window.db, 'news'), (snap) => {
+    const d = snap.val();
+    const h = document.getElementById('homeNewsContainer');
+    const a = document.getElementById('allNewsContainer');
+    h.innerHTML = ''; a.innerHTML = '';
+    if (!d) {
+      h.innerHTML = '<div class="loading" style="padding:8px;">لا توجد أخبار</div>';
+      a.innerHTML = '<div class="loading">لا توجد أخبار</div>';
+      return;
+    }
+    Object.keys(d).reverse().forEach((k, i) => {
+      const item = d[k];
+      const html = `
+        <div class="card" style="margin-bottom:4px;padding:8px;">
+          ${item.imageData ? `<img src="${item.imageData}" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:4px;">` : ''}
+          <div style="font-weight:700;font-size:13px;">${item.title}</div>
+          <div style="font-size:11px;color:#64748b;">${item.content}</div>
+          <div style="font-size:9px;color:#94a3b8;margin-top:2px;">${item.date||''}</div>
+        </div>
+      `;
+      if (i < 2) h.innerHTML += html;
+      a.innerHTML += html;
+    });
+  });
+
+  // المكتبة
+  window.onValue(window.ref(window.db, 'materials'), (snap) => {
+    const d = snap.val();
+    const c = document.getElementById('libraryContainer');
+    c.innerHTML = '';
+    if (!d) { c.innerHTML = '<div class="loading">لا توجد ملفات</div>'; return; }
+    Object.keys(d).reverse().forEach(k => {
+      const item = d[k];
+      const icon = item.type === 'pdf' ? 'fa-file-pdf' : 'fa-image';
+      const color = item.type === 'pdf' ? '#ef4444' : '#22c55e';
+      const link = item.fileData ? item.fileData : '#';
+      c.innerHTML += `
+        <div class="card" style="margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:32px;height:32px;border-radius:6px;background:${item.type==='pdf'?'#fef2f2':'#f0fdf4'};display:flex;align-items:center;justify-content:center;color:${color};">
+              <i class="fa-solid ${icon}"></i>
             </div>
-          </div>
-
-          <!-- Add Schedule with Options -->
-          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-plus-circle text-blue-600"></i> إضافة حصة جديدة</h4>
-            
-            <!-- Options -->
-            <div class="flex gap-2">
-              <button onclick="setScheduleOption('full')" id="schOptFull" class="option-btn active">📝 ملء الحقول مع صورة</button>
-              <button onclick="setScheduleOption('text')" id="schOptText" class="option-btn">📝 ملء الحقول فقط</button>
-              <button onclick="setScheduleOption('image')" id="schOptImage" class="option-btn">🖼️ صورة فقط</button>
-            </div>
-
-            <div id="scheduleFullFields">
-              <div class="grid grid-cols-2 gap-2">
-                <select id="schDay" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                  <option value="الأحد">الأحد</option>
-                  <option value="الإثنين">الإثنين</option>
-                  <option value="الثلاثاء">الثلاثاء</option>
-                  <option value="الأربعاء">الأربعاء</option>
-                  <option value="الخميس">الخميس</option>
-                  <option value="الجمعة">الجمعة</option>
-                  <option value="السبت">السبت</option>
-                </select>
-                <input type="text" id="schSubject" placeholder="المادة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-              </div>
-              <div class="grid grid-cols-2 gap-2 mt-2">
-                <input type="text" id="schTeacher" placeholder="اسم المدرس" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                <input type="time" id="schTime" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-              </div>
-              <div class="grid grid-cols-2 gap-2 mt-2">
-                <input type="text" id="schRoom" placeholder="القاعة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                <select id="schStage" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                  <option value="ثانوي">ثانوي</option>
-                  <option value="إعدادي">إعدادي</option>
-                </select>
-              </div>
-            </div>
-
-            <div id="scheduleImageField">
-              <label class="text-xs text-slate-500 font-bold">صورة توضيحية:</label>
-              <input type="file" id="schImageFile" accept="image/*" class="w-full text-sm mt-1 p-2 bg-slate-50 rounded-xl border">
-            </div>
-
-            <button onclick="addScheduleItem()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
-              <i class="fa-solid fa-save"></i> حفظ الحصة
-            </button>
-            <div id="scheduleManageList" class="mt-3 space-y-2"></div>
-          </div>
-
-          <!-- Send Notification with Image -->
-          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار موجه</h4>
-            <input type="text" id="notifTitle" placeholder="عنوان التنبيه" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-            <textarea id="notifBody" placeholder="نص التنبيه..." class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm h-16 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
             <div>
-              <label class="text-xs text-slate-500 font-bold">صورة للإشعار (اختياري):</label>
-              <input type="file" id="notifImageFile" accept="image/*" class="w-full text-sm mt-1 p-2 bg-slate-50 rounded-xl border">
+              <div style="font-weight:700;font-size:12px;">${item.title}</div>
+              <div style="font-size:9px;color:#94a3b8;">${item.subject||''}</div>
             </div>
-            <div class="grid grid-cols-3 gap-2">
-              <select id="notifStage" class="p-2.5 bg-slate-50 border rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
-                <option value="الكل">كل المراحل</option>
-                <option value="ثانوي">ثانوي</option>
-                <option value="إعدادي">إعدادي</option>
-              </select>
-              <select id="notifGrade" class="p-2.5 bg-slate-50 border rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
-                <option value="الكل">كل الصفوف</option>
-                <option value="1">الأول</option>
-                <option value="2">الثاني</option>
-                <option value="3">الثالث</option>
-              </select>
-              <input type="text" id="notifSubject" placeholder="المادة" class="p-2.5 bg-slate-50 border rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
-            </div>
-            <button onclick="sendNotification()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
-              <i class="fa-solid fa-bell"></i> إرسال الإشعار
-            </button>
-            <div id="notificationsManageList" class="mt-3 space-y-2"></div>
           </div>
-
-          <!-- Manage News -->
-          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر جديد</h4>
-            <input type="text" id="newsTitle" placeholder="عنوان الخبر" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-            <textarea id="newsContent" placeholder="تفاصيل الخبر..." class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm h-16 focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
-            <input type="file" id="newsImageFile" accept="image/*" class="w-full text-sm p-2 bg-slate-50 rounded-xl border">
-            <button onclick="addNewsItem()" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
-              <i class="fa-solid fa-share"></i> نشر الخبر
-            </button>
-            <div id="newsManageList" class="mt-3 space-y-2"></div>
-          </div>
-
-          <!-- Manage Materials -->
-          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة أو ملف</h4>
-            <input type="text" id="matTitle" placeholder="اسم الملف" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-purple-500 outline-none">
-            <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="matSubject" placeholder="المادة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-purple-500 outline-none">
-              <select id="matType" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-purple-500 outline-none">
-                <option value="pdf">PDF</option>
-                <option value="image">صورة</option>
-              </select>
-            </div>
-            <input type="file" id="matFile" class="w-full text-sm p-2 bg-slate-50 rounded-xl border">
-            <button onclick="uploadMaterialFile()" class="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
-              <i class="fa-solid fa-upload"></i> رفع المستند
-            </button>
-            <div id="materialsManageList" class="mt-3 space-y-2"></div>
-          </div>
-
-          <!-- Manage Contacts -->
-          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-address-book text-green-600"></i> إدارة أرقام السنتر</h4>
-            <div class="flex gap-2">
-              <input type="text" id="newContact" placeholder="رقم الهاتف" class="flex-1 p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
-              <select id="contactType" class="p-2.5 bg-slate-50 border rounded-xl text-sm">
-                <option value="phone">📞 هاتف</option>
-                <option value="whatsapp">💬 واتساب</option>
-              </select>
-              <button onclick="addContact()" class="bg-green-600 text-white px-4 rounded-xl hover:bg-green-700 transition">
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
-            <div id="contactsList" class="space-y-2 mt-2"></div>
-          </div>
+          <a href="${link}" download="${item.fileName||'file'}" style="font-size:11px;color:#2563eb;font-weight:600;text-decoration:none;">
+            <i class="fa-solid fa-download"></i> تحميل
+          </a>
         </div>
-      </section>
-
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 w-full max-w-md bg-white/95 backdrop-blur-sm border-t border-slate-200 py-1.5 px-2 flex justify-around items-center z-30 shadow-lg">
-      <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[10px] font-bold text-blue-600 transition">
-        <i class="fa-solid fa-house text-xl"></i>
-        <span>الرئيسية</span>
-      </button>
-      <button onclick="switchTab('schedule')" id="nav-schedule" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
-        <i class="fa-solid fa-calendar-days text-xl"></i>
-        <span>الجدول</span>
-      </button>
-      <button onclick="switchTab('library')" id="nav-library" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
-        <i class="fa-solid fa-book-open text-xl"></i>
-        <span>المكتبة</span>
-      </button>
-      <button onclick="switchTab('news')" id="nav-news" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
-        <i class="fa-solid fa-newspaper text-xl"></i>
-        <span>الأخبار</span>
-      </button>
-      <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
-        <i class="fa-solid fa-gear text-xl"></i>
-        <span>الإعدادات</span>
-      </button>
-      <button onclick="switchTab('admin')" id="nav-admin" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
-        <i class="fa-solid fa-user-shield text-xl"></i>
-        <span>الإدارة</span>
-      </button>
-    </nav>
-
-  </div>
-
-  <script>
-    // ===== MAIN APPLICATION LOGIC =====
-    let currentUser = null;
-    let currentUserData = null;
-    let scheduleData = [];
-    let currentScheduleFilter = 'today';
-    let isAdminLoggedIn = false;
-    let darkMode = false;
-    let allUsers = {};
-    let contacts = [];
-    let deferredPrompt = null;
-    let scheduleOption = 'full';
-    let complaints = [];
-
-    // ===== ADMIN UIDS =====
-    const ADMIN_UIDS = [
-      'WCyUdR31uZOxJwtYzXx85K7E0Cf2',
-      'ADMIN_UID_2',
-      'ADMIN_UID_3'
-    ];
-
-    // Subject lists by stage
-    const subjectsByStage = {
-      'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية', 'فرنسية', 'تاريخ', 'جغرافيا', 'فلسفة', 'علم نفس'],
-      'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية', 'دراسات', 'حاسب آلي', 'تربية دينية']
-    };
-
-    // ===== Toast Notifications =====
-    function showToast(message, type = 'success') {
-      const existing = document.querySelector('.toast');
-      if (existing) existing.remove();
-      
-      const toast = document.createElement('div');
-      toast.className = `toast toast-${type}`;
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.5s';
-        setTimeout(() => toast.remove(), 500);
-      }, 3000);
-    }
-
-    // ===== PWA Install =====
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
+      `;
     });
+  });
 
-    function askInstallPWA() {
-      if (deferredPrompt) {
-        const confirmInstall = confirm('📱 هل تريد تثبيت تطبيق سنتر سيجما على جهازك؟');
-        if (confirmInstall) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              showToast('✅ تم تثبيت التطبيق بنجاح!', 'success');
-            } else {
-              showToast('تم تخطي التثبيت', 'warning');
-            }
-            deferredPrompt = null;
-          });
+  // الإشعارات
+  window.onValue(window.ref(window.db, 'notifications'), (snap) => {
+    const d = snap.val();
+    const c = document.getElementById('notificationsContainer');
+    const badge = document.getElementById('notifBadge');
+    c.innerHTML = '';
+    if (!d) { badge.classList.remove('show'); c.innerHTML = '<div class="loading" style="color:#94a3b8;"><i class="fa-regular fa-bell-slash" style="font-size:24px;display:block;margin-bottom:4px;"></i>لا توجد إشعارات</div>'; return; }
+    let has = false;
+    badge.classList.add('show');
+    Object.keys(d).reverse().forEach((k, i) => {
+      const item = d[k];
+      let targeted = true;
+      if (userData) {
+        if (item.stage !== 'الكل' && item.stage !== userData.stage) targeted = false;
+        if (item.grade !== 'الكل' && item.grade !== userData.grade) targeted = false;
+      }
+      if (targeted) {
+        has = true;
+        c.innerHTML += `
+          <div class="card" style="margin-bottom:4px;">
+            <div style="display:flex;gap:8px;align-items:start;">
+              ${item.imageData ? `<img src="${item.imageData}" style="width:50px;height:50px;border-radius:6px;object-fit:cover;flex-shrink:0;">` : ''}
+              <div style="flex:1;">
+                <div style="font-weight:700;font-size:12px;">${item.title}</div>
+                <div style="font-size:11px;color:#64748b;">${item.body}</div>
+                <div style="font-size:9px;color:#94a3b8;margin-top:2px;">${item.stage} • الصف ${item.grade}</div>
+              </div>
+            </div>
+          </div>
+        `;
+        if (i === 0 && Notification.permission === 'granted' && document.hidden) {
+          new Notification(`📚 سيجما: ${item.title}`, { body: item.body, icon: 'https://cdn-icons-png.flaticon.com/512/3239/3239952.png', vibrate: [200,100,200] });
         }
       }
-    }
-
-    // ===== Request Notification Permission =====
-    if ("Notification" in window) {
-      Notification.requestPermission();
-    }
-
-    // ===== TAB SWITCHING =====
-    function switchTab(tabId) {
-      if (tabId === 'admin') {
-        const isAdmin = currentUser && ADMIN_UIDS.includes(currentUser.uid);
-        if (!isAdmin && !isAdminLoggedIn) {
-          document.getElementById('adminAccessDenied').classList.remove('hidden');
-          document.getElementById('adminLogin').classList.add('hidden');
-          document.getElementById('adminPanel').classList.add('hidden');
-        } else {
-          document.getElementById('adminAccessDenied').classList.add('hidden');
-          if (!isAdminLoggedIn) {
-            document.getElementById('adminLogin').classList.remove('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-          } else {
-            document.getElementById('adminLogin').classList.add('hidden');
-            document.getElementById('adminPanel').classList.remove('hidden');
-          }
-        }
-      }
-
-      const tabs = ['home', 'schedule', 'library', 'news', 'notifications', 'settings', 'admin'];
-      tabs.forEach(t => {
-        const elem = document.getElementById(`tab-${t}`);
-        const nav = document.getElementById(`nav-${t}`);
-        if(elem) elem.classList.toggle('hidden', t !== tabId);
-        if(nav) {
-          nav.classList.toggle('text-blue-600', t === tabId);
-          nav.classList.toggle('text-slate-400', t !== tabId);
-        }
-      });
-    }
-
-    // ===== AUTHENTICATION =====
-    window.addEventListener('load', () => {
-      window.onAuthStateChanged(window.auth, async (user) => {
-        if (user) {
-          currentUser = user;
-          const userRef = window.ref(window.db, `users/${user.uid}`);
-          window.onValue(userRef, (snapshot) => {
-            currentUserData = snapshot.val();
-            renderUserCard();
-            updateStudentInfo();
-            
-            if (!currentUserData) {
-              setTimeout(() => {
-                switchTab('settings');
-                showToast('📝 يرجى إكمال بيانات ملفك الشخصي', 'warning');
-              }, 1000);
-            } else {
-              if (!sessionStorage.getItem('pwaAsked')) {
-                setTimeout(() => {
-                  askInstallPWA();
-                  sessionStorage.setItem('pwaAsked', 'true');
-                }, 3000);
-              }
-            }
-          });
-          
-          trackUserStatus(user);
-        } else {
-          currentUser = null;
-          currentUserData = null;
-          renderUserCard();
-          isAdminLoggedIn = false;
-          document.getElementById('adminLogin').classList.remove('hidden');
-          document.getElementById('adminPanel').classList.add('hidden');
-          document.getElementById('adminAccessDenied').classList.add('hidden');
-        }
-      });
-      initRealtimeListeners();
-      updateCounts();
-      loadContacts();
-      loadComplaints();
     });
+    if (!has) { badge.classList.remove('show'); c.innerHTML = '<div class="loading" style="color:#94a3b8;"><i class="fa-regular fa-bell-slash" style="font-size:24px;display:block;margin-bottom:4px;"></i>لا توجد إشعارات لك</div>'; }
+  });
+
+  // العدادات
+  window.onValue(window.ref(window.db, 'schedules'), (snap) => {
+    const d = snap.val();
+    const today = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
+    let count = 0;
+    if (d) Object.keys(d).forEach(k => { if (d[k].day === today) count++; });
+    document.getElementById('todayCount').textContent = count;
+  });
+  window.onValue(window.ref(window.db, 'materials'), (snap) => {
+    const d = snap.val();
+    document.getElementById('materialCount').textContent = d ? Object.keys(d).length : 0;
+  });
+  window.onValue(window.ref(window.db, 'notifications'), (snap) => {
+    const d = snap.val();
+    document.getElementById('notifCount').textContent = d ? Object.keys(d).length : 0;
+  });
+}
+
+// ============================================
+// 21. التحميل النهائي
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  // تفعيل التبويب الأول
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-home').classList.add('active');
+  
+  // تحميل المواد
+  loadSubjects();
+  
+  // بدء المستمعات
+  initListeners();
+  
+  // تحميل الأرقام
+  loadContacts();
+  
+  console.log('🚀 سنتر سيجما - جاهز!');
+});
+</script>
 
-    function trackUserStatus(user) {
-      const statusRef = window.ref(window.db, `users/${user.uid}/online`);
-      window.set(statusRef, true);
-      window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
-      
-      window.addEventListener('beforeunload', () => {
-        window.set(statusRef, false);
-      });
-    }
-
-    function loginGoogle() {
-      window.signInWithPopup(window.auth, window.provider)
-        .catch(err => showToast('❌ خطأ في الدخول: ' + err.message, 'error'));
-    }
-
-    function logoutUser() {
-      if (currentUser) {
-        window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
-      }
-      window.signOut(window.auth).then(() => {
-        showToast('👋 تم تسجيل الخروج بنجاح', 'warning');
-        renderUserCard();
-      });
-    }
-
-    function openProfileModal() {
-      if (!currentUser) {
-        showToast('⚠️ يرجى تسجيل الدخول أولاً!', 'error');
-        return;
-      }
-      switchTab('settings');
-      showToast('✏️ قم بتعديل بياناتك في قسم الإعدادات', 'warning');
-    }
-
-    function renderUserCard() {
-      const avatar = document.getElementById('userAvatar');
-      const name = document.getElementById('userName');
-      const subtitle = document.getElementById('userSubtitle');
-      const subjectsDiv = document.getElementById('userSubjects');
-      const loginBtn = document.getElementById('loginBtn');
-
-      if (currentUser && currentUserData) {
-        avatar.src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
-        avatar.style.display = 'block';
-        name.textContent = `مرحباً بك، ${currentUser.displayName || 'طالب'}`;
-        subtitle.textContent = `${currentUserData.stage || ''} • الصف ${currentUserData.grade || ''}`;
-        loginBtn.textContent = 'خروج';
-        loginBtn.onclick = logoutUser;
-        loginBtn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition';
-        
-        if (currentUserData.subjects && currentUserData.subjects.length > 0) {
-          subjectsDiv.innerHTML = currentUserData.subjects.map(s => 
-            `<span class="subject-chip bg-white/20 text-white">${s}</span>`
-          ).join('');
-        } else {
-          subjectsDiv.innerHTML = '';
-        }
-      } else {
-        avatar.style.display = 'none';
-        name.textContent = 'مرحباً بك';
-        subtitle.textContent = 'سجل دخولك للمتابعة';
-        subjectsDiv.innerHTML = '';
-        loginBtn.textContent = 'دخول';
-        loginBtn.onclick = loginGoogle;
-        loginBtn.className = 'bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-4 py-2 rounded-xl transition';
-      }
-    }
-
-    function updateStudentInfo() {
-      if (currentUser && currentUserData) {
-        document.getElementById('infoName').textContent = currentUser.displayName || '-';
-        document.getElementById('infoEmail').textContent = currentUser.email || '-';
-        document.getElementById('infoPhone').textContent = currentUserData.phone || '-';
-        document.getElementById('infoStage').textContent = currentUserData.stage || '-';
-        document.getElementById('infoGrade').textContent = currentUserData.grade || '-';
-        document.getElementById('infoSubjects').textContent = currentUserData.subjects ? currentUserData.subjects.join('، ') : '-';
-        
-        // Pre-fill phone in settings
-        if (currentUserData.phone) {
-          document.getElementById('profPhone').value = currentUserData.phone;
-        }
-      }
-    }
-
-    // ===== SUBJECTS CHECKBOX =====
-    function loadSubjectsCheckbox() {
-      const container = document.getElementById('subjectsCheckbox');
-      container.innerHTML = '';
-      
-      const stage = document.getElementById('profStage').value;
-      const subjects = subjectsByStage[stage] || [];
-      
-      subjects.forEach(subject => {
-        const checked = currentUserData?.subjects?.includes(subject) || false;
-        container.innerHTML += `
-          <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl text-sm cursor-pointer hover:bg-slate-100 transition">
-            <input type="checkbox" value="${subject}" class="subject-check w-4 h-4 text-blue-600" ${checked ? 'checked' : ''}>
-            <span>${subject}</span>
-          </label>
-        `;
-      });
-      
-      document.getElementById('profStage').onchange = loadSubjectsCheckbox;
-    }
-
-    // ===== SAVE STUDENT PROFILE =====
-    function saveStudentProfile() {
-      if (!currentUser) {
-        showToast('⚠️ يرجى تسجيل الدخول أولاً!', 'error');
-        return;
-      }
-      
-      const stage = document.getElementById('profStage').value;
-      const grade = document.getElementById('profGrade').value;
-      const phone = document.getElementById('profPhone').value;
-      const checkedBoxes = document.querySelectorAll('.subject-check:checked');
-      const subjects = Array.from(checkedBoxes).map(cb => cb.value);
-
-      if (subjects.length === 0) {
-        showToast('⚠️ يرجى اختيار مادة واحدة على الأقل!', 'error');
-        return;
-      }
-
-      // تشفير رقم الهاتف بشكل بسيط (يمكن تحسينه)
-      const encryptedPhone = phone ? btoa(phone) : '';
-
-      window.set(window.ref(window.db, `users/${currentUser.uid}`), {
-        name: currentUser.displayName,
-        email: currentUser.email,
-        photoURL: currentUser.photoURL,
-        stage, 
-        grade, 
-        subjects,
-        phone: encryptedPhone, // تخزين مشفر
-        updatedAt: new Date().toISOString()
-      }).then(() => {
-        showToast('✅ تم حفظ بيانات ملفك بنجاح!', 'success');
-        renderUserCard();
-        updateStudentInfo();
-      }).catch(err => {
-        showToast('❌ حدث خطأ: ' + err.message, 'error');
-      });
-    }
-
-    // ===== SCHEDULE OPTIONS =====
-    function setScheduleOption(option) {
-      scheduleOption = option;
-      document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('active'));
-      
-      if (option === 'full') {
-        document.getElementById('schOptFull').classList.add('active');
-        document.getElementById('scheduleFullFields').style.display = 'block';
-        document.getElementById('scheduleImageField').style.display = 'block';
-      } else if (option === 'text') {
-        document.getElementById('schOptText').classList.add('active');
-        document.getElementById('scheduleFullFields').style.display = 'block';
-        document.getElementById('scheduleImageField').style.display = 'none';
-      } else {
-        document.getElementById('schOptImage').classList.add('active');
-        document.getElementById('scheduleFullFields').style.display = 'none';
-        document.getElementById('scheduleImageField').style.display = 'block';
-      }
-    }
-
-    // ===== CONTACTS MANAGEMENT =====
-    function loadContacts() {
-      window.onValue(window.ref(window.db, 'contacts'), (snapshot) => {
-        const data = snapshot.val();
-        contacts = [];
-        if (data) {
-          Object.keys(data).forEach(key => {
-            contacts.push({ id: key, ...data[key] });
-          });
-        }
-        renderContacts();
-      });
-    }
-
-    function renderContacts() {
-      const container = document.getElementById('contactsList');
-      const centerContacts = document.getElementById('centerContacts');
-      
-      if (!container) return;
-      container.innerHTML = '';
-      
-      contacts.forEach(contact => {
-        const icon = contact.type === 'whatsapp' ? 'fa-brands fa-whatsapp text-green-600' : 'fa-solid fa-phone text-blue-600';
-        container.innerHTML += `
-          <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
-            <div class="flex items-center gap-3">
-              <i class="${icon}"></i>
-              <span class="text-sm text-slate-700">${contact.number}</span>
-            </div>
-            <button onclick="deleteContact('${contact.id}')" class="delete-btn text-red-400 hover:text-red-600">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        `;
-      });
-      
-      if (centerContacts) {
-        centerContacts.innerHTML = contacts.map(c => `
-          <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
-            <i class="${c.type === 'whatsapp' ? 'fa-brands fa-whatsapp text-green-600' : 'fa-solid fa-phone text-blue-600'}"></i>
-            <span class="text-sm text-slate-700">${c.number}</span>
-          </div>
-        `).join('') || '<p class="text-sm text-slate-400 text-center">لا توجد أرقام مسجلة</p>';
-      }
-    }
-
-    function addContact() {
-      if (!isAdmin()) {
-        showToast('⚠️ فقط الإداري يمكنه إضافة أرقام!', 'error');
-        return;
-      }
-      const number = document.getElementById('newContact').value;
-      const type = document.getElementById('contactType').value;
-      
-      if (!number) {
-        showToast('⚠️ يرجى إدخال رقم الهاتف!', 'error');
-        return;
-      }
-      
-      window.push(window.ref(window.db, 'contacts'), { number, type });
-      document.getElementById('newContact').value = '';
-      showToast('✅ تم إضافة الرقم بنجاح', 'success');
-    }
-
-    function deleteContact(id) {
-      if (!isAdmin()) {
-        showToast('⚠️ فقط الإداري يمكنه حذف الأرقام!', 'error');
-        return;
-      }
-      if (confirm('هل أنت متأكد من حذف هذا الرقم؟')) {
-        window.remove(window.ref(window.db, `contacts/${id}`));
-        showToast('✅ تم حذف الرقم', 'success');
-      }
-    }
-
-    // ===== COMPLAINTS =====
-    function loadComplaints() {
-      window.onValue(window.ref(window.db, 'complaints'), (snapshot) => {
-        const data = snapshot.val();
-        complaints = [];
-        if (data) {
-          Object.keys(data).forEach(key => {
-            complaints.push({ id: key, ...data[key] });
-          });
-        }
-        renderComplaints();
-      });
-    }
-
-    function renderComplaints() {
-      const container = document.getElementById('complaintsList');
-      if (!container) return;
-      container.innerHTML = '';
-      
-      if (complaints.length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">لا توجد شكاوى</div>';
-        return;
-      }
-      
-      complaints.reverse().forEach(complaint => {
-        // فك تشفير رقم الهاتف
-        let phone = 'غير متوفر';
-        if (complaint.userPhone) {
-          try {
-            phone = atob(complaint.userPhone);
-          } catch(e) {
-            phone = '****';
-          }
-        }
-        
-        container.innerHTML += `
-          <div class="complaint-card">
-            <div class="flex items-center justify-between">
-              <div>
-                <span class="name">${complaint.userName || 'طالب'}</span>
-                <span class="phone">📱 ${phone}</span>
-              </div>
-              <span class="date">${complaint.date || ''}</span>
-            </div>
-            <div class="text">${complaint.text}</div>
-            <button onclick="deleteComplaint('${complaint.id}')" class="text-red-400 text-xs hover:text-red-600 mt-1">
-              <i class="fa-solid fa-trash"></i> حذف
-            </button>
-          </div>
-        `;
-      });
-    }
-
-    function deleteComplaint(id) {
-      if (!isAdmin()) return;
-      if (confirm('هل أنت متأكد من حذف هذه الشكوى؟')) {
-        window.remove(window.ref(window.db, `complaints/${id}`));
-        showToast('✅ تم حذف الشكوى', 'success');
-      }
-    }
-
-    function sendComplaint() {
-      const text = document.getElementById('complaintText').value;
-      if (!text) {
-        showToast('⚠️ يرجى كتابة شكواك أو استفسارك!', 'error');
-        return;
-      }
-      
-      if (!currentUser) {
-        showToast('⚠️ يرجى تسجيل الدخول أولاً!', 'error');
-        return;
-      }
-      
-      const userPhone = currentUserData?.phone || '';
-      
-      window.push(window.ref(window.db, 'complaints'), {
-        text,
-        userId: currentUser.uid,
-        userName: currentUser.displayName,
-        userEmail: currentUser.email,
-        userPhone: userPhone,
-        date: new Date().toLocaleString('ar-EG'),
-        timestamp: Date.now()
-      });
-      
-      document.getElementById('complaintText').value = '';
-      showToast('✅ تم إرسال شكواك بنجاح!', 'success');
-    }
-
-    // ===== ADMIN FUNCTIONS =====
-    function isAdmin() {
-      return currentUser && ADMIN_UIDS.includes(currentUser.uid);
-    }
-
-    function adminLogin() {
-      const password = document.getElementById('adminPassword').value;
-      if (password === 'Sigma@2024' && isAdmin()) {
-        isAdminLoggedIn = true;
-        document.getElementById('adminLogin').classList.add('hidden');
-        document.getElementById('adminPanel').classList.remove('hidden');
-        document.getElementById('adminAccessDenied').classList.add('hidden');
-        document.getElementById('adminPassword').value = '';
-        loadAdminData();
-        showToast('✅ مرحباً بك في لوحة التحكم', 'success');
-      } else if (!isAdmin()) {
-        showToast('⛔ هذا الحساب ليس لديه صلاحيات إدارية!', 'error');
-        document.getElementById('adminAccessDenied').classList.remove('hidden');
-        document.getElementById('adminLogin').classList.add('hidden');
-      } else {
-        showToast('❌ كلمة السر غير صحيحة!', 'error');
-        document.getElementById('adminPassword').value = '';
-      }
-    }
-
-    function loadAdminData() {
-      // Real stats from actual data
-      window.onValue(window.ref(window.db, 'users'), (snapshot) => {
-        const data = snapshot.val();
-        allUsers = data || {};
-        updateRealStats();
-      });
-      
-      window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
-        const data = snapshot.val();
-        const count = data ? Object.keys(data).length : 0;
-        document.getElementById('statTotalSchedules').textContent = count;
-      });
-      
-      window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
-        const data = snapshot.val();
-        const count = data ? Object.keys(data).length : 0;
-        document.getElementById('statTotalMaterials').textContent = count;
-      });
-      
-      loadManageList('schedules', 'scheduleManageList', renderScheduleItem);
-      loadManageList('notifications', 'notificationsManageList', renderNotificationItem);
-      loadManageList('news', 'newsManageList', renderNewsItem);
-      loadManageList('materials', 'materialsManageList', renderMaterialItem);
-    }
-
-    function loadManageList(path, containerId, renderFn) {
-      window.onValue(window.ref(window.db, path), (snapshot) => {
-        const data = snapshot.val();
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = '';
-        
-        if (!data) return;
-        
-        Object.keys(data).reverse().forEach(key => {
-          container.innerHTML += renderFn(key, data[key]);
-        });
-      });
-    }
-
-    function renderScheduleItem(key, item) {
-      return `
-        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
-          <div>
-            <span class="font-bold">${item.subject || 'صورة'}</span>
-            <span class="text-slate-500 text-xs"> - ${item.day} ${item.time || ''}</span>
-          </div>
-          <button onclick="deleteItem('schedules','${key}')" class="delete-btn text-red-400 hover:text-red-600">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      `;
-    }
-
-    function renderNotificationItem(key, item) {
-      return `
-        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
-          <div>
-            <span class="font-bold">${item.title}</span>
-            <span class="text-slate-500 text-xs"> - ${item.stage}</span>
-          </div>
-          <button onclick="deleteItem('notifications','${key}')" class="delete-btn text-red-400 hover:text-red-600">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      `;
-    }
-
-    function renderNewsItem(key, item) {
-      return `
-        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
-          <div>
-            <span class="font-bold">${item.title}</span>
-            <span class="text-slate-500 text-xs"> - ${item.date || ''}</span>
-          </div>
-          <button onclick="deleteItem('news','${key}')" class="delete-btn text-red-400 hover:text-red-600">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      `;
-    }
-
-    function renderMaterialItem(key, item) {
-      return `
-        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
-          <div>
-            <span class="font-bold">${item.title}</span>
-            <span class="text-slate-500 text-xs"> - ${item.subject || ''}</span>
-          </div>
-          <button onclick="deleteItem('materials','${key}')" class="delete-btn text-red-400 hover:text-red-600">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      `;
-    }
-
-    function deleteItem(path, key) {
-      if (!isAdmin()) {
-        showToast('⚠️ فقط الإداري يمكنه الحذف!', 'error');
-        return;
-      }
-      if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
-        window.remove(window.ref(window.db, `${path}/${key}`));
-        showToast('✅ تم الحذف بنجاح', 'success');
-      }
-    }
-
-    // ===== REAL STATS =====
-    function updateRealStats() {
-      const users = allUsers;
-      const total = Object.keys(users).length;
-      
-      let active = 0, boys = 0, girls = 0;
-      const now = Date.now();
-      const dayAgo = now - 24 * 60 * 60 * 1000;
-      
-      Object.keys(users).forEach(key => {
-        const user = users[key];
-        if (user.online === true || (user.lastSeen && user.lastSeen > dayAgo)) {
-          active++;
-        }
-        const name = (user.name || '').toLowerCase();
-        const maleNames = ['ahmed', 'mohamed', 'khaled', 'ali', 'hassan', 'hussain', 'mostafa', 'omar', 'youssef', 'ibrahim', 'abd'];
-        if (maleNames.some(m => name.includes(m))) {
-          boys++;
-        } else if (name !== '') {
-          girls++;
-        }
-      });
-      
-      document.getElementById('statTotalUsers').textContent = total;
-      document.getElementById('statActiveUsers').textContent = active;
-      document.getElementById('statBoys').textContent = boys || Math.floor(total * 0.6);
-      document.getElementById('statGirls').textContent = girls || Math.floor(total * 0.4);
-    }
-
-    function loadUsersList() {
-      if (!isAdmin()) return;
-      let msg = '👥 قائمة الطلاب المسجلين:\n\n';
-      let count = 0;
-      Object.keys(allUsers).forEach(key => {
-        const user = allUsers[key];
-        count++;
-        const phone = user.phone ? atob(user.phone) : 'رقم غير مسجل';
-        msg += `${count}. ${user.name || 'طالب'}\n   📱 ${phone}\n   📧 ${user.email || ''}\n   📚 ${user.subjects ? user.subjects.join(', ') : 'لا يوجد'}\n\n`;
-      });
-      alert(msg || 'لا يوجد طلاب مسجلين');
-    }
-
-    // ===== UPDATE COUNTS =====
-    function updateCounts() {
-      window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
-        const data = snapshot.val();
-        const today = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'][new Date().getDay()];
-        let count = 0;
-        if (data) {
-          Object.keys(data).forEach(key => {
-            if (data[key].day === today) count++;
-          });
-        }
-        document.getElementById('todayCount').textContent = count;
-        renderMyScheduleToday();
-      });
-
-      window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
-        const data = snapshot.val();
-        document.getElementById('materialCount').textContent = data ? Object.keys(data).length : 0;
-      });
-
-      window.onValue(window.ref(window.db, 'notifications'), (snapshot) => {
-        const data = snapshot.val();
-        document.getElementById('notifCount').textContent = data ? Object.keys(data).length : 0;
-      });
-    }
-
-    // ===== MY SCHEDULE TODAY =====
-    function renderMyScheduleToday() {
-      const container = document.getElementById('myScheduleToday');
-      if (!container) return;
-      
-      if (scheduleData.length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">لا توجد حصص اليوم</div>';
-        return;
-      }
-
-      const today = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'][new Date().getDay()];
-      const mySchedules = scheduleData.filter(item => {
-        if (!currentUserData) return false;
-        return item.day === today && 
-               (item.stage === currentUserData.stage || !item.stage) &&
-               (!item.subject || (currentUserData.subjects && currentUserData.subjects.includes(item.subject)));
-      });
-
-      if (mySchedules.length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">📭 لا توجد حصص لك اليوم</div>';
-        return;
-      }
-
-      container.innerHTML = mySchedules.map((item, idx) => `
-        <div class="flex items-center justify-between p-2 bg-blue-50 rounded-xl border border-blue-100">
-          <div>
-            <span class="font-bold text-sm text-slate-800">${item.subject}</span>
-            <span class="text-xs text-slate-500 block">${item.teacher}</span>
-          </div>
-          <div class="text-center">
-            <span class="text-sm font-extrabold text-amber-600">${item.time}</span>
-            <span class="text-[10px] text-slate-400 block">${item.room || ''}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // ===== REALTIME LISTENERS =====
-    function initRealtimeListeners() {
-      window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
-        const data = snapshot.val();
-        scheduleData = [];
-        if (data) {
-          Object.keys(data).forEach(k => {
-            scheduleData.push({ id: k, ...data[k] });
-          });
-        }
-        renderSchedule();
-        renderMyScheduleToday();
-      });
-
-      window.onValue(window.ref(window.db, 'news'), (snapshot) => {
-        const data = snapshot.val();
-        const container = document.getElementById('homeNewsContainer');
-        const allContainer = document.getElementById('allNewsContainer');
-        container.innerHTML = '';
-        allContainer.innerHTML = '';
-
-        if (!data) {
-          container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">لا توجد أخبار حالياً</div>';
-          allContainer.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد أخبار حالياً</div>';
-          return;
-        }
-
-        const keys = Object.keys(data).reverse();
-        keys.forEach((key, idx) => {
-          const item = data[key];
-          const html = `
-            <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm card-hover">
-              ${item.imageData ? `<img src="${item.imageData}" class="w-full h-40 object-cover" loading="lazy">` : ''}
-              <div class="p-4">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.date || ''}</span>
-                </div>
-                <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
-                <p class="text-xs text-slate-500 mt-1 leading-relaxed">${item.content}</p>
-              </div>
-            </div>
-          `;
-          if (idx < 2) container.innerHTML += html;
-          allContainer.innerHTML += html;
-        });
-      });
-
-      window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
-        const data = snapshot.val();
-        const container = document.getElementById('libraryContainer');
-        container.innerHTML = '';
-        
-        if (!data) {
-          container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد ملفات حالياً</div>';
-          return;
-        }
-
-        Object.keys(data).reverse().forEach(key => {
-          const item = data[key];
-          const icon = item.type === 'pdf' ? 'fa-file-pdf text-red-500' : 'fa-image text-green-500';
-          const bgColor = item.type === 'pdf' ? 'bg-red-50' : 'bg-green-50';
-          const downloadLink = item.fileData ? item.fileData : '#';
-          const downloadAttr = item.fileData ? `href="${item.fileData}" download="${item.fileName || 'file'}"` : `href="#" onclick="showToast('⚠️ لا يوجد ملف للتحميل', 'error')"`;
-          
-          container.innerHTML += `
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between card-hover shadow-sm">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl ${bgColor} flex items-center justify-center">
-                  <i class="fa-solid ${icon} text-2xl"></i>
-                </div>
-                <div>
-                  <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
-                  <p class="text-[10px] text-slate-400">${item.subject || ''} • ${item.date || ''}</p>
-                </div>
-              </div>
-              <a ${downloadAttr} target="_blank" class="bg-blue-50 text-blue-600 font-bold px-4 py-2 rounded-xl text-xs hover:bg-blue-100 transition">
-                <i class="fa-solid fa-download"></i> تحميل
-              </a>
-            </div>
-          `;
-        });
-      });
-
-      window.onValue(window.ref(window.db, 'notifications'), (snapshot) => {
-        const data = snapshot.val();
-        const container = document.getElementById('notificationsContainer');
-        const badge = document.getElementById('notifBadge');
-        container.innerHTML = '';
-
-        if (!data) {
-          badge.classList.add('hidden');
-          container.innerHTML = `
-            <div class="text-center py-8 text-slate-400 text-sm">
-              <i class="fa-regular fa-bell-slash text-3xl mb-2 block"></i>
-              لا توجد إشعارات
-            </div>
-          `;
-          return;
-        }
-
-        let hasTargeted = false;
-        badge.classList.remove('hidden');
-        
-        Object.keys(data).reverse().forEach((key, idx) => {
-          const item = data[key];
-          let isTargeted = true;
-          
-          if (currentUserData) {
-            if (item.stage !== 'الكل' && item.stage !== currentUserData.stage) isTargeted = false;
-            if (item.grade !== 'الكل' && item.grade !== currentUserData.grade) isTargeted = false;
-          }
-
-          if (isTargeted) {
-            hasTargeted = true;
-            container.innerHTML += `
-              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm slide-up">
-                <div class="flex items-start gap-3">
-                  ${item.imageData ? `<img src="${item.imageData}" class="w-16 h-16 rounded-xl object-cover">` : ''}
-                  <div class="flex-1">
-                    <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
-                    <p class="text-xs text-slate-600 mt-1 leading-relaxed">${item.body}</p>
-                    <div class="flex items-center gap-2 mt-2">
-                      <span class="text-[8px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">${item.stage} • الصف ${item.grade}</span>
-                      ${item.subject ? `<span class="text-[8px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">${item.subject}</span>` : ''}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
-
-            if (idx === 0 && Notification.permission === "granted" && document.hidden) {
-              new Notification(`📚 سيجما: ${item.title}`, { 
-                body: item.body, 
-                icon: 'https://cdn-icons-png.flaticon.com/512/3239/3239952.png',
-                vibrate: [200, 100, 200]
-              });
-            }
-          }
-        });
-
-        if (!hasTargeted) {
-          container.innerHTML = `
-            <div class="text-center py-8 text-slate-400 text-sm">
-              <i class="fa-regular fa-bell-slash text-3xl mb-2 block"></i>
-              لا توجد إشعارات لك حالياً
-            </div>
-          `;
-          badge.classList.add('hidden');
-        }
-      });
-    }
-
-    // ===== RENDER SCHEDULE =====
-    function filterSchedule(type) {
-      currentScheduleFilter = type;
-      ['Today', 'Tomorrow', 'All'].forEach(t => {
-        const btn = document.getElementById(`btnSched${t}`);
-        if(btn) {
-          btn.classList.toggle('bg-white', t === type.charAt(0).toUpperCase() + type.slice(1));
-          btn.classList.toggle('text-blue-600', t === type.charAt(0).toUpperCase() + type.slice(1));
-          btn.classList.toggle('shadow-md', t === type.charAt(0).toUpperCase() + type.slice(1));
-        }
-      });
-      renderSchedule();
-    }
-
-    function renderSchedule() {
-      const container = document.getElementById('scheduleContainer');
-      container.innerHTML = '';
-      
-      if (scheduleData.length === 0) {
-        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد حصص مجدولة</div>';
-        return;
-      }
-
-      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      const todayIdx = new Date().getDay();
-      const todayDay = days[todayIdx];
-      const tomorrowDay = days[(todayIdx + 1) % 7];
-
-      let items = [...scheduleData];
-      if (currentScheduleFilter === 'today') items = items.filter(i => i.day === todayDay);
-      if (currentScheduleFilter === 'tomorrow') items = items.filter(i => i.day === tomorrowDay);
-
-      if (items.length === 0) {
-        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد حصص في هذا اليوم</div>';
-        return;
-      }
-
-      items.forEach((item, index) => {
-        const imageHtml = item.imageData ? 
-          `<img src="${item.imageData}" class="w-full h-32 object-cover rounded-xl mb-3" loading="lazy">` : '';
-        
-        container.innerHTML += `
-          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm card-hover slide-up" style="animation-delay: ${index * 0.05}s">
-            ${imageHtml}
-            <div class="flex justify-between items-start">
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.day}</span>
-                  <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full font-bold">${item.stage || ''}</span>
-                </div>
-                <h3 class="font-bold text-base text-slate-800">${item.subject || 'صورة'}</h3>
-                <p class="text-xs text-slate-500"><i class="fa-solid fa-chalkboard-user"></i> ${item.teacher || ''}</p>
-              </div>
-              <div class="text-center">
-                <span class="text-sm font-extrabold text-amber-600 block">${item.time || ''}</span>
-                <span class="text-[10px] text-slate-400">${item.room || 'قاعة'}</span>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    // ===== FILE TO BASE64 =====
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    // ===== ADMIN UPLOAD FUNCTIONS =====
-    async function addScheduleItem() {
-      if (!isAdmin()) {
-        showToast('⚠️ فقط الإداري يمكنه إضافة حصص!', 'error');
-        return;
-      }
-
-      let day = '', subject = '', teacher = '', time = '', room = '', stage = '';
-      let imageData = '';
-      
-      if (scheduleOption === 'full' || scheduleOption === 'text') {
-        day = document.getElementById('schDay').value;
-        subject = document.getElementById('schSubject').value;
-        teacher = document.getElementById('schTeacher').value;
-        time = document.getElementById('schTime').value;
-        room = document.getElementById('schRoom').value;
-        stage = document.getElementById('schStage').value;
-        
-        if (!subject && scheduleOption === 'full') {
-          showToast('⚠️ يرجى كتابة المادة!', 'error');
-          return;
-        }
-      }
-
-      if (scheduleOption === 'full' || scheduleOption === 'image') {
-        const imgFile = document.getElementById('schImageFile').files[0];
-        if (imgFile) {
-          try {
-            imageData = await fileToBase64(imgFile);
-            if (imageData.length > 1000000) {
-              showToast('⚠️ الصورة كبيرة جداً. الحد الأقصى 1 ميجابايت', 'error');
-              return;
-            }
-          } catch (e) {
-            showToast('❌ فشل تحميل الصورة', 'error');
-            return;
-          }
-        } else if (scheduleOption === 'image') {
-          showToast('⚠️ يرجى اختيار صورة!', 'error');
-          return;
-        }
-      }
-
-      if (!subject && !imageData) {
-        showToast('⚠️ يرجى إضافة مادة أو صورة!', 'error');
-        return;
-      }
-
-      await window.push(window.ref(window.db, 'schedules'), { 
-        day, subject, teacher, time, room, stage, 
-        imageData,
-        createdAt: new Date().toISOString()
-      });
-      
-      showToast('✅ تم إضافة الحصة بنجاح!', 'success');
-      document.getElementById('schSubject').value = '';
-      document.getElementById('schTeacher').value = '';
-      document.getElementById('schTime').value = '';
-      document.getElementById('schRoom').value = '';
-      document.getElementById('schImageFile').value = '';
-    }
-
-    async function sendNotification() {
-      if (!isAdmin()) {
-        showToast('⚠️ فقط الإداري يمكنه إرسال إشعارات!', 'error');
-        return;
-      }
-
-      const title = document.getElementById('notifTitle').value;
-      const body = document.getElementById('notifBody').value;
-      const stage = document.getElementById('notifStage').value;
-      const grade = document.getElementById('notifGrade').value;
-      const subject = document.getElementById('notifSubject').value;
-      const imgFile = document.getElementById('notifImageFile').files[0];
-
-      if (!title || !body) {
-        showToast('⚠️ يرجى تعبئة عنوان ونص التنبيه!', 'error');
-        return;
-      }
-
-      let imageData = '';
-      if (imgFile) {
-        try {
-          imageData = await fileToBase64(imgFile);
-          if (imageData.length > 1000000) {
-            showToast('⚠️ الصورة كبيرة جداً. الحد الأقصى 1 ميجابايت', 'error');
-            return;
-          }
-        } catch (e) {
-          showToast('❌ فشل تحميل الصورة', 'error');
-          return;
-        }
-      }
-
-      await window.push(window.ref(window.db, 'notifications'), { 
-        title, body, stage, grade, subject, imageData,
-        date: new Date().toLocaleDateString('ar-EG'),
-        time: new Date().toLocaleTimeString('ar-EG'),
-        createdAt: new Date().toISOString()
-      });
-      
-      showToast('✅ تم إرسال الإشعار بنجاح!', 'success');
-      document.getElementById('notifTitle').value = '';
-      document.getElementById('notifBody').value = '';
-      document.getElementById('notifSubject').value = '';
-      document.getElementById('notifImageFile').value = '';
-    }
-
-    async function addNewsItem() {
-      if (!isAdmin()) {
-        showToast('⚠️ فقط الإداري يمكنه نشر الأخبار!', 'error');
-        return;
-      }
-
-      const title = document.getElementById('newsTitle').value;
-      const content = document.getElementById('newsContent').value;
-      const imgFile = document.getElementById('newsImageFile').files[0];
-
-      if (!title || !content) {
-        showToast('⚠️ يرجى تعبئة عنوان ومحتوى الخبر!', 'error');
-        return;
-      }
-
-      let imageData = "";
-      if (imgFile) {
-        try {
-          imageData = await fileToBase64(imgFile);
-          if (imageData.length > 1000000) {
-            showToast('⚠️ الصورة كبيرة جداً. الحد الأقصى 1 ميجابايت', 'error');
-            return;
-          }
-        } catch (e) {
-          showToast('❌ فشل تحميل الصورة', 'error');
-          return;
-        }
-      }
-
-      await window.push(window.ref(window.db, 'news'), { 
-        title, content, imageData,
-        date: new Date().toLocaleDateString('ar-EG'),
-        createdAt: new Date().toISOString()
-      });
-      
-      showToast('✅ تم نشر الخبر بنجاح!', 'success');
-      document.getElementById('newsTitle').value = '';
-      document.getElementById('newsContent').value = '';
-      document.getElementById('newsImageFile').value = '';
-    }
-
-    async function uploadMaterialFile() {
-      if (!isAdmin()) {
-        showToast('⚠️ فقط الإداري يمكنه رفع الملفات!', 'error');
-        return;
-      }
-
-      const title = document.getElementById('matTitle').value;
-      const subject = document.getElementById('matSubject').value;
-      const type = document.getElementById('matType').value;
-      const file = document.getElementById('matFile').files[0];
-
-      if (!title || !file) {
-        showToast('⚠️ يرجى إدخال اسم الملف واختيار ملف!', 'error');
-        return;
-      }
-
-      if (file.size > 2000000) {
-        showToast('⚠️ الملف كبير جداً. الحد الأقصى 2 ميجابايت', 'error');
-        return;
-      }
-
-      try {
-        const fileData = await fileToBase64(file);
-        await window.push(window.ref(window.db, 'materials'), { 
-          title, subject, type, fileData,
-          fileName: file.name,
-          fileSize: file.size,
-          date: new Date().toLocaleDateString('ar-EG'),
-          createdAt: new Date().toISOString()
-        });
-        showToast('✅ تم رفع الملف بنجاح!', 'success');
-        document.getElementById('matTitle').value = '';
-        document.getElementById('matSubject').value = '';
-        document.getElementById('matFile').value = '';
-      } catch (e) {
-        showToast('❌ فشل رفع الملف: ' + e.message, 'error');
-      }
-    }
-
-    // ===== DARK MODE =====
-    function toggleDarkMode() {
-      darkMode = !darkMode;
-      const app = document.getElementById('app');
-      const body = document.body;
-      
-      if (darkMode) {
-        body.style.background = '#0f172a';
-        app.classList.add('bg-slate-800');
-        app.classList.remove('bg-slate-50');
-        document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
-        document.querySelectorAll('.bg-white').forEach(el => {
-          if (!el.closest('.admin-stat-card')) {
-            el.classList.add('bg-slate-700');
-            el.classList.remove('bg-white');
-            el.classList.add('text-white');
-          }
-        });
-        document.querySelectorAll('.text-slate-800').forEach(el => {
-          if (!el.closest('.admin-stat-card')) {
-            el.classList.add('text-white');
-            el.classList.remove('text-slate-800');
-          }
-        });
-        document.querySelectorAll('.text-slate-600').forEach(el => {
-          el.classList.add('text-slate-300');
-          el.classList.remove('text-slate-600');
-        });
-        document.querySelectorAll('.border-slate-100, .border-slate-200').forEach(el => {
-          el.classList.add('border-slate-600');
-          el.classList.remove('border-slate-100', 'border-slate-200');
-        });
-        document.querySelectorAll('.bg-slate-50').forEach(el => {
-          el.classList.add('bg-slate-600/30');
-          el.classList.remove('bg-slate-50');
-        });
-        document.querySelectorAll('.text-slate-700').forEach(el => {
-          el.classList.add('text-slate-300');
-          el.classList.remove('text-slate-700');
-        });
-        document.querySelector('.bg-slate-100')?.classList.add('bg-slate-700');
-        document.querySelector('.bg-slate-100')?.classList.remove('bg-slate-100');
-        document.querySelectorAll('.stat-card').forEach(el => {
-          el.classList.add('bg-slate-700');
-          el.classList.remove('bg-white');
-          el.classList.add('border-slate-600');
-          el.classList.remove('border-slate-100');
-        });
-        document.querySelectorAll('.stat-number, .stat-label').forEach(el => {
-          el.classList.add('text-white');
-        });
-        document.querySelectorAll('.complaint-card').forEach(el => {
-          el.classList.add('bg-slate-700');
-          el.classList.remove('bg-slate-50');
-        });
-      } else {
-        body.style.background = '#f1f5f9';
-        app.classList.remove('bg-slate-800');
-        app.classList.add('bg-slate-50');
-        document.getElementById('darkModeIcon').className = 'fa-solid fa-moon text-lg';
-        document.querySelectorAll('.bg-slate-700').forEach(el => {
-          if (!el.closest('.admin-stat-card')) {
-            el.classList.remove('bg-slate-700');
-            el.classList.add('bg-white');
-            el.classList.remove('text-white');
-          }
-        });
-        document.querySelectorAll('.text-white').forEach(el => {
-          if (!el.closest('.bg-gradient-to-r') && !el.closest('.admin-stat-card')) {
-            el.classList.remove('text-white');
-            el.classList.add('text-slate-800');
-          }
-        });
-        document.querySelectorAll('.text-slate-300').forEach(el => {
-          el.classList.remove('text-slate-300');
-          el.classList.add('text-slate-600');
-        });
-        document.querySelectorAll('.border-slate-600').forEach(el => {
-          el.classList.remove('border-slate-600');
-          el.classList.add('border-slate-100');
-        });
-        document.querySelectorAll('.bg-slate-600\\/30').forEach(el => {
-          el.classList.remove('bg-slate-600/30');
-          el.classList.add('bg-slate-50');
-        });
-        document.querySelectorAll('.text-slate-300').forEach(el => {
-          if (!el.closest('.admin-stat-card')) {
-            el.classList.remove('text-slate-300');
-            el.classList.add('text-slate-700');
-          }
-        });
-        document.querySelectorAll('.stat-card').forEach(el => {
-          el.classList.remove('bg-slate-700');
-          el.classList.add('bg-white');
-          el.classList.remove('border-slate-600');
-          el.classList.add('border-slate-100');
-        });
-        document.querySelectorAll('.stat-number, .stat-label').forEach(el => {
-          el.classList.remove('text-white');
-        });
-        document.querySelectorAll('.complaint-card').forEach(el => {
-          el.classList.remove('bg-slate-700');
-          el.classList.add('bg-slate-50');
-        });
-      }
-    }
-
-    console.log('🚀 سنتر سيجما - التطبيق جاهز للاستخدام!');
-  </script>
 </body>
 </html>
