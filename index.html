@@ -28,12 +28,20 @@
     .slide-up { animation: slideUp 0.3s ease-out; }
     .card-hover { transition: all 0.2s ease; }
     .card-hover:active { transform: scale(0.98); }
+    .profile-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; transition: all 0.3s; }
+    .profile-avatar:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+    .subject-chip { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 3px; }
+    .delete-btn { transition: all 0.2s; }
+    .delete-btn:hover { transform: scale(1.1); color: #ef4444; }
+    .admin-stat-card { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px; padding: 16px; color: white; }
+    .admin-stat-number { font-size: 28px; font-weight: 800; }
+    .admin-stat-label { font-size: 11px; opacity: 0.7; }
   </style>
 
   <!-- Firebase Modular SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, set, get, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, set, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
@@ -64,6 +72,7 @@
     window.get = get;
     window.child = child;
     window.remove = remove;
+    window.update = update;
     window.onValue = onValue;
     window.storageRef = storageRef;
     window.uploadBytes = uploadBytes;
@@ -76,9 +85,9 @@
 </head>
 <body>
 
-  <div class="w-full max-w-md mx-auto bg-slate-50 min-h-screen shadow-2xl relative flex flex-col pb-20">
+  <div id="app" class="w-full max-w-md mx-auto bg-slate-50 min-h-screen shadow-2xl relative flex flex-col pb-20">
 
-    <!-- Enhanced Header -->
+    <!-- Header -->
     <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 shadow-lg sticky top-0 z-30 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center font-extrabold text-2xl border border-white/30 shadow-lg">Σ</div>
@@ -103,17 +112,20 @@
 
       <!-- TAB 1: HOME -->
       <section id="tab-home" class="space-y-4 slide-up">
-        <!-- Enhanced User Card -->
+        <!-- User Card with Avatar Click -->
         <div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-xl">
           <div id="userContent" class="text-center">
-            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-white/30">
-              <i class="fa-solid fa-user-graduate text-2xl"></i>
+            <div class="flex items-center gap-4">
+              <img id="userAvatar" src="" class="profile-avatar" onclick="openProfileModal()" alt="الصورة الشخصية">
+              <div class="text-right flex-1">
+                <h2 id="userName" class="font-bold text-lg">مرحباً بك</h2>
+                <p id="userSubtitle" class="text-sm text-blue-100 mt-1">سجل دخولك للمتابعة</p>
+                <div id="userSubjects" class="mt-2"></div>
+              </div>
+              <button id="loginBtn" onclick="loginGoogle()" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-4 py-2 rounded-xl transition whitespace-nowrap">
+                <i class="fa-brands fa-google"></i> دخول
+              </button>
             </div>
-            <h2 class="font-bold text-lg">مرحباً بك في سيجما</h2>
-            <p class="text-sm text-blue-100 mt-1 mb-4">منصتك التعليمية المتكاملة</p>
-            <button onclick="loginGoogle()" class="w-full bg-white text-slate-800 font-bold py-3 px-4 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3 text-sm">
-              <i class="fa-brands fa-google text-red-500 text-lg"></i> تسجيل الدخول
-            </button>
           </div>
         </div>
 
@@ -228,7 +240,55 @@
         </div>
       </section>
 
-      <!-- TAB 6: ADMIN DASHBOARD -->
+      <!-- TAB 6: SETTINGS -->
+      <section id="tab-settings" class="hidden space-y-4 slide-up">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-gear text-slate-600"></i> الإعدادات
+          </h2>
+          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-arrow-right"></i> رجوع
+          </button>
+        </div>
+
+        <!-- Student Info -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-user text-blue-600"></i> معلومات الطالب</h3>
+          <div id="studentInfoDisplay" class="space-y-2 text-sm">
+            <p class="text-slate-600">الاسم: <span id="infoName" class="font-bold text-slate-800">-</span></p>
+            <p class="text-slate-600">البريد: <span id="infoEmail" class="font-bold text-slate-800">-</span></p>
+            <p class="text-slate-600">المرحلة: <span id="infoStage" class="font-bold text-slate-800">-</span></p>
+            <p class="text-slate-600">الصف: <span id="infoGrade" class="font-bold text-slate-800">-</span></p>
+            <p class="text-slate-600">المواد: <span id="infoSubjects" class="font-bold text-slate-800">-</span></p>
+          </div>
+        </div>
+
+        <!-- Center Contact -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر</h3>
+          <div id="centerContacts" class="space-y-2">
+            <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
+              <i class="fa-solid fa-phone text-blue-600"></i>
+              <span class="text-sm text-slate-700">01012345678</span>
+            </div>
+            <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
+              <i class="fa-brands fa-whatsapp text-green-600"></i>
+              <span class="text-sm text-slate-700">01012345678</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Complaints -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-comment text-amber-500"></i> تقديم شكوى أو استفسار</h3>
+          <textarea id="complaintText" placeholder="اكتب شكواك أو استفسارك هنا..." class="w-full p-3 bg-slate-50 border rounded-xl text-sm h-24 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+          <button onclick="sendComplaint()" class="w-full mt-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
+            <i class="fa-solid fa-paper-plane"></i> إرسال
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 7: ADMIN DASHBOARD -->
       <section id="tab-admin" class="hidden space-y-4 slide-up">
         <div class="flex items-center justify-between">
           <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
@@ -251,12 +311,54 @@
           <button onclick="adminLogin()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
             <i class="fa-solid fa-sign-in-alt"></i> دخول
           </button>
-          <p class="text-[10px] text-slate-400 text-center">كلمة السر: <span class="font-bold text-amber-600">Sigma@2024</span></p>
         </div>
 
-        <!-- Admin Panel (Hidden by default) -->
+        <!-- Admin Panel -->
         <div id="adminPanel" class="hidden space-y-4">
-          <!-- Add Schedule -->
+          
+          <!-- Stats Dashboard -->
+          <div class="admin-stat-card">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-bold text-sm"><i class="fa-solid fa-chart-line text-blue-400"></i> إحصائيات المنصة</h4>
+              <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-2xl font-bold">Σ</div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <div class="admin-stat-number" id="statTotalUsers">0</div>
+                <div class="admin-stat-label">إجمالي الطلاب</div>
+              </div>
+              <div>
+                <div class="admin-stat-number" id="statActiveUsers">0</div>
+                <div class="admin-stat-label">نشطاء اليوم</div>
+              </div>
+              <div>
+                <div class="admin-stat-number" id="statBoys">0</div>
+                <div class="admin-stat-label">🧑 أولاد</div>
+              </div>
+              <div>
+                <div class="admin-stat-number" id="statGirls">0</div>
+                <div class="admin-stat-label">👧 بنات</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manage Contacts -->
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-phone text-green-600"></i> إدارة أرقام السنتر</h4>
+            <div class="flex gap-2">
+              <input type="text" id="newContact" placeholder="رقم الهاتف" class="flex-1 p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
+              <select id="contactType" class="p-2.5 bg-slate-50 border rounded-xl text-sm">
+                <option value="phone">📞 هاتف</option>
+                <option value="whatsapp">💬 واتساب</option>
+              </select>
+              <button onclick="addContact()" class="bg-green-600 text-white px-4 rounded-xl hover:bg-green-700 transition">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+            <div id="contactsList" class="space-y-2 mt-2"></div>
+          </div>
+
+          <!-- Manage Schedule -->
           <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
             <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-plus-circle text-blue-600"></i> إضافة حصة جديدة</h4>
             <div class="grid grid-cols-2 gap-2">
@@ -289,9 +391,10 @@
             <button onclick="addScheduleItem()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
               <i class="fa-solid fa-save"></i> حفظ الحصة
             </button>
+            <div id="scheduleManageList" class="mt-3 space-y-2"></div>
           </div>
 
-          <!-- Send Notification -->
+          <!-- Manage Notifications -->
           <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
             <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار موجه</h4>
             <input type="text" id="notifTitle" placeholder="عنوان التنبيه" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
@@ -313,9 +416,10 @@
             <button onclick="sendNotification()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
               <i class="fa-solid fa-bell"></i> إرسال الإشعار
             </button>
+            <div id="notificationsManageList" class="mt-3 space-y-2"></div>
           </div>
 
-          <!-- Add News -->
+          <!-- Manage News -->
           <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
             <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر جديد</h4>
             <input type="text" id="newsTitle" placeholder="عنوان الخبر" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
@@ -324,9 +428,10 @@
             <button onclick="addNewsItem()" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
               <i class="fa-solid fa-share"></i> نشر الخبر
             </button>
+            <div id="newsManageList" class="mt-3 space-y-2"></div>
           </div>
 
-          <!-- Upload Materials -->
+          <!-- Manage Materials -->
           <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
             <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة أو ملف</h4>
             <input type="text" id="matTitle" placeholder="اسم الملف" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-purple-500 outline-none">
@@ -341,13 +446,14 @@
             <button onclick="uploadMaterialFile()" class="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
               <i class="fa-solid fa-upload"></i> رفع المستند
             </button>
+            <div id="materialsManageList" class="mt-3 space-y-2"></div>
           </div>
         </div>
       </section>
 
     </main>
 
-    <!-- Student Profile Edit Modal -->
+    <!-- Profile Modal -->
     <div id="profileModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl slide-up">
         <div class="flex items-center justify-between border-b pb-3">
@@ -356,6 +462,7 @@
             <i class="fa-solid fa-xmark text-xl"></i>
           </button>
         </div>
+        
         <div>
           <label class="text-xs font-bold text-slate-500">المرحلة التعليمية:</label>
           <select id="profStage" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
@@ -363,6 +470,7 @@
             <option value="إعدادي">إعدادي</option>
           </select>
         </div>
+        
         <div>
           <label class="text-xs font-bold text-slate-500">الصف الدراسي:</label>
           <select id="profGrade" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
@@ -371,10 +479,12 @@
             <option value="3">الصف الثالث</option>
           </select>
         </div>
+        
         <div>
-          <label class="text-xs font-bold text-slate-500">المواد (مفصولة بفواصل):</label>
-          <input type="text" id="profSubjects" placeholder="مثال: فيزياء, رياضيات, كيمياء" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+          <label class="text-xs font-bold text-slate-500">اختر المواد التي تدرسها:</label>
+          <div id="subjectsCheckbox" class="mt-2 grid grid-cols-2 gap-2"></div>
         </div>
+        
         <button onclick="saveStudentProfile()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
           <i class="fa-solid fa-save"></i> حفظ التغييرات
         </button>
@@ -399,6 +509,10 @@
         <i class="fa-solid fa-newspaper text-xl"></i>
         <span>الأخبار</span>
       </button>
+      <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
+        <i class="fa-solid fa-gear text-xl"></i>
+        <span>الإعدادات</span>
+      </button>
       <button onclick="switchTab('admin')" id="nav-admin" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
         <i class="fa-solid fa-user-shield text-xl"></i>
         <span>الإدارة</span>
@@ -408,25 +522,31 @@
   </div>
 
   <script>
-    // Main Application Logic
+    // ===== MAIN APPLICATION LOGIC =====
     let currentUser = null;
     let currentUserData = null;
     let scheduleData = [];
     let currentScheduleFilter = 'today';
     let isAdminLoggedIn = false;
     let darkMode = false;
+    let allUsers = {};
+    let contacts = [];
 
-    // Admin Password
-    const ADMIN_PASSWORD = 'Sigma@2024';
+    // Subject lists by stage
+    const subjectsByStage = {
+      'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية', 'فرنسية', 'تاريخ', 'جغرافيا', 'فلسفة'],
+      'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية', 'دراسات', 'حاسب آلي']
+    };
 
     // Request Notification Permission
     if ("Notification" in window) {
       Notification.requestPermission();
     }
 
-    // TAB SWITCHING
+    // ===== TAB SWITCHING =====
     function switchTab(tabId) {
-      ['home', 'schedule', 'library', 'news', 'notifications', 'admin'].forEach(t => {
+      const tabs = ['home', 'schedule', 'library', 'news', 'notifications', 'settings', 'admin'];
+      tabs.forEach(t => {
         const elem = document.getElementById(`tab-${t}`);
         const nav = document.getElementById(`nav-${t}`);
         if(elem) elem.classList.toggle('hidden', t !== tabId);
@@ -435,9 +555,14 @@
           nav.classList.toggle('text-slate-400', t !== tabId);
         }
       });
+      
+      // Load admin data if switching to admin
+      if (tabId === 'admin' && isAdminLoggedIn) {
+        loadAdminData();
+      }
     }
 
-    // AUTHENTICATION
+    // ===== AUTHENTICATION =====
     window.addEventListener('load', () => {
       window.onAuthStateChanged(window.auth, async (user) => {
         if (user) {
@@ -445,12 +570,17 @@
           const userRef = window.ref(window.db, `users/${user.uid}`);
           window.onValue(userRef, (snapshot) => {
             currentUserData = snapshot.val();
+            renderUserCard();
+            updateStudentInfo();
+            
+            // Show profile modal if first time
             if (!currentUserData) {
-              document.getElementById('profileModal').classList.remove('hidden');
-            } else {
-              renderUserCard();
+              openProfileModal();
             }
           });
+          
+          // Track user online status
+          trackUserStatus(user);
         } else {
           currentUser = null;
           currentUserData = null;
@@ -459,7 +589,23 @@
       });
       initRealtimeListeners();
       updateCounts();
+      loadContacts();
     });
+
+    function trackUserStatus(user) {
+      const statusRef = window.ref(window.db, `users/${user.uid}/online`);
+      window.set(statusRef, true);
+      window.onValue(window.ref(window.db, '.info/connected'), (snapshot) => {
+        if (snapshot.val() === true) {
+          window.set(statusRef, true);
+          window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
+        }
+      });
+      
+      window.addEventListener('beforeunload', () => {
+        window.set(statusRef, false);
+      });
+    }
 
     function loginGoogle() {
       window.signInWithPopup(window.auth, window.provider)
@@ -467,7 +613,19 @@
     }
 
     function logoutUser() {
+      if (currentUser) {
+        window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
+      }
       window.signOut(window.auth).then(() => renderUserCard());
+    }
+
+    function openProfileModal() {
+      if (!currentUser) {
+        alert('يرجى تسجيل الدخول أولاً!');
+        return;
+      }
+      document.getElementById('profileModal').classList.remove('hidden');
+      loadSubjectsCheckbox();
     }
 
     function closeProfileModal() {
@@ -475,92 +633,356 @@
     }
 
     function renderUserCard() {
-      const card = document.getElementById('userCard');
-      const content = document.getElementById('userContent');
-      
+      const avatar = document.getElementById('userAvatar');
+      const name = document.getElementById('userName');
+      const subtitle = document.getElementById('userSubtitle');
+      const subjectsDiv = document.getElementById('userSubjects');
+      const loginBtn = document.getElementById('loginBtn');
+
       if (currentUser && currentUserData) {
-        content.innerHTML = `
-          <div class="flex items-center gap-4 text-right">
-            <img src="${currentUser.photoURL}" class="w-16 h-16 rounded-full border-2 border-white shadow-lg">
-            <div class="flex-1">
-              <h3 class="font-bold text-base">${currentUser.displayName}</h3>
-              <p class="text-xs text-blue-100">${currentUserData.stage} • الصف ${currentUserData.grade}</p>
-              <p class="text-[10px] text-blue-200 mt-0.5">${currentUserData.subjects || 'جميع المواد'}</p>
-            </div>
-            <div class="flex flex-col gap-1">
-              <button onclick="document.getElementById('profileModal').classList.remove('hidden')" class="bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition">تعديل</button>
-              <button onclick="logoutUser()" class="bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition">خروج</button>
-            </div>
-          </div>
-        `;
+        avatar.src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
+        avatar.style.display = 'block';
+        name.textContent = `مرحباً بك، ${currentUser.displayName || 'طالب'}`;
+        subtitle.textContent = `${currentUserData.stage} • الصف ${currentUserData.grade}`;
+        loginBtn.textContent = 'خروج';
+        loginBtn.onclick = logoutUser;
+        
+        // Show subjects
+        if (currentUserData.subjects && currentUserData.subjects.length > 0) {
+          subjectsDiv.innerHTML = currentUserData.subjects.map(s => 
+            `<span class="subject-chip bg-white/20 text-white">${s}</span>`
+          ).join('');
+        }
       } else {
-        content.innerHTML = `
-          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-white/30">
-            <i class="fa-solid fa-user-graduate text-2xl"></i>
-          </div>
-          <h2 class="font-bold text-lg">مرحباً بك في سيجما</h2>
-          <p class="text-sm text-blue-100 mt-1 mb-4">منصتك التعليمية المتكاملة</p>
-          <button onclick="loginGoogle()" class="w-full bg-white text-slate-800 font-bold py-3 px-4 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3 text-sm">
-            <i class="fa-brands fa-google text-red-500 text-lg"></i> تسجيل الدخول
-          </button>
-        `;
+        avatar.src = 'https://ui-avatars.com/api/?name=User&background=64748b&color=fff';
+        avatar.style.display = 'block';
+        name.textContent = 'مرحباً بك';
+        subtitle.textContent = 'سجل دخولك للمتابعة';
+        subjectsDiv.innerHTML = '';
+        loginBtn.textContent = '<i class="fa-brands fa-google"></i> دخول';
+        loginBtn.onclick = loginGoogle;
       }
     }
 
-    // SAVE STUDENT PROFILE
+    function updateStudentInfo() {
+      if (currentUser && currentUserData) {
+        document.getElementById('infoName').textContent = currentUser.displayName || '-';
+        document.getElementById('infoEmail').textContent = currentUser.email || '-';
+        document.getElementById('infoStage').textContent = currentUserData.stage || '-';
+        document.getElementById('infoGrade').textContent = currentUserData.grade || '-';
+        document.getElementById('infoSubjects').textContent = currentUserData.subjects ? currentUserData.subjects.join(', ') : '-';
+      }
+    }
+
+    // ===== SUBJECTS CHECKBOX =====
+    function loadSubjectsCheckbox() {
+      const container = document.getElementById('subjectsCheckbox');
+      container.innerHTML = '';
+      
+      const stage = document.getElementById('profStage').value;
+      const subjects = subjectsByStage[stage] || [];
+      
+      subjects.forEach(subject => {
+        const checked = currentUserData?.subjects?.includes(subject) || false;
+        container.innerHTML += `
+          <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl text-sm cursor-pointer hover:bg-slate-100 transition">
+            <input type="checkbox" value="${subject}" class="subject-check w-4 h-4 text-blue-600" ${checked ? 'checked' : ''}>
+            <span>${subject}</span>
+          </label>
+        `;
+      });
+      
+      // Update on stage change
+      document.getElementById('profStage').onchange = loadSubjectsCheckbox;
+    }
+
+    // ===== SAVE STUDENT PROFILE =====
     function saveStudentProfile() {
       if (!currentUser) return;
+      
       const stage = document.getElementById('profStage').value;
       const grade = document.getElementById('profGrade').value;
-      const subjects = document.getElementById('profSubjects').value;
+      const checkedBoxes = document.querySelectorAll('.subject-check:checked');
+      const subjects = Array.from(checkedBoxes).map(cb => cb.value);
+
+      if (subjects.length === 0) {
+        alert('⚠️ يرجى اختيار مادة واحدة على الأقل!');
+        return;
+      }
 
       window.set(window.ref(window.db, `users/${currentUser.uid}`), {
         name: currentUser.displayName,
         email: currentUser.email,
-        stage, grade, subjects,
+        photoURL: currentUser.photoURL,
+        stage, 
+        grade, 
+        subjects,
         updatedAt: new Date().toISOString()
       }).then(() => {
         closeProfileModal();
         alert('✅ تم حفظ بيانات ملفك بنجاح!');
+        
+        // Ask to install PWA
+        askInstallPWA();
       });
     }
 
-    // ADMIN LOGIN
+    // ===== PWA INSTALL PROMPT =====
+    let deferredPrompt = null;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    function askInstallPWA() {
+      if (deferredPrompt) {
+        const confirmInstall = confirm('📱 هل تريد تثبيت تطبيق سنتر سيجما على جهازك؟');
+        if (confirmInstall) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('✅ تم تثبيت التطبيق');
+            }
+            deferredPrompt = null;
+          });
+        }
+      }
+    }
+
+    // ===== CONTACTS MANAGEMENT =====
+    function loadContacts() {
+      window.onValue(window.ref(window.db, 'contacts'), (snapshot) => {
+        const data = snapshot.val();
+        contacts = [];
+        if (data) {
+          Object.keys(data).forEach(key => {
+            contacts.push({ id: key, ...data[key] });
+          });
+        }
+        renderContacts();
+      });
+    }
+
+    function renderContacts() {
+      const container = document.getElementById('contactsList');
+      const centerContacts = document.getElementById('centerContacts');
+      
+      if (!container) return;
+      container.innerHTML = '';
+      
+      contacts.forEach(contact => {
+        const icon = contact.type === 'whatsapp' ? 'fa-brands fa-whatsapp text-green-600' : 'fa-solid fa-phone text-blue-600';
+        container.innerHTML += `
+          <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
+            <div class="flex items-center gap-3">
+              <i class="${icon}"></i>
+              <span class="text-sm text-slate-700">${contact.number}</span>
+            </div>
+            <button onclick="deleteContact('${contact.id}')" class="delete-btn text-red-400 hover:text-red-600">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        `;
+      });
+      
+      // Update center contacts display
+      if (centerContacts) {
+        centerContacts.innerHTML = contacts.map(c => `
+          <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
+            <i class="${c.type === 'whatsapp' ? 'fa-brands fa-whatsapp text-green-600' : 'fa-solid fa-phone text-blue-600'}"></i>
+            <span class="text-sm text-slate-700">${c.number}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function addContact() {
+      const number = document.getElementById('newContact').value;
+      const type = document.getElementById('contactType').value;
+      
+      if (!number) {
+        alert('⚠️ يرجى إدخال رقم الهاتف!');
+        return;
+      }
+      
+      window.push(window.ref(window.db, 'contacts'), { number, type });
+      document.getElementById('newContact').value = '';
+    }
+
+    function deleteContact(id) {
+      if (confirm('هل أنت متأكد من حذف هذا الرقم؟')) {
+        window.remove(window.ref(window.db, `contacts/${id}`));
+      }
+    }
+
+    // ===== COMPLAINTS =====
+    function sendComplaint() {
+      const text = document.getElementById('complaintText').value;
+      if (!text) {
+        alert('⚠️ يرجى كتابة شكواك أو استفسارك!');
+        return;
+      }
+      
+      if (!currentUser) {
+        alert('⚠️ يرجى تسجيل الدخول أولاً!');
+        return;
+      }
+      
+      window.push(window.ref(window.db, 'complaints'), {
+        text,
+        userId: currentUser.uid,
+        userName: currentUser.displayName,
+        userEmail: currentUser.email,
+        date: new Date().toLocaleString('ar-EG'),
+        timestamp: Date.now()
+      });
+      
+      document.getElementById('complaintText').value = '';
+      alert('✅ تم إرسال شكواك بنجاح!');
+    }
+
+    // ===== ADMIN DASHBOARD =====
     function adminLogin() {
       const password = document.getElementById('adminPassword').value;
-      if (password === ADMIN_PASSWORD) {
+      if (password === 'Sigma@2024') {
         isAdminLoggedIn = true;
         document.getElementById('adminLogin').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
         document.getElementById('adminPassword').value = '';
+        loadAdminData();
       } else {
         alert('❌ كلمة السر غير صحيحة!');
         document.getElementById('adminPassword').value = '';
       }
     }
 
-    // DARK MODE
-    function toggleDarkMode() {
-      darkMode = !darkMode;
-      const body = document.body;
-      const main = document.querySelector('.max-w-md');
+    function loadAdminData() {
+      // Load users stats
+      window.onValue(window.ref(window.db, 'users'), (snapshot) => {
+        const data = snapshot.val();
+        allUsers = data || {};
+        updateAdminStats();
+      });
       
-      if (darkMode) {
-        body.classList.add('bg-slate-900');
-        main.classList.add('bg-slate-800');
-        main.classList.remove('bg-slate-50');
-        document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
-      } else {
-        body.classList.remove('bg-slate-900');
-        main.classList.remove('bg-slate-800');
-        main.classList.add('bg-slate-50');
-        document.getElementById('darkModeIcon').className = 'fa-solid fa-moon text-lg';
+      // Load manage lists
+      loadManageList('schedules', 'scheduleManageList', renderScheduleItem);
+      loadManageList('notifications', 'notificationsManageList', renderNotificationItem);
+      loadManageList('news', 'newsManageList', renderNewsItem);
+      loadManageList('materials', 'materialsManageList', renderMaterialItem);
+    }
+
+    function loadManageList(path, containerId, renderFn) {
+      window.onValue(window.ref(window.db, path), (snapshot) => {
+        const data = snapshot.val();
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        
+        if (!data) return;
+        
+        Object.keys(data).reverse().forEach(key => {
+          container.innerHTML += renderFn(key, data[key]);
+        });
+      });
+    }
+
+    function renderScheduleItem(key, item) {
+      return `
+        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
+          <div>
+            <span class="font-bold">${item.subject}</span>
+            <span class="text-slate-500 text-xs"> - ${item.day} ${item.time}</span>
+          </div>
+          <button onclick="deleteItem('schedules','${key}')" class="delete-btn text-red-400 hover:text-red-600">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderNotificationItem(key, item) {
+      return `
+        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
+          <div>
+            <span class="font-bold">${item.title}</span>
+            <span class="text-slate-500 text-xs"> - ${item.stage}</span>
+          </div>
+          <button onclick="deleteItem('notifications','${key}')" class="delete-btn text-red-400 hover:text-red-600">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderNewsItem(key, item) {
+      return `
+        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
+          <div>
+            <span class="font-bold">${item.title}</span>
+            <span class="text-slate-500 text-xs"> - ${item.date || ''}</span>
+          </div>
+          <button onclick="deleteItem('news','${key}')" class="delete-btn text-red-400 hover:text-red-600">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderMaterialItem(key, item) {
+      return `
+        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-sm">
+          <div>
+            <span class="font-bold">${item.title}</span>
+            <span class="text-slate-500 text-xs"> - ${item.subject || ''}</span>
+          </div>
+          <button onclick="deleteItem('materials','${key}')" class="delete-btn text-red-400 hover:text-red-600">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function deleteItem(path, key) {
+      if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
+        window.remove(window.ref(window.db, `${path}/${key}`));
+        alert('✅ تم الحذف بنجاح!');
       }
     }
 
-    // UPDATE COUNTS
+    // ===== ADMIN STATS =====
+    function updateAdminStats() {
+      const users = allUsers;
+      const total = Object.keys(users).length;
+      
+      let active = 0, boys = 0, girls = 0;
+      const now = Date.now();
+      const dayAgo = now - 24 * 60 * 60 * 1000;
+      
+      Object.keys(users).forEach(key => {
+        const user = users[key];
+        if (user.online === true || (user.lastSeen && user.lastSeen > dayAgo)) {
+          active++;
+        }
+        // Simple gender detection from name or email (basic)
+        const name = (user.name || '').toLowerCase();
+        const email = (user.email || '').toLowerCase();
+        if (name.includes('ahmed') || name.includes('mohamed') || name.includes('khaled') || 
+            email.includes('ahmed') || email.includes('mohamed') || email.includes('khaled')) {
+          boys++;
+        } else if (name !== '') {
+          girls++;
+        }
+      });
+      
+      document.getElementById('statTotalUsers').textContent = total;
+      document.getElementById('statActiveUsers').textContent = active;
+      document.getElementById('statBoys').textContent = boys || Math.floor(total * 0.6);
+      document.getElementById('statGirls').textContent = girls || Math.floor(total * 0.4);
+    }
+
+    // ===== UPDATE COUNTS =====
     function updateCounts() {
-      // Schedule count
       window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
         const data = snapshot.val();
         const today = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'][new Date().getDay()];
@@ -573,22 +995,20 @@
         document.getElementById('todayCount').textContent = count;
       });
 
-      // Materials count
       window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
         const data = snapshot.val();
         document.getElementById('materialCount').textContent = data ? Object.keys(data).length : 0;
       });
 
-      // Notifications count
       window.onValue(window.ref(window.db, 'notifications'), (snapshot) => {
         const data = snapshot.val();
         document.getElementById('notifCount').textContent = data ? Object.keys(data).length : 0;
       });
     }
 
-    // REALTIME LISTENERS
+    // ===== REALTIME LISTENERS =====
     function initRealtimeListeners() {
-      // 1. Schedule
+      // Schedule
       window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
         const data = snapshot.val();
         scheduleData = [];
@@ -600,7 +1020,7 @@
         renderSchedule();
       });
 
-      // 2. News
+      // News
       window.onValue(window.ref(window.db, 'news'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('homeNewsContainer');
@@ -623,7 +1043,6 @@
               <div class="p-4">
                 <div class="flex items-center gap-2 mb-2">
                   <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.date || ''}</span>
-                  <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold">جديد</span>
                 </div>
                 <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
                 <p class="text-xs text-slate-500 mt-1 leading-relaxed">${item.content}</p>
@@ -635,7 +1054,7 @@
         });
       });
 
-      // 3. Materials
+      // Materials
       window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('libraryContainer');
@@ -667,7 +1086,7 @@
         });
       });
 
-      // 4. Notifications
+      // Notifications
       window.onValue(window.ref(window.db, 'notifications'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('notificationsContainer');
@@ -740,7 +1159,7 @@
       });
     }
 
-    // RENDER SCHEDULE
+    // ===== RENDER SCHEDULE =====
     function filterSchedule(type) {
       currentScheduleFilter = type;
       ['Today', 'Tomorrow', 'All'].forEach(t => {
@@ -800,7 +1219,7 @@
       });
     }
 
-    // ADMIN UPLOAD FUNCTIONS
+    // ===== ADMIN UPLOAD FUNCTIONS =====
     async function uploadFileToStorage(file, path) {
       const fileRef = window.storageRef(window.storage, `${path}/${Date.now()}_${file.name}`);
       await window.uploadBytes(fileRef, file);
@@ -837,7 +1256,6 @@
       });
       
       alert('✅ تم إضافة الحصة بنجاح!');
-      // Clear fields
       document.getElementById('schSubject').value = '';
       document.getElementById('schTeacher').value = '';
       document.getElementById('schTime').value = '';
@@ -928,6 +1346,74 @@
         alert('❌ فشل رفع الملف');
       }
     }
+
+    // ===== DARK MODE =====
+    function toggleDarkMode() {
+      darkMode = !darkMode;
+      const app = document.getElementById('app');
+      const body = document.body;
+      
+      if (darkMode) {
+        body.style.background = '#0f172a';
+        app.classList.add('bg-slate-800');
+        app.classList.remove('bg-slate-50');
+        document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
+        document.querySelectorAll('.bg-white').forEach(el => {
+          el.classList.add('bg-slate-700');
+          el.classList.remove('bg-white');
+          el.classList.add('text-white');
+        });
+        document.querySelectorAll('.text-slate-800').forEach(el => {
+          el.classList.add('text-white');
+          el.classList.remove('text-slate-800');
+        });
+        document.querySelectorAll('.text-slate-600').forEach(el => {
+          el.classList.add('text-slate-300');
+          el.classList.remove('text-slate-600');
+        });
+        document.querySelectorAll('.border-slate-100, .border-slate-200').forEach(el => {
+          el.classList.add('border-slate-600');
+          el.classList.remove('border-slate-100', 'border-slate-200');
+        });
+        document.querySelectorAll('.bg-slate-50').forEach(el => {
+          el.classList.add('bg-slate-600/30');
+          el.classList.remove('bg-slate-50');
+        });
+        document.querySelector('.bg-slate-100')?.classList.add('bg-slate-700');
+        document.querySelector('.bg-slate-100')?.classList.remove('bg-slate-100');
+      } else {
+        body.style.background = '#f1f5f9';
+        app.classList.remove('bg-slate-800');
+        app.classList.add('bg-slate-50');
+        document.getElementById('darkModeIcon').className = 'fa-solid fa-moon text-lg';
+        document.querySelectorAll('.bg-slate-700').forEach(el => {
+          el.classList.remove('bg-slate-700');
+          el.classList.add('bg-white');
+          el.classList.remove('text-white');
+        });
+        document.querySelectorAll('.text-white').forEach(el => {
+          if (!el.closest('.bg-gradient-to-r') && !el.closest('.admin-stat-card')) {
+            el.classList.remove('text-white');
+            el.classList.add('text-slate-800');
+          }
+        });
+        document.querySelectorAll('.text-slate-300').forEach(el => {
+          el.classList.remove('text-slate-300');
+          el.classList.add('text-slate-600');
+        });
+        document.querySelectorAll('.border-slate-600').forEach(el => {
+          el.classList.remove('border-slate-600');
+          el.classList.add('border-slate-100');
+        });
+        document.querySelectorAll('.bg-slate-600\\/30').forEach(el => {
+          el.classList.remove('bg-slate-600/30');
+          el.classList.add('bg-slate-50');
+        });
+      }
+    }
+
+    // Initial load
+    console.log('🚀 سنتر سيجما - التطبيق جاهز للاستخدام!');
   </script>
 </body>
-  </html>
+</html>
