@@ -5,23 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>سنتر سيجما التعليمي</title>
   
-  <!-- PWA Meta Tags -->
+  <!-- PWA -->
   <meta name="theme-color" content="#2563eb">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="سيجما">
   
-  <!-- Manifest مدمج -->
   <link rel="manifest" href="data:application/json,{
     &quot;name&quot;:&quot;سنتر سيجما التعليمي&quot;,
     &quot;short_name&quot;:&quot;سيجما&quot;,
     &quot;start_url&quot;:&quot;.&quot;,
     &quot;display&quot;:&quot;standalone&quot;,
     &quot;background_color&quot;:&quot;#f8fafc&quot;,
-    &quot;theme_color&quot;:&quot;#2563eb&quot;
+    &quot;theme_color&quot;:&quot;#2563eb&quot;,
+    &quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%232563eb'/%3E%3Ctext x='256' y='350' font-size='300' text-anchor='middle' fill='white' font-family='serif' font-weight='bold'%3E%CE%A3%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;,&quot;purpose&quot;:&quot;any maskable&quot;}]
   }">
 
-  <!-- Tailwind CSS & Font Awesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -45,10 +44,6 @@
     .option-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
     .option-btn:active { transform: scale(0.95); }
     
-    .admin-btn { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; transition: all 0.2s; width: 100%; }
-    .admin-btn:active { transform: scale(0.98); background: #f1f5f9; }
-    .admin-btn i { font-size: 16px; width: 24px; text-align: center; }
-    
     .admin-panel-section { background: white; border-radius: 16px; padding: 12px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
     .admin-panel-section .header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 4px 0; }
     .admin-panel-section .header h4 { font-size: 13px; font-weight: 700; color: #1e293b; }
@@ -71,6 +66,10 @@
     .install-btn { background: rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 11px; cursor: pointer; display: none; align-items: center; gap: 4px; }
     .install-btn.show { display: flex; }
     
+    .settings-card { background: white; border-radius: 16px; padding: 14px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+    .settings-card .title { font-size: 13px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .settings-card .title i { width: 20px; text-align: center; }
+    
     .dark-mode .app-container { background: #0f172a; }
     .dark-mode .bg-white { background: #1e293b !important; }
     .dark-mode .text-slate-800 { color: #e2e8f0 !important; }
@@ -80,9 +79,18 @@
     .dark-mode .stat-card { background: #1e293b !important; border-color: #334155 !important; }
     .dark-mode .stat-label { color: #94a3b8 !important; }
     .dark-mode .admin-panel-section { background: #1e293b !important; border-color: #334155 !important; }
+    .dark-mode .settings-card { background: #1e293b !important; border-color: #334155 !important; }
     .dark-mode .complaint-card { background: #0f172a !important; }
     .dark-mode .option-btn { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
     .dark-mode .option-btn.active { background: #1e3a5f !important; border-color: #2563eb !important; color: #60a5fa !important; }
+    
+    .schedule-item { background: white; border-radius: 12px; padding: 10px; border: 1px solid #e2e8f0; margin-bottom: 6px; }
+    .schedule-item .subject { font-weight: 700; font-size: 13px; }
+    .schedule-item .time { font-weight: 700; color: #d97706; }
+    .schedule-item .teacher { font-size: 11px; color: #64748b; }
+    
+    .dark-mode .schedule-item { background: #1e293b !important; border-color: #334155 !important; }
+    .dark-mode .schedule-item .teacher { color: #94a3b8 !important; }
     
     @media (max-width: 400px) {
       .stat-number { font-size: 15px; }
@@ -99,7 +107,7 @@
   <!-- HEADER -->
   <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 shadow-lg sticky top-0 z-30 flex items-center justify-between">
     <div class="flex items-center gap-2">
-      <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center font-extrabold text-xl border border-white/30">Σ</div>
+      <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center font-extrabold text-xl border border-white/30 shadow-lg">Σ</div>
       <div>
         <h1 class="font-extrabold text-sm leading-tight">سنتر سيجما</h1>
         <p class="text-[8px] text-blue-100">منصة الطالب الذكية</p>
@@ -156,6 +164,7 @@
         </div>
       </div>
 
+      <!-- حصصي اليوم - خاصة بالطالب -->
       <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
         <div class="flex items-center justify-between mb-2">
           <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-clock text-blue-600 ml-1"></i> حصصي اليوم</h3>
@@ -177,10 +186,10 @@
       </div>
     </section>
 
-    <!-- SCHEDULE -->
+    <!-- SCHEDULE - جدول السنتر كاملاً -->
     <section id="tab-schedule" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
-        <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-calendar-days text-blue-600 ml-1"></i> جدول المحاضرات</h2>
+        <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-calendar-days text-blue-600 ml-1"></i> جدول السنتر</h2>
         <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
       </div>
       <div class="flex bg-slate-200/80 p-1 rounded-xl text-[10px] font-bold text-slate-600">
@@ -226,15 +235,29 @@
       </div>
     </section>
 
-    <!-- SETTINGS -->
+    <!-- SETTINGS - مرتبة -->
     <section id="tab-settings" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-gear text-slate-600 ml-1"></i> الإعدادات</h2>
         <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
       </div>
 
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-        <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-user-pen text-blue-600"></i> تعديل البيانات الشخصية</h3>
+      <!-- معلوماتي -->
+      <div class="settings-card">
+        <div class="title"><i class="fa-solid fa-user text-blue-600"></i> معلوماتي</div>
+        <div id="studentInfo" class="space-y-1 text-xs">
+          <p><span class="text-slate-500">الاسم:</span> <span id="infoName" class="font-bold text-slate-800">-</span></p>
+          <p><span class="text-slate-500">البريد:</span> <span id="infoEmail" class="font-bold text-slate-800">-</span></p>
+          <p><span class="text-slate-500">الهاتف:</span> <span id="infoPhone" class="font-bold text-slate-800">-</span></p>
+          <p><span class="text-slate-500">المرحلة:</span> <span id="infoStage" class="font-bold text-slate-800">-</span></p>
+          <p><span class="text-slate-500">الصف:</span> <span id="infoGrade" class="font-bold text-slate-800">-</span></p>
+          <p><span class="text-slate-500">المواد:</span> <span id="infoSubjects" class="font-bold text-slate-800">-</span></p>
+        </div>
+      </div>
+
+      <!-- تعديل البيانات -->
+      <div class="settings-card">
+        <div class="title"><i class="fa-solid fa-pen text-emerald-600"></i> تعديل البيانات</div>
         <div class="space-y-2">
           <div>
             <label class="text-[10px] font-bold text-slate-500">المرحلة:</label>
@@ -260,30 +283,20 @@
             <div id="subjectsCheckbox" class="mt-1 grid grid-cols-2 gap-1"></div>
           </div>
           <button onclick="saveProfile()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm mt-2">
-            <i class="fa-solid fa-save"></i> حفظ التغييرات
+            <i class="fa-solid fa-save"></i> حفظ
           </button>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
-        <h3 class="font-bold text-xs text-slate-800 mb-2"><i class="fa-solid fa-user text-blue-600"></i> معلوماتي</h3>
-        <div id="studentInfo" class="space-y-1 text-xs">
-          <p><span class="text-slate-500">الاسم:</span> <span id="infoName" class="font-bold text-slate-800">-</span></p>
-          <p><span class="text-slate-500">البريد:</span> <span id="infoEmail" class="font-bold text-slate-800">-</span></p>
-          <p><span class="text-slate-500">الهاتف:</span> <span id="infoPhone" class="font-bold text-slate-800">-</span></p>
-          <p><span class="text-slate-500">المرحلة:</span> <span id="infoStage" class="font-bold text-slate-800">-</span></p>
-          <p><span class="text-slate-500">الصف:</span> <span id="infoGrade" class="font-bold text-slate-800">-</span></p>
-          <p><span class="text-slate-500">المواد:</span> <span id="infoSubjects" class="font-bold text-slate-800">-</span></p>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
-        <h3 class="font-bold text-xs text-slate-800 mb-2"><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر</h3>
+      <!-- أرقام السنتر -->
+      <div class="settings-card">
+        <div class="title"><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر</div>
         <div id="centerContacts" class="space-y-1.5"></div>
       </div>
 
-      <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
-        <h3 class="font-bold text-xs text-slate-800 mb-2"><i class="fa-solid fa-comment text-amber-500"></i> تقديم شكوى</h3>
+      <!-- شكوى -->
+      <div class="settings-card">
+        <div class="title"><i class="fa-solid fa-comment text-amber-500"></i> تقديم شكوى</div>
         <textarea id="complaintText" placeholder="اكتب شكواك هنا..." class="w-full p-2 bg-slate-50 border rounded-xl text-sm h-16 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
         <button onclick="sendComplaint()" class="w-full mt-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-2 rounded-xl text-sm">
           <i class="fa-solid fa-paper-plane"></i> إرسال
@@ -316,6 +329,7 @@
 
       <div id="adminPanel" class="hidden space-y-2">
         
+        <!-- إحصائيات -->
         <div class="admin-panel-section" onclick="toggleStats()" style="cursor:pointer;">
           <div class="header">
             <h4><i class="fa-solid fa-chart-line text-blue-400"></i> الإحصائيات</h4>
@@ -333,6 +347,7 @@
           </div>
         </div>
 
+        <!-- الشكاوى -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-message text-amber-500"></i> رسائل الشكاوى</h4>
@@ -345,17 +360,26 @@
           </div>
         </div>
 
+        <!-- إضافة حصة -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-plus-circle text-blue-600"></i> إضافة حصة</h4>
             <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
           </div>
           <div class="content">
+            <!-- نوع الإضافة -->
             <div class="flex gap-1 mb-2">
               <button onclick="setOption('full')" id="optFull" class="option-btn active flex-1 text-center">📝 كامل</button>
               <button onclick="setOption('text')" id="optText" class="option-btn flex-1 text-center">📝 نص</button>
               <button onclick="setOption('image')" id="optImage" class="option-btn flex-1 text-center">🖼️ صورة</button>
             </div>
+            <!-- اليوم -->
+            <div class="flex gap-1 mb-2">
+              <button onclick="setScheduleDay('today')" id="dayToday" class="option-btn active flex-1 text-center">اليوم</button>
+              <button onclick="setScheduleDay('tomorrow')" id="dayTomorrow" class="option-btn flex-1 text-center">غداً</button>
+              <button onclick="setScheduleDay('week')" id="dayWeek" class="option-btn flex-1 text-center">الأسبوع</button>
+            </div>
+            <!-- الحقول -->
             <div id="scheduleFields">
               <div class="grid grid-cols-2 gap-1.5">
                 <select id="schDay" class="p-1.5 bg-slate-50 border rounded-lg text-xs">
@@ -386,6 +410,7 @@
           </div>
         </div>
 
+        <!-- إشعار -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار</h4>
@@ -409,6 +434,7 @@
           </div>
         </div>
 
+        <!-- خبر -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر</h4>
@@ -423,6 +449,7 @@
           </div>
         </div>
 
+        <!-- مذكرة -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة</h4>
@@ -442,6 +469,7 @@
           </div>
         </div>
 
+        <!-- أرقام السنتر -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-address-book text-green-600"></i> أرقام السنتر</h4>
@@ -476,9 +504,7 @@
 
 </div>
 
-<!-- ============================================ -->
-<!-- FIREBASE - يتم تحميله أولاً -->
-<!-- ============================================ -->
+<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -499,64 +525,23 @@
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // تفعيل استمرار الجلسة
   await setPersistence(auth, browserLocalPersistence);
 
-  // جعل الكائنات متاحة عالمياً
-  window.db = db;
-  window.auth = auth;
-  window.provider = provider;
-  window.ref = ref;
-  window.push = push;
-  window.set = set;
-  window.remove = remove;
-  window.update = update;
-  window.onValue = onValue;
-  window.signInWithPopup = signInWithPopup;
-  window.signOut = signOut;
-  window.onAuthStateChanged = onAuthStateChanged;
-
-  console.log('✅ Firebase initialized successfully');
+  window.db = db; window.auth = auth; window.provider = provider;
+  window.ref = ref; window.push = push; window.set = set; window.remove = remove; window.update = update; window.onValue = onValue;
+  window.signInWithPopup = signInWithPopup; window.signOut = signOut; window.onAuthStateChanged = onAuthStateChanged;
 </script>
 
-<!-- ============================================ -->
-<!-- APPLICATION LOGIC - يتم تحميله بعد Firebase -->
-<!-- ============================================ -->
+<!-- APPLICATION -->
 <script>
-// ===== انتظار تحميل Firebase =====
-let firebaseReady = false;
-
-// التحقق من جاهزية Firebase
-function waitForFirebase() {
-  return new Promise((resolve) => {
-    if (window.db && window.auth) {
-      resolve();
-      return;
-    }
-    const check = setInterval(() => {
-      if (window.db && window.auth) {
-        clearInterval(check);
-        resolve();
-      }
-    }, 100);
-  });
-}
-
-// ===== بدء التطبيق بعد جاهزية Firebase =====
-waitForFirebase().then(() => {
-  console.log('🚀 Starting application...');
-  initApp();
-});
-
-// ===== المتغيرات العامة =====
+// ===== المتغيرات =====
 let currentUser = null, userData = null, scheduleData = [];
 let currentFilter = 'today', isAdmin = false, darkMode = false, deferredPrompt;
 let allUsers = {}, contacts = [], complaints = [], scheduleOption = 'full';
+let scheduleDayOption = 'today';
 
-// ===== حسابات الإدارة =====
 const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2', 'ADMIN_UID_2', 'ADMIN_UID_3'];
 
-// ===== المواد =====
 const subjectsByStage = {
   'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية', 'فرنسية', 'تاريخ', 'جغرافيا', 'فلسفة'],
   'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية', 'دراسات', 'حاسب آلي']
@@ -579,7 +564,6 @@ function installApp() {
   }
 }
 
-// ===== Toast =====
 function showToast(msg, type = 'info') {
   const old = document.querySelector('.toast');
   if (old) old.remove();
@@ -590,12 +574,26 @@ function showToast(msg, type = 'info') {
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3000);
 }
 
-// ===== Service Worker مدمج =====
+// ===== Service Worker =====
 if ('serviceWorker' in navigator) {
   const sw = `self.addEventListener('install',e=>e.waitUntil(caches.open('v1').then(c=>c.add(['/']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
-  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], {type:'application/javascript'})))
-    .then(r => console.log('✅ SW registered')).catch(e => console.log('❌ SW failed'));
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], {type:'application/javascript'})));
 }
+
+// ===== انتظار Firebase =====
+function waitForFirebase() {
+  return new Promise(resolve => {
+    if (window.db && window.auth) { resolve(); return; }
+    const check = setInterval(() => {
+      if (window.db && window.auth) { clearInterval(check); resolve(); }
+    }, 100);
+  });
+}
+
+waitForFirebase().then(() => {
+  console.log('🚀 Starting...');
+  initApp();
+});
 
 // ===== التبويبات =====
 function switchTab(id) {
@@ -632,76 +630,45 @@ function handleAdminTab() {
 
 // ===== المصادقة =====
 function initApp() {
-  // مراقبة حالة المصادقة
   window.onAuthStateChanged(window.auth, user => {
-    console.log('Auth state changed:', user ? '✅ Logged in' : '❌ Logged out');
-    
     if (user) {
       currentUser = user;
-      // قراءة بيانات المستخدم
       window.onValue(window.ref(window.db, `users/${user.uid}`), snap => {
         userData = snap.val();
-        console.log('User data loaded:', userData ? '✅' : '❌ No data');
         renderUser();
         updateInfo();
         if (!userData) {
-          setTimeout(() => { 
-            switchTab('settings'); 
-            showToast('📝 أكمل بياناتك الشخصية', 'warning'); 
-          }, 1000);
+          setTimeout(() => { switchTab('settings'); showToast('📝 أكمل بياناتك', 'warning'); }, 1000);
         }
       });
-      
-      // تحديث حالة التواجد
       window.set(window.ref(window.db, `users/${user.uid}/online`), true);
       window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
-      
     } else {
-      currentUser = null;
-      userData = null;
-      isAdmin = false;
+      currentUser = null; userData = null; isAdmin = false;
       renderUser();
       document.getElementById('adminDenied').classList.add('hidden');
       document.getElementById('adminLogin').classList.remove('hidden');
       document.getElementById('adminPanel').classList.add('hidden');
     }
   });
-
-  // بدء المستمعات
   initListeners();
   loadContacts();
   loadComplaints();
   loadSubjects();
-  
-  console.log('✅ Application initialized');
 }
 
-// ===== تسجيل الدخول =====
 function loginGoogle() {
-  console.log('🔐 Attempting Google login...');
   window.signInWithPopup(window.auth, window.provider)
-    .then(result => {
-      console.log('✅ Login successful:', result.user.displayName);
-      showToast('✅ تم تسجيل الدخول بنجاح', 'success');
-    })
-    .catch(error => {
-      console.error('❌ Login error:', error);
-      showToast('❌ فشل تسجيل الدخول: ' + error.message, 'error');
-    });
+    .then(() => showToast('✅ تم الدخول', 'success'))
+    .catch(e => showToast('❌ ' + e.message, 'error'));
 }
 
-// ===== تسجيل الخروج =====
 function logoutUser() {
-  if (currentUser) {
-    window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
-  }
-  window.signOut(window.auth).then(() => {
-    showToast('👋 تم تسجيل الخروج', 'warning');
-    renderUser();
-  });
+  if (currentUser) window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
+  window.signOut(window.auth);
+  showToast('👋 تم الخروج', 'warning');
 }
 
-// ===== عرض بيانات المستخدم =====
 function renderUser() {
   const avatar = document.getElementById('userAvatar');
   const name = document.getElementById('userName');
@@ -717,75 +684,44 @@ function renderUser() {
     subjects.innerHTML = (userData.subjects || []).map(s => `<span class="subject-chip">${s}</span>`).join('');
     btn.innerHTML = '<i class="fa-solid fa-sign-out-alt"></i> خروج';
     btn.onclick = logoutUser;
-    btn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition';
+    btn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl';
   } else if (currentUser) {
-    // مستخدم مسجل لكن بدون بيانات
     avatar.src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
     avatar.style.display = 'block';
     name.textContent = `مرحباً، ${currentUser.displayName || 'طالب'}`;
-    sub.textContent = 'يرجى إكمال بياناتك';
+    sub.textContent = 'أكمل بياناتك';
     subjects.innerHTML = '';
     btn.innerHTML = '<i class="fa-solid fa-sign-out-alt"></i> خروج';
     btn.onclick = logoutUser;
-    btn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition';
+    btn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl';
   } else {
     avatar.style.display = 'none';
     name.textContent = 'مرحباً بك';
-    sub.textContent = 'سجل دخولك للمتابعة';
+    sub.textContent = 'سجل دخولك';
     subjects.innerHTML = '';
     btn.innerHTML = '<i class="fa-brands fa-google text-xs"></i> دخول';
     btn.onclick = loginGoogle;
-    btn.className = 'bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition';
+    btn.className = 'bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl';
   }
 }
 
-function openProfile() { 
-  if (currentUser) {
-    switchTab('settings');
-  } else {
-    showToast('⚠️ سجل دخول أولاً', 'error');
-  }
-}
+function openProfile() { if (currentUser) switchTab('settings'); else showToast('⚠️ سجل دخول', 'error'); }
 
-// ===== حفظ الملف الشخصي =====
+// ===== حفظ الملف =====
 function saveProfile() {
-  if (!currentUser) {
-    showToast('⚠️ سجل دخول أولاً', 'error');
-    return;
-  }
-  
+  if (!currentUser) return showToast('⚠️ سجل دخول', 'error');
   const stage = document.getElementById('profStage').value;
   const grade = document.getElementById('profGrade').value;
   const phone = document.getElementById('profPhone').value;
   const checked = document.querySelectorAll('.subject-check:checked');
   const subjects = Array.from(checked).map(cb => cb.value);
-  
-  if (!subjects.length) {
-    showToast('⚠️ اختر مادة واحدة على الأقل', 'error');
-    return;
-  }
+  if (!subjects.length) return showToast('⚠️ اختر مادة', 'error');
 
-  const data = {
-    name: currentUser.displayName,
-    email: currentUser.email,
-    photoURL: currentUser.photoURL,
-    stage, grade, subjects,
-    phone: phone ? btoa(phone) : '',
+  window.set(window.ref(window.db, `users/${currentUser.uid}`), {
+    name: currentUser.displayName, email: currentUser.email, photoURL: currentUser.photoURL,
+    stage, grade, subjects, phone: phone ? btoa(phone) : '',
     updatedAt: new Date().toISOString()
-  };
-
-  window.set(window.ref(window.db, `users/${currentUser.uid}`), data)
-    .then(() => {
-      showToast('✅ تم حفظ البيانات بنجاح!', 'success');
-      renderUser();
-      updateInfo();
-      // تحديث userData محلياً
-      userData = data;
-    })
-    .catch(err => {
-      console.error('Save error:', err);
-      showToast('❌ فشل الحفظ: ' + err.message, 'error');
-    });
+  }).then(() => { showToast('✅ تم الحفظ', 'success'); renderUser(); updateInfo(); });
 }
 
 function loadSubjects() {
@@ -795,12 +731,7 @@ function loadSubjects() {
   const stage = document.getElementById('profStage').value;
   (subjectsByStage[stage] || []).forEach(s => {
     const checked = userData?.subjects?.includes(s) || false;
-    container.innerHTML += `
-      <label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded-lg text-xs cursor-pointer hover:bg-slate-100 transition">
-        <input type="checkbox" value="${s}" class="subject-check" ${checked?'checked':''}>
-        ${s}
-      </label>
-    `;
+    container.innerHTML += `<label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded-lg text-xs cursor-pointer"><input type="checkbox" value="${s}" class="subject-check" ${checked?'checked':''}> ${s}</label>`;
   });
   document.getElementById('profStage').onchange = loadSubjects;
 }
@@ -817,15 +748,41 @@ function updateInfo() {
   }
 }
 
-// ===== الإدارة =====
+// ===== خيارات الإضافة =====
+function setOption(opt) {
+  scheduleOption = opt;
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`opt${opt.charAt(0).toUpperCase()+opt.slice(1)}`).classList.add('active');
+  document.getElementById('scheduleFields').style.display = (opt === 'image') ? 'none' : 'block';
+  document.getElementById('scheduleImageField').style.display = (opt === 'text') ? 'none' : 'block';
+}
+
+function setScheduleDay(day) {
+  scheduleDayOption = day;
+  document.querySelectorAll('#tab-admin .option-btn').forEach(b => {
+    if (b.id === 'dayToday' || b.id === 'dayTomorrow' || b.id === 'dayWeek') {
+      b.classList.remove('active');
+    }
+  });
+  document.getElementById(`day${day.charAt(0).toUpperCase()+day.slice(1)}`).classList.add('active');
+  
+  const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const today = days[new Date().getDay()];
+  const tomorrow = days[(new Date().getDay()+1)%7];
+  
+  if (day === 'today') {
+    document.getElementById('schDay').value = today;
+  } else if (day === 'tomorrow') {
+    document.getElementById('schDay').value = tomorrow;
+  }
+}
+
+// ===== إدارة =====
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
-  if (!currentUser) {
-    showToast('⚠️ سجل دخول أولاً بحساب إداري', 'error');
-    return;
-  }
+  if (!currentUser) return showToast('⚠️ سجل دخول بحساب إداري', 'error');
   if (!ADMIN_UIDS.includes(currentUser.uid)) {
-    showToast('⛔ هذا الحساب ليس إدارياً!', 'error');
+    showToast('⛔ ليس إدارياً', 'error');
     document.getElementById('adminDenied').classList.remove('hidden');
     document.getElementById('adminLogin').classList.add('hidden');
     return;
@@ -838,7 +795,7 @@ function adminLogin() {
     loadAdminData();
     showToast('✅ مرحباً في لوحة التحكم', 'success');
   } else {
-    showToast('❌ كلمة السر غير صحيحة!', 'error');
+    showToast('❌ كلمة السر خاطئة', 'error');
   }
 }
 
@@ -926,15 +883,6 @@ function deleteItem(path, key) {
   }
 }
 
-// ===== خيارات الإضافة =====
-function setOption(opt) {
-  scheduleOption = opt;
-  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`opt${opt.charAt(0).toUpperCase()+opt.slice(1)}`).classList.add('active');
-  document.getElementById('scheduleFields').style.display = (opt === 'image') ? 'none' : 'block';
-  document.getElementById('scheduleImageField').style.display = (opt === 'text') ? 'none' : 'block';
-}
-
 // ===== Base64 =====
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -948,15 +896,25 @@ function fileToBase64(file) {
 // ===== إضافة حصة =====
 async function addSchedule() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
-  let day = '', subject = '', teacher = '', time = '', room = '', stage = '', imageData = '';
+  
+  let day = document.getElementById('schDay').value;
+  let subject = document.getElementById('schSubject').value;
+  let teacher = document.getElementById('schTeacher').value;
+  let time = document.getElementById('schTime').value;
+  let room = document.getElementById('schRoom').value;
+  let stage = document.getElementById('schStage').value;
+  let imageData = '';
+  
+  // إذا كان الخيار اليوم أو غداً، نستخدم اليوم المحدد تلقائياً
+  if (scheduleDayOption === 'today') {
+    const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    day = days[new Date().getDay()];
+  } else if (scheduleDayOption === 'tomorrow') {
+    const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    day = days[(new Date().getDay()+1)%7];
+  }
   
   if (scheduleOption !== 'image') {
-    day = document.getElementById('schDay').value;
-    subject = document.getElementById('schSubject').value;
-    teacher = document.getElementById('schTeacher').value;
-    time = document.getElementById('schTime').value;
-    room = document.getElementById('schRoom').value;
-    stage = document.getElementById('schStage').value;
     if (!subject && scheduleOption === 'full') return showToast('⚠️ اكتب المادة', 'error');
   }
   
@@ -1150,11 +1108,21 @@ function renderSchedule() {
     return;
   }
   container.innerHTML = items.map(i => `
-    <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
-      ${i.imageData ? `<img src="${i.imageData}" class="w-full h-28 object-cover rounded-lg mb-2">` : ''}
+    <div class="schedule-item">
+      ${i.imageData ? `<img src="${i.imageData}" class="w-full h-24 object-cover rounded-lg mb-2">` : ''}
       <div class="flex justify-between">
-        <div><div class="flex gap-1 mb-0.5"><span class="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">${i.day}</span><span class="text-[9px] bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded">${i.stage||''}</span></div><h3 class="font-bold text-sm">${i.subject||'صورة'}</h3><p class="text-xs text-slate-500"><i class="fa-solid fa-chalkboard-user"></i> ${i.teacher||''}</p></div>
-        <div class="text-center"><span class="text-sm font-extrabold text-amber-600">${i.time||''}</span><div class="text-[9px] text-slate-400">${i.room||''}</div></div>
+        <div>
+          <div class="flex gap-1 mb-0.5">
+            <span class="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">${i.day}</span>
+            <span class="text-[9px] bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded">${i.stage||''}</span>
+          </div>
+          <div class="subject">${i.subject||'صورة'}</div>
+          <div class="teacher"><i class="fa-solid fa-chalkboard-user"></i> ${i.teacher||''}</div>
+        </div>
+        <div class="text-center">
+          <div class="time">${i.time||''}</div>
+          <div class="text-[9px] text-slate-400">${i.room||''}</div>
+        </div>
       </div>
     </div>
   `).join('');
@@ -1164,19 +1132,35 @@ function renderMySchedule() {
   const container = document.getElementById('myScheduleToday');
   if (!container) return;
   if (!scheduleData.length || !userData) {
-    container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد حصص</div>';
+    container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد حصص لك اليوم</div>';
     return;
   }
-  const today = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
-  const my = scheduleData.filter(i => i.day === today && (i.stage === userData.stage || !i.stage) && (!i.subject || (userData.subjects||[]).includes(i.subject)));
+  const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const today = days[new Date().getDay()];
+  
+  // تصفية الحصص حسب مرحلة الطالب والمواد المسجلة
+  const my = scheduleData.filter(i => {
+    const dayMatch = i.day === today;
+    const stageMatch = i.stage === userData.stage || !i.stage;
+    const subjectMatch = !i.subject || (userData.subjects && userData.subjects.includes(i.subject));
+    return dayMatch && stageMatch && subjectMatch;
+  });
+  
   if (!my.length) {
-    container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">📭 لا توجد حصص اليوم</div>';
+    container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">📭 لا توجد حصص لك اليوم</div>';
     return;
   }
+  
   container.innerHTML = my.map(i => `
     <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg border border-blue-100">
-      <div><span class="font-bold text-sm">${i.subject||'صورة'}</span><span class="text-xs text-slate-500 block">${i.teacher||''}</span></div>
-      <div class="text-center"><span class="text-sm font-extrabold text-amber-600">${i.time||''}</span><span class="text-[9px] text-slate-400 block">${i.room||''}</span></div>
+      <div>
+        <span class="font-bold text-sm">${i.subject||'صورة'}</span>
+        <span class="text-xs text-slate-500 block">${i.teacher||''}</span>
+      </div>
+      <div class="text-center">
+        <span class="text-sm font-extrabold text-amber-600">${i.time||''}</span>
+        <span class="text-[9px] text-slate-400 block">${i.room||''}</span>
+      </div>
     </div>
   `).join('');
 }
@@ -1188,7 +1172,9 @@ function initListeners() {
     scheduleData = d ? Object.keys(d).map(k => ({id:k, ...d[k]})) : [];
     renderSchedule();
     renderMySchedule();
-    document.getElementById('todayCount').textContent = scheduleData.filter(i => i.day === ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()]).length;
+    const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const today = days[new Date().getDay()];
+    document.getElementById('todayCount').textContent = scheduleData.filter(i => i.day === today).length;
   });
   
   window.onValue(window.ref(window.db, 'materials'), snap => {
@@ -1252,7 +1238,7 @@ function toggleDarkMode() {
   document.getElementById('darkIcon').className = darkMode ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
 }
 
-console.log('📱 سنتر سيجما - جاهز للتشغيل');
+console.log('✅ سنتر سيجما - جاهز للتشغيل الفوري!');
 </script>
 </body>
-</html>
+                                                                                                                    </html>
