@@ -1508,15 +1508,21 @@ function toggleDarkMode() {
 
 console.log('✅ سنتر سيجما - جاهز للتشغيل الفوري!');
 </script>
-  <!-- ===== إضافة نظام الإشعارات التلقائية ===== -->
+  <!-- ===== إضافة نظام الإشعارات التلقائية للمدير فقط ===== -->
 <script>
 // ============================================
-// نظام الإشعارات التلقائية
+// نظام الإشعارات التلقائية - للمدير فقط
 // ============================================
 
-// دالة لإرسال إشعار لجميع المستخدمين عند إضافة شيء جديد
+// دالة لإرسال إشعار لجميع المستخدمين عند إضافة شيء جديد بواسطة المدير
 async function sendAutoNotification(type, title, details) {
   try {
+    // التأكد أن المستخدم الحالي هو مدير
+    if (!isAdmin) {
+      console.log('⚠️ فقط المدير يمكنه إرسال إشعارات تلقائية');
+      return;
+    }
+
     // تحديد نوع الإشعار
     const notificationTypes = {
       'schedule': {
@@ -1536,18 +1542,13 @@ async function sendAutoNotification(type, title, details) {
       },
       'notification': {
         icon: '🔔',
-        title: '🔔 إشعار جديد!',
-        body: `تم إرسال إشعار جديد: ${title}`
+        title: '🔔 إشعار جديد من الإدارة!',
+        body: `📌 ${title}`
       },
       'contact': {
         icon: '📞',
-        title: '📞 رقم جديد!',
+        title: '📞 رقم تواصل جديد!',
         body: `تم إضافة رقم تواصل جديد: ${title}`
-      },
-      'complaint': {
-        icon: '💬',
-        title: '💬 شكوى جديدة!',
-        body: `تم استلام شكوى جديدة من: ${title}`
       }
     };
 
@@ -1566,20 +1567,21 @@ async function sendAutoNotification(type, title, details) {
       time: new Date().toLocaleTimeString('ar-EG'),
       createdAt: new Date().toISOString(),
       isAuto: true,
-      type: type
+      type: type,
+      fromAdmin: currentUser?.displayName || 'الإدارة'
     });
 
-    console.log(`✅ تم إرسال إشعار تلقائي: ${notifData.title}`);
+    console.log(`✅ تم إرسال إشعار تلقائي من المدير: ${notifData.title}`);
     
-    // عرض رسالة للمستخدم الحالي
-    showToast(`🔔 تم إرسال إشعار للجميع: ${notifData.title}`, 'info');
+    // عرض رسالة للمدير فقط
+    showToast(`🔔 تم إرسال إشعار للجميع: ${notifData.title}`, 'success');
     
   } catch (error) {
     console.error('❌ فشل إرسال الإشعار التلقائي:', error);
   }
 }
 
-// ===== تعديل دوال الإضافة لإرسال إشعارات تلقائية =====
+// ===== تعديل دوال الإضافة لإرسال إشعارات تلقائية (للمدير فقط) =====
 
 // تعديل دالة إضافة حصة
 const originalAddSchedule = addSchedule;
@@ -1588,12 +1590,14 @@ addSchedule = async function() {
     // تنفيذ الدالة الأصلية
     await originalAddSchedule.call(this);
     
-    // بعد الإضافة بنجاح، نرسل إشعار
-    const subject = document.getElementById('schSubject')?.value || 'حصة جديدة';
-    const day = document.getElementById('schDay')?.value || '';
-    const teacher = document.getElementById('schTeacher')?.value || '';
-    
-    await sendAutoNotification('schedule', subject, `${subject} - يوم ${day} - مدرس: ${teacher}`);
+    // بعد الإضافة بنجاح، نرسل إشعار (إذا كان المدير)
+    if (isAdmin) {
+      const subject = document.getElementById('schSubject')?.value || 'حصة جديدة';
+      const day = document.getElementById('schDay')?.value || '';
+      const teacher = document.getElementById('schTeacher')?.value || '';
+      
+      await sendAutoNotification('schedule', subject, `${subject} - يوم ${day} - مدرس: ${teacher}`);
+    }
   } catch (error) {
     console.error('❌ خطأ في إضافة الحصة:', error);
   }
@@ -1604,8 +1608,10 @@ const originalAddNews = addNews;
 addNews = async function() {
   try {
     await originalAddNews.call(this);
-    const title = document.getElementById('newsTitle')?.value || 'خبر جديد';
-    await sendAutoNotification('news', title, title);
+    if (isAdmin) {
+      const title = document.getElementById('newsTitle')?.value || 'خبر جديد';
+      await sendAutoNotification('news', title, title);
+    }
   } catch (error) {
     console.error('❌ خطأ في نشر الخبر:', error);
   }
@@ -1616,21 +1622,25 @@ const originalUploadMat = uploadMat;
 uploadMat = async function() {
   try {
     await originalUploadMat.call(this);
-    const title = document.getElementById('matTitle')?.value || 'ملف جديد';
-    const subject = document.getElementById('matSubject')?.value || '';
-    await sendAutoNotification('material', title, `${title} - ${subject}`);
+    if (isAdmin) {
+      const title = document.getElementById('matTitle')?.value || 'ملف جديد';
+      const subject = document.getElementById('matSubject')?.value || '';
+      await sendAutoNotification('material', title, `${title} - ${subject}`);
+    }
   } catch (error) {
     console.error('❌ خطأ في رفع المذكرة:', error);
   }
 };
 
-// تعديل دالة إرسال إشعار (يدوي)
+// تعديل دالة إرسال إشعار (يدوي من المدير)
 const originalSendNotif = sendNotif;
 sendNotif = async function() {
   try {
     await originalSendNotif.call(this);
-    const title = document.getElementById('notifTitle')?.value || 'إشعار جديد';
-    await sendAutoNotification('notification', title, title);
+    if (isAdmin) {
+      const title = document.getElementById('notifTitle')?.value || 'إشعار جديد';
+      await sendAutoNotification('notification', title, title);
+    }
   } catch (error) {
     console.error('❌ خطأ في إرسال الإشعار:', error);
   }
@@ -1641,32 +1651,24 @@ const originalAddContact = addContact;
 addContact = async function() {
   try {
     await originalAddContact.call(this);
-    const number = document.getElementById('newContact')?.value || 'رقم جديد';
-    await sendAutoNotification('contact', number, `تم إضافة رقم: ${number}`);
+    if (isAdmin) {
+      const number = document.getElementById('newContact')?.value || 'رقم جديد';
+      await sendAutoNotification('contact', number, `تم إضافة رقم: ${number}`);
+    }
   } catch (error) {
     console.error('❌ خطأ في إضافة الرقم:', error);
   }
 };
 
-// تعديل دالة إرسال شكوى (للمدير فقط)
-const originalSendComplaint = sendComplaint;
-sendComplaint = async function() {
-  try {
-    await originalSendComplaint.call(this);
-    const name = currentUser?.displayName || 'طالب';
-    await sendAutoNotification('complaint', name, `شكوى من: ${name}`);
-  } catch (error) {
-    console.error('❌ خطأ في إرسال الشكوى:', error);
-  }
-};
+// ===== ملاحظة: لا نرسل إشعار عند إرسال شكوى (لأنها من الطالب وليس المدير) =====
+// دالة إرسال الشكوى تبقى كما هي دون إشعار تلقائي
 
-console.log('✅ تم تفعيل نظام الإشعارات التلقائية');
+console.log('✅ تم تفعيل نظام الإشعارات التلقائية للمدير فقط');
 
 // ============================================
-// عرض عدد الإشعارات غير المقروءة في الشاشة الرئيسية
+// عرض عدد الإشعارات غير المقروءة
 // ============================================
 
-// تحديث عداد الإشعارات
 function updateNotificationCounter() {
   const badge = document.getElementById('notifBadge');
   const notifCount = document.getElementById('notifCount');
@@ -1680,7 +1682,6 @@ function updateNotificationCounter() {
       return;
     }
     
-    // حساب عدد الإشعارات الموجهة للمستخدم
     let count = 0;
     const keys = Object.keys(data);
     
@@ -1704,12 +1705,10 @@ function updateNotificationCounter() {
   });
 }
 
-// استدعاء الدالة بعد تحميل البيانات
 setTimeout(updateNotificationCounter, 1000);
 
-console.log('🚀 جميع الإشعارات التلقائية مفعلة!');
+console.log('🚀 جاهز! الإشعارات التلقائية للمدير فقط.');
 </script>
-<script src="app.js"></script>
 <!-- ===== نهاية الكود ===== -->
 </body>
 </html>
