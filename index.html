@@ -92,6 +92,15 @@
     .dark-mode .schedule-item { background: #1e293b !important; border-color: #334155 !important; }
     .dark-mode .schedule-item .teacher { color: #94a3b8 !important; }
     
+    .pwa-install-banner { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .pwa-install-banner .icon { font-size: 24px; }
+    .pwa-install-banner .text { flex: 1; margin: 0 10px; font-size: 12px; }
+    .pwa-install-banner .text strong { display: block; font-size: 14px; }
+    .pwa-install-banner .btn-install { background: #2563eb; color: white; border: none; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .pwa-install-banner .btn-close { background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; }
+    
+    .dark-mode .pwa-install-banner { background: linear-gradient(135deg, #334155, #1e293b); }
+    
     @media (max-width: 400px) {
       .stat-number { font-size: 15px; }
       .stat-label { font-size: 8px; }
@@ -130,6 +139,18 @@
 
     <!-- HOME -->
     <section id="tab-home" class="space-y-3 slide-up">
+      
+      <!-- PWA Install Banner -->
+      <div id="pwaBanner" class="pwa-install-banner" style="display:none;">
+        <span class="icon">📱</span>
+        <div class="text">
+          <strong>ثبّت تطبيق سيجما</strong>
+          <span>للوصول السريع والإشعارات الفورية</span>
+        </div>
+        <button class="btn-install" onclick="installApp()">تثبيت</button>
+        <button class="btn-close" onclick="closePwaBanner()">✕</button>
+      </div>
+
       <div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-4 text-white shadow-lg">
         <div id="userContent" class="flex items-center gap-3">
           <img id="userAvatar" src="" class="profile-avatar" onclick="openProfile()" style="display:none;">
@@ -186,7 +207,7 @@
       </div>
     </section>
 
-    <!-- SCHEDULE - جدول السنتر كاملاً -->
+    <!-- SCHEDULE -->
     <section id="tab-schedule" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-calendar-days text-blue-600 ml-1"></i> جدول السنتر</h2>
@@ -235,14 +256,13 @@
       </div>
     </section>
 
-    <!-- SETTINGS - مرتبة -->
+    <!-- SETTINGS -->
     <section id="tab-settings" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-gear text-slate-600 ml-1"></i> الإعدادات</h2>
         <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
       </div>
 
-      <!-- معلوماتي -->
       <div class="settings-card">
         <div class="title"><i class="fa-solid fa-user text-blue-600"></i> معلوماتي</div>
         <div id="studentInfo" class="space-y-1 text-xs">
@@ -255,7 +275,6 @@
         </div>
       </div>
 
-      <!-- تعديل البيانات -->
       <div class="settings-card">
         <div class="title"><i class="fa-solid fa-pen text-emerald-600"></i> تعديل البيانات</div>
         <div class="space-y-2">
@@ -288,13 +307,11 @@
         </div>
       </div>
 
-      <!-- أرقام السنتر -->
       <div class="settings-card">
         <div class="title"><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر</div>
         <div id="centerContacts" class="space-y-1.5"></div>
       </div>
 
-      <!-- شكوى -->
       <div class="settings-card">
         <div class="title"><i class="fa-solid fa-comment text-amber-500"></i> تقديم شكوى</div>
         <textarea id="complaintText" placeholder="اكتب شكواك هنا..." class="w-full p-2 bg-slate-50 border rounded-xl text-sm h-16 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
@@ -329,7 +346,6 @@
 
       <div id="adminPanel" class="hidden space-y-2">
         
-        <!-- إحصائيات -->
         <div class="admin-panel-section" onclick="toggleStats()" style="cursor:pointer;">
           <div class="header">
             <h4><i class="fa-solid fa-chart-line text-blue-400"></i> الإحصائيات</h4>
@@ -347,7 +363,6 @@
           </div>
         </div>
 
-        <!-- الشكاوى -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-message text-amber-500"></i> رسائل الشكاوى</h4>
@@ -360,26 +375,22 @@
           </div>
         </div>
 
-        <!-- إضافة حصة -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-plus-circle text-blue-600"></i> إضافة حصة</h4>
             <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
           </div>
           <div class="content">
-            <!-- نوع الإضافة -->
             <div class="flex gap-1 mb-2">
               <button onclick="setOption('full')" id="optFull" class="option-btn active flex-1 text-center">📝 كامل</button>
               <button onclick="setOption('text')" id="optText" class="option-btn flex-1 text-center">📝 نص</button>
               <button onclick="setOption('image')" id="optImage" class="option-btn flex-1 text-center">🖼️ صورة</button>
             </div>
-            <!-- اليوم -->
             <div class="flex gap-1 mb-2">
               <button onclick="setScheduleDay('today')" id="dayToday" class="option-btn active flex-1 text-center">اليوم</button>
               <button onclick="setScheduleDay('tomorrow')" id="dayTomorrow" class="option-btn flex-1 text-center">غداً</button>
               <button onclick="setScheduleDay('week')" id="dayWeek" class="option-btn flex-1 text-center">الأسبوع</button>
             </div>
-            <!-- الحقول -->
             <div id="scheduleFields">
               <div class="grid grid-cols-2 gap-1.5">
                 <select id="schDay" class="p-1.5 bg-slate-50 border rounded-lg text-xs">
@@ -410,16 +421,25 @@
           </div>
         </div>
 
-        <!-- إشعار -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار</h4>
             <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
           </div>
           <div class="content">
+            <!-- خيارات الإشعار -->
+            <div class="flex gap-1 mb-2">
+              <button onclick="setNotifOption('full')" id="notifOptFull" class="option-btn active flex-1 text-center">📝 كامل</button>
+              <button onclick="setNotifOption('text')" id="notifOptText" class="option-btn flex-1 text-center">📝 نص</button>
+              <button onclick="setNotifOption('image')" id="notifOptImage" class="option-btn flex-1 text-center">🖼️ صورة</button>
+            </div>
             <input type="text" id="notifTitle" placeholder="العنوان" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-            <textarea id="notifBody" placeholder="النص..." class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs h-12 mt-1"></textarea>
-            <input type="file" id="notifImage" accept="image/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border mt-1">
+            <div id="notifTextField">
+              <textarea id="notifBody" placeholder="النص..." class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs h-12 mt-1"></textarea>
+            </div>
+            <div id="notifImageField">
+              <input type="file" id="notifImage" accept="image/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border mt-1">
+            </div>
             <div class="grid grid-cols-3 gap-1 mt-1">
               <select id="notifStage" class="p-1.5 bg-slate-50 border rounded-lg text-[10px]">
                 <option value="الكل">الكل</option><option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option>
@@ -434,7 +454,6 @@
           </div>
         </div>
 
-        <!-- خبر -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر</h4>
@@ -449,7 +468,6 @@
           </div>
         </div>
 
-        <!-- مذكرة -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة</h4>
@@ -469,7 +487,6 @@
           </div>
         </div>
 
-        <!-- أرقام السنتر -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-address-book text-green-600"></i> أرقام السنتر</h4>
@@ -539,6 +556,7 @@ let currentUser = null, userData = null, scheduleData = [];
 let currentFilter = 'today', isAdmin = false, darkMode = false, deferredPrompt;
 let allUsers = {}, contacts = [], complaints = [], scheduleOption = 'full';
 let scheduleDayOption = 'today';
+let notifOption = 'full';
 
 const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2', 'ADMIN_UID_2', 'ADMIN_UID_3'];
 
@@ -548,20 +566,49 @@ const subjectsByStage = {
 };
 
 // ===== PWA =====
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; document.getElementById('installBtn')?.classList.add('show'); });
-window.addEventListener('appinstalled', () => document.getElementById('installBtn')?.classList.remove('show'));
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn')?.classList.add('show');
+  document.getElementById('pwaBanner').style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBtn')?.classList.remove('show');
+  document.getElementById('pwaBanner').style.display = 'none';
+});
 
 function installApp() {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(r => {
-      if (r.outcome === 'accepted') showToast('✅ تم التثبيت!', 'success');
+      if (r.outcome === 'accepted') {
+        showToast('✅ تم تثبيت التطبيق!', 'success');
+        document.getElementById('pwaBanner').style.display = 'none';
+      } else {
+        showToast('تم تخطي التثبيت', 'warning');
+      }
       deferredPrompt = null;
       document.getElementById('installBtn')?.classList.remove('show');
     });
   } else {
-    alert('📱 استخدم Chrome وابحث عن "تثبيت التطبيق"');
+    // عرض تعليمات التثبيت اليدوي
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    let msg = '📱 لتثبيت التطبيق:\n\n';
+    if (isAndroid) {
+      msg += '1. اضغط ⋮ (القائمة)\n2. اختر "تثبيت التطبيق"\n3. اضغط "تثبيت"';
+    } else if (isIOS) {
+      msg += '1. اضغط □↑ (مشاركة)\n2. اختر "إضافة للشاشة الرئيسية"\n3. اضغط "إضافة"';
+    } else {
+      msg += 'استخدم Chrome أو Safari\nوابحث عن خيار "تثبيت التطبيق" في القائمة';
+    }
+    alert(msg);
   }
+}
+
+function closePwaBanner() {
+  document.getElementById('pwaBanner').style.display = 'none';
 }
 
 function showToast(msg, type = 'info') {
@@ -777,6 +824,19 @@ function setScheduleDay(day) {
   }
 }
 
+// ===== خيارات الإشعار =====
+function setNotifOption(opt) {
+  notifOption = opt;
+  document.querySelectorAll('#tab-admin .option-btn').forEach(b => {
+    if (b.id === 'notifOptFull' || b.id === 'notifOptText' || b.id === 'notifOptImage') {
+      b.classList.remove('active');
+    }
+  });
+  document.getElementById(`notifOpt${opt.charAt(0).toUpperCase()+opt.slice(1)}`).classList.add('active');
+  document.getElementById('notifTextField').style.display = (opt === 'image') ? 'none' : 'block';
+  document.getElementById('notifImageField').style.display = (opt === 'text') ? 'none' : 'block';
+}
+
 // ===== إدارة =====
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
@@ -905,7 +965,6 @@ async function addSchedule() {
   let stage = document.getElementById('schStage').value;
   let imageData = '';
   
-  // إذا كان الخيار اليوم أو غداً، نستخدم اليوم المحدد تلقائياً
   if (scheduleDayOption === 'today') {
     const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     day = days[new Date().getDay()];
@@ -941,15 +1000,35 @@ async function addSchedule() {
 async function sendNotif() {
   if (!isAdmin) return;
   const title = document.getElementById('notifTitle').value;
-  const body = document.getElementById('notifBody').value;
-  if (!title || !body) return showToast('⚠️ اكتب العنوان والنص', 'error');
+  let body = '';
+  let imageData = '';
+  
+  if (notifOption !== 'image') {
+    body = document.getElementById('notifBody').value;
+    if (!body) return showToast('⚠️ اكتب النص', 'error');
+  }
+  
+  if (notifOption !== 'text') {
+    const file = document.getElementById('notifImage').files[0];
+    if (file) {
+      imageData = await fileToBase64(file);
+      if (imageData.length > 2000000) return showToast('⚠️ الصورة كبيرة', 'error');
+    } else if (notifOption === 'image') return showToast('⚠️ اختر صورة', 'error');
+  }
+  
+  if (!title) return showToast('⚠️ اكتب العنوان', 'error');
+  if (!body && !imageData) return showToast('⚠️ أضف نص أو صورة', 'error');
+  
   const stage = document.getElementById('notifStage').value;
   const grade = document.getElementById('notifGrade').value;
   const subject = document.getElementById('notifSubject').value;
-  let imageData = '';
-  const file = document.getElementById('notifImage').files[0];
-  if (file) { imageData = await fileToBase64(file); if (imageData.length > 2000000) return showToast('⚠️ الصورة كبيرة', 'error'); }
-  await window.push(window.ref(window.db, 'notifications'), { title, body, stage, grade, subject, imageData });
+  
+  await window.push(window.ref(window.db, 'notifications'), { 
+    title, body, stage, grade, subject, imageData,
+    date: new Date().toLocaleDateString('ar-EG'),
+    time: new Date().toLocaleTimeString('ar-EG')
+  });
+  
   showToast('✅ تم الإرسال', 'success');
   document.getElementById('notifTitle').value = '';
   document.getElementById('notifBody').value = '';
@@ -1138,10 +1217,11 @@ function renderMySchedule() {
   const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
   const today = days[new Date().getDay()];
   
-  // تصفية الحصص حسب مرحلة الطالب والمواد المسجلة
+  // تصفية حسب مرحلة الطالب والمواد المسجلة فقط (مشترك فيها)
   const my = scheduleData.filter(i => {
     const dayMatch = i.day === today;
     const stageMatch = i.stage === userData.stage || !i.stage;
+    // شرط أساسي: الطالب مشترك في المادة
     const subjectMatch = !i.subject || (userData.subjects && userData.subjects.includes(i.subject));
     return dayMatch && stageMatch && subjectMatch;
   });
@@ -1241,4 +1321,4 @@ function toggleDarkMode() {
 console.log('✅ سنتر سيجما - جاهز للتشغيل الفوري!');
 </script>
 </body>
-                                                                                                                    </html>
+</html>
