@@ -18,16 +18,23 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; background: #f1f5f9; }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .glass-effect { backdrop-filter: blur(10px); background: rgba(255,255,255,0.7); }
+    .gradient-text { background: linear-gradient(135deg, #2563eb, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .slide-up { animation: slideUp 0.3s ease-out; }
+    .card-hover { transition: all 0.2s ease; }
+    .card-hover:active { transform: scale(0.98); }
   </style>
 
   <!-- Firebase Modular SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+    import { getDatabase, ref, push, onValue, set, get, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -56,141 +63,204 @@
     window.set = set;
     window.get = get;
     window.child = child;
+    window.remove = remove;
     window.onValue = onValue;
     window.storageRef = storageRef;
     window.uploadBytes = uploadBytes;
     window.getDownloadURL = getDownloadURL;
+    window.deleteObject = deleteObject;
     window.signInWithPopup = signInWithPopup;
     window.signOut = signOut;
     window.onAuthStateChanged = onAuthStateChanged;
   </script>
 </head>
-<body class="bg-slate-100 min-h-screen flex justify-center text-slate-800 select-none">
+<body>
 
-  <!-- Main Mobile Frame -->
-  <div class="w-full max-w-md bg-slate-50 min-h-screen shadow-2xl relative flex flex-col pb-20 border-x border-slate-200">
+  <div class="w-full max-w-md mx-auto bg-slate-50 min-h-screen shadow-2xl relative flex flex-col pb-20">
 
-    <!-- Header -->
-    <header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-30 flex items-center justify-between">
+    <!-- Enhanced Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 shadow-lg sticky top-0 z-30 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-extrabold text-xl border border-white/30">Σ</div>
+        <div class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center font-extrabold text-2xl border border-white/30 shadow-lg">Σ</div>
         <div>
-          <h1 class="font-extrabold text-base leading-tight">سنتر سيجما التعليمي</h1>
-          <p class="text-[10px] text-blue-100">منصة الطالب والمتابعة</p>
+          <h1 class="font-extrabold text-lg leading-tight">سنتر سيجما</h1>
+          <p class="text-[10px] text-blue-100">منصة الطالب الذكية</p>
         </div>
       </div>
-      <button onclick="switchTab('notifications')" class="relative p-2 rounded-full hover:bg-white/10">
-        <i class="fa-solid fa-bell text-xl"></i>
-        <span id="notifBadge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
-      </button>
+      <div class="flex items-center gap-2">
+        <button onclick="switchTab('notifications')" class="relative p-2.5 rounded-full hover:bg-white/10 transition">
+          <i class="fa-solid fa-bell text-xl"></i>
+          <span id="notifBadge" class="hidden absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
+        </button>
+        <button onclick="toggleDarkMode()" class="p-2.5 rounded-full hover:bg-white/10 transition">
+          <i id="darkModeIcon" class="fa-solid fa-moon text-lg"></i>
+        </button>
+      </div>
     </header>
 
-    <!-- App Content -->
+    <!-- Main Content -->
     <main class="flex-1 p-4 space-y-4 overflow-y-auto">
 
       <!-- TAB 1: HOME -->
-      <section id="tab-home" class="space-y-4">
-        <!-- User Status / Login Card -->
-        <div id="userCard" class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-4 text-white shadow-md text-center">
-          <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-2">
-            <i class="fa-solid fa-user text-xl"></i>
+      <section id="tab-home" class="space-y-4 slide-up">
+        <!-- Enhanced User Card -->
+        <div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-xl">
+          <div id="userContent" class="text-center">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-white/30">
+              <i class="fa-solid fa-user-graduate text-2xl"></i>
+            </div>
+            <h2 class="font-bold text-lg">مرحباً بك في سيجما</h2>
+            <p class="text-sm text-blue-100 mt-1 mb-4">منصتك التعليمية المتكاملة</p>
+            <button onclick="loginGoogle()" class="w-full bg-white text-slate-800 font-bold py-3 px-4 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3 text-sm">
+              <i class="fa-brands fa-google text-red-500 text-lg"></i> تسجيل الدخول
+            </button>
           </div>
-          <h2 class="font-bold text-base">مرحباً بك في منصة سيجما</h2>
-          <p class="text-xs text-blue-100 mt-1 mb-3">سجل دخولك ليصلك تنبيه بحصصك ومذكراتك الدراسية</p>
-          <button onclick="loginGoogle()" class="w-full bg-white text-slate-800 font-bold py-2 px-4 rounded-xl shadow hover:bg-slate-100 flex items-center justify-center gap-2 text-xs">
-            <i class="fa-brands fa-google text-red-500 text-sm"></i> تسجيل الدخول عبر جوجل
-          </button>
         </div>
 
-        <!-- Shortcuts -->
-        <div class="grid grid-cols-2 gap-3">
-          <div onclick="switchTab('schedule')" class="cursor-pointer p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow transition">
-            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
-              <i class="fa-solid fa-calendar-days text-lg"></i>
-            </div>
-            <h3 class="font-bold text-xs text-slate-800">جدول الحصص</h3>
-            <p class="text-[10px] text-slate-500">مواعيد اليوم والأسبوع</p>
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-white rounded-2xl p-3 text-center shadow-sm border border-slate-100">
+            <div class="text-blue-600 text-xl"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="text-xs font-bold text-slate-700 mt-1">حصص اليوم</div>
+            <div id="todayCount" class="text-sm font-extrabold text-blue-600">0</div>
           </div>
-          <div onclick="switchTab('library')" class="cursor-pointer p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow transition">
-            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-2">
-              <i class="fa-solid fa-book-open text-lg"></i>
-            </div>
-            <h3 class="font-bold text-xs text-slate-800">المكتبة الرقمية</h3>
-            <p class="text-[10px] text-slate-500">تحميل المذكرات والصور</p>
+          <div class="bg-white rounded-2xl p-3 text-center shadow-sm border border-slate-100">
+            <div class="text-purple-600 text-xl"><i class="fa-solid fa-book"></i></div>
+            <div class="text-xs font-bold text-slate-700 mt-1">الملفات</div>
+            <div id="materialCount" class="text-sm font-extrabold text-purple-600">0</div>
+          </div>
+          <div class="bg-white rounded-2xl p-3 text-center shadow-sm border border-slate-100">
+            <div class="text-amber-500 text-xl"><i class="fa-solid fa-bell"></i></div>
+            <div class="text-xs font-bold text-slate-700 mt-1">تنبيهات</div>
+            <div id="notifCount" class="text-sm font-extrabold text-amber-500">0</div>
           </div>
         </div>
 
         <!-- News Preview -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <div class="flex items-center justify-between mb-3">
             <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
               <i class="fa-solid fa-newspaper text-blue-600"></i> آخر الأخبار
             </h3>
-            <button onclick="switchTab('news')" class="text-xs text-blue-600 font-bold">عرض الكل</button>
+            <button onclick="switchTab('news')" class="text-xs text-blue-600 font-bold hover:text-blue-800">عرض الكل</button>
           </div>
           <div id="homeNewsContainer" class="space-y-3">
-            <p class="text-xs text-slate-400 text-center py-4">جاري تحميل الأخبار...</p>
+            <div class="flex items-center justify-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- TAB 2: SCHEDULE -->
-      <section id="tab-schedule" class="hidden space-y-4">
-        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-calendar-days text-blue-600"></i> جدول المحاضرات
-        </h2>
-        <div class="flex bg-slate-200/80 p-1 rounded-xl text-xs font-bold text-slate-600">
-          <button onclick="filterSchedule('today')" id="btnSchedToday" class="flex-1 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm">اليوم</button>
-          <button onclick="filterSchedule('tomorrow')" id="btnSchedTomorrow" class="flex-1 py-1.5 rounded-lg">غداً</button>
-          <button onclick="filterSchedule('all')" id="btnSchedAll" class="flex-1 py-1.5 rounded-lg">الأسبوع</button>
+      <section id="tab-schedule" class="hidden space-y-4 slide-up">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-calendar-days text-blue-600"></i> جدول المحاضرات
+          </h2>
+          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-arrow-right"></i> رجوع
+          </button>
         </div>
+        
+        <div class="flex bg-slate-200/80 p-1.5 rounded-2xl text-xs font-bold text-slate-600">
+          <button onclick="filterSchedule('today')" id="btnSchedToday" class="flex-1 py-2 rounded-xl bg-white text-blue-600 shadow-md transition">اليوم</button>
+          <button onclick="filterSchedule('tomorrow')" id="btnSchedTomorrow" class="flex-1 py-2 rounded-xl transition hover:bg-white/50">غداً</button>
+          <button onclick="filterSchedule('all')" id="btnSchedAll" class="flex-1 py-2 rounded-xl transition hover:bg-white/50">الأسبوع</button>
+        </div>
+        
         <div id="scheduleContainer" class="space-y-3">
-          <p class="text-xs text-slate-400 text-center py-4">جاري تحميل الحصص...</p>
+          <div class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
         </div>
       </section>
 
       <!-- TAB 3: LIBRARY -->
-      <section id="tab-library" class="hidden space-y-4">
-        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-book-open text-purple-600"></i> مذكرات وملفات السنتر
-        </h2>
+      <section id="tab-library" class="hidden space-y-4 slide-up">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-book-open text-purple-600"></i> المكتبة الرقمية
+          </h2>
+          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-arrow-right"></i> رجوع
+          </button>
+        </div>
         <div id="libraryContainer" class="space-y-3">
-          <p class="text-xs text-slate-400 text-center py-4">جاري تحميل الملفات...</p>
+          <div class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          </div>
         </div>
       </section>
 
       <!-- TAB 4: NEWS -->
-      <section id="tab-news" class="hidden space-y-4">
-        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-newspaper text-blue-600"></i> الأخبار والإعلانات
-        </h2>
-        <div id="allNewsContainer" class="space-y-3">
-          <p class="text-xs text-slate-400 text-center py-4">جاري تحميل الإعلانات...</p>
+      <section id="tab-news" class="hidden space-y-4 slide-up">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-newspaper text-blue-600"></i> الأخبار والإعلانات
+          </h2>
+          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-arrow-right"></i> رجوع
+          </button>
+        </div>
+        <div id="allNewsContainer" class="space-y-4">
+          <div class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
         </div>
       </section>
 
       <!-- TAB 5: NOTIFICATIONS -->
-      <section id="tab-notifications" class="hidden space-y-4">
-        <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-bell text-amber-500"></i> مركز الإشعارات
-        </h2>
+      <section id="tab-notifications" class="hidden space-y-4 slide-up">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-bell text-amber-500"></i> مركز الإشعارات
+          </h2>
+          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-arrow-right"></i> رجوع
+          </button>
+        </div>
         <div id="notificationsContainer" class="space-y-3">
-          <p class="text-xs text-slate-400 text-center py-4">لا توجد إشعارات حالياً</p>
+          <div class="text-center py-8 text-slate-400 text-sm">
+            <i class="fa-regular fa-bell-slash text-3xl mb-2 block"></i>
+            لا توجد إشعارات
+          </div>
         </div>
       </section>
 
       <!-- TAB 6: ADMIN DASHBOARD -->
-      <section id="tab-admin" class="hidden space-y-4">
-        <div id="adminPanel" class="space-y-4">
-          <div class="bg-slate-900 text-white p-3 rounded-2xl flex justify-between items-center text-xs">
-            <span class="font-bold"><i class="fa-solid fa-user-shield text-blue-400"></i> لوحة الإدارة العامة</span>
-          </div>
+      <section id="tab-admin" class="hidden space-y-4 slide-up">
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-user-shield text-blue-600"></i> لوحة الإدارة
+          </h2>
+          <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-arrow-right"></i> رجوع
+          </button>
+        </div>
 
-          <!-- Add Schedule Class -->
-          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
-            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-plus text-blue-600"></i> إضافة حصة بالجدول</h4>
+        <!-- Admin Login -->
+        <div id="adminLogin" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+          <div class="flex items-center gap-2 text-sm font-bold text-slate-700">
+            <i class="fa-solid fa-lock text-amber-500"></i> الدخول للوحة التحكم
+          </div>
+          <div class="relative">
+            <input type="password" id="adminPassword" placeholder="كلمة السر" class="w-full p-3 bg-slate-50 border rounded-2xl text-sm pr-10 focus:ring-2 focus:ring-blue-500 outline-none">
+            <i class="fa-solid fa-key absolute left-3 top-3.5 text-slate-400"></i>
+          </div>
+          <button onclick="adminLogin()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
+            <i class="fa-solid fa-sign-in-alt"></i> دخول
+          </button>
+          <p class="text-[10px] text-slate-400 text-center">كلمة السر: <span class="font-bold text-amber-600">Sigma@2024</span></p>
+        </div>
+
+        <!-- Admin Panel (Hidden by default) -->
+        <div id="adminPanel" class="hidden space-y-4">
+          <!-- Add Schedule -->
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-plus-circle text-blue-600"></i> إضافة حصة جديدة</h4>
             <div class="grid grid-cols-2 gap-2">
-              <select id="schDay" class="p-2 bg-slate-50 border rounded-xl text-xs">
+              <select id="schDay" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 <option value="الأحد">الأحد</option>
                 <option value="الإثنين">الإثنين</option>
                 <option value="الثلاثاء">الثلاثاء</option>
@@ -199,72 +269,78 @@
                 <option value="الجمعة">الجمعة</option>
                 <option value="السبت">السبت</option>
               </select>
-              <input type="text" id="schSubject" placeholder="المادة" class="p-2 bg-slate-50 border rounded-xl text-xs">
+              <input type="text" id="schSubject" placeholder="المادة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="schTeacher" placeholder="اسم المدرس" class="p-2 bg-slate-50 border rounded-xl text-xs">
-              <input type="text" id="schTime" placeholder="الوقت (مثال: 04:00 م)" class="p-2 bg-slate-50 border rounded-xl text-xs">
+              <input type="text" id="schTeacher" placeholder="اسم المدرس" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <input type="time" id="schTime" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="schRoom" placeholder="القاعة" class="p-2 bg-slate-50 border rounded-xl text-xs">
-              <select id="schStage" class="p-2 bg-slate-50 border rounded-xl text-xs">
+              <input type="text" id="schRoom" placeholder="القاعة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <select id="schStage" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 <option value="ثانوي">ثانوي</option>
                 <option value="إعدادي">إعدادي</option>
               </select>
             </div>
             <div>
-              <label class="text-[10px] text-slate-500 font-bold">صورة توضيحية (اختياري):</label>
-              <input type="file" id="schImageFile" accept="image/*" class="w-full text-xs mt-1">
+              <label class="text-xs text-slate-500 font-bold">صورة توضيحية (اختياري):</label>
+              <input type="file" id="schImageFile" accept="image/*" class="w-full text-sm mt-1 p-2 bg-slate-50 rounded-xl border">
             </div>
-            <button onclick="addScheduleItem()" class="w-full bg-blue-600 text-white font-bold py-2 rounded-xl text-xs">حفظ الحصة</button>
+            <button onclick="addScheduleItem()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
+              <i class="fa-solid fa-save"></i> حفظ الحصة
+            </button>
           </div>
 
-          <!-- Targeted Notification System -->
-          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
-            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار موجه للطلاب</h4>
-            <input type="text" id="notifTitle" placeholder="عنوان التنبيه" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
-            <textarea id="notifBody" placeholder="نص التنبيه..." class="w-full p-2 bg-slate-50 border rounded-xl text-xs h-16"></textarea>
-            
-            <!-- Filters -->
-            <div class="grid grid-cols-3 gap-1.5">
-              <select id="notifStage" class="p-2 bg-slate-50 border rounded-xl text-[10px]">
+          <!-- Send Notification -->
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار موجه</h4>
+            <input type="text" id="notifTitle" placeholder="عنوان التنبيه" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+            <textarea id="notifBody" placeholder="نص التنبيه..." class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm h-16 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+            <div class="grid grid-cols-3 gap-2">
+              <select id="notifStage" class="p-2.5 bg-slate-50 border rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
                 <option value="الكل">كل المراحل</option>
                 <option value="ثانوي">ثانوي</option>
                 <option value="إعدادي">إعدادي</option>
               </select>
-              <select id="notifGrade" class="p-2 bg-slate-50 border rounded-xl text-[10px]">
+              <select id="notifGrade" class="p-2.5 bg-slate-50 border rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
                 <option value="الكل">كل الصفوف</option>
-                <option value="1">الصف الأول</option>
-                <option value="2">الصف الثاني</option>
-                <option value="3">الصف الثالث</option>
+                <option value="1">الأول</option>
+                <option value="2">الثاني</option>
+                <option value="3">الثالث</option>
               </select>
-              <input type="text" id="notifSubject" placeholder="المادة (اختياري)" class="p-2 bg-slate-50 border rounded-xl text-[10px]">
+              <input type="text" id="notifSubject" placeholder="المادة" class="p-2.5 bg-slate-50 border rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
             </div>
-            <button onclick="sendNotification()" class="w-full bg-amber-500 text-white font-bold py-2 rounded-xl text-xs">إرسال الإشعار الفوري</button>
+            <button onclick="sendNotification()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
+              <i class="fa-solid fa-bell"></i> إرسال الإشعار
+            </button>
           </div>
 
           <!-- Add News -->
-          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
-            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر جديد</h4>
-            <input type="text" id="newsTitle" placeholder="عنوان الخبر" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
-            <textarea id="newsContent" placeholder="تفاصيل الخبر..." class="w-full p-2 bg-slate-50 border rounded-xl text-xs h-16"></textarea>
-            <input type="file" id="newsImageFile" accept="image/*" class="w-full text-xs">
-            <button onclick="addNewsItem()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs">نشر الخبر</button>
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر جديد</h4>
+            <input type="text" id="newsTitle" placeholder="عنوان الخبر" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <textarea id="newsContent" placeholder="تفاصيل الخبر..." class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm h-16 focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+            <input type="file" id="newsImageFile" accept="image/*" class="w-full text-sm p-2 bg-slate-50 rounded-xl border">
+            <button onclick="addNewsItem()" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
+              <i class="fa-solid fa-share"></i> نشر الخبر
+            </button>
           </div>
 
           <!-- Upload Materials -->
-          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
-            <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة أو ملف (PDF/صورة)</h4>
-            <input type="text" id="matTitle" placeholder="اسم الملف" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <h4 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة أو ملف</h4>
+            <input type="text" id="matTitle" placeholder="اسم الملف" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-purple-500 outline-none">
             <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="matSubject" placeholder="المادة" class="p-2 bg-slate-50 border rounded-xl text-xs">
-              <select id="matType" class="p-2 bg-slate-50 border rounded-xl text-xs">
-                <option value="pdf">مستند PDF</option>
-                <option value="image">صورة / مخطط</option>
+              <input type="text" id="matSubject" placeholder="المادة" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+              <select id="matType" class="p-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                <option value="pdf">PDF</option>
+                <option value="image">صورة</option>
               </select>
             </div>
-            <input type="file" id="matFile" class="w-full text-xs">
-            <button onclick="uploadMaterialFile()" class="w-full bg-purple-600 text-white font-bold py-2 rounded-xl text-xs">رفع المستند</button>
+            <input type="file" id="matFile" class="w-full text-sm p-2 bg-slate-50 rounded-xl border">
+            <button onclick="uploadMaterialFile()" class="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
+              <i class="fa-solid fa-upload"></i> رفع المستند
+            </button>
           </div>
         </div>
       </section>
@@ -272,61 +348,78 @@
     </main>
 
     <!-- Student Profile Edit Modal -->
-    <div id="profileModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
-        <h3 class="font-bold text-sm text-slate-800 border-b pb-2"><i class="fa-solid fa-user-pen text-blue-600"></i> إعداد الملف الشخصي للطالب</h3>
+    <div id="profileModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl slide-up">
+        <div class="flex items-center justify-between border-b pb-3">
+          <h3 class="font-bold text-base text-slate-800"><i class="fa-solid fa-user-pen text-blue-600"></i> الملف الشخصي</h3>
+          <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
         <div>
-          <label class="text-[10px] font-bold text-slate-500">المرحلة التعليمية:</label>
-          <select id="profStage" class="w-full p-2 bg-slate-50 border rounded-xl text-xs mt-1">
+          <label class="text-xs font-bold text-slate-500">المرحلة التعليمية:</label>
+          <select id="profStage" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="ثانوي">ثانوي</option>
             <option value="إعدادي">إعدادي</option>
           </select>
         </div>
         <div>
-          <label class="text-[10px] font-bold text-slate-500">الصف الدراسي:</label>
-          <select id="profGrade" class="w-full p-2 bg-slate-50 border rounded-xl text-xs mt-1">
+          <label class="text-xs font-bold text-slate-500">الصف الدراسي:</label>
+          <select id="profGrade" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="1">الصف الأول</option>
             <option value="2">الصف الثاني</option>
             <option value="3">الصف الثالث</option>
           </select>
         </div>
         <div>
-          <label class="text-[10px] font-bold text-slate-500">المواد الاشتراك بها (مفصولة بفواصل):</label>
-          <input type="text" id="profSubjects" placeholder="مثال: فيزياء, رياضيات, كيمياء" class="w-full p-2 bg-slate-50 border rounded-xl text-xs mt-1">
+          <label class="text-xs font-bold text-slate-500">المواد (مفصولة بفواصل):</label>
+          <input type="text" id="profSubjects" placeholder="مثال: فيزياء, رياضيات, كيمياء" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
-        <button onclick="saveStudentProfile()" class="w-full bg-blue-600 text-white font-bold py-2 rounded-xl text-xs">حفظ التغييرات</button>
+        <button onclick="saveStudentProfile()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
+          <i class="fa-solid fa-save"></i> حفظ التغييرات
+        </button>
       </div>
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 py-2 px-3 flex justify-around items-center z-30">
-      <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[10px] font-bold text-blue-600">
-        <i class="fa-solid fa-house text-base"></i> الرئيسية
+    <nav class="fixed bottom-0 w-full max-w-md bg-white/95 backdrop-blur-sm border-t border-slate-200 py-1.5 px-2 flex justify-around items-center z-30 shadow-lg">
+      <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[10px] font-bold text-blue-600 transition">
+        <i class="fa-solid fa-house text-xl"></i>
+        <span>الرئيسية</span>
       </button>
-      <button onclick="switchTab('schedule')" id="nav-schedule" class="flex flex-col items-center text-[10px] font-bold text-slate-400">
-        <i class="fa-solid fa-calendar-days text-base"></i> الجدول
+      <button onclick="switchTab('schedule')" id="nav-schedule" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
+        <i class="fa-solid fa-calendar-days text-xl"></i>
+        <span>الجدول</span>
       </button>
-      <button onclick="switchTab('library')" id="nav-library" class="flex flex-col items-center text-[10px] font-bold text-slate-400">
-        <i class="fa-solid fa-book-open text-base"></i> المكتبة
+      <button onclick="switchTab('library')" id="nav-library" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
+        <i class="fa-solid fa-book-open text-xl"></i>
+        <span>المكتبة</span>
       </button>
-      <button onclick="switchTab('news')" id="nav-news" class="flex flex-col items-center text-[10px] font-bold text-slate-400">
-        <i class="fa-solid fa-newspaper text-base"></i> الأخبار
+      <button onclick="switchTab('news')" id="nav-news" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
+        <i class="fa-solid fa-newspaper text-xl"></i>
+        <span>الأخبار</span>
       </button>
-      <button onclick="switchTab('admin')" id="nav-admin" class="flex flex-col items-center text-[10px] font-bold text-slate-400">
-        <i class="fa-solid fa-user-shield text-base"></i> الإدارة
+      <button onclick="switchTab('admin')" id="nav-admin" class="flex flex-col items-center text-[10px] font-bold text-slate-400 transition">
+        <i class="fa-solid fa-user-shield text-xl"></i>
+        <span>الإدارة</span>
       </button>
     </nav>
 
   </div>
 
-  <!-- Main Logic -->
   <script>
+    // Main Application Logic
     let currentUser = null;
     let currentUserData = null;
     let scheduleData = [];
     let currentScheduleFilter = 'today';
+    let isAdminLoggedIn = false;
+    let darkMode = false;
 
-    // Request System Notification Permission for Phone Alerts
+    // Admin Password
+    const ADMIN_PASSWORD = 'Sigma@2024';
+
+    // Request Notification Permission
     if ("Notification" in window) {
       Notification.requestPermission();
     }
@@ -336,20 +429,19 @@
       ['home', 'schedule', 'library', 'news', 'notifications', 'admin'].forEach(t => {
         const elem = document.getElementById(`tab-${t}`);
         const nav = document.getElementById(`nav-${t}`);
-        if(elem) elem.classList.add('hidden');
-        if(nav) { nav.classList.remove('text-blue-600'); nav.classList.add('text-slate-400'); }
+        if(elem) elem.classList.toggle('hidden', t !== tabId);
+        if(nav) {
+          nav.classList.toggle('text-blue-600', t === tabId);
+          nav.classList.toggle('text-slate-400', t !== tabId);
+        }
       });
-      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-      const activeNav = document.getElementById(`nav-${tabId}`);
-      if(activeNav) { activeNav.classList.remove('text-slate-400'); activeNav.classList.add('text-blue-600'); }
     }
 
-    // GOOGLE AUTH & AUTH STATE OBSERVER
+    // AUTHENTICATION
     window.addEventListener('load', () => {
       window.onAuthStateChanged(window.auth, async (user) => {
         if (user) {
           currentUser = user;
-          // Fetch Student Profile Data
           const userRef = window.ref(window.db, `users/${user.uid}`);
           window.onValue(userRef, (snapshot) => {
             currentUserData = snapshot.val();
@@ -365,47 +457,51 @@
           renderUserCard();
         }
       });
-
-      // Firebase Realtime Listeners
       initRealtimeListeners();
+      updateCounts();
     });
 
     function loginGoogle() {
-      window.signInWithPopup(window.auth, window.provider).catch(err => alert("خطأ بالدخول: " + err.message));
+      window.signInWithPopup(window.auth, window.provider)
+        .catch(err => alert("خطأ في الدخول: " + err.message));
     }
 
     function logoutUser() {
       window.signOut(window.auth).then(() => renderUserCard());
     }
 
+    function closeProfileModal() {
+      document.getElementById('profileModal').classList.add('hidden');
+    }
+
     function renderUserCard() {
       const card = document.getElementById('userCard');
+      const content = document.getElementById('userContent');
+      
       if (currentUser && currentUserData) {
-        card.innerHTML = `
-          <div class="flex items-center justify-between text-right">
-            <div class="flex items-center gap-3">
-              <img src="${currentUser.photoURL}" class="w-12 h-12 rounded-full border-2 border-white shadow">
-              <div>
-                <h3 class="font-bold text-sm">${currentUser.displayName}</h3>
-                <p class="text-[10px] text-blue-100">${currentUserData.stage} • الصف ${currentUserData.grade}</p>
-                <p class="text-[9px] text-blue-200 mt-0.5">المواد: ${currentUserData.subjects || 'الكل'}</p>
-              </div>
+        content.innerHTML = `
+          <div class="flex items-center gap-4 text-right">
+            <img src="${currentUser.photoURL}" class="w-16 h-16 rounded-full border-2 border-white shadow-lg">
+            <div class="flex-1">
+              <h3 class="font-bold text-base">${currentUser.displayName}</h3>
+              <p class="text-xs text-blue-100">${currentUserData.stage} • الصف ${currentUserData.grade}</p>
+              <p class="text-[10px] text-blue-200 mt-0.5">${currentUserData.subjects || 'جميع المواد'}</p>
             </div>
             <div class="flex flex-col gap-1">
-              <button onclick="document.getElementById('profileModal').classList.remove('hidden')" class="bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">تعديل</button>
-              <button onclick="logoutUser()" class="bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">خروج</button>
+              <button onclick="document.getElementById('profileModal').classList.remove('hidden')" class="bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition">تعديل</button>
+              <button onclick="logoutUser()" class="bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition">خروج</button>
             </div>
           </div>
         `;
       } else {
-        card.innerHTML = `
-          <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-2">
-            <i class="fa-solid fa-user text-xl"></i>
+        content.innerHTML = `
+          <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-white/30">
+            <i class="fa-solid fa-user-graduate text-2xl"></i>
           </div>
-          <h2 class="font-bold text-base">مرحباً بك في منصة سيجما</h2>
-          <p class="text-xs text-blue-100 mt-1 mb-3">سجل دخولك ليصلك تنبيه بحصصك ومذكراتك الدراسية</p>
-          <button onclick="loginGoogle()" class="w-full bg-white text-slate-800 font-bold py-2 px-4 rounded-xl shadow hover:bg-slate-100 flex items-center justify-center gap-2 text-xs">
-            <i class="fa-brands fa-google text-red-500 text-sm"></i> تسجيل الدخول عبر جوجل
+          <h2 class="font-bold text-lg">مرحباً بك في سيجما</h2>
+          <p class="text-sm text-blue-100 mt-1 mb-4">منصتك التعليمية المتكاملة</p>
+          <button onclick="loginGoogle()" class="w-full bg-white text-slate-800 font-bold py-3 px-4 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3 text-sm">
+            <i class="fa-brands fa-google text-red-500 text-lg"></i> تسجيل الدخول
           </button>
         `;
       }
@@ -424,38 +520,113 @@
         stage, grade, subjects,
         updatedAt: new Date().toISOString()
       }).then(() => {
-        document.getElementById('profileModal').classList.add('hidden');
-        alert("تم حفظ بيانات ملفك بنجاح!");
+        closeProfileModal();
+        alert('✅ تم حفظ بيانات ملفك بنجاح!');
+      });
+    }
+
+    // ADMIN LOGIN
+    function adminLogin() {
+      const password = document.getElementById('adminPassword').value;
+      if (password === ADMIN_PASSWORD) {
+        isAdminLoggedIn = true;
+        document.getElementById('adminLogin').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('adminPassword').value = '';
+      } else {
+        alert('❌ كلمة السر غير صحيحة!');
+        document.getElementById('adminPassword').value = '';
+      }
+    }
+
+    // DARK MODE
+    function toggleDarkMode() {
+      darkMode = !darkMode;
+      const body = document.body;
+      const main = document.querySelector('.max-w-md');
+      
+      if (darkMode) {
+        body.classList.add('bg-slate-900');
+        main.classList.add('bg-slate-800');
+        main.classList.remove('bg-slate-50');
+        document.getElementById('darkModeIcon').className = 'fa-solid fa-sun text-lg';
+      } else {
+        body.classList.remove('bg-slate-900');
+        main.classList.remove('bg-slate-800');
+        main.classList.add('bg-slate-50');
+        document.getElementById('darkModeIcon').className = 'fa-solid fa-moon text-lg';
+      }
+    }
+
+    // UPDATE COUNTS
+    function updateCounts() {
+      // Schedule count
+      window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
+        const data = snapshot.val();
+        const today = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'][new Date().getDay()];
+        let count = 0;
+        if (data) {
+          Object.keys(data).forEach(key => {
+            if (data[key].day === today) count++;
+          });
+        }
+        document.getElementById('todayCount').textContent = count;
+      });
+
+      // Materials count
+      window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
+        const data = snapshot.val();
+        document.getElementById('materialCount').textContent = data ? Object.keys(data).length : 0;
+      });
+
+      // Notifications count
+      window.onValue(window.ref(window.db, 'notifications'), (snapshot) => {
+        const data = snapshot.val();
+        document.getElementById('notifCount').textContent = data ? Object.keys(data).length : 0;
       });
     }
 
     // REALTIME LISTENERS
     function initRealtimeListeners() {
-      // 1. Schedule Listener
+      // 1. Schedule
       window.onValue(window.ref(window.db, 'schedules'), (snapshot) => {
         const data = snapshot.val();
         scheduleData = [];
-        if (data) Object.keys(data).forEach(k => scheduleData.push({ id: k, ...data[k] }));
+        if (data) {
+          Object.keys(data).forEach(k => {
+            scheduleData.push({ id: k, ...data[k] });
+          });
+        }
         renderSchedule();
       });
 
-      // 2. News Listener
+      // 2. News
       window.onValue(window.ref(window.db, 'news'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('homeNewsContainer');
         const allContainer = document.getElementById('allNewsContainer');
-        container.innerHTML = ''; allContainer.innerHTML = '';
+        container.innerHTML = '';
+        allContainer.innerHTML = '';
 
-        if (!data) return;
-        Object.keys(data).reverse().forEach((key, idx) => {
+        if (!data) {
+          container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">لا توجد أخبار حالياً</div>';
+          allContainer.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد أخبار حالياً</div>';
+          return;
+        }
+
+        const keys = Object.keys(data).reverse();
+        keys.forEach((key, idx) => {
           const item = data[key];
           const html = `
-            <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-              ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-36 object-cover">` : ''}
-              <div class="p-3">
-                <span class="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold">${item.date || ''}</span>
-                <h4 class="font-bold text-xs text-slate-800 mt-1">${item.title}</h4>
-                <p class="text-[11px] text-slate-500 mt-1">${item.content}</p>
+            <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm card-hover">
+              ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-40 object-cover" loading="lazy">` : ''}
+              <div class="p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.date || ''}</span>
+                  <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold">جديد</span>
+                </div>
+                <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">${item.content}</p>
               </div>
             </div>
           `;
@@ -464,67 +635,108 @@
         });
       });
 
-      // 3. Materials Listener
+      // 3. Materials
       window.onValue(window.ref(window.db, 'materials'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('libraryContainer');
         container.innerHTML = '';
-        if (!data) return;
+        
+        if (!data) {
+          container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد ملفات حالياً</div>';
+          return;
+        }
 
         Object.keys(data).reverse().forEach(key => {
           const item = data[key];
           container.innerHTML += `
-            <div class="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between card-hover shadow-sm">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                  <i class="fa-solid ${item.type === 'pdf' ? 'fa-file-pdf text-red-500' : 'fa-image text-green-500'} text-lg"></i>
+                <div class="w-12 h-12 rounded-2xl ${item.type === 'pdf' ? 'bg-red-50' : 'bg-green-50'} flex items-center justify-center">
+                  <i class="fa-solid ${item.type === 'pdf' ? 'fa-file-pdf text-red-500' : 'fa-image text-green-500'} text-2xl"></i>
                 </div>
                 <div>
-                  <h4 class="font-bold text-xs text-slate-800">${item.title}</h4>
+                  <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
                   <p class="text-[10px] text-slate-400">${item.subject || ''} • ${item.date || ''}</p>
                 </div>
               </div>
-              <a href="${item.fileUrl}" target="_blank" class="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-xl text-xs">تحميل</a>
+              <a href="${item.fileUrl}" target="_blank" class="bg-blue-50 text-blue-600 font-bold px-4 py-2 rounded-xl text-xs hover:bg-blue-100 transition">
+                <i class="fa-solid fa-download"></i> تحميل
+              </a>
             </div>
           `;
         });
       });
 
-      // 4. Notifications Listener & Phone System Alert Push
+      // 4. Notifications
       window.onValue(window.ref(window.db, 'notifications'), (snapshot) => {
         const data = snapshot.val();
         const container = document.getElementById('notificationsContainer');
         const badge = document.getElementById('notifBadge');
         container.innerHTML = '';
 
-        if (!data) { badge.classList.add('hidden'); return; }
+        if (!data) {
+          badge.classList.add('hidden');
+          container.innerHTML = `
+            <div class="text-center py-8 text-slate-400 text-sm">
+              <i class="fa-regular fa-bell-slash text-3xl mb-2 block"></i>
+              لا توجد إشعارات
+            </div>
+          `;
+          return;
+        }
 
+        let hasTargeted = false;
         badge.classList.remove('hidden');
+        
         Object.keys(data).reverse().forEach((key, idx) => {
           const item = data[key];
-          
-          // Check targeted user filters
           let isTargeted = true;
+          
           if (currentUserData) {
             if (item.stage !== 'الكل' && item.stage !== currentUserData.stage) isTargeted = false;
             if (item.grade !== 'الكل' && item.grade !== currentUserData.grade) isTargeted = false;
           }
 
           if (isTargeted) {
+            hasTargeted = true;
             container.innerHTML += `
-              <div class="bg-white p-3 rounded-2xl border border-slate-200 space-y-1">
-                <h4 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-bell text-amber-500"></i> ${item.title}</h4>
-                <p class="text-[11px] text-slate-600">${item.body}</p>
-                <span class="text-[8px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">موجّه لـ: ${item.stage} • الصف ${item.grade}</span>
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm slide-up">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-bell text-amber-500"></i>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
+                    <p class="text-xs text-slate-600 mt-1 leading-relaxed">${item.body}</p>
+                    <div class="flex items-center gap-2 mt-2">
+                      <span class="text-[8px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">${item.stage} • الصف ${item.grade}</span>
+                      ${item.subject ? `<span class="text-[8px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">${item.subject}</span>` : ''}
+                    </div>
+                  </div>
+                </div>
               </div>
             `;
 
-            // Push Device System Notification for latest item
-            if (idx === 0 && Notification.permission === "granted") {
-              new Notification(`سيجما: ${item.title}`, { body: item.body, icon: 'https://cdn-icons-png.flaticon.com/512/3239/3239952.png' });
+            // Push Notification
+            if (idx === 0 && Notification.permission === "granted" && document.hidden) {
+              new Notification(`📚 سيجما: ${item.title}`, { 
+                body: item.body, 
+                icon: 'https://cdn-icons-png.flaticon.com/512/3239/3239952.png',
+                vibrate: [200, 100, 200]
+              });
             }
           }
         });
+
+        if (!hasTargeted) {
+          container.innerHTML = `
+            <div class="text-center py-8 text-slate-400 text-sm">
+              <i class="fa-regular fa-bell-slash text-3xl mb-2 block"></i>
+              لا توجد إشعارات لك حالياً
+            </div>
+          `;
+          badge.classList.add('hidden');
+        }
       });
     }
 
@@ -533,43 +745,55 @@
       currentScheduleFilter = type;
       ['Today', 'Tomorrow', 'All'].forEach(t => {
         const btn = document.getElementById(`btnSched${t}`);
-        if(btn) btn.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+        if(btn) {
+          btn.classList.toggle('bg-white', t === type.charAt(0).toUpperCase() + type.slice(1));
+          btn.classList.toggle('text-blue-600', t === type.charAt(0).toUpperCase() + type.slice(1));
+          btn.classList.toggle('shadow-md', t === type.charAt(0).toUpperCase() + type.slice(1));
+        }
       });
-      document.getElementById(`btnSched${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('bg-white', 'text-blue-600', 'shadow-sm');
       renderSchedule();
     }
 
     function renderSchedule() {
       const container = document.getElementById('scheduleContainer');
       container.innerHTML = '';
-      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      const todayIdx = new Date().getDay();
-      const todayDay = days[todayIdx] || 'الأحد';
-      const tomorrowDay = days[(todayIdx + 1) % 7] || 'الإثنين';
-
-      let items = scheduleData;
-      if (currentScheduleFilter === 'today') items = scheduleData.filter(i => i.day === todayDay);
-      if (currentScheduleFilter === 'tomorrow') items = scheduleData.filter(i => i.day === tomorrowDay);
-
-      if (items.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">لا توجد حصص مجدولة</p>';
+      
+      if (scheduleData.length === 0) {
+        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد حصص مجدولة</div>';
         return;
       }
 
-      items.forEach(item => {
+      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      const todayIdx = new Date().getDay();
+      const todayDay = days[todayIdx];
+      const tomorrowDay = days[(todayIdx + 1) % 7];
+
+      let items = [...scheduleData];
+      if (currentScheduleFilter === 'today') items = items.filter(i => i.day === todayDay);
+      if (currentScheduleFilter === 'tomorrow') items = items.filter(i => i.day === tomorrowDay);
+
+      if (items.length === 0) {
+        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">لا توجد حصص في هذا اليوم</div>';
+        return;
+      }
+
+      items.forEach((item, index) => {
         container.innerHTML += `
-          <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm space-y-2">
-            ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-28 object-cover rounded-xl mb-2">` : ''}
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm card-hover slide-up" style="animation-delay: ${index * 0.05}s">
+            ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-32 object-cover rounded-xl mb-3" loading="lazy">` : ''}
             <div class="flex justify-between items-start">
               <div>
-                <span class="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.day} • ${item.stage}</span>
-                <h3 class="font-bold text-xs text-slate-800 mt-1">${item.subject}</h3>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.day}</span>
+                  <span class="text-[10px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full font-bold">${item.stage}</span>
+                </div>
+                <h3 class="font-bold text-base text-slate-800">${item.subject}</h3>
+                <p class="text-xs text-slate-500"><i class="fa-solid fa-chalkboard-user"></i> ${item.teacher}</p>
               </div>
-              <span class="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-lg border border-amber-200 font-bold">${item.room || 'قاعة'}</span>
-            </div>
-            <div class="flex justify-between items-center text-[11px] text-slate-500 pt-2 border-t">
-              <span><i class="fa-solid fa-chalkboard-user"></i> ${item.teacher}</span>
-              <span class="font-bold text-slate-700"><i class="fa-regular fa-clock"></i> ${item.time}</span>
+              <div class="text-center">
+                <span class="text-sm font-extrabold text-amber-600 block">${item.time}</span>
+                <span class="text-[10px] text-slate-400">${item.room || 'قاعة'}</span>
+              </div>
             </div>
           </div>
         `;
@@ -592,13 +816,33 @@
       const stage = document.getElementById('schStage').value;
       const imgFile = document.getElementById('schImageFile').files[0];
 
-      if (!subject || !teacher) return alert('يرجى كتابة اسم المادة والمدرس!');
+      if (!subject || !teacher || !time) {
+        alert('⚠️ يرجى ملء جميع الحقول الأساسية!');
+        return;
+      }
 
       let imageUrl = "";
-      if (imgFile) imageUrl = await uploadFileToStorage(imgFile, 'schedules');
+      if (imgFile) {
+        try {
+          imageUrl = await uploadFileToStorage(imgFile, 'schedules');
+        } catch (e) {
+          alert('❌ فشل رفع الصورة');
+          return;
+        }
+      }
 
-      window.push(window.ref(window.db, 'schedules'), { day, subject, teacher, time, room, stage, imageUrl });
-      alert('تم إضافة الحصة بنجاح!');
+      window.push(window.ref(window.db, 'schedules'), { 
+        day, subject, teacher, time, room, stage, imageUrl,
+        createdAt: new Date().toISOString()
+      });
+      
+      alert('✅ تم إضافة الحصة بنجاح!');
+      // Clear fields
+      document.getElementById('schSubject').value = '';
+      document.getElementById('schTeacher').value = '';
+      document.getElementById('schTime').value = '';
+      document.getElementById('schRoom').value = '';
+      document.getElementById('schImageFile').value = '';
     }
 
     async function sendNotification() {
@@ -608,10 +852,22 @@
       const grade = document.getElementById('notifGrade').value;
       const subject = document.getElementById('notifSubject').value;
 
-      if (!title || !body) return alert('يرجى تعبئة التنبيه!');
+      if (!title || !body) {
+        alert('⚠️ يرجى تعبئة عنوان ونص التنبيه!');
+        return;
+      }
 
-      window.push(window.ref(window.db, 'notifications'), { title, body, stage, grade, subject, date: new Date().toLocaleDateString('ar-EG') });
-      alert('تم إرسال الإشعار المخصص!');
+      await window.push(window.ref(window.db, 'notifications'), { 
+        title, body, stage, grade, subject,
+        date: new Date().toLocaleDateString('ar-EG'),
+        time: new Date().toLocaleTimeString('ar-EG'),
+        createdAt: new Date().toISOString()
+      });
+      
+      alert('✅ تم إرسال الإشعار بنجاح!');
+      document.getElementById('notifTitle').value = '';
+      document.getElementById('notifBody').value = '';
+      document.getElementById('notifSubject').value = '';
     }
 
     async function addNewsItem() {
@@ -619,13 +875,31 @@
       const content = document.getElementById('newsContent').value;
       const imgFile = document.getElementById('newsImageFile').files[0];
 
-      if (!title || !content) return alert('يرجى تعبئة بيانات الخبر!');
+      if (!title || !content) {
+        alert('⚠️ يرجى تعبئة عنوان ومحتوى الخبر!');
+        return;
+      }
 
       let imageUrl = "";
-      if (imgFile) imageUrl = await uploadFileToStorage(imgFile, 'news');
+      if (imgFile) {
+        try {
+          imageUrl = await uploadFileToStorage(imgFile, 'news');
+        } catch (e) {
+          alert('❌ فشل رفع الصورة');
+          return;
+        }
+      }
 
-      window.push(window.ref(window.db, 'news'), { title, content, imageUrl, date: new Date().toLocaleDateString('ar-EG') });
-      alert('تم نشر الخبر بنجاح!');
+      await window.push(window.ref(window.db, 'news'), { 
+        title, content, imageUrl,
+        date: new Date().toLocaleDateString('ar-EG'),
+        createdAt: new Date().toISOString()
+      });
+      
+      alert('✅ تم نشر الخبر بنجاح!');
+      document.getElementById('newsTitle').value = '';
+      document.getElementById('newsContent').value = '';
+      document.getElementById('newsImageFile').value = '';
     }
 
     async function uploadMaterialFile() {
@@ -634,12 +908,26 @@
       const type = document.getElementById('matType').value;
       const file = document.getElementById('matFile').files[0];
 
-      if (!title || !file) return alert('يرجى إدخال البيانات واختيار الملف!');
+      if (!title || !file) {
+        alert('⚠️ يرجى إدخال اسم الملف واختيار ملف!');
+        return;
+      }
 
-      const fileUrl = await uploadFileToStorage(file, 'materials');
-      window.push(window.ref(window.db, 'materials'), { title, subject, type, fileUrl, date: new Date().toLocaleDateString('ar-EG') });
-      alert('تم رفع الملف بنجاح!');
+      try {
+        const fileUrl = await uploadFileToStorage(file, 'materials');
+        await window.push(window.ref(window.db, 'materials'), { 
+          title, subject, type, fileUrl,
+          date: new Date().toLocaleDateString('ar-EG'),
+          createdAt: new Date().toISOString()
+        });
+        alert('✅ تم رفع الملف بنجاح!');
+        document.getElementById('matTitle').value = '';
+        document.getElementById('matSubject').value = '';
+        document.getElementById('matFile').value = '';
+      } catch (e) {
+        alert('❌ فشل رفع الملف');
+      }
     }
   </script>
 </body>
-</html>
+  </html>
