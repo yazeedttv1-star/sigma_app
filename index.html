@@ -36,14 +36,18 @@
     .admin-stat-card { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px; padding: 16px; color: white; }
     .admin-stat-number { font-size: 28px; font-weight: 800; }
     .admin-stat-label { font-size: 11px; opacity: 0.7; }
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 12px 24px; border-radius: 12px; color: white; font-weight: bold; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: slideDown 0.5s ease; }
+    .toast-success { background: #22c55e; }
+    .toast-error { background: #ef4444; }
+    .toast-warning { background: #f59e0b; }
+    @keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
   </style>
 
   <!-- Firebase Modular SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, onValue, set, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
@@ -58,12 +62,13 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const storage = getStorage(app);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
+    // إعداد استمرار الجلسة
+    setPersistence(auth, browserLocalPersistence);
+
     window.db = db;
-    window.storage = storage;
     window.auth = auth;
     window.provider = provider;
     window.ref = ref;
@@ -74,10 +79,6 @@
     window.remove = remove;
     window.update = update;
     window.onValue = onValue;
-    window.storageRef = storageRef;
-    window.uploadBytes = uploadBytes;
-    window.getDownloadURL = getDownloadURL;
-    window.deleteObject = deleteObject;
     window.signInWithPopup = signInWithPopup;
     window.signOut = signOut;
     window.onAuthStateChanged = onAuthStateChanged;
@@ -114,18 +115,16 @@
       <section id="tab-home" class="space-y-4 slide-up">
         <!-- User Card with Avatar Click -->
         <div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-xl">
-          <div id="userContent" class="text-center">
-            <div class="flex items-center gap-4">
-              <img id="userAvatar" src="" class="profile-avatar" onclick="openProfileModal()" alt="الصورة الشخصية">
-              <div class="text-right flex-1">
-                <h2 id="userName" class="font-bold text-lg">مرحباً بك</h2>
-                <p id="userSubtitle" class="text-sm text-blue-100 mt-1">سجل دخولك للمتابعة</p>
-                <div id="userSubjects" class="mt-2"></div>
-              </div>
-              <button id="loginBtn" onclick="loginGoogle()" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-4 py-2 rounded-xl transition whitespace-nowrap">
-                <i class="fa-brands fa-google"></i> دخول
-              </button>
+          <div id="userContent" class="flex items-center gap-4">
+            <img id="userAvatar" src="" class="profile-avatar" onclick="openProfileModal()" alt="الصورة الشخصية" style="display:none;">
+            <div class="text-right flex-1">
+              <h2 id="userName" class="font-bold text-lg">مرحباً بك</h2>
+              <p id="userSubtitle" class="text-sm text-blue-100 mt-1">سجل دخولك للمتابعة</p>
+              <div id="userSubjects" class="mt-2"></div>
             </div>
+            <button id="loginBtn" onclick="loginGoogle()" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-4 py-2 rounded-xl transition whitespace-nowrap">
+              <i class="fa-brands fa-google"></i> دخول
+            </button>
           </div>
         </div>
 
@@ -251,6 +250,33 @@
           </button>
         </div>
 
+        <!-- Edit Profile -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-user-pen text-blue-600"></i> تعديل الملف الشخصي</h3>
+          <div>
+            <label class="text-xs font-bold text-slate-500">المرحلة التعليمية:</label>
+            <select id="profStage" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+              <option value="ثانوي">ثانوي</option>
+              <option value="إعدادي">إعدادي</option>
+            </select>
+          </div>
+          <div class="mt-2">
+            <label class="text-xs font-bold text-slate-500">الصف الدراسي:</label>
+            <select id="profGrade" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+              <option value="1">الصف الأول</option>
+              <option value="2">الصف الثاني</option>
+              <option value="3">الصف الثالث</option>
+            </select>
+          </div>
+          <div class="mt-2">
+            <label class="text-xs font-bold text-slate-500">اختر المواد التي تدرسها:</label>
+            <div id="subjectsCheckbox" class="mt-2 grid grid-cols-2 gap-2"></div>
+          </div>
+          <button onclick="saveStudentProfile()" class="w-full mt-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
+            <i class="fa-solid fa-save"></i> حفظ التغييرات
+          </button>
+        </div>
+
         <!-- Student Info -->
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
           <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-user text-blue-600"></i> معلومات الطالب</h3>
@@ -269,10 +295,6 @@
           <div id="centerContacts" class="space-y-2">
             <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
               <i class="fa-solid fa-phone text-blue-600"></i>
-              <span class="text-sm text-slate-700">01012345678</span>
-            </div>
-            <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
-              <i class="fa-brands fa-whatsapp text-green-600"></i>
               <span class="text-sm text-slate-700">01012345678</span>
             </div>
           </div>
@@ -296,6 +318,16 @@
           </h2>
           <button onclick="switchTab('home')" class="text-xs text-slate-400 hover:text-slate-600">
             <i class="fa-solid fa-arrow-right"></i> رجوع
+          </button>
+        </div>
+
+        <!-- Admin Access Denied for non-admins -->
+        <div id="adminAccessDenied" class="hidden bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+          <i class="fa-solid fa-ban text-red-500 text-5xl mb-3"></i>
+          <h3 class="font-bold text-red-700">⛔ غير مصرح بالدخول</h3>
+          <p class="text-sm text-red-600 mt-2">هذه الصفحة مخصصة للإداريين فقط</p>
+          <button onclick="switchTab('home')" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-red-700 transition">
+            العودة للرئيسية
           </button>
         </div>
 
@@ -385,7 +417,7 @@
               </select>
             </div>
             <div>
-              <label class="text-xs text-slate-500 font-bold">صورة توضيحية (اختياري):</label>
+              <label class="text-xs text-slate-500 font-bold">صورة توضيحية (Base64 - اختياري):</label>
               <input type="file" id="schImageFile" accept="image/*" class="w-full text-sm mt-1 p-2 bg-slate-50 rounded-xl border">
             </div>
             <button onclick="addScheduleItem()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
@@ -453,44 +485,6 @@
 
     </main>
 
-    <!-- Profile Modal -->
-    <div id="profileModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl slide-up">
-        <div class="flex items-center justify-between border-b pb-3">
-          <h3 class="font-bold text-base text-slate-800"><i class="fa-solid fa-user-pen text-blue-600"></i> الملف الشخصي</h3>
-          <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-xmark text-xl"></i>
-          </button>
-        </div>
-        
-        <div>
-          <label class="text-xs font-bold text-slate-500">المرحلة التعليمية:</label>
-          <select id="profStage" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="ثانوي">ثانوي</option>
-            <option value="إعدادي">إعدادي</option>
-          </select>
-        </div>
-        
-        <div>
-          <label class="text-xs font-bold text-slate-500">الصف الدراسي:</label>
-          <select id="profGrade" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="1">الصف الأول</option>
-            <option value="2">الصف الثاني</option>
-            <option value="3">الصف الثالث</option>
-          </select>
-        </div>
-        
-        <div>
-          <label class="text-xs font-bold text-slate-500">اختر المواد التي تدرسها:</label>
-          <div id="subjectsCheckbox" class="mt-2 grid grid-cols-2 gap-2"></div>
-        </div>
-        
-        <button onclick="saveStudentProfile()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition text-sm">
-          <i class="fa-solid fa-save"></i> حفظ التغييرات
-        </button>
-      </div>
-    </div>
-
     <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 w-full max-w-md bg-white/95 backdrop-blur-sm border-t border-slate-200 py-1.5 px-2 flex justify-around items-center z-30 shadow-lg">
       <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[10px] font-bold text-blue-600 transition">
@@ -531,20 +525,88 @@
     let darkMode = false;
     let allUsers = {};
     let contacts = [];
+    let deferredPrompt = null;
+
+    // ===== قائمة حسابات الإدارة (3 حسابات فقط) =====
+    const ADMIN_UIDS = [
+      'WCyUdR31uZOxJwtYzXx85K7E0Cf2', // حساب الإدارة الرئيسي
+      'ADMIN_UID_2', // ضع هنا الـ UID الثاني
+      'ADMIN_UID_3'  // ضع هنا الـ UID الثالث
+    ];
 
     // Subject lists by stage
     const subjectsByStage = {
-      'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية', 'فرنسية', 'تاريخ', 'جغرافيا', 'فلسفة'],
-      'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية', 'دراسات', 'حاسب آلي']
+      'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية', 'فرنسية', 'تاريخ', 'جغرافيا', 'فلسفة', 'علم نفس'],
+      'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية', 'دراسات', 'حاسب آلي', 'تربية دينية']
     };
 
-    // Request Notification Permission
+    // ===== Toast Notifications =====
+    function showToast(message, type = 'success') {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => toast.remove(), 500);
+      }, 3000);
+    }
+
+    // ===== PWA Install =====
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    function askInstallPWA() {
+      if (deferredPrompt) {
+        const confirmInstall = confirm('📱 هل تريد تثبيت تطبيق سنتر سيجما على جهازك؟');
+        if (confirmInstall) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              showToast('✅ تم تثبيت التطبيق بنجاح!', 'success');
+            } else {
+              showToast('تم تخطي التثبيت', 'warning');
+            }
+            deferredPrompt = null;
+          });
+        }
+      }
+    }
+
+    // ===== Request Notification Permission =====
     if ("Notification" in window) {
       Notification.requestPermission();
     }
 
     // ===== TAB SWITCHING =====
     function switchTab(tabId) {
+      // Check admin access
+      if (tabId === 'admin') {
+        const isAdmin = currentUser && ADMIN_UIDS.includes(currentUser.uid);
+        if (!isAdmin && !isAdminLoggedIn) {
+          document.getElementById('adminAccessDenied').classList.remove('hidden');
+          document.getElementById('adminLogin').classList.add('hidden');
+          document.getElementById('adminPanel').classList.add('hidden');
+          // Still show the tab content with denial message
+        } else {
+          document.getElementById('adminAccessDenied').classList.add('hidden');
+          if (!isAdminLoggedIn) {
+            document.getElementById('adminLogin').classList.remove('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+          } else {
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+          }
+        }
+      }
+
       const tabs = ['home', 'schedule', 'library', 'news', 'notifications', 'settings', 'admin'];
       tabs.forEach(t => {
         const elem = document.getElementById(`tab-${t}`);
@@ -555,11 +617,6 @@
           nav.classList.toggle('text-slate-400', t !== tabId);
         }
       });
-      
-      // Load admin data if switching to admin
-      if (tabId === 'admin' && isAdminLoggedIn) {
-        loadAdminData();
-      }
     }
 
     // ===== AUTHENTICATION =====
@@ -573,9 +630,20 @@
             renderUserCard();
             updateStudentInfo();
             
-            // Show profile modal if first time
+            // Ask for profile if not exists
             if (!currentUserData) {
-              openProfileModal();
+              setTimeout(() => {
+                openProfileModal();
+                showToast('📝 يرجى إكمال بيانات ملفك الشخصي', 'warning');
+              }, 1000);
+            } else {
+              // Ask for PWA install after first login
+              if (!sessionStorage.getItem('pwaAsked')) {
+                setTimeout(() => {
+                  askInstallPWA();
+                  sessionStorage.setItem('pwaAsked', 'true');
+                }, 3000);
+              }
             }
           });
           
@@ -585,6 +653,11 @@
           currentUser = null;
           currentUserData = null;
           renderUserCard();
+          // Reset admin state
+          isAdminLoggedIn = false;
+          document.getElementById('adminLogin').classList.remove('hidden');
+          document.getElementById('adminPanel').classList.add('hidden');
+          document.getElementById('adminAccessDenied').classList.add('hidden');
         }
       });
       initRealtimeListeners();
@@ -595,12 +668,7 @@
     function trackUserStatus(user) {
       const statusRef = window.ref(window.db, `users/${user.uid}/online`);
       window.set(statusRef, true);
-      window.onValue(window.ref(window.db, '.info/connected'), (snapshot) => {
-        if (snapshot.val() === true) {
-          window.set(statusRef, true);
-          window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
-        }
-      });
+      window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
       
       window.addEventListener('beforeunload', () => {
         window.set(statusRef, false);
@@ -609,27 +677,33 @@
 
     function loginGoogle() {
       window.signInWithPopup(window.auth, window.provider)
-        .catch(err => alert("خطأ في الدخول: " + err.message));
+        .catch(err => showToast('❌ خطأ في الدخول: ' + err.message, 'error'));
     }
 
     function logoutUser() {
       if (currentUser) {
         window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
       }
-      window.signOut(window.auth).then(() => renderUserCard());
+      window.signOut(window.auth).then(() => {
+        showToast('👋 تم تسجيل الخروج بنجاح', 'warning');
+        renderUserCard();
+      });
     }
 
     function openProfileModal() {
       if (!currentUser) {
-        alert('يرجى تسجيل الدخول أولاً!');
+        showToast('⚠️ يرجى تسجيل الدخول أولاً!', 'error');
         return;
       }
-      document.getElementById('profileModal').classList.remove('hidden');
+      // Pre-fill current values
+      if (currentUserData) {
+        document.getElementById('profStage').value = currentUserData.stage || 'ثانوي';
+        document.getElementById('profGrade').value = currentUserData.grade || '1';
+      }
       loadSubjectsCheckbox();
-    }
-
-    function closeProfileModal() {
-      document.getElementById('profileModal').classList.add('hidden');
+      // Show the modal (using settings tab instead)
+      switchTab('settings');
+      showToast('✏️ قم بتعديل بياناتك في قسم الإعدادات', 'warning');
     }
 
     function renderUserCard() {
@@ -643,24 +717,27 @@
         avatar.src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
         avatar.style.display = 'block';
         name.textContent = `مرحباً بك، ${currentUser.displayName || 'طالب'}`;
-        subtitle.textContent = `${currentUserData.stage} • الصف ${currentUserData.grade}`;
+        subtitle.textContent = `${currentUserData.stage || ''} • الصف ${currentUserData.grade || ''}`;
         loginBtn.textContent = 'خروج';
         loginBtn.onclick = logoutUser;
+        loginBtn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition';
         
-        // Show subjects
+        // Show subjects as chips
         if (currentUserData.subjects && currentUserData.subjects.length > 0) {
           subjectsDiv.innerHTML = currentUserData.subjects.map(s => 
             `<span class="subject-chip bg-white/20 text-white">${s}</span>`
           ).join('');
+        } else {
+          subjectsDiv.innerHTML = '';
         }
       } else {
-        avatar.src = 'https://ui-avatars.com/api/?name=User&background=64748b&color=fff';
-        avatar.style.display = 'block';
+        avatar.style.display = 'none';
         name.textContent = 'مرحباً بك';
         subtitle.textContent = 'سجل دخولك للمتابعة';
         subjectsDiv.innerHTML = '';
-        loginBtn.textContent = '<i class="fa-brands fa-google"></i> دخول';
+        loginBtn.textContent = 'دخول';
         loginBtn.onclick = loginGoogle;
+        loginBtn.className = 'bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-4 py-2 rounded-xl transition';
       }
     }
 
@@ -670,7 +747,7 @@
         document.getElementById('infoEmail').textContent = currentUser.email || '-';
         document.getElementById('infoStage').textContent = currentUserData.stage || '-';
         document.getElementById('infoGrade').textContent = currentUserData.grade || '-';
-        document.getElementById('infoSubjects').textContent = currentUserData.subjects ? currentUserData.subjects.join(', ') : '-';
+        document.getElementById('infoSubjects').textContent = currentUserData.subjects ? currentUserData.subjects.join('، ') : '-';
       }
     }
 
@@ -698,7 +775,10 @@
 
     // ===== SAVE STUDENT PROFILE =====
     function saveStudentProfile() {
-      if (!currentUser) return;
+      if (!currentUser) {
+        showToast('⚠️ يرجى تسجيل الدخول أولاً!', 'error');
+        return;
+      }
       
       const stage = document.getElementById('profStage').value;
       const grade = document.getElementById('profGrade').value;
@@ -706,7 +786,7 @@
       const subjects = Array.from(checkedBoxes).map(cb => cb.value);
 
       if (subjects.length === 0) {
-        alert('⚠️ يرجى اختيار مادة واحدة على الأقل!');
+        showToast('⚠️ يرجى اختيار مادة واحدة على الأقل!', 'error');
         return;
       }
 
@@ -719,35 +799,12 @@
         subjects,
         updatedAt: new Date().toISOString()
       }).then(() => {
-        closeProfileModal();
-        alert('✅ تم حفظ بيانات ملفك بنجاح!');
-        
-        // Ask to install PWA
-        askInstallPWA();
+        showToast('✅ تم حفظ بيانات ملفك بنجاح!', 'success');
+        renderUserCard();
+        updateStudentInfo();
+      }).catch(err => {
+        showToast('❌ حدث خطأ: ' + err.message, 'error');
       });
-    }
-
-    // ===== PWA INSTALL PROMPT =====
-    let deferredPrompt = null;
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-    });
-
-    function askInstallPWA() {
-      if (deferredPrompt) {
-        const confirmInstall = confirm('📱 هل تريد تثبيت تطبيق سنتر سيجما على جهازك؟');
-        if (confirmInstall) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('✅ تم تثبيت التطبيق');
-            }
-            deferredPrompt = null;
-          });
-        }
-      }
     }
 
     // ===== CONTACTS MANAGEMENT =====
@@ -793,26 +850,36 @@
             <i class="${c.type === 'whatsapp' ? 'fa-brands fa-whatsapp text-green-600' : 'fa-solid fa-phone text-blue-600'}"></i>
             <span class="text-sm text-slate-700">${c.number}</span>
           </div>
-        `).join('');
+        `).join('') || '<p class="text-sm text-slate-400 text-center">لا توجد أرقام مسجلة</p>';
       }
     }
 
     function addContact() {
+      if (!isAdmin()) {
+        showToast('⚠️ فقط الإداري يمكنه إضافة أرقام!', 'error');
+        return;
+      }
       const number = document.getElementById('newContact').value;
       const type = document.getElementById('contactType').value;
       
       if (!number) {
-        alert('⚠️ يرجى إدخال رقم الهاتف!');
+        showToast('⚠️ يرجى إدخال رقم الهاتف!', 'error');
         return;
       }
       
       window.push(window.ref(window.db, 'contacts'), { number, type });
       document.getElementById('newContact').value = '';
+      showToast('✅ تم إضافة الرقم بنجاح', 'success');
     }
 
     function deleteContact(id) {
+      if (!isAdmin()) {
+        showToast('⚠️ فقط الإداري يمكنه حذف الأرقام!', 'error');
+        return;
+      }
       if (confirm('هل أنت متأكد من حذف هذا الرقم؟')) {
         window.remove(window.ref(window.db, `contacts/${id}`));
+        showToast('✅ تم حذف الرقم', 'success');
       }
     }
 
@@ -820,12 +887,12 @@
     function sendComplaint() {
       const text = document.getElementById('complaintText').value;
       if (!text) {
-        alert('⚠️ يرجى كتابة شكواك أو استفسارك!');
+        showToast('⚠️ يرجى كتابة شكواك أو استفسارك!', 'error');
         return;
       }
       
       if (!currentUser) {
-        alert('⚠️ يرجى تسجيل الدخول أولاً!');
+        showToast('⚠️ يرجى تسجيل الدخول أولاً!', 'error');
         return;
       }
       
@@ -839,20 +906,31 @@
       });
       
       document.getElementById('complaintText').value = '';
-      alert('✅ تم إرسال شكواك بنجاح!');
+      showToast('✅ تم إرسال شكواك بنجاح!', 'success');
     }
 
-    // ===== ADMIN DASHBOARD =====
+    // ===== ADMIN FUNCTIONS =====
+    function isAdmin() {
+      return currentUser && ADMIN_UIDS.includes(currentUser.uid);
+    }
+
     function adminLogin() {
       const password = document.getElementById('adminPassword').value;
-      if (password === 'Sigma@2024') {
+      // استخدام كلمة سر ثابتة مع التحقق من الـ UID
+      if (password === 'Sigma@2024' && isAdmin()) {
         isAdminLoggedIn = true;
         document.getElementById('adminLogin').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('adminAccessDenied').classList.add('hidden');
         document.getElementById('adminPassword').value = '';
         loadAdminData();
+        showToast('✅ مرحباً بك في لوحة التحكم', 'success');
+      } else if (!isAdmin()) {
+        showToast('⛔ هذا الحساب ليس لديه صلاحيات إدارية!', 'error');
+        document.getElementById('adminAccessDenied').classList.remove('hidden');
+        document.getElementById('adminLogin').classList.add('hidden');
       } else {
-        alert('❌ كلمة السر غير صحيحة!');
+        showToast('❌ كلمة السر غير صحيحة!', 'error');
         document.getElementById('adminPassword').value = '';
       }
     }
@@ -944,9 +1022,13 @@
     }
 
     function deleteItem(path, key) {
+      if (!isAdmin()) {
+        showToast('⚠️ فقط الإداري يمكنه الحذف!', 'error');
+        return;
+      }
       if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
         window.remove(window.ref(window.db, `${path}/${key}`));
-        alert('✅ تم الحذف بنجاح!');
+        showToast('✅ تم الحذف بنجاح', 'success');
       }
     }
 
@@ -964,11 +1046,10 @@
         if (user.online === true || (user.lastSeen && user.lastSeen > dayAgo)) {
           active++;
         }
-        // Simple gender detection from name or email (basic)
+        // Simple gender detection from name
         const name = (user.name || '').toLowerCase();
-        const email = (user.email || '').toLowerCase();
-        if (name.includes('ahmed') || name.includes('mohamed') || name.includes('khaled') || 
-            email.includes('ahmed') || email.includes('mohamed') || email.includes('khaled')) {
+        const maleNames = ['ahmed', 'mohamed', 'khaled', 'ali', 'hassan', 'hussain', 'mostafa', 'omar', 'youssef', 'ibrahim'];
+        if (maleNames.some(m => name.includes(m))) {
           boys++;
         } else if (name !== '') {
           girls++;
@@ -1039,7 +1120,7 @@
           const item = data[key];
           const html = `
             <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm card-hover">
-              ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-40 object-cover" loading="lazy">` : ''}
+              ${item.imageData ? `<img src="${item.imageData}" class="w-full h-40 object-cover" loading="lazy">` : ''}
               <div class="p-4">
                 <div class="flex items-center gap-2 mb-2">
                   <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">${item.date || ''}</span>
@@ -1067,18 +1148,23 @@
 
         Object.keys(data).reverse().forEach(key => {
           const item = data[key];
+          const icon = item.type === 'pdf' ? 'fa-file-pdf text-red-500' : 'fa-image text-green-500';
+          const bgColor = item.type === 'pdf' ? 'bg-red-50' : 'bg-green-50';
+          const downloadLink = item.fileData ? item.fileData : '#';
+          const downloadAttr = item.fileData ? `href="${item.fileData}" download="${item.fileName || 'file'}"` : `href="#" onclick="showToast('⚠️ لا يوجد ملف للتحميل', 'error')"`;
+          
           container.innerHTML += `
             <div class="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between card-hover shadow-sm">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl ${item.type === 'pdf' ? 'bg-red-50' : 'bg-green-50'} flex items-center justify-center">
-                  <i class="fa-solid ${item.type === 'pdf' ? 'fa-file-pdf text-red-500' : 'fa-image text-green-500'} text-2xl"></i>
+                <div class="w-12 h-12 rounded-2xl ${bgColor} flex items-center justify-center">
+                  <i class="fa-solid ${icon} text-2xl"></i>
                 </div>
                 <div>
                   <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
                   <p class="text-[10px] text-slate-400">${item.subject || ''} • ${item.date || ''}</p>
                 </div>
               </div>
-              <a href="${item.fileUrl}" target="_blank" class="bg-blue-50 text-blue-600 font-bold px-4 py-2 rounded-xl text-xs hover:bg-blue-100 transition">
+              <a ${downloadAttr} target="_blank" class="bg-blue-50 text-blue-600 font-bold px-4 py-2 rounded-xl text-xs hover:bg-blue-100 transition">
                 <i class="fa-solid fa-download"></i> تحميل
               </a>
             </div>
@@ -1197,9 +1283,12 @@
       }
 
       items.forEach((item, index) => {
+        const imageHtml = item.imageData ? 
+          `<img src="${item.imageData}" class="w-full h-32 object-cover rounded-xl mb-3" loading="lazy">` : '';
+        
         container.innerHTML += `
           <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm card-hover slide-up" style="animation-delay: ${index * 0.05}s">
-            ${item.imageUrl ? `<img src="${item.imageUrl}" class="w-full h-32 object-cover rounded-xl mb-3" loading="lazy">` : ''}
+            ${imageHtml}
             <div class="flex justify-between items-start">
               <div>
                 <div class="flex items-center gap-2 mb-1">
@@ -1219,14 +1308,23 @@
       });
     }
 
-    // ===== ADMIN UPLOAD FUNCTIONS =====
-    async function uploadFileToStorage(file, path) {
-      const fileRef = window.storageRef(window.storage, `${path}/${Date.now()}_${file.name}`);
-      await window.uploadBytes(fileRef, file);
-      return await window.getDownloadURL(fileRef);
+    // ===== FILE TO BASE64 =====
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
     }
 
+    // ===== ADMIN UPLOAD FUNCTIONS (Base64) =====
     async function addScheduleItem() {
+      if (!isAdmin()) {
+        showToast('⚠️ فقط الإداري يمكنه إضافة حصص!', 'error');
+        return;
+      }
+
       const day = document.getElementById('schDay').value;
       const subject = document.getElementById('schSubject').value;
       const teacher = document.getElementById('schTeacher').value;
@@ -1236,26 +1334,33 @@
       const imgFile = document.getElementById('schImageFile').files[0];
 
       if (!subject || !teacher || !time) {
-        alert('⚠️ يرجى ملء جميع الحقول الأساسية!');
+        showToast('⚠️ يرجى ملء جميع الحقول الأساسية!', 'error');
         return;
       }
 
-      let imageUrl = "";
+      let imageData = "";
       if (imgFile) {
         try {
-          imageUrl = await uploadFileToStorage(imgFile, 'schedules');
+          // تحويل الصورة إلى Base64
+          imageData = await fileToBase64(imgFile);
+          // التحقق من حجم الصورة (حد أقصى 1 ميجابايت)
+          if (imageData.length > 1000000) {
+            showToast('⚠️ الصورة كبيرة جداً. الحد الأقصى 1 ميجابايت', 'error');
+            return;
+          }
         } catch (e) {
-          alert('❌ فشل رفع الصورة');
+          showToast('❌ فشل تحميل الصورة', 'error');
           return;
         }
       }
 
-      window.push(window.ref(window.db, 'schedules'), { 
-        day, subject, teacher, time, room, stage, imageUrl,
+      await window.push(window.ref(window.db, 'schedules'), { 
+        day, subject, teacher, time, room, stage, 
+        imageData: imageData,
         createdAt: new Date().toISOString()
       });
       
-      alert('✅ تم إضافة الحصة بنجاح!');
+      showToast('✅ تم إضافة الحصة بنجاح!', 'success');
       document.getElementById('schSubject').value = '';
       document.getElementById('schTeacher').value = '';
       document.getElementById('schTime').value = '';
@@ -1264,6 +1369,11 @@
     }
 
     async function sendNotification() {
+      if (!isAdmin()) {
+        showToast('⚠️ فقط الإداري يمكنه إرسال إشعارات!', 'error');
+        return;
+      }
+
       const title = document.getElementById('notifTitle').value;
       const body = document.getElementById('notifBody').value;
       const stage = document.getElementById('notifStage').value;
@@ -1271,7 +1381,7 @@
       const subject = document.getElementById('notifSubject').value;
 
       if (!title || !body) {
-        alert('⚠️ يرجى تعبئة عنوان ونص التنبيه!');
+        showToast('⚠️ يرجى تعبئة عنوان ونص التنبيه!', 'error');
         return;
       }
 
@@ -1282,68 +1392,90 @@
         createdAt: new Date().toISOString()
       });
       
-      alert('✅ تم إرسال الإشعار بنجاح!');
+      showToast('✅ تم إرسال الإشعار بنجاح!', 'success');
       document.getElementById('notifTitle').value = '';
       document.getElementById('notifBody').value = '';
       document.getElementById('notifSubject').value = '';
     }
 
     async function addNewsItem() {
+      if (!isAdmin()) {
+        showToast('⚠️ فقط الإداري يمكنه نشر الأخبار!', 'error');
+        return;
+      }
+
       const title = document.getElementById('newsTitle').value;
       const content = document.getElementById('newsContent').value;
       const imgFile = document.getElementById('newsImageFile').files[0];
 
       if (!title || !content) {
-        alert('⚠️ يرجى تعبئة عنوان ومحتوى الخبر!');
+        showToast('⚠️ يرجى تعبئة عنوان ومحتوى الخبر!', 'error');
         return;
       }
 
-      let imageUrl = "";
+      let imageData = "";
       if (imgFile) {
         try {
-          imageUrl = await uploadFileToStorage(imgFile, 'news');
+          imageData = await fileToBase64(imgFile);
+          if (imageData.length > 1000000) {
+            showToast('⚠️ الصورة كبيرة جداً. الحد الأقصى 1 ميجابايت', 'error');
+            return;
+          }
         } catch (e) {
-          alert('❌ فشل رفع الصورة');
+          showToast('❌ فشل تحميل الصورة', 'error');
           return;
         }
       }
 
       await window.push(window.ref(window.db, 'news'), { 
-        title, content, imageUrl,
+        title, content, imageData,
         date: new Date().toLocaleDateString('ar-EG'),
         createdAt: new Date().toISOString()
       });
       
-      alert('✅ تم نشر الخبر بنجاح!');
+      showToast('✅ تم نشر الخبر بنجاح!', 'success');
       document.getElementById('newsTitle').value = '';
       document.getElementById('newsContent').value = '';
       document.getElementById('newsImageFile').value = '';
     }
 
     async function uploadMaterialFile() {
+      if (!isAdmin()) {
+        showToast('⚠️ فقط الإداري يمكنه رفع الملفات!', 'error');
+        return;
+      }
+
       const title = document.getElementById('matTitle').value;
       const subject = document.getElementById('matSubject').value;
       const type = document.getElementById('matType').value;
       const file = document.getElementById('matFile').files[0];
 
       if (!title || !file) {
-        alert('⚠️ يرجى إدخال اسم الملف واختيار ملف!');
+        showToast('⚠️ يرجى إدخال اسم الملف واختيار ملف!', 'error');
+        return;
+      }
+
+      // التحقق من حجم الملف (حد أقصى 2 ميجابايت)
+      if (file.size > 2000000) {
+        showToast('⚠️ الملف كبير جداً. الحد الأقصى 2 ميجابايت', 'error');
         return;
       }
 
       try {
-        const fileUrl = await uploadFileToStorage(file, 'materials');
+        const fileData = await fileToBase64(file);
         await window.push(window.ref(window.db, 'materials'), { 
-          title, subject, type, fileUrl,
+          title, subject, type, fileData,
+          fileName: file.name,
+          fileSize: file.size,
           date: new Date().toLocaleDateString('ar-EG'),
           createdAt: new Date().toISOString()
         });
-        alert('✅ تم رفع الملف بنجاح!');
+        showToast('✅ تم رفع الملف بنجاح!', 'success');
         document.getElementById('matTitle').value = '';
         document.getElementById('matSubject').value = '';
         document.getElementById('matFile').value = '';
       } catch (e) {
-        alert('❌ فشل رفع الملف');
+        showToast('❌ فشل رفع الملف: ' + e.message, 'error');
       }
     }
 
@@ -1379,6 +1511,10 @@
           el.classList.add('bg-slate-600/30');
           el.classList.remove('bg-slate-50');
         });
+        document.querySelectorAll('.text-slate-700').forEach(el => {
+          el.classList.add('text-slate-300');
+          el.classList.remove('text-slate-700');
+        });
         document.querySelector('.bg-slate-100')?.classList.add('bg-slate-700');
         document.querySelector('.bg-slate-100')?.classList.remove('bg-slate-100');
       } else {
@@ -1409,10 +1545,15 @@
           el.classList.remove('bg-slate-600/30');
           el.classList.add('bg-slate-50');
         });
+        document.querySelectorAll('.text-slate-300').forEach(el => {
+          if (!el.closest('.admin-stat-card')) {
+            el.classList.remove('text-slate-300');
+            el.classList.add('text-slate-700');
+          }
+        });
       }
     }
 
-    // Initial load
     console.log('🚀 سنتر سيجما - التطبيق جاهز للاستخدام!');
   </script>
 </body>
