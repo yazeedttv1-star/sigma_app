@@ -29,48 +29,38 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Cairo', sans-serif; background: #f1f5f9; -webkit-tap-highlight-color: transparent; }
-    
-    /* ===== تحسينات عامة ===== */
     .app-container { max-width: 480px; margin: 0 auto; background: #f8fafc; min-height: 100vh; position: relative; }
     .slide-up { animation: slideUp 0.3s ease-out; }
     @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     
-    /* ===== بطاقات صغيرة ===== */
     .stat-card { background: white; border-radius: 12px; padding: 10px 8px; text-align: center; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s; }
     .stat-card:active { transform: scale(0.96); }
     .stat-number { font-size: 18px; font-weight: 800; }
     .stat-label { font-size: 9px; color: #64748b; margin-top: 2px; }
     
-    /* ===== بطاقات المستخدم ===== */
     .profile-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid white; cursor: pointer; }
     .subject-chip { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 600; margin: 2px; background: rgba(255,255,255,0.2); color: white; }
     
-    /* ===== خيارات الإضافة ===== */
     .option-btn { padding: 6px 12px; border-radius: 10px; border: 2px solid #e2e8f0; background: white; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .option-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
     .option-btn:active { transform: scale(0.95); }
     
-    /* ===== أزرار الإدارة ===== */
     .admin-btn { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; transition: all 0.2s; width: 100%; }
     .admin-btn:active { transform: scale(0.98); background: #f1f5f9; }
     .admin-btn i { font-size: 16px; width: 24px; text-align: center; }
-    .admin-btn .badge { background: #2563eb; color: white; padding: 1px 8px; border-radius: 10px; font-size: 10px; margin-right: auto; }
     
-    /* ===== لوحة الإدارة ===== */
     .admin-panel-section { background: white; border-radius: 16px; padding: 12px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
     .admin-panel-section .header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 4px 0; }
     .admin-panel-section .header h4 { font-size: 13px; font-weight: 700; color: #1e293b; }
     .admin-panel-section .content { margin-top: 10px; display: none; }
     .admin-panel-section .content.open { display: block; }
     
-    /* ===== الشكاوى ===== */
     .complaint-card { background: #f8fafc; border-radius: 10px; padding: 10px; border-right: 3px solid #f59e0b; margin-bottom: 6px; }
     .complaint-card .name { font-weight: 700; font-size: 13px; color: #1e293b; }
     .complaint-card .phone { color: #2563eb; font-size: 11px; }
     .complaint-card .text { color: #475569; font-size: 12px; margin-top: 3px; }
     .complaint-card .date { color: #94a3b8; font-size: 9px; }
     
-    /* ===== توست ===== */
     .toast { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 10px 20px; border-radius: 10px; color: white; font-weight: 600; font-size: 13px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); animation: slideDown 0.4s ease; max-width: 90%; text-align: center; }
     .toast-success { background: #22c55e; }
     .toast-error { background: #ef4444; }
@@ -78,11 +68,9 @@
     .toast-info { background: #3b82f6; }
     @keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
     
-    /* ===== زر التثبيت ===== */
     .install-btn { background: rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 11px; cursor: pointer; display: none; align-items: center; gap: 4px; }
     .install-btn.show { display: flex; }
     
-    /* ===== وضع الليل ===== */
     .dark-mode .app-container { background: #0f172a; }
     .dark-mode .bg-white { background: #1e293b !important; }
     .dark-mode .text-slate-800 { color: #e2e8f0 !important; }
@@ -91,54 +79,24 @@
     .dark-mode .bg-slate-50 { background: #0f172a !important; }
     .dark-mode .stat-card { background: #1e293b !important; border-color: #334155 !important; }
     .dark-mode .stat-label { color: #94a3b8 !important; }
-    .dark-mode .admin-btn { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
     .dark-mode .admin-panel-section { background: #1e293b !important; border-color: #334155 !important; }
     .dark-mode .complaint-card { background: #0f172a !important; }
     .dark-mode .option-btn { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
     .dark-mode .option-btn.active { background: #1e3a5f !important; border-color: #2563eb !important; color: #60a5fa !important; }
     
-    /* ===== استجابة ===== */
     @media (max-width: 400px) {
       .stat-number { font-size: 15px; }
       .stat-label { font-size: 8px; }
       .subject-chip { font-size: 8px; padding: 1px 6px; }
       .profile-avatar { width: 36px; height: 36px; }
-      .admin-btn { font-size: 11px; padding: 8px 12px; }
     }
   </style>
-
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
-      authDomain: "sigma-6f162.firebaseapp.com",
-      databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
-      projectId: "sigma-6f162",
-      storageBucket: "sigma-6f162.firebasestorage.app",
-      messagingSenderId: "420365348074",
-      appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-    setPersistence(auth, browserLocalPersistence);
-
-    window.db = db; window.auth = auth; window.provider = provider;
-    window.ref = ref; window.push = push; window.set = set; window.remove = remove; window.update = update; window.onValue = onValue;
-    window.signInWithPopup = signInWithPopup; window.signOut = signOut; window.onAuthStateChanged = onAuthStateChanged;
-  </script>
 </head>
 <body>
 
 <div id="app" class="app-container flex flex-col pb-16">
 
-  <!-- ===== HEADER ===== -->
+  <!-- HEADER -->
   <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 shadow-lg sticky top-0 z-30 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center font-extrabold text-xl border border-white/30">Σ</div>
@@ -159,12 +117,11 @@
     </div>
   </header>
 
-  <!-- ===== MAIN ===== -->
+  <!-- MAIN -->
   <main class="flex-1 p-3 space-y-3 overflow-y-auto" style="padding-bottom: 70px;">
 
-    <!-- ===== TAB: HOME ===== -->
+    <!-- HOME -->
     <section id="tab-home" class="space-y-3 slide-up">
-      <!-- بطاقة المستخدم -->
       <div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-4 text-white shadow-lg">
         <div id="userContent" class="flex items-center gap-3">
           <img id="userAvatar" src="" class="profile-avatar" onclick="openProfile()" style="display:none;">
@@ -181,7 +138,6 @@
         </div>
       </div>
 
-      <!-- إحصائيات سريعة -->
       <div class="grid grid-cols-3 gap-2">
         <div class="stat-card" onclick="switchTab('schedule')">
           <div class="text-blue-600 text-lg"><i class="fa-solid fa-calendar-check"></i></div>
@@ -200,7 +156,6 @@
         </div>
       </div>
 
-      <!-- حصصي اليوم -->
       <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
         <div class="flex items-center justify-between mb-2">
           <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-clock text-blue-600 ml-1"></i> حصصي اليوم</h3>
@@ -211,7 +166,6 @@
         </div>
       </div>
 
-      <!-- آخر الأخبار -->
       <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
         <div class="flex items-center justify-between mb-2">
           <h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-newspaper text-blue-600 ml-1"></i> آخر الأخبار</h3>
@@ -223,7 +177,7 @@
       </div>
     </section>
 
-    <!-- ===== TAB: SCHEDULE ===== -->
+    <!-- SCHEDULE -->
     <section id="tab-schedule" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-calendar-days text-blue-600 ml-1"></i> جدول المحاضرات</h2>
@@ -239,7 +193,7 @@
       </div>
     </section>
 
-    <!-- ===== TAB: LIBRARY ===== -->
+    <!-- LIBRARY -->
     <section id="tab-library" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-book-open text-purple-600 ml-1"></i> المكتبة الرقمية</h2>
@@ -250,7 +204,7 @@
       </div>
     </section>
 
-    <!-- ===== TAB: NEWS ===== -->
+    <!-- NEWS -->
     <section id="tab-news" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-newspaper text-blue-600 ml-1"></i> الأخبار</h2>
@@ -261,7 +215,7 @@
       </div>
     </section>
 
-    <!-- ===== TAB: NOTIFICATIONS ===== -->
+    <!-- NOTIFICATIONS -->
     <section id="tab-notifications" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-bell text-amber-500 ml-1"></i> الإشعارات</h2>
@@ -272,14 +226,13 @@
       </div>
     </section>
 
-    <!-- ===== TAB: SETTINGS ===== -->
+    <!-- SETTINGS -->
     <section id="tab-settings" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-gear text-slate-600 ml-1"></i> الإعدادات</h2>
         <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
       </div>
 
-      <!-- تعديل البيانات -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
         <h3 class="font-bold text-sm text-slate-800 mb-3"><i class="fa-solid fa-user-pen text-blue-600"></i> تعديل البيانات الشخصية</h3>
         <div class="space-y-2">
@@ -312,7 +265,6 @@
         </div>
       </div>
 
-      <!-- معلومات الطالب -->
       <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
         <h3 class="font-bold text-xs text-slate-800 mb-2"><i class="fa-solid fa-user text-blue-600"></i> معلوماتي</h3>
         <div id="studentInfo" class="space-y-1 text-xs">
@@ -325,13 +277,11 @@
         </div>
       </div>
 
-      <!-- أرقام السنتر -->
       <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
         <h3 class="font-bold text-xs text-slate-800 mb-2"><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر</h3>
         <div id="centerContacts" class="space-y-1.5"></div>
       </div>
 
-      <!-- شكوى -->
       <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
         <h3 class="font-bold text-xs text-slate-800 mb-2"><i class="fa-solid fa-comment text-amber-500"></i> تقديم شكوى</h3>
         <textarea id="complaintText" placeholder="اكتب شكواك هنا..." class="w-full p-2 bg-slate-50 border rounded-xl text-sm h-16 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
@@ -341,14 +291,13 @@
       </div>
     </section>
 
-    <!-- ===== TAB: ADMIN ===== -->
+    <!-- ADMIN -->
     <section id="tab-admin" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-user-shield text-blue-600 ml-1"></i> لوحة الإدارة</h2>
         <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
       </div>
 
-      <!-- منع الوصول -->
       <div id="adminDenied" class="hidden bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
         <i class="fa-solid fa-ban text-red-500 text-4xl mb-2"></i>
         <h3 class="font-bold text-red-700 text-sm">⛔ غير مصرح بالدخول</h3>
@@ -356,7 +305,6 @@
         <button onclick="switchTab('home')" class="mt-3 bg-red-600 text-white px-4 py-1.5 rounded-xl text-xs">الرجوع</button>
       </div>
 
-      <!-- تسجيل الدخول -->
       <div id="adminLogin" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
         <div class="flex items-center gap-2 text-sm font-bold text-slate-700"><i class="fa-solid fa-lock text-amber-500"></i> دخول الإدارة</div>
         <div class="relative mt-2">
@@ -366,10 +314,8 @@
         <button onclick="adminLogin()" class="w-full mt-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm">دخول</button>
       </div>
 
-      <!-- لوحة التحكم -->
       <div id="adminPanel" class="hidden space-y-2">
         
-        <!-- الإحصائيات - تظهر عند الضغط على شعار السنتر -->
         <div class="admin-panel-section" onclick="toggleStats()" style="cursor:pointer;">
           <div class="header">
             <h4><i class="fa-solid fa-chart-line text-blue-400"></i> الإحصائيات</h4>
@@ -387,7 +333,6 @@
           </div>
         </div>
 
-        <!-- الشكاوى -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-message text-amber-500"></i> رسائل الشكاوى</h4>
@@ -400,20 +345,17 @@
           </div>
         </div>
 
-        <!-- إضافة حصة -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-plus-circle text-blue-600"></i> إضافة حصة</h4>
             <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
           </div>
           <div class="content">
-            <!-- خيارات الإضافة -->
             <div class="flex gap-1 mb-2">
               <button onclick="setOption('full')" id="optFull" class="option-btn active flex-1 text-center">📝 كامل</button>
               <button onclick="setOption('text')" id="optText" class="option-btn flex-1 text-center">📝 نص</button>
               <button onclick="setOption('image')" id="optImage" class="option-btn flex-1 text-center">🖼️ صورة</button>
             </div>
-            <!-- الحقول -->
             <div id="scheduleFields">
               <div class="grid grid-cols-2 gap-1.5">
                 <select id="schDay" class="p-1.5 bg-slate-50 border rounded-lg text-xs">
@@ -444,7 +386,6 @@
           </div>
         </div>
 
-        <!-- إشعار -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار</h4>
@@ -468,7 +409,6 @@
           </div>
         </div>
 
-        <!-- خبر -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر</h4>
@@ -483,7 +423,6 @@
           </div>
         </div>
 
-        <!-- مذكرة -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة</h4>
@@ -503,7 +442,6 @@
           </div>
         </div>
 
-        <!-- أرقام السنتر -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-address-book text-green-600"></i> أرقام السنتر</h4>
@@ -526,7 +464,7 @@
 
   </main>
 
-  <!-- ===== BOTTOM NAV ===== -->
+  <!-- BOTTOM NAV -->
   <nav class="fixed bottom-0 w-full max-w-[480px] bg-white/95 backdrop-blur-sm border-t border-slate-200 py-1 px-2 flex justify-around items-center z-30 shadow-lg" style="left:50%;transform:translateX(-50%);">
     <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[9px] font-bold text-blue-600"><i class="fa-solid fa-house text-lg"></i><span>الرئيسية</span></button>
     <button onclick="switchTab('schedule')" id="nav-schedule" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-calendar-days text-lg"></i><span>الجدول</span></button>
@@ -539,9 +477,77 @@
 </div>
 
 <!-- ============================================ -->
-<!-- ===== جميع الـ JavaScript ===== -->
+<!-- FIREBASE - يتم تحميله أولاً -->
+<!-- ============================================ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
+    authDomain: "sigma-6f162.firebaseapp.com",
+    databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
+    projectId: "sigma-6f162",
+    storageBucket: "sigma-6f162.firebasestorage.app",
+    messagingSenderId: "420365348074",
+    appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // تفعيل استمرار الجلسة
+  await setPersistence(auth, browserLocalPersistence);
+
+  // جعل الكائنات متاحة عالمياً
+  window.db = db;
+  window.auth = auth;
+  window.provider = provider;
+  window.ref = ref;
+  window.push = push;
+  window.set = set;
+  window.remove = remove;
+  window.update = update;
+  window.onValue = onValue;
+  window.signInWithPopup = signInWithPopup;
+  window.signOut = signOut;
+  window.onAuthStateChanged = onAuthStateChanged;
+
+  console.log('✅ Firebase initialized successfully');
+</script>
+
+<!-- ============================================ -->
+<!-- APPLICATION LOGIC - يتم تحميله بعد Firebase -->
 <!-- ============================================ -->
 <script>
+// ===== انتظار تحميل Firebase =====
+let firebaseReady = false;
+
+// التحقق من جاهزية Firebase
+function waitForFirebase() {
+  return new Promise((resolve) => {
+    if (window.db && window.auth) {
+      resolve();
+      return;
+    }
+    const check = setInterval(() => {
+      if (window.db && window.auth) {
+        clearInterval(check);
+        resolve();
+      }
+    }, 100);
+  });
+}
+
+// ===== بدء التطبيق بعد جاهزية Firebase =====
+waitForFirebase().then(() => {
+  console.log('🚀 Starting application...');
+  initApp();
+});
+
 // ===== المتغيرات العامة =====
 let currentUser = null, userData = null, scheduleData = [];
 let currentFilter = 'today', isAdmin = false, darkMode = false, deferredPrompt;
@@ -588,7 +594,7 @@ function showToast(msg, type = 'info') {
 if ('serviceWorker' in navigator) {
   const sw = `self.addEventListener('install',e=>e.waitUntil(caches.open('v1').then(c=>c.add(['/']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
   navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], {type:'application/javascript'})))
-    .then(r => console.log('✅ SW:', r)).catch(e => console.log('❌ SW:', e));
+    .then(r => console.log('✅ SW registered')).catch(e => console.log('❌ SW failed'));
 }
 
 // ===== التبويبات =====
@@ -625,35 +631,77 @@ function handleAdminTab() {
 }
 
 // ===== المصادقة =====
-window.onAuthStateChanged(window.auth, user => {
-  if (user) {
-    currentUser = user;
-    window.onValue(window.ref(window.db, `users/${user.uid}`), snap => {
-      userData = snap.val();
+function initApp() {
+  // مراقبة حالة المصادقة
+  window.onAuthStateChanged(window.auth, user => {
+    console.log('Auth state changed:', user ? '✅ Logged in' : '❌ Logged out');
+    
+    if (user) {
+      currentUser = user;
+      // قراءة بيانات المستخدم
+      window.onValue(window.ref(window.db, `users/${user.uid}`), snap => {
+        userData = snap.val();
+        console.log('User data loaded:', userData ? '✅' : '❌ No data');
+        renderUser();
+        updateInfo();
+        if (!userData) {
+          setTimeout(() => { 
+            switchTab('settings'); 
+            showToast('📝 أكمل بياناتك الشخصية', 'warning'); 
+          }, 1000);
+        }
+      });
+      
+      // تحديث حالة التواجد
+      window.set(window.ref(window.db, `users/${user.uid}/online`), true);
+      window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
+      
+    } else {
+      currentUser = null;
+      userData = null;
+      isAdmin = false;
       renderUser();
-      if (!userData) setTimeout(() => { switchTab('settings'); showToast('📝 أكمل بياناتك', 'warning'); }, 1000);
-    });
-    window.set(window.ref(window.db, `users/${user.uid}/online`), true);
-    window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
-  } else {
-    currentUser = null; userData = null; isAdmin = false;
-    renderUser();
-    document.getElementById('adminDenied').classList.add('hidden');
-    document.getElementById('adminLogin').classList.remove('hidden');
-    document.getElementById('adminPanel').classList.add('hidden');
-  }
-});
+      document.getElementById('adminDenied').classList.add('hidden');
+      document.getElementById('adminLogin').classList.remove('hidden');
+      document.getElementById('adminPanel').classList.add('hidden');
+    }
+  });
 
+  // بدء المستمعات
+  initListeners();
+  loadContacts();
+  loadComplaints();
+  loadSubjects();
+  
+  console.log('✅ Application initialized');
+}
+
+// ===== تسجيل الدخول =====
 function loginGoogle() {
-  window.signInWithPopup(window.auth, window.provider).catch(e => showToast('❌ ' + e.message, 'error'));
+  console.log('🔐 Attempting Google login...');
+  window.signInWithPopup(window.auth, window.provider)
+    .then(result => {
+      console.log('✅ Login successful:', result.user.displayName);
+      showToast('✅ تم تسجيل الدخول بنجاح', 'success');
+    })
+    .catch(error => {
+      console.error('❌ Login error:', error);
+      showToast('❌ فشل تسجيل الدخول: ' + error.message, 'error');
+    });
 }
 
+// ===== تسجيل الخروج =====
 function logoutUser() {
-  if (currentUser) window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
-  window.signOut(window.auth);
-  showToast('👋 تم الخروج', 'warning');
+  if (currentUser) {
+    window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
+  }
+  window.signOut(window.auth).then(() => {
+    showToast('👋 تم تسجيل الخروج', 'warning');
+    renderUser();
+  });
 }
 
+// ===== عرض بيانات المستخدم =====
 function renderUser() {
   const avatar = document.getElementById('userAvatar');
   const name = document.getElementById('userName');
@@ -667,9 +715,19 @@ function renderUser() {
     name.textContent = `مرحباً، ${currentUser.displayName || 'طالب'}`;
     sub.textContent = `${userData.stage || ''} • صف ${userData.grade || ''}`;
     subjects.innerHTML = (userData.subjects || []).map(s => `<span class="subject-chip">${s}</span>`).join('');
-    btn.textContent = 'خروج';
+    btn.innerHTML = '<i class="fa-solid fa-sign-out-alt"></i> خروج';
     btn.onclick = logoutUser;
-    btn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl';
+    btn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition';
+  } else if (currentUser) {
+    // مستخدم مسجل لكن بدون بيانات
+    avatar.src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
+    avatar.style.display = 'block';
+    name.textContent = `مرحباً، ${currentUser.displayName || 'طالب'}`;
+    sub.textContent = 'يرجى إكمال بياناتك';
+    subjects.innerHTML = '';
+    btn.innerHTML = '<i class="fa-solid fa-sign-out-alt"></i> خروج';
+    btn.onclick = logoutUser;
+    btn.className = 'bg-red-500/80 hover:bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition';
   } else {
     avatar.style.display = 'none';
     name.textContent = 'مرحباً بك';
@@ -677,36 +735,72 @@ function renderUser() {
     subjects.innerHTML = '';
     btn.innerHTML = '<i class="fa-brands fa-google text-xs"></i> دخول';
     btn.onclick = loginGoogle;
-    btn.className = 'bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl';
+    btn.className = 'bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition';
   }
 }
 
-function openProfile() { if (currentUser) switchTab('settings'); else showToast('⚠️ سجل دخول أولاً', 'error'); }
+function openProfile() { 
+  if (currentUser) {
+    switchTab('settings');
+  } else {
+    showToast('⚠️ سجل دخول أولاً', 'error');
+  }
+}
 
 // ===== حفظ الملف الشخصي =====
 function saveProfile() {
-  if (!currentUser) return showToast('⚠️ سجل دخول أولاً', 'error');
+  if (!currentUser) {
+    showToast('⚠️ سجل دخول أولاً', 'error');
+    return;
+  }
+  
   const stage = document.getElementById('profStage').value;
   const grade = document.getElementById('profGrade').value;
   const phone = document.getElementById('profPhone').value;
   const checked = document.querySelectorAll('.subject-check:checked');
   const subjects = Array.from(checked).map(cb => cb.value);
-  if (!subjects.length) return showToast('⚠️ اختر مادة واحدة على الأقل', 'error');
+  
+  if (!subjects.length) {
+    showToast('⚠️ اختر مادة واحدة على الأقل', 'error');
+    return;
+  }
 
-  window.set(window.ref(window.db, `users/${currentUser.uid}`), {
-    name: currentUser.displayName, email: currentUser.email, photoURL: currentUser.photoURL,
-    stage, grade, subjects, phone: phone ? btoa(phone) : '',
+  const data = {
+    name: currentUser.displayName,
+    email: currentUser.email,
+    photoURL: currentUser.photoURL,
+    stage, grade, subjects,
+    phone: phone ? btoa(phone) : '',
     updatedAt: new Date().toISOString()
-  }).then(() => { showToast('✅ تم الحفظ!', 'success'); renderUser(); updateInfo(); });
+  };
+
+  window.set(window.ref(window.db, `users/${currentUser.uid}`), data)
+    .then(() => {
+      showToast('✅ تم حفظ البيانات بنجاح!', 'success');
+      renderUser();
+      updateInfo();
+      // تحديث userData محلياً
+      userData = data;
+    })
+    .catch(err => {
+      console.error('Save error:', err);
+      showToast('❌ فشل الحفظ: ' + err.message, 'error');
+    });
 }
 
 function loadSubjects() {
   const container = document.getElementById('subjectsCheckbox');
+  if (!container) return;
   container.innerHTML = '';
   const stage = document.getElementById('profStage').value;
   (subjectsByStage[stage] || []).forEach(s => {
     const checked = userData?.subjects?.includes(s) || false;
-    container.innerHTML += `<label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded-lg text-xs cursor-pointer"><input type="checkbox" value="${s}" class="subject-check" ${checked?'checked':''}> ${s}</label>`;
+    container.innerHTML += `
+      <label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded-lg text-xs cursor-pointer hover:bg-slate-100 transition">
+        <input type="checkbox" value="${s}" class="subject-check" ${checked?'checked':''}>
+        ${s}
+      </label>
+    `;
   });
   document.getElementById('profStage').onchange = loadSubjects;
 }
@@ -726,17 +820,23 @@ function updateInfo() {
 // ===== الإدارة =====
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
-  if (pass === 'Sigma@2024' && currentUser && ADMIN_UIDS.includes(currentUser.uid)) {
+  if (!currentUser) {
+    showToast('⚠️ سجل دخول أولاً بحساب إداري', 'error');
+    return;
+  }
+  if (!ADMIN_UIDS.includes(currentUser.uid)) {
+    showToast('⛔ هذا الحساب ليس إدارياً!', 'error');
+    document.getElementById('adminDenied').classList.remove('hidden');
+    document.getElementById('adminLogin').classList.add('hidden');
+    return;
+  }
+  if (pass === 'Sigma@2024') {
     isAdmin = true;
     document.getElementById('adminLogin').classList.add('hidden');
     document.getElementById('adminPanel').classList.remove('hidden');
     document.getElementById('adminPass').value = '';
     loadAdminData();
     showToast('✅ مرحباً في لوحة التحكم', 'success');
-  } else if (!currentUser || !ADMIN_UIDS.includes(currentUser.uid)) {
-    showToast('⛔ هذا الحساب ليس إدارياً!', 'error');
-    document.getElementById('adminDenied').classList.remove('hidden');
-    document.getElementById('adminLogin').classList.add('hidden');
   } else {
     showToast('❌ كلمة السر غير صحيحة!', 'error');
   }
@@ -763,8 +863,6 @@ function loadAdminData() {
   loadManage('notifications', 'notifList', renderNotifItem);
   loadManage('news', 'newsList', renderNewsItem);
   loadManage('materials', 'matList', renderMatItem);
-  loadContacts();
-  loadComplaints();
 }
 
 function loadStats() {
@@ -835,6 +933,16 @@ function setOption(opt) {
   document.getElementById(`opt${opt.charAt(0).toUpperCase()+opt.slice(1)}`).classList.add('active');
   document.getElementById('scheduleFields').style.display = (opt === 'image') ? 'none' : 'block';
   document.getElementById('scheduleImageField').style.display = (opt === 'text') ? 'none' : 'block';
+}
+
+// ===== Base64 =====
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.readAsDataURL(file);
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+  });
 }
 
 // ===== إضافة حصة =====
@@ -1012,16 +1120,6 @@ function sendComplaint() {
   showToast('✅ تم الإرسال', 'success');
 }
 
-// ===== Base64 =====
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.readAsDataURL(file);
-    r.onload = () => resolve(r.result);
-    r.onerror = () => reject(r.error);
-  });
-}
-
 // ===== الجدول =====
 function filterSchedule(type) {
   currentFilter = type;
@@ -1092,6 +1190,7 @@ function initListeners() {
     renderMySchedule();
     document.getElementById('todayCount').textContent = scheduleData.filter(i => i.day === ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()]).length;
   });
+  
   window.onValue(window.ref(window.db, 'materials'), snap => {
     const d = snap.val();
     document.getElementById('materialCount').textContent = d ? Object.keys(d).length : 0;
@@ -1107,6 +1206,7 @@ function initListeners() {
       </div>`;
     }).join('');
   });
+  
   window.onValue(window.ref(window.db, 'news'), snap => {
     const d = snap.val();
     ['homeNewsContainer', 'allNewsContainer'].forEach(id => {
@@ -1121,6 +1221,7 @@ function initListeners() {
       }).join('');
     });
   });
+  
   window.onValue(window.ref(window.db, 'notifications'), snap => {
     const d = snap.val();
     const container = document.getElementById('notificationsContainer');
@@ -1151,18 +1252,7 @@ function toggleDarkMode() {
   document.getElementById('darkIcon').className = darkMode ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
 }
 
-// ===== بدء التشغيل =====
-document.addEventListener('DOMContentLoaded', () => {
-  loadSubjects();
-  initListeners();
-  // التحقق من الحفاظ على الجلسة
-  if (currentUser) {
-    renderUser();
-    updateInfo();
-  }
-});
-
-console.log('🚀 سنتر سيجما - النسخة النهائية المتطورة');
+console.log('📱 سنتر سيجما - جاهز للتشغيل');
 </script>
 </body>
 </html>
