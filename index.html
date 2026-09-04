@@ -143,7 +143,6 @@
     .pwa-install-banner .btn-install { background: #2563eb; color: white; border: none; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
     .pwa-install-banner .btn-close { background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; }
     
-    /* ===== نظام الامتحانات ===== */
     .exam-card { background: white; border-radius: 12px; padding: 12px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
     .exam-card .exam-title { font-weight: 700; font-size: 14px; color: #1e293b; }
     .exam-card .exam-info { font-size: 11px; color: #64748b; }
@@ -480,7 +479,7 @@
         <!-- ===== إحصائيات ===== -->
         <div class="admin-panel-section" onclick="toggleStats()" style="cursor:pointer;">
           <div class="header">
-            <h4><i class="fa-solid fa-chart-line text-blue-400"></i> الإحصائيات</h4>
+            <h4><i class="fa-solid fa-chart-line text-blue-400"></i> الإحصائيات اللحظية</h4>
             <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down" id="statsArrow"></i></span>
           </div>
           <div class="content" id="statsContent">
@@ -493,7 +492,24 @@
               <div><div class="text-xl font-bold" id="statMaterials">0</div><div class="text-[10px] opacity-70">📄 ملفات</div></div>
               <div><div class="text-xl font-bold" id="statTeachers">0</div><div class="text-[10px] opacity-70">👨‍🏫 مدرسين</div></div>
               <div><div class="text-xl font-bold" id="statExams">0</div><div class="text-[10px] opacity-70">📝 امتحانات</div></div>
+              <div><div class="text-xl font-bold" id="statResults">0</div><div class="text-[10px] opacity-70">📊 نتائج</div></div>
+              <div><div class="text-xl font-bold" id="statNotifs">0</div><div class="text-[10px] opacity-70">🔔 إشعارات</div></div>
             </div>
+          </div>
+        </div>
+
+        <!-- ===== إعدادات الإشعارات التلقائية ===== -->
+        <div class="admin-panel-section">
+          <div class="header" onclick="toggleSection(this)">
+            <h4><i class="fa-solid fa-gear text-slate-600"></i> إعدادات الإشعارات التلقائية</h4>
+            <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
+          <div class="content">
+            <div class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
+              <input type="checkbox" id="autoNotifToggle" checked>
+              <label for="autoNotifToggle" class="text-xs font-bold text-slate-700">تفعيل الإشعارات التلقائية عند الإضافة</label>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">عند تعطيل هذا الخيار، لن يتم إرسال إشعارات تلقائية عند إضافة أي محتوى جديد</p>
           </div>
         </div>
 
@@ -729,6 +745,24 @@
           </div>
         </div>
 
+        <!-- ===== حذف الكل ===== -->
+        <div class="admin-panel-section">
+          <div class="header" onclick="toggleSection(this)">
+            <h4><i class="fa-solid fa-trash-can text-red-500"></i> حذف الكل</h4>
+            <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
+          <div class="content">
+            <div class="grid grid-cols-2 gap-1">
+              <button onclick="deleteAll('notifications')" class="bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs">🗑️ حذف كل الإشعارات</button>
+              <button onclick="deleteAll('news')" class="bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs">🗑️ حذف كل الأخبار</button>
+              <button onclick="deleteAll('schedules')" class="bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs">🗑️ حذف كل الحصص</button>
+              <button onclick="deleteAll('materials')" class="bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs">🗑️ حذف كل الملفات</button>
+              <button onclick="deleteAll('exams')" class="bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs">🗑️ حذف كل الامتحانات</button>
+              <button onclick="deleteAll('results')" class="bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs">🗑️ حذف كل النتائج</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -772,8 +806,6 @@
   window.db = db; window.auth = auth; window.provider = provider;
   window.ref = ref; window.push = push; window.set = set; window.remove = remove; window.update = update; window.onValue = onValue;
   window.signInWithPopup = signInWithPopup; window.signOut = signOut; window.onAuthStateChanged = onAuthStateChanged;
-
-  console.log('✅ Firebase جاهز');
 </script>
 
 <!-- APPLICATION -->
@@ -784,6 +816,7 @@ let currentFilter = 'today', isAdmin = false, darkMode = false, deferredPrompt;
 let allUsers = {}, contacts = [], complaints = [], scheduleOption = 'full';
 let scheduleDayOption = 'today', notifOption = 'full';
 let currentViewerImage = '';
+let autoNotifEnabled = true;
 
 const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2', 'ADMIN_UID_2', 'ADMIN_UID_3'];
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -799,10 +832,11 @@ function openImageViewer(imageSrc, title = 'صورة') {
   const img = document.getElementById('viewerImage');
   const info = document.getElementById('imageInfo');
   
+  if (!viewer || !img) return;
   currentViewerImage = imageSrc;
   img.src = imageSrc;
   if (info) info.textContent = title;
-  if (viewer) viewer.classList.add('show');
+  viewer.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
 
@@ -1060,7 +1094,7 @@ function requestProfileUpdate() {
   };
 }
 
-// ===== حفظ الملف الشخصي (للإدارة فقط) =====
+// ===== حفظ الملف الشخصي =====
 function saveProfile() {
   if (!currentUser) return showToast('⚠️ سجل دخول', 'error');
   
@@ -1247,6 +1281,14 @@ function loadStats() {
     const d = snap.val();
     document.getElementById('statExams').textContent = d ? Object.keys(d).length : 0;
   });
+  window.onValue(window.ref(window.db, 'results'), snap => {
+    const d = snap.val();
+    document.getElementById('statResults').textContent = d ? Object.keys(d).length : 0;
+  });
+  window.onValue(window.ref(window.db, 'notifications'), snap => {
+    const d = snap.val();
+    document.getElementById('statNotifs').textContent = d ? Object.keys(d).length : 0;
+  });
 }
 
 function loadManage(path, containerId, renderFn) {
@@ -1278,6 +1320,23 @@ function deleteItem(path, key) {
   if (confirm('حذف هذا العنصر؟')) {
     window.remove(window.ref(window.db, `${path}/${key}`));
     showToast('✅ تم الحذف', 'success');
+  }
+}
+
+// ===== حذف الكل =====
+function deleteAll(path) {
+  if (!isAdmin) return;
+  const names = {
+    'notifications': 'الإشعارات',
+    'news': 'الأخبار',
+    'schedules': 'الحصص',
+    'materials': 'الملفات',
+    'exams': 'الامتحانات',
+    'results': 'النتائج'
+  };
+  if (confirm(`⚠️ هل أنت متأكد من حذف كل ${names[path] || path}؟`)) {
+    window.set(window.ref(window.db, path), null);
+    showToast(`✅ تم حذف كل ${names[path] || path}`, 'success');
   }
 }
 
@@ -1650,7 +1709,9 @@ async function addSchedule() {
   document.getElementById('schRoom').value = '';
   document.getElementById('schImage').value = '';
   
-  sendAutoNotification('schedule', subject, `${subject} - يوم ${day} - مدرس: ${teacher}`);
+  if (autoNotifEnabled) {
+    sendAutoNotification('schedule', subject, `${subject} - يوم ${day} - مدرس: ${teacher}`);
+  }
 }
 
 // ===== إرسال إشعار =====
@@ -1721,7 +1782,9 @@ async function addNews() {
   document.getElementById('newsContent').value = '';
   document.getElementById('newsImage').value = '';
   
-  sendAutoNotification('news', title, title);
+  if (autoNotifEnabled) {
+    sendAutoNotification('news', title, title);
+  }
 }
 
 // ===== رفع مذكرة =====
@@ -1740,21 +1803,23 @@ async function uploadMat() {
   document.getElementById('matSubject').value = '';
   document.getElementById('matFile').value = '';
   
-  sendAutoNotification('material', title, `${title} - ${subject}`);
+  if (autoNotifEnabled) {
+    sendAutoNotification('material', title, `${title} - ${subject}`);
+  }
 }
 
 // ===== نظام الإشعارات التلقائية =====
 async function sendAutoNotification(type, title, details) {
   try {
+    if (!autoNotifEnabled) return;
+    
     const notificationTypes = {
       'schedule': { icon: '📚', title: '📚 حصة جديدة مضافة!', body: `تم إضافة حصة جديدة: ${title}` },
       'news': { icon: '📰', title: '📰 خبر جديد!', body: `تم نشر خبر جديد: ${title}` },
-      'material': { icon: '📄', title: '📄 ملف جديد!', body: `تم رفع ملف جديد: ${title}` },
-      'notification': { icon: '🔔', title: '🔔 إشعار جديد من الإدارة!', body: `📌 ${title}` },
-      'contact': { icon: '📞', title: '📞 رقم تواصل جديد!', body: `تم إضافة رقم تواصل جديد: ${title}` }
+      'material': { icon: '📄', title: '📄 ملف جديد!', body: `تم رفع ملف جديد: ${title}` }
     };
 
-    const notifData = notificationTypes[type] || notificationTypes['notification'];
+    const notifData = notificationTypes[type] || notificationTypes['news'];
     
     await window.push(window.ref(window.db, 'notifications'), {
       title: notifData.title,
@@ -2079,4 +2144,4 @@ function toggleDarkMode() {
 console.log('✅ سنتر سيجما - النسخة المتكاملة جاهزة!');
 </script>
 </body>
-        </html>
+</html>
