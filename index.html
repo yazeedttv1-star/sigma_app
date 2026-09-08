@@ -5,25 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>سنتر سيجما التعليمي</title>
   
-  <!-- ===== PWA Meta Tags ===== -->
+  <!-- ===== PWA ===== -->
   <meta name="theme-color" content="#2563eb">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="سيجما">
-  
-  <!-- ===== Manifest مدمج ===== -->
   <link rel="manifest" href="data:application/json,{
     &quot;name&quot;:&quot;سنتر سيجما التعليمي&quot;,
     &quot;short_name&quot;:&quot;سيجما&quot;,
-    &quot;description&quot;:&quot;منصة سنتر سيجما التعليمية المتكاملة للطلاب والمتابعة&quot;,
+    &quot;description&quot;:&quot;منصة سنتر سيجما التعليمية المتكاملة&quot;,
     &quot;start_url&quot;:&quot;.&quot;,
     &quot;display&quot;:&quot;standalone&quot;,
-    &quot;orientation&quot;:&quot;portrait&quot;,
     &quot;background_color&quot;:&quot;#f8fafc&quot;,
     &quot;theme_color&quot;:&quot;#2563eb&quot;,
-    &quot;lang&quot;:&quot;ar&quot;,
-    &quot;dir&quot;:&quot;rtl&quot;,
-    &quot;categories&quot;:[&quot;education&quot;,&quot;students&quot;,&quot;learning&quot;],
     &quot;icons&quot;:[
       {&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%232563eb'/%3E%3Ctext x='256' y='350' font-size='300' text-anchor='middle' fill='white' font-family='serif' font-weight='bold'%3E%CE%A3%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;,&quot;purpose&quot;:&quot;any maskable&quot;}
     ]
@@ -197,44 +188,6 @@
     .publish-btn.red { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
     .publish-btn.teal { background: linear-gradient(135deg, #14b8a6, #0d9488); box-shadow: 0 4px 15px rgba(20,184,166,0.3); }
     
-    /* ===== شريط التثبيت ===== */
-    .install-banner {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      color: white;
-      padding: 12px 16px;
-      border-radius: 12px;
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      animation: slideDown 0.5s ease;
-    }
-    .install-banner.show { display: flex; }
-    .install-banner .icon { font-size: 28px; }
-    .install-banner .text { flex: 1; margin: 0 10px; }
-    .install-banner .text strong { display: block; font-size: 14px; }
-    .install-banner .text span { font-size: 11px; opacity: 0.7; display: block; }
-    .install-banner .btn-install {
-      background: #2563eb;
-      border: none;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .install-banner .btn-install:hover { background: #1d4ed8; }
-    .install-banner .btn-close {
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      cursor: pointer;
-      font-size: 18px;
-      padding: 4px 8px;
-    }
-    .install-banner .btn-close:hover { color: white; }
-    
     .dark-mode .app-container { background: #0f172a; }
     .dark-mode .bg-white { background: #1e293b !important; }
     .dark-mode .text-slate-800 { color: #e2e8f0 !important; }
@@ -255,7 +208,6 @@
     .dark-mode .login-section p { color: #94a3b8 !important; }
     .dark-mode .login-section .input-group label { color: #94a3b8 !important; }
     .dark-mode .login-section .input-group input { background: #0f172a !important; border-color: #334155 !important; color: #e2e8f0 !important; }
-    .dark-mode .install-banner { background: linear-gradient(135deg, #334155, #1e293b); }
     
     @media (max-width: 400px) {
       .stat-number { font-size: 15px; }
@@ -301,17 +253,6 @@
 
   <!-- MAIN -->
   <main class="flex-1 p-3 space-y-3 overflow-y-auto" style="padding-bottom: 70px;">
-
-    <!-- ===== شريط تثبيت التطبيق ===== -->
-    <div id="installBanner" class="install-banner">
-      <span class="icon">📱</span>
-      <div class="text">
-        <strong>ثبّت تطبيق سيجما</strong>
-        <span>للوصول السريع والإشعارات الفورية</span>
-      </div>
-      <button class="btn-install" onclick="installApp()">تثبيت</button>
-      <button class="btn-close" onclick="closeInstallBanner()">✕</button>
-    </div>
 
     <!-- LOGIN -->
     <section id="tab-login" class="slide-up">
@@ -968,53 +909,20 @@
 <!-- ===== APPLICATION ===== -->
 <script>
 // ============================================
-// PWA - تثبيت التطبيق
+// PWA - منع التثبيت من المتصفح
 // ============================================
-let deferredPrompt;
-
+// منع ظهور شريط التثبيت
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('installBanner').classList.add('show');
-  console.log('✅ التطبيق جاهز للتثبيت');
+  console.log('❌ تم منع تثبيت التطبيق من المتصفح');
 });
 
-window.addEventListener('appinstalled', () => {
-  document.getElementById('installBanner').classList.remove('show');
-  showToast('✅ تم تثبيت التطبيق بنجاح!', 'success');
-});
-
-function installApp() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((result) => {
-      if (result.outcome === 'accepted') {
-        showToast('✅ تم تثبيت التطبيق!', 'success');
-        document.getElementById('installBanner').classList.remove('show');
-      } else {
-        showToast('تم تخطي التثبيت', 'warning');
-      }
-      deferredPrompt = null;
-    });
-  } else {
-    // عرض تعليمات التثبيت اليدوي
-    const isAndroid = /android/i.test(navigator.userAgent);
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    let msg = '📱 لتثبيت التطبيق:\n\n';
-    if (isAndroid) {
-      msg += '1. اضغط ⋮ (القائمة)\n2. اختر "تثبيت التطبيق"\n3. اضغط "تثبيت"';
-    } else if (isIOS) {
-      msg += '1. اضغط □↑ (مشاركة)\n2. اختر "إضافة للشاشة الرئيسية"\n3. اضغط "إضافة"';
-    } else {
-      msg += 'استخدم Chrome أو Safari\nوابحث عن خيار "تثبيت التطبيق" في القائمة';
-    }
-    alert(msg);
-  }
+// منع ظهور زر التثبيت في شريط العنوان (للمتصفحات المدعومة)
+if (window.navigator && window.navigator.setAppBadge) {
+  // تجاهل
 }
 
-function closeInstallBanner() {
-  document.getElementById('installBanner').classList.remove('show');
-}
+console.log('✅ تم تعطيل تثبيت التطبيق من المتصفح');
 
 // ============================================
 // المتغيرات العامة
@@ -1134,29 +1042,40 @@ function handleAdminTab() {
 }
 
 // ============================================
-// المصادقة
+// المصادقة - الإصلاح الكامل
 // ============================================
 function initApp() {
   window.onAuthStateChanged(window.auth, user => {
     if (user) {
       currentUser = user;
-      window.onValue(window.ref(window.db, `users/${user.uid}`), snap => {
-        userData = snap.val();
-        renderUser();
-        updateInfo();
-        if (!userData) {
-          setTimeout(() => { switchTab('settings'); showToast('📝 أكمل بياناتك', 'warning'); }, 1000);
+      // جلب بيانات المستخدم مع معالجة الأخطاء
+      const userRef = window.ref(window.db, `users/${user.uid}`);
+      window.onValue(userRef, (snapshot) => {
+        try {
+          userData = snapshot.val();
+          renderUser();
+          updateInfo();
+          if (!userData) {
+            setTimeout(() => { switchTab('settings'); showToast('📝 أكمل بياناتك', 'warning'); }, 1000);
+          }
+          document.getElementById('tab-login').classList.add('hidden');
+          document.getElementById('tab-register').classList.add('hidden');
+          document.getElementById('tab-home').classList.remove('hidden');
+          document.querySelectorAll('nav button').forEach(b => {
+            b.classList.remove('text-blue-600');
+            b.classList.add('text-slate-400');
+          });
+          const nav = document.getElementById('nav-home');
+          if (nav) { nav.classList.remove('text-slate-400'); nav.classList.add('text-blue-600'); }
+        } catch (e) {
+          console.error('❌ خطأ في قراءة بيانات المستخدم:', e);
+          showToast('❌ حدث خطأ في تحميل البيانات', 'error');
         }
-        document.getElementById('tab-login').classList.add('hidden');
-        document.getElementById('tab-register').classList.add('hidden');
-        document.getElementById('tab-home').classList.remove('hidden');
-        document.querySelectorAll('nav button').forEach(b => {
-          b.classList.remove('text-blue-600');
-          b.classList.add('text-slate-400');
-        });
-        const nav = document.getElementById('nav-home');
-        if (nav) { nav.classList.remove('text-slate-400'); nav.classList.add('text-blue-600'); }
+      }, (error) => {
+        console.error('❌ خطأ في الاستماع للبيانات:', error);
+        showToast('❌ فشل تحميل البيانات', 'error');
       });
+      
       window.set(window.ref(window.db, `users/${user.uid}/online`), true);
       window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
     } else {
@@ -1174,15 +1093,19 @@ function initApp() {
       document.getElementById('adminPanel').classList.add('hidden');
     }
   });
-  initListeners();
-  loadContacts();
-  loadComplaints();
-  loadSubjects();
-  loadTeachers();
-  loadExams();
-  loadResults();
-  loadWeeklyFollow();
-  loadProfileRequests();
+  
+  // تحميل البيانات الأساسية
+  setTimeout(() => {
+    initListeners();
+    loadContacts();
+    loadComplaints();
+    loadSubjects();
+    loadTeachers();
+    loadExams();
+    loadResults();
+    loadWeeklyFollow();
+    loadProfileRequests();
+  }, 500);
 }
 
 // ===== تسجيل الدخول =====
@@ -1195,15 +1118,29 @@ function loginUser() {
     return;
   }
   
+  // إظهار رسالة تحميل
+  showToast('⏳ جاري تسجيل الدخول...', 'info');
+  
   window.signInWithEmailAndPassword(window.auth, email, password)
     .then(result => {
       showToast('✅ تم تسجيل الدخول بنجاح', 'success');
+      // جلب البيانات فوراً
+      const user = result.user;
+      const userRef = window.ref(window.db, `users/${user.uid}`);
+      window.onValue(userRef, (snapshot) => {
+        userData = snapshot.val();
+        renderUser();
+        updateInfo();
+      }, { onlyOnce: true });
     })
     .catch(error => {
+      console.error('❌ خطأ في تسجيل الدخول:', error);
       if (error.code === 'auth/user-not-found') {
         showToast('❌ لا يوجد حساب بهذا البريد', 'error');
       } else if (error.code === 'auth/wrong-password') {
         showToast('❌ كلمة المرور غير صحيحة', 'error');
+      } else if (error.code === 'auth/too-many-requests') {
+        showToast('❌ تم تجاوز عدد المحاولات. حاول لاحقاً', 'error');
       } else {
         showToast('❌ ' + error.message, 'error');
       }
@@ -1233,6 +1170,9 @@ function registerUser() {
     showToast('⚠️ يرجى رفع صورة البطاقة أو شهادة الميلاد', 'error');
     return;
   }
+  
+  // إظهار رسالة تحميل
+  showToast('⏳ جاري إنشاء الحساب...', 'info');
   
   const reader = new FileReader();
   reader.readAsDataURL(idFile);
@@ -1270,8 +1210,11 @@ function registerUser() {
       switchTab('login');
       
     } catch (error) {
+      console.error('❌ خطأ في إنشاء الحساب:', error);
       if (error.code === 'auth/email-already-in-use') {
         showToast('❌ هذا البريد الإلكتروني مستخدم بالفعل', 'error');
+      } else if (error.code === 'auth/weak-password') {
+        showToast('❌ كلمة المرور ضعيفة. استخدم 6 أحرف على الأقل', 'error');
       } else {
         showToast('❌ ' + error.message, 'error');
       }
@@ -1323,6 +1266,8 @@ function renderUser() {
   const sub = document.getElementById('userSubtitle');
   const subjects = document.getElementById('userSubjects');
   const btn = document.getElementById('loginBtn');
+
+  if (!avatar || !name || !sub || !subjects || !btn) return;
 
   if (currentUser && userData) {
     avatar.src = userData.idImage || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
@@ -2424,7 +2369,7 @@ window.toggleDarkMode = toggleDarkMode;
 waitForFirebase().then(() => {
   console.log('🚀 سنتر سيجما - جاهز للتشغيل!');
   console.log('📊 يدعم حتى 500+ مستخدم متزامن');
-  console.log('📱 يمكن تثبيت التطبيق من خلال شريط التثبيت');
+  console.log('❌ تم تعطيل تثبيت التطبيق من المتصفح');
   initApp();
 });
 
