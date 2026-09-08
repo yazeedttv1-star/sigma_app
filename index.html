@@ -140,7 +140,6 @@
     .login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .login-btn:active { transform: scale(0.98); }
 
-    /* ===== أزرار النشر الجديدة ===== */
     .publish-btn {
       display: inline-flex;
       align-items: center;
@@ -178,19 +177,6 @@
     .publish-btn.orange { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
     .publish-btn.red { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
     .publish-btn.teal { background: linear-gradient(135deg, #14b8a6, #0d9488); box-shadow: 0 4px 15px rgba(20,184,166,0.3); }
-    .publish-btn.pink { background: linear-gradient(135deg, #ec4899, #db2777); box-shadow: 0 4px 15px rgba(236,72,153,0.3); }
-    .publish-btn i { font-size: 16px; }
-    .publish-btn .badge-icon {
-      background: rgba(255,255,255,0.2);
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 10px;
-      margin-right: 4px;
-    }
-
-    /* ===== تحسين الأداء ===== */
-    .lazy-load { opacity: 0; transition: opacity 0.3s; }
-    .lazy-load.loaded { opacity: 1; }
     
     .dark-mode .app-container { background: #0f172a; }
     .dark-mode .bg-white { background: #1e293b !important; }
@@ -890,7 +876,6 @@
 
   await setPersistence(auth, browserLocalPersistence);
 
-  // تحسين الأداء مع Pagination
   window.db = db;
   window.auth = auth;
   window.ref = ref;
@@ -913,7 +898,9 @@
 
 <!-- ===== APPLICATION ===== -->
 <script>
-// ===== المتغيرات العامة =====
+// ============================================
+// المتغيرات العامة
+// ============================================
 let currentUser = null, userData = null, scheduleData = [];
 let currentFilter = 'today', isAdmin = false, darkMode = false;
 let allUsers = {}, contacts = [], complaints = [], scheduleOption = 'full';
@@ -930,7 +917,9 @@ const subjectsByStage = {
   'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية', 'دراسات', 'حاسب آلي']
 };
 
-// ===== عرض الصور =====
+// ============================================
+// عرض الصور
+// ============================================
 function openImageViewer(imageSrc, title = 'صورة') {
   const viewer = document.getElementById('imageViewer');
   const img = document.getElementById('viewerImage');
@@ -942,12 +931,14 @@ function openImageViewer(imageSrc, title = 'صورة') {
   viewer.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
+window.openImageViewer = openImageViewer;
 
 function closeImageViewer() {
   const viewer = document.getElementById('imageViewer');
   if (viewer) viewer.classList.remove('show');
   document.body.style.overflow = '';
 }
+window.closeImageViewer = closeImageViewer;
 
 function downloadImage() {
   if (currentViewerImage) {
@@ -960,8 +951,11 @@ function downloadImage() {
     showToast('✅ جاري تحميل الصورة', 'success');
   }
 }
+window.downloadImage = downloadImage;
 
-// ===== Toast =====
+// ============================================
+// Toast
+// ============================================
 function showToast(msg, type = 'info') {
   const old = document.querySelector('.toast');
   if (old) old.remove();
@@ -971,8 +965,11 @@ function showToast(msg, type = 'info') {
   document.body.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 3000);
 }
+window.showToast = showToast;
 
-// ===== انتظار Firebase =====
+// ============================================
+// انتظار Firebase
+// ============================================
 function waitForFirebase() {
   return new Promise(resolve => {
     if (window.db && window.auth) { resolve(); return; }
@@ -982,12 +979,9 @@ function waitForFirebase() {
   });
 }
 
-waitForFirebase().then(() => {
-  console.log('🚀 Starting...');
-  initApp();
-});
-
-// ===== التبويبات =====
+// ============================================
+// التبويبات
+// ============================================
 function switchTab(id) {
   document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
   document.getElementById(`tab-${id}`)?.classList.remove('hidden');
@@ -999,6 +993,7 @@ function switchTab(id) {
   if (nav) { nav.classList.remove('text-slate-400'); nav.classList.add('text-blue-600'); }
   if (id === 'admin') handleAdminTab();
 }
+window.switchTab = switchTab;
 
 function handleAdminTab() {
   const denied = document.getElementById('adminDenied');
@@ -1020,7 +1015,9 @@ function handleAdminTab() {
   }
 }
 
-// ===== المصادقة =====
+// ============================================
+// المصادقة
+// ============================================
 function initApp() {
   window.onAuthStateChanged(window.auth, user => {
     if (user) {
@@ -1049,15 +1046,6 @@ function initApp() {
       document.getElementById('tab-login').classList.remove('hidden');
       document.getElementById('tab-register').classList.add('hidden');
       document.getElementById('tab-home').classList.add('hidden');
-      document.getElementById('tab-schedule').classList.add('hidden');
-      document.getElementById('tab-library').classList.add('hidden');
-      document.getElementById('tab-news').classList.add('hidden');
-      document.getElementById('tab-notifications').classList.add('hidden');
-      document.getElementById('tab-exams').classList.add('hidden');
-      document.getElementById('tab-results').classList.add('hidden');
-      document.getElementById('tab-teachers').classList.add('hidden');
-      document.getElementById('tab-settings').classList.add('hidden');
-      document.getElementById('tab-admin').classList.add('hidden');
       document.querySelectorAll('nav button').forEach(b => {
         b.classList.remove('text-blue-600');
         b.classList.add('text-slate-400');
@@ -1103,6 +1091,7 @@ function loginUser() {
       }
     });
 }
+window.loginUser = loginUser;
 
 // ===== إنشاء حساب جديد =====
 function registerUser() {
@@ -1171,6 +1160,7 @@ function registerUser() {
     }
   };
 }
+window.registerUser = registerUser;
 
 // ===== تسجيل الخروج =====
 function logoutUser() {
@@ -1180,6 +1170,7 @@ function logoutUser() {
   window.signOut(window.auth);
   showToast('👋 تم تسجيل الخروج', 'warning');
 }
+window.logoutUser = logoutUser;
 
 // ===== حذف الحساب =====
 function deleteAccount() {
@@ -1206,6 +1197,7 @@ function deleteAccount() {
       });
   }
 }
+window.deleteAccount = deleteAccount;
 
 function renderUser() {
   const avatar = document.getElementById('userAvatar');
@@ -1241,8 +1233,11 @@ function renderUser() {
 }
 
 function openProfile() { if (currentUser) switchTab('settings'); else showToast('⚠️ سجل دخول', 'error'); }
+window.openProfile = openProfile;
 
-// ===== حفظ الملف الشخصي =====
+// ============================================
+// حفظ الملف الشخصي
+// ============================================
 function saveProfile() {
   if (!currentUser) return showToast('⚠️ سجل دخول', 'error');
   
@@ -1269,6 +1264,7 @@ function saveProfile() {
     updateInfo(); 
   });
 }
+window.saveProfile = saveProfile;
 
 function loadSubjects() {
   const container = document.getElementById('subjectsCheckbox');
@@ -1281,6 +1277,7 @@ function loadSubjects() {
   });
   document.getElementById('profStage').onchange = loadSubjects;
 }
+window.loadSubjects = loadSubjects;
 
 function updateInfo() {
   if (currentUser && userData) {
@@ -1301,7 +1298,9 @@ function updateInfo() {
   }
 }
 
-// ===== خيارات الإضافة =====
+// ============================================
+// خيارات الإضافة
+// ============================================
 function setOption(opt) {
   scheduleOption = opt;
   document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
@@ -1309,6 +1308,7 @@ function setOption(opt) {
   document.getElementById('scheduleFields').style.display = (opt === 'image') ? 'none' : 'block';
   document.getElementById('scheduleImageField').style.display = (opt === 'text') ? 'none' : 'block';
 }
+window.setOption = setOption;
 
 function setScheduleDay(day) {
   scheduleDayOption = day;
@@ -1329,6 +1329,7 @@ function setScheduleDay(day) {
     document.getElementById('schDay').value = tomorrow;
   }
 }
+window.setScheduleDay = setScheduleDay;
 
 function setNotifOption(opt) {
   notifOption = opt;
@@ -1341,8 +1342,11 @@ function setNotifOption(opt) {
   document.getElementById('notifTextField').style.display = (opt === 'image') ? 'none' : 'block';
   document.getElementById('notifImageField').style.display = (opt === 'text') ? 'none' : 'block';
 }
+window.setNotifOption = setNotifOption;
 
-// ===== إدارة =====
+// ============================================
+// إدارة
+// ============================================
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
   if (!currentUser) return showToast('⚠️ سجل دخول بحساب إداري', 'error');
@@ -1363,6 +1367,7 @@ function adminLogin() {
     showToast('❌ كلمة السر خاطئة', 'error');
   }
 }
+window.adminLogin = adminLogin;
 
 function toggleStats() {
   const content = document.getElementById('statsContent');
@@ -1371,6 +1376,7 @@ function toggleStats() {
   arrow.className = content.classList.contains('open') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
   if (content.classList.contains('open')) loadStats();
 }
+window.toggleStats = toggleStats;
 
 function toggleSection(el) {
   const content = el.closest('.admin-panel-section').querySelector('.content');
@@ -1378,6 +1384,7 @@ function toggleSection(el) {
   content.classList.toggle('open');
   arrow.className = content.classList.contains('open') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
 }
+window.toggleSection = toggleSection;
 
 function loadAdminData() {
   loadStats();
@@ -1439,7 +1446,6 @@ function loadManage(path, containerId, renderFn) {
     if (!container) return;
     container.innerHTML = '';
     if (!data) return;
-    // تحسين الأداء: عرض آخر 20 عنصر فقط
     const keys = Object.keys(data).reverse().slice(0, 20);
     keys.forEach(k => container.innerHTML += renderFn(k, data[k]));
   });
@@ -1465,6 +1471,7 @@ function deleteItem(path, key) {
     showToast('✅ تم الحذف', 'success');
   }
 }
+window.deleteItem = deleteItem;
 
 function deleteAll(path) {
   if (!isAdmin) return;
@@ -1481,8 +1488,11 @@ function deleteAll(path) {
     showToast(`✅ تم حذف كل ${names[path] || path}`, 'success');
   }
 }
+window.deleteAll = deleteAll;
 
-// ===== إدارة المدرسين =====
+// ============================================
+// إدارة المدرسين
+// ============================================
 function loadTeachers() {
   window.onValue(window.ref(window.db, 'teachers'), snap => {
     const data = snap.val();
@@ -1538,8 +1548,11 @@ function addTeacher() {
   document.getElementById('teacherSubject').value = '';
   showToast('✅ تم إضافة المدرس', 'success');
 }
+window.addTeacher = addTeacher;
 
-// ===== نظام الامتحانات =====
+// ============================================
+// نظام الامتحانات
+// ============================================
 function loadExams() {
   window.onValue(window.ref(window.db, 'exams'), snap => {
     const data = snap.val();
@@ -1597,8 +1610,11 @@ function addExam() {
   document.getElementById('examDate').value = '';
   showToast('✅ تم إضافة الامتحان', 'success');
 }
+window.addExam = addExam;
 
-// ===== نظام النتائج =====
+// ============================================
+// نظام النتائج
+// ============================================
 function loadResults() {
   window.onValue(window.ref(window.db, 'results'), snap => {
     const data = snap.val();
@@ -1680,8 +1696,11 @@ function addResult() {
   document.getElementById('resultScore').value = '';
   showToast('✅ تم إضافة النتيجة', 'success');
 }
+window.addResult = addResult;
 
-// ===== المتابعة الأسبوعية =====
+// ============================================
+// المتابعة الأسبوعية
+// ============================================
 function loadWeeklyFollow() {
   window.onValue(window.ref(window.db, 'weekly_follow'), snap => {
     const data = snap.val();
@@ -1733,8 +1752,11 @@ function addWeeklyFollow() {
   document.getElementById('weeklyNote').value = '';
   showToast('✅ تم إضافة المتابعة', 'success');
 }
+window.addWeeklyFollow = addWeeklyFollow;
 
-// ===== طلبات تعديل البيانات =====
+// ============================================
+// طلبات تعديل البيانات
+// ============================================
 function loadProfileRequests() {
   window.onValue(window.ref(window.db, 'profile_requests'), snap => {
     const data = snap.val();
@@ -1774,14 +1796,18 @@ function approveProfile(key) {
   window.update(window.ref(window.db, `profile_requests/${key}/status`), 'approved');
   showToast('✅ تم الموافقة على الطلب', 'success');
 }
+window.approveProfile = approveProfile;
 
 function rejectProfile(key) {
   if (!isAdmin) return;
   window.update(window.ref(window.db, `profile_requests/${key}/status`), 'rejected');
   showToast('❌ تم رفض الطلب', 'warning');
 }
+window.rejectProfile = rejectProfile;
 
-// ===== Base64 =====
+// ============================================
+// Base64
+// ============================================
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -1812,7 +1838,9 @@ function compressImage(base64, maxWidth = 1200, quality = 0.8) {
   });
 }
 
-// ===== إضافة حصة =====
+// ============================================
+// إضافة حصة
+// ============================================
 async function addSchedule() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
   
@@ -1859,8 +1887,11 @@ async function addSchedule() {
   document.getElementById('schRoom').value = '';
   document.getElementById('schImage').value = '';
 }
+window.addSchedule = addSchedule;
 
-// ===== إرسال إشعار =====
+// ============================================
+// إرسال إشعار
+// ============================================
 async function sendNotif() {
   if (!isAdmin) return;
   const title = document.getElementById('notifTitle').value;
@@ -1904,8 +1935,11 @@ async function sendNotif() {
   document.getElementById('notifSubject').value = '';
   document.getElementById('notifImage').value = '';
 }
+window.sendNotif = sendNotif;
 
-// ===== نشر خبر =====
+// ============================================
+// نشر خبر
+// ============================================
 async function addNews() {
   if (!isAdmin) return;
   const title = document.getElementById('newsTitle').value;
@@ -1928,8 +1962,11 @@ async function addNews() {
   document.getElementById('newsContent').value = '';
   document.getElementById('newsImage').value = '';
 }
+window.addNews = addNews;
 
-// ===== رفع مذكرة =====
+// ============================================
+// رفع مذكرة
+// ============================================
 async function uploadMat() {
   if (!isAdmin) return;
   const title = document.getElementById('matTitle').value;
@@ -1945,8 +1982,11 @@ async function uploadMat() {
   document.getElementById('matSubject').value = '';
   document.getElementById('matFile').value = '';
 }
+window.uploadMat = uploadMat;
 
-// ===== أرقام السنتر والدعم =====
+// ============================================
+// أرقام السنتر والدعم
+// ============================================
 function loadContacts() {
   window.onValue(window.ref(window.db, 'contacts'), snap => {
     const data = snap.val();
@@ -2009,14 +2049,18 @@ function addContact() {
   document.getElementById('newContact').value = '';
   showToast('✅ تم الإضافة', 'success');
 }
+window.addContact = addContact;
 
 function deleteContact(id) {
   if (!isAdmin || !confirm('حذف الرقم؟')) return;
   window.remove(window.ref(window.db, `contacts/${id}`));
   showToast('✅ تم الحذف', 'success');
 }
+window.deleteContact = deleteContact;
 
-// ===== الشكاوى =====
+// ============================================
+// الشكاوى
+// ============================================
 function loadComplaints() {
   window.onValue(window.ref(window.db, 'complaints'), snap => {
     const data = snap.val();
@@ -2043,6 +2087,7 @@ function deleteComplaint(id) {
   window.remove(window.ref(window.db, `complaints/${id}`));
   showToast('✅ تم الحذف', 'success');
 }
+window.deleteComplaint = deleteComplaint;
 
 function sendComplaint() {
   const text = document.getElementById('complaintText').value;
@@ -2056,8 +2101,11 @@ function sendComplaint() {
   document.getElementById('complaintText').value = '';
   showToast('✅ تم الإرسال', 'success');
 }
+window.sendComplaint = sendComplaint;
 
-// ===== الجدول =====
+// ============================================
+// الجدول
+// ============================================
 function filterSchedule(type) {
   currentFilter = type;
   document.querySelectorAll('#tab-schedule .flex button').forEach(b => {
@@ -2068,6 +2116,7 @@ function filterSchedule(type) {
   if (btn) btn.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
   renderSchedule();
 }
+window.filterSchedule = filterSchedule;
 
 function renderSchedule() {
   const container = document.getElementById('scheduleContainer');
@@ -2086,7 +2135,6 @@ function renderSchedule() {
     container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد حصص</div>';
     return;
   }
-  // عرض آخر 20 حصة فقط
   items = items.slice(0, 20);
   container.innerHTML = items.map(i => `
     <div class="schedule-item">
@@ -2145,7 +2193,9 @@ function renderMySchedule() {
   `).join('');
 }
 
-// ===== المستمعات =====
+// ============================================
+// المستمعات
+// ============================================
 function initListeners() {
   window.onValue(window.ref(window.db, 'schedules'), snap => {
     const d = snap.val();
@@ -2240,15 +2290,26 @@ function initListeners() {
   });
 }
 
-// ===== وضع الليل =====
+// ============================================
+// وضع الليل
+// ============================================
 function toggleDarkMode() {
   darkMode = !darkMode;
   document.getElementById('app').classList.toggle('dark-mode', darkMode);
   document.getElementById('darkIcon').className = darkMode ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
 }
+window.toggleDarkMode = toggleDarkMode;
 
-console.log('✅ سنتر سيجما - النسخة النهائية جاهزة!');
-console.log('📊 تدعم حتى 500 مستخدم متزامن مع تحسينات الأداء');
+// ============================================
+// بدء التطبيق
+// ============================================
+waitForFirebase().then(() => {
+  console.log('🚀 سنتر سيجما - جاهز للتشغيل!');
+  console.log('📊 يدعم حتى 500+ مستخدم متزامن');
+  initApp();
+});
+
+console.log('✅ التطبيق جاهز للعمل');
 </script>
 </body>
   </html>
