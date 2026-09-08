@@ -1,0 +1,73 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    
+    "users": {
+      "$uid": {
+        ".read": "auth !== null && auth.uid === $uid",
+        ".write": "auth !== null && auth.uid === $uid"
+      }
+    },
+    
+    "schedules": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "news": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "materials": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "notifications": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "contacts": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "complaints": {
+      ".read": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'",
+      ".write": "auth !== null"
+    },
+    
+    "teachers": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "exams": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "results": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "weekly_follow": {
+      ".read": "auth !== null",
+      ".write": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'"
+    },
+    
+    "profile_requests": {
+      ".read": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'",
+      ".write": "auth !== null"
+    },
+    
+    "security_logs": {
+      ".read": "auth !== null && auth.uid === 'WCyUdR31uZOxJwtYzXx85K7E0Cf2'",
+      ".write": "auth !== null"
+    }
+  }
+}
