@@ -24,6 +24,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,8 +39,8 @@
     .stat-number { font-size: 18px; font-weight: 800; }
     .stat-label { font-size: 9px; color: #64748b; margin-top: 2px; }
     
-    .profile-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid white; cursor: pointer; }
-    .subject-chip { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 600; margin: 2px; background: rgba(255,255,255,0.2); color: white; }
+    .profile-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid white; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .subject-chip { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; margin: 2px; background: rgba(255,255,255,0.25); color: white; }
     
     .option-btn { padding: 6px 12px; border-radius: 10px; border: 2px solid #e2e8f0; background: white; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .option-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
@@ -50,12 +52,7 @@
     .admin-panel-section .content.open { display: block; }
     
     .complaint-card { background: #f8fafc; border-radius: 10px; padding: 10px; border-right: 3px solid #f59e0b; margin-bottom: 6px; }
-    .complaint-card .name { font-weight: 700; font-size: 13px; color: #1e293b; }
-    .complaint-card .phone { color: #2563eb; font-size: 11px; }
-    .complaint-card .text { color: #475569; font-size: 12px; margin-top: 3px; }
-    .complaint-card .date { color: #94a3b8; font-size: 9px; }
     
-    /* ===== Toast الجديد - نفس ألوان الموقع ===== */
     .toast {
       position: fixed;
       top: 80px;
@@ -72,8 +69,6 @@
       text-align: center;
       opacity: 0;
       transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -86,11 +81,6 @@
     .toast-warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
     .toast-info { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
     
-    .settings-card { background: white; border-radius: 16px; padding: 14px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
-    .settings-card .title { font-size: 13px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-    .settings-card .title i { width: 20px; text-align: center; }
-    
-    /* ===== أزرار الإعدادات المضغوطة ===== */
     .settings-menu-btn {
       display: flex;
       align-items: center;
@@ -105,15 +95,7 @@
     }
     .settings-menu-btn:active { transform: scale(0.98); background: #f8fafc; }
     .settings-menu-btn .left { display: flex; align-items: center; gap: 12px; }
-    .settings-menu-btn .icon-box {
-      width: 40px; height: 40px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      color: white;
-    }
+    .settings-menu-btn .icon-box { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; }
     .settings-menu-btn .text-box { text-align: right; }
     .settings-menu-btn .text-box .title { font-size: 13px; font-weight: 700; color: #1e293b; }
     .settings-menu-btn .text-box .subtitle { font-size: 10px; color: #94a3b8; }
@@ -143,28 +125,11 @@
       padding-bottom: 10px;
       border-bottom: 1px solid #f1f5f9;
     }
-    .settings-panel .panel-header h3 {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .settings-panel .close-panel {
-      background: #f1f5f9;
-      border: none;
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: #64748b;
-      font-size: 14px;
-    }
+    .settings-panel .panel-header h3 { font-size: 14px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+    .settings-panel .close-panel { background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; color: #64748b; font-size: 14px; }
     
     .image-viewer {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.95);
       z-index: 99999;
       display: none;
@@ -174,54 +139,15 @@
     }
     .image-viewer.show { display: flex; }
     .image-viewer img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 12px; }
-    .image-viewer .close-btn {
-      position: absolute;
-      top: 20px; right: 20px;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      font-size: 28px;
-      width: 50px; height: 50px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .image-viewer .download-btn {
-      position: absolute;
-      bottom: 30px;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .image-viewer .info {
-      position: absolute;
-      bottom: 90px;
-      color: rgba(255,255,255,0.6);
-      font-size: 12px;
-      text-align: center;
-    }
+    .image-viewer .close-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 28px; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .image-viewer .download-btn { position: absolute; bottom: 30px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
     
     .schedule-item { background: white; border-radius: 12px; padding: 10px; border: 1px solid #e2e8f0; margin-bottom: 6px; }
     .schedule-item .subject { font-weight: 700; font-size: 13px; }
     .schedule-item .time { font-weight: 700; color: #d97706; }
     .schedule-item .teacher { font-size: 11px; color: #64748b; }
-    .schedule-item img, .news-item img, .notif-item img { cursor: pointer; }
     
     .exam-card { background: white; border-radius: 12px; padding: 12px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
-    .exam-card .exam-title { font-weight: 700; font-size: 14px; color: #1e293b; }
-    .exam-card .exam-info { font-size: 11px; color: #64748b; }
-    .result-card { background: #f0fdf4; border-radius: 12px; padding: 12px; border: 1px solid #bbf7d0; margin-bottom: 8px; }
-    .result-card .result-subject { font-weight: 700; font-size: 13px; }
-    .result-card .result-score { font-size: 16px; font-weight: 800; color: #16a34a; }
     
     .login-section { background: white; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; text-align: center; }
     .login-section .logo { font-size: 48px; color: #2563eb; margin-bottom: 10px; }
@@ -235,12 +161,56 @@
     .login-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
     .link-text { color: #2563eb; cursor: pointer; font-weight: 600; }
     
+    /* ===== خيارات تسجيل الدخول ===== */
+    .login-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .login-option-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .login-option-btn:hover { border-color: #2563eb; background: #eff6ff; }
+    .login-option-btn:active { transform: scale(0.98); }
+    .login-option-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+    .login-option-btn .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .login-option-btn .text { flex: 1; }
+    .login-option-btn .text .main { font-size: 14px; font-weight: 700; }
+    .login-option-btn .text .sub { font-size: 10px; color: #94a3b8; font-weight: 400; margin-top: 2px; }
+    
+    .icon-phone { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .icon-google { background: linear-gradient(135deg, #ea4335, #dc2626); }
+    .icon-email { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    
     .publish-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 10px 20px;
+      padding: 12px 20px;
       border: none;
       border-radius: 12px;
       font-size: 13px;
@@ -255,12 +225,101 @@
     .publish-btn.orange { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
     .publish-btn.red { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
     
+    /* ===== إعداد البيانات ===== */
+    .setup-step {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 10px;
+    }
+    .setup-step .step-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .setup-step .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .setup-step .step-title { font-size: 14px; font-weight: 700; color: #1e293b; }
+    .setup-step .step-title small { font-size: 10px; color: #ef4444; font-weight: 400; }
+    
+    .stage-option, .grade-option {
+      display: inline-block;
+      padding: 8px 16px;
+      margin: 3px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .stage-option.active, .grade-option.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+    
+    .subject-option {
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 3px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .subject-option.active { border-color: #22c55e; background: #f0fdf4; color: #16a34a; }
+    
+    .upload-box {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f8fafc;
+    }
+    .upload-box:hover { border-color: #2563eb; background: #eff6ff; }
+    .upload-box.uploaded { border-color: #22c55e; background: #f0fdf4; border-style: solid; }
+    .upload-box .upload-icon { font-size: 32px; color: #94a3b8; margin-bottom: 6px; }
+    .upload-box.uploaded .upload-icon { color: #22c55e; }
+    .upload-box .upload-text { font-size: 11px; color: #64748b; font-weight: 600; }
+    .upload-box .upload-preview { max-width: 100%; max-height: 120px; border-radius: 8px; margin-top: 8px; }
+    
+    .verification-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-approved { background: #d1fae5; color: #065f46; }
+    .badge-rejected { background: #fee2e2; color: #991b1b; }
+    
     .dark-mode .app-container { background: #0f172a; }
     .dark-mode .bg-white { background: #1e293b !important; }
     .dark-mode .text-slate-800 { color: #e2e8f0 !important; }
     .dark-mode .text-slate-600 { color: #94a3b8 !important; }
-    .dark-mode .border-slate-100 { border-color: #334155 !important; }
+    .dark-mode .text-slate-500 { color: #94a3b8 !important; }
+    .dark-mode .border-slate-100, .dark-mode .border-slate-200 { border-color: #334155 !important; }
     .dark-mode .bg-slate-50 { background: #0f172a !important; }
+    .dark-mode .bg-slate-100 { background: #1e293b !important; }
     .dark-mode .stat-card { background: #1e293b !important; border-color: #334155 !important; }
     .dark-mode .admin-panel-section { background: #1e293b !important; border-color: #334155 !important; }
     .dark-mode .settings-menu-btn { background: #1e293b !important; border-color: #334155 !important; }
@@ -274,6 +333,19 @@
     .dark-mode .settings-panel .panel-header h3 { color: #e2e8f0 !important; }
     .dark-mode .settings-panel .panel-header { border-color: #334155 !important; }
     .dark-mode .settings-panel .close-panel { background: #334155 !important; color: #94a3b8 !important; }
+    .dark-mode .login-option-btn { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+    .dark-mode .login-option-btn:hover { border-color: #2563eb; background: #1e3a5f !important; }
+    .dark-mode .setup-step { background: #1e293b !important; border-color: #334155 !important; }
+    .dark-mode .stage-option, .dark-mode .grade-option, .dark-mode .subject-option { background: #0f172a !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+    .dark-mode .upload-box { background: #0f172a !important; border-color: #475569 !important; }
+    .dark-mode .complaint-card { background: #0f172a !important; }
+    
+    @media (max-width: 400px) {
+      .stat-number { font-size: 15px; }
+      .stat-label { font-size: 8px; }
+      .subject-chip { font-size: 8px; padding: 2px 8px; }
+      .profile-avatar { width: 50px; height: 50px; }
+    }
   </style>
 </head>
 <body>
@@ -304,43 +376,97 @@
   <div id="imageViewer" class="image-viewer" onclick="closeImageViewer()">
     <button class="close-btn" onclick="closeImageViewer()">✕</button>
     <img id="viewerImage" src="" alt="صورة">
-    <button class="download-btn" onclick="downloadImage()"><i class="fa-solid fa-download"></i> تحميل الصورة</button>
-    <div class="info" id="imageInfo"></div>
+    <button class="download-btn" onclick="downloadImage()"><i class="fa-solid fa-download"></i> تحميل</button>
   </div>
 
   <!-- MAIN -->
   <main class="flex-1 p-3 space-y-3 overflow-y-auto" style="padding-bottom: 70px;">
 
-    <!-- LOGIN -->
+    <!-- ========== LOGIN - 3 خيارات ========== -->
     <section id="tab-login" class="slide-up">
       <div class="login-section">
         <div class="logo">Σ</div>
         <h2>مرحباً بك في سنتر سيجما</h2>
-        <p>سجل دخولك باستخدام البريد الإلكتروني</p>
+        <p>اختر طريقة تسجيل الدخول</p>
         
-        <div class="input-group">
-          <label>📧 البريد الإلكتروني</label>
-          <input type="email" id="loginEmail" placeholder="example@email.com">
+        <div class="login-options">
+          <!-- خيار 1: رقم الهاتف (الافتراضي) -->
+          <div class="login-option-btn active" onclick="selectLoginMethod('phone')" id="loginOptPhone">
+            <div class="icon icon-phone"><i class="fa-solid fa-mobile-screen"></i></div>
+            <div class="text">
+              <div class="main">📱 رقم الهاتف</div>
+              <div class="sub">الطريقة الأساسية</div>
+            </div>
+          </div>
+          
+          <!-- خيار 2: Google -->
+          <div class="login-option-btn" onclick="selectLoginMethod('google')" id="loginOptGoogle">
+            <div class="icon icon-google"><i class="fa-brands fa-google"></i></div>
+            <div class="text">
+              <div class="main">🔴 تسجيل بجوجل</div>
+              <div class="sub">سريع وآمن</div>
+            </div>
+          </div>
+          
+          <!-- خيار 3: البريد الإلكتروني -->
+          <div class="login-option-btn" onclick="selectLoginMethod('email')" id="loginOptEmail">
+            <div class="icon icon-email"><i class="fa-solid fa-envelope"></i></div>
+            <div class="text">
+              <div class="main">📧 البريد الإلكتروني</div>
+              <div class="sub">تسجيل تقليدي</div>
+            </div>
+          </div>
         </div>
-        
-        <div class="input-group">
-          <label>🔒 كلمة المرور</label>
-          <input type="password" id="loginPassword" placeholder="••••••••">
-          <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('loginPassword', this)"></i>
+
+        <!-- نموذج رقم الهاتف -->
+        <div id="loginFormPhone" class="mt-2">
+          <div class="input-group">
+            <label>📱 رقم الهاتف</label>
+            <input type="tel" id="loginPhone" placeholder="01012345678">
+          </div>
+          <div class="input-group">
+            <label>🔒 كلمة المرور</label>
+            <input type="password" id="loginPhonePassword" placeholder="••••••••">
+            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('loginPhonePassword', this)"></i>
+          </div>
+          <button class="login-btn" onclick="loginByPhone()">🚀 تسجيل الدخول</button>
+          <div style="margin-top: 10px; font-size: 12px;">
+            <span onclick="switchTab('forgot')" class="link-text">🔑 نسيت كلمة المرور؟</span>
+          </div>
         </div>
-        
-        <button class="login-btn" onclick="loginUserWithRetry()">🚀 تسجيل الدخول</button>
-        
-        <div style="margin-top: 12px; font-size: 12px; color: #64748b;">
-          <span onclick="switchTab('forgot')" class="link-text">🔑 نسيت كلمة المرور؟</span>
+
+        <!-- نموذج البريد الإلكتروني -->
+        <div id="loginFormEmail" class="mt-2 hidden">
+          <div class="input-group">
+            <label>📧 البريد الإلكتروني</label>
+            <input type="email" id="loginEmail" placeholder="example@email.com">
+          </div>
+          <div class="input-group">
+            <label>🔒 كلمة المرور</label>
+            <input type="password" id="loginEmailPassword" placeholder="••••••••">
+            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('loginEmailPassword', this)"></i>
+          </div>
+          <button class="login-btn" onclick="loginByEmail()">🚀 تسجيل الدخول</button>
+          <div style="margin-top: 10px; font-size: 12px;">
+            <span onclick="switchTab('forgot')" class="link-text">🔑 نسيت كلمة المرور؟</span>
+          </div>
         </div>
-        <div style="margin-top: 8px; font-size: 12px; color: #64748b;">
+
+        <!-- نموذج Google -->
+        <div id="loginFormGoogle" class="mt-2 hidden">
+          <button class="login-btn" onclick="loginWithGoogle()" style="background: white; color: #1e293b; border: 2px solid #e2e8f0;">
+            <i class="fa-brands fa-google text-red-500"></i> تسجيل الدخول بجوجل
+          </button>
+          <p style="font-size: 11px; color: #64748b; margin-top: 10px;">سيتم استخدام حسابك في Google</p>
+        </div>
+
+        <div style="margin-top: 16px; font-size: 12px; color: #64748b;">
           ليس لديك حساب؟ <span onclick="switchTab('register')" class="link-text">إنشاء حساب جديد</span>
         </div>
       </div>
     </section>
 
-    <!-- FORGOT PASSWORD -->
+    <!-- ========== FORGOT PASSWORD ========== -->
     <section id="tab-forgot" class="hidden slide-up">
       <div class="login-section">
         <div class="logo">🔑</div>
@@ -360,65 +486,209 @@
       </div>
     </section>
 
-    <!-- REGISTER -->
+    <!-- ========== REGISTER ========== -->
     <section id="tab-register" class="hidden slide-up">
       <div class="login-section">
         <div class="logo">Σ</div>
         <h2>إنشاء حساب جديد</h2>
-        <p>أدخل بياناتك للتسجيل في منصة سيجما</p>
+        <p>اختر طريقة التسجيل</p>
         
-        <div class="input-group">
-          <label>👤 الاسم الكامل</label>
-          <input type="text" id="regName" placeholder="أحمد محمد">
+        <div class="login-options">
+          <div class="login-option-btn active" onclick="selectRegisterMethod('phone')" id="regOptPhone">
+            <div class="icon icon-phone"><i class="fa-solid fa-mobile-screen"></i></div>
+            <div class="text">
+              <div class="main">📱 رقم الهاتف</div>
+              <div class="sub">الطريقة الأساسية</div>
+            </div>
+          </div>
+          <div class="login-option-btn" onclick="selectRegisterMethod('google')" id="regOptGoogle">
+            <div class="icon icon-google"><i class="fa-brands fa-google"></i></div>
+            <div class="text">
+              <div class="main">🔴 تسجيل بجوجل</div>
+              <div class="sub">سريع وآمن</div>
+            </div>
+          </div>
+          <div class="login-option-btn" onclick="selectRegisterMethod('email')" id="regOptEmail">
+            <div class="icon icon-email"><i class="fa-solid fa-envelope"></i></div>
+            <div class="text">
+              <div class="main">📧 البريد الإلكتروني</div>
+              <div class="sub">تسجيل تقليدي</div>
+            </div>
+          </div>
         </div>
-        
-        <div class="input-group">
-          <label>📧 البريد الإلكتروني</label>
-          <input type="email" id="regEmail" placeholder="example@email.com">
+
+        <!-- نموذج رقم الهاتف -->
+        <div id="regFormPhone" class="mt-2">
+          <div class="input-group">
+            <label>👤 الاسم الكامل</label>
+            <input type="text" id="regPhoneName" placeholder="أحمد محمد">
+          </div>
+          <div class="input-group">
+            <label>📱 رقم الهاتف</label>
+            <input type="tel" id="regPhoneNumber" placeholder="01012345678">
+          </div>
+          <div class="input-group">
+            <label>🔒 كلمة المرور</label>
+            <input type="password" id="regPhonePassword" placeholder="••••••••">
+            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regPhonePassword', this)"></i>
+          </div>
+          <div class="input-group">
+            <label>🔒 تأكيد كلمة المرور</label>
+            <input type="password" id="regPhoneConfirm" placeholder="••••••••">
+            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regPhoneConfirm', this)"></i>
+          </div>
+          <button class="login-btn" onclick="registerByPhone()">📝 إنشاء حساب</button>
         </div>
-        
-        <div class="input-group">
-          <label>📱 رقم الهاتف</label>
-          <input type="tel" id="regPhone" placeholder="01012345678">
+
+        <!-- نموذج البريد الإلكتروني -->
+        <div id="regFormEmail" class="mt-2 hidden">
+          <div class="input-group">
+            <label>👤 الاسم الكامل</label>
+            <input type="text" id="regEmailName" placeholder="أحمد محمد">
+          </div>
+          <div class="input-group">
+            <label>📧 البريد الإلكتروني</label>
+            <input type="email" id="regEmailAddress" placeholder="example@email.com">
+          </div>
+          <div class="input-group">
+            <label>📱 رقم الهاتف</label>
+            <input type="tel" id="regEmailPhone" placeholder="01012345678">
+          </div>
+          <div class="input-group">
+            <label>🔒 كلمة المرور</label>
+            <input type="password" id="regEmailPassword" placeholder="••••••••">
+            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regEmailPassword', this)"></i>
+          </div>
+          <div class="input-group">
+            <label>🔒 تأكيد كلمة المرور</label>
+            <input type="password" id="regEmailConfirm" placeholder="••••••••">
+            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regEmailConfirm', this)"></i>
+          </div>
+          <button class="login-btn" onclick="registerByEmail()">📝 إنشاء حساب</button>
         </div>
-        
-        <div class="input-group">
-          <label>🔒 كلمة المرور</label>
-          <input type="password" id="regPassword" placeholder="•••••••• (6 أحرف على الأقل)">
-          <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regPassword', this)"></i>
+
+        <!-- نموذج Google -->
+        <div id="regFormGoogle" class="mt-2 hidden">
+          <button class="login-btn" onclick="registerWithGoogle()" style="background: white; color: #1e293b; border: 2px solid #e2e8f0;">
+            <i class="fa-brands fa-google text-red-500"></i> التسجيل بجوجل
+          </button>
+          <p style="font-size: 11px; color: #64748b; margin-top: 10px;">سيتم إنشاء الحساب باستخدام حسابك في Google</p>
         </div>
-        
-        <div class="input-group">
-          <label>🔒 تأكيد كلمة المرور</label>
-          <input type="password" id="regConfirmPassword" placeholder="••••••••">
-          <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regConfirmPassword', this)"></i>
-        </div>
-        
-        <div class="input-group">
-          <label>📄 صورة البطاقة الشخصية أو شهادة الميلاد</label>
-          <input type="file" id="regIdImage" accept="image/*" style="padding: 8px; padding-left: 8px;">
-        </div>
-        
-        <button class="login-btn" onclick="registerUserWithRetry()">📝 إنشاء حساب</button>
-        
-        <div style="margin-top: 12px; font-size: 12px; color: #64748b;">
+
+        <div style="margin-top: 16px; font-size: 12px; color: #64748b;">
           لديك حساب بالفعل؟ <span onclick="switchTab('login')" class="link-text">تسجيل الدخول</span>
         </div>
       </div>
     </section>
 
-    <!-- HOME - مبسطة -->
+    <!-- ========== SETUP - إعداد البيانات الإجبارية ========== -->
+    <section id="tab-setup" class="hidden slide-up space-y-3">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 rounded-2xl text-center">
+        <i class="fa-solid fa-clipboard-check text-3xl mb-2"></i>
+        <h2 class="font-bold text-base">إكمال البيانات إجباري</h2>
+        <p class="text-xs text-blue-100 mt-1">يجب إكمال جميع البيانات للدخول</p>
+      </div>
+
+      <!-- الخطوة 1: المرحلة والصف -->
+      <div class="setup-step">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div class="step-title">المرحلة والصف <small>(إجباري)</small></div>
+        </div>
+        
+        <label class="text-[11px] font-bold text-slate-500 block mb-2">المرحلة:</label>
+        <div id="setupStageOptions">
+          <div class="stage-option" onclick="selectSetupStage('ثانوي', this)">ثانوي</div>
+          <div class="stage-option" onclick="selectSetupStage('إعدادي', this)">إعدادي</div>
+        </div>
+        
+        <label class="text-[11px] font-bold text-slate-500 block mb-2 mt-3">الصف:</label>
+        <div id="setupGradeOptions">
+          <div class="grade-option" onclick="selectSetupGrade('1', this)">الأول</div>
+          <div class="grade-option" onclick="selectSetupGrade('2', this)">الثاني</div>
+          <div class="grade-option" onclick="selectSetupGrade('3', this)">الثالث</div>
+        </div>
+      </div>
+
+      <!-- الخطوة 2: المواد -->
+      <div class="setup-step">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <div class="step-title">اختر موادك <small>(إجباري)</small></div>
+        </div>
+        <p class="text-[10px] text-slate-500 mb-2">اختر مادة واحدة على الأقل</p>
+        <div id="setupSubjectsOptions" class="flex flex-wrap">
+          <p class="text-xs text-slate-400">اختر المرحلة أولاً</p>
+        </div>
+      </div>
+
+      <!-- الخطوة 3: بيانات التواصل -->
+      <div class="setup-step">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <div class="step-title">بيانات التواصل <small>(إجباري)</small></div>
+        </div>
+        
+        <div class="input-group mb-2">
+          <label class="text-[11px] font-bold text-slate-500 block mb-1">📱 رقم ولي الأمر:</label>
+          <input type="tel" id="setupParentPhone" placeholder="01012345678" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm outline-none">
+        </div>
+        
+        <div class="input-group">
+          <label class="text-[11px] font-bold text-slate-500 block mb-1">🏫 اسم المدرسة:</label>
+          <input type="text" id="setupSchool" placeholder="اسم مدرستك" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm outline-none">
+        </div>
+      </div>
+
+      <!-- الخطوة 4: الصور -->
+      <div class="setup-step">
+        <div class="step-header">
+          <div class="step-number">4</div>
+          <div class="step-title">الصور <small>(إجباري)</small></div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="text-[11px] font-bold text-slate-500 block mb-2">📷 صورة الملف الشخصي:</label>
+          <div class="upload-box" id="uploadProfileBox" onclick="document.getElementById('setupProfileImg').click()">
+            <div class="upload-icon"><i class="fa-solid fa-user-circle"></i></div>
+            <div class="upload-text">اضغط لاختيار صورة شخصية</div>
+            <img id="profilePreview" class="upload-preview hidden" src="">
+          </div>
+          <input type="file" id="setupProfileImg" accept="image/*" class="hidden" onchange="handleProfileUpload(event)">
+        </div>
+        
+        <div>
+          <label class="text-[11px] font-bold text-slate-500 block mb-2">📄 صورة البطاقة أو شهادة الميلاد:</label>
+          <div class="upload-box" id="uploadIdBox" onclick="document.getElementById('setupIdImg').click()">
+            <div class="upload-icon"><i class="fa-solid fa-id-card"></i></div>
+            <div class="upload-text">اضغط لاختيار صورة البطاقة</div>
+            <img id="idPreview" class="upload-preview hidden" src="">
+          </div>
+          <input type="file" id="setupIdImg" accept="image/*" class="hidden" onchange="handleIdUpload(event)">
+        </div>
+      </div>
+
+      <button onclick="saveSetupData()" class="publish-btn green" style="padding: 16px;">
+        <i class="fa-solid fa-check-circle"></i> حفظ البيانات والدخول
+      </button>
+    </section>
+
+    <!-- ========== HOME - مبسطة ========== -->
     <section id="tab-home" class="hidden space-y-3 slide-up">
       
-      <!-- بطاقة الترحيب المبسطة -->
-      <div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg">
-        <div id="userContent" class="flex items-center gap-3">
-          <img id="userAvatar" src="" class="profile-avatar" onclick="openProfile()" style="display:none;">
+      <!-- بطاقة ترحيب مع المواد -->
+      <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg">
+        <div class="flex items-center gap-3">
+          <img id="userAvatar" src="" class="profile-avatar" onclick="openImageViewer(this.src, 'صورتي')">
           <div class="flex-1">
             <h2 id="userName" class="font-bold text-base">مرحباً</h2>
             <p id="userSubtitle" class="text-xs text-blue-100 mt-1"></p>
-            <div id="userSubjects" class="mt-1"></div>
           </div>
+        </div>
+        <!-- المواد المشترك بها -->
+        <div id="userSubjectsHome" class="mt-3 pt-3 border-t border-white/20">
+          <p class="text-[10px] text-blue-100 mb-1">📚 المواد المشترك بها:</p>
+          <div id="userSubjectsList"></div>
         </div>
       </div>
 
@@ -532,97 +802,65 @@
       </div>
     </section>
 
-    <!-- ===== SETTINGS - مبسطة بزراير ===== -->
+    <!-- SETTINGS -->
     <section id="tab-settings" class="hidden space-y-3 slide-up">
       <div class="flex items-center justify-between mb-2">
         <h2 class="font-bold text-base text-slate-800"><i class="fa-solid fa-gear text-slate-600 ml-1"></i> الإعدادات</h2>
         <button onclick="switchTab('home')" class="text-xs text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
       </div>
 
-      <!-- المحتوى الرئيسي للإعدادات -->
       <div id="settingsMain">
-        
-        <!-- زر معلوماتي -->
         <div class="settings-menu-btn" onclick="openSettingsPanel('info')">
           <div class="left">
             <div class="icon-box icon-blue"><i class="fa-solid fa-user"></i></div>
-            <div class="text-box">
-              <div class="title">معلوماتي</div>
-              <div class="subtitle">عرض بياناتك الشخصية</div>
-            </div>
+            <div class="text-box"><div class="title">معلوماتي</div><div class="subtitle">عرض بياناتك</div></div>
           </div>
           <i class="fa-solid fa-chevron-left arrow"></i>
         </div>
-
-        <!-- زر تعديل البيانات -->
         <div class="settings-menu-btn" onclick="openSettingsPanel('edit')">
           <div class="left">
             <div class="icon-box icon-green"><i class="fa-solid fa-pen"></i></div>
-            <div class="text-box">
-              <div class="title">تعديل البيانات</div>
-              <div class="subtitle" id="editStatusSub">مرة واحدة مجاناً</div>
-            </div>
+            <div class="text-box"><div class="title">تعديل البيانات</div><div class="subtitle" id="editStatusSub">متاح</div></div>
           </div>
           <i class="fa-solid fa-chevron-left arrow"></i>
         </div>
-
-        <!-- زر الأمان -->
         <div class="settings-menu-btn" onclick="openSettingsPanel('security')">
           <div class="left">
             <div class="icon-box icon-amber"><i class="fa-solid fa-shield-halved"></i></div>
-            <div class="text-box">
-              <div class="title">الأمان</div>
-              <div class="subtitle">تغيير كلمة المرور</div>
-            </div>
+            <div class="text-box"><div class="title">الأمان</div><div class="subtitle">تغيير كلمة المرور</div></div>
           </div>
           <i class="fa-solid fa-chevron-left arrow"></i>
         </div>
-
-        <!-- زر أرقام السنتر -->
         <div class="settings-menu-btn" onclick="openSettingsPanel('contacts')">
           <div class="left">
             <div class="icon-box icon-cyan"><i class="fa-solid fa-phone"></i></div>
-            <div class="text-box">
-              <div class="title">أرقام السنتر</div>
-              <div class="subtitle">تواصل معنا</div>
-            </div>
+            <div class="text-box"><div class="title">أرقام السنتر</div><div class="subtitle">تواصل معنا</div></div>
           </div>
           <i class="fa-solid fa-chevron-left arrow"></i>
         </div>
-
-        <!-- زر الشكاوى -->
         <div class="settings-menu-btn" onclick="openSettingsPanel('complaints')">
           <div class="left">
             <div class="icon-box icon-orange"><i class="fa-solid fa-comment"></i></div>
-            <div class="text-box">
-              <div class="title">تقديم شكوى</div>
-              <div class="subtitle">أرسل استفسارك</div>
-            </div>
+            <div class="text-box"><div class="title">شكوى</div><div class="subtitle">أرسل استفسارك</div></div>
           </div>
           <i class="fa-solid fa-chevron-left arrow"></i>
         </div>
-
-        <!-- زر حذف الحساب -->
         <div class="settings-menu-btn" onclick="openSettingsPanel('delete')">
           <div class="left">
             <div class="icon-box icon-red"><i class="fa-solid fa-trash"></i></div>
-            <div class="text-box">
-              <div class="title">حذف الحساب</div>
-              <div class="subtitle">إجراء نهائي</div>
-            </div>
+            <div class="text-box"><div class="title">حذف الحساب</div><div class="subtitle">إجراء نهائي</div></div>
           </div>
           <i class="fa-solid fa-chevron-left arrow"></i>
         </div>
-
       </div>
 
-      <!-- لوحة معلوماتي -->
       <div id="panel-info" class="settings-panel hidden">
         <div class="panel-header">
           <h3><i class="fa-solid fa-user text-blue-600"></i> معلوماتي</h3>
           <button class="close-panel" onclick="closeSettingsPanel()">✕</button>
         </div>
-        <div class="space-y-1 text-xs">
+        <div class="space-y-2 text-xs">
+          <img id="infoAvatar" src="" class="w-20 h-20 rounded-full mx-auto mb-2 border-2 border-blue-500" style="display:none;">
           <p><span class="text-slate-500">الاسم:</span> <span id="infoName" class="font-bold text-slate-800">-</span></p>
           <p><span class="text-slate-500">البريد:</span> <span id="infoEmail" class="font-bold text-slate-800">-</span></p>
           <p><span class="text-slate-500">الهاتف:</span> <span id="infoPhone" class="font-bold text-slate-800">-</span></p>
@@ -631,118 +869,78 @@
           <p><span class="text-slate-500">المرحلة:</span> <span id="infoStage" class="font-bold text-slate-800">-</span></p>
           <p><span class="text-slate-500">الصف:</span> <span id="infoGrade" class="font-bold text-slate-800">-</span></p>
           <p><span class="text-slate-500">المواد:</span> <span id="infoSubjects" class="font-bold text-slate-800">-</span></p>
-          <p><span class="text-slate-500">حالة البيانات:</span> <span id="infoStatus" class="font-bold text-amber-600">قيد المراجعة</span></p>
+          <p><span class="text-slate-500">حالة البيانات:</span> <span id="infoStatus" class="font-bold text-amber-600">-</span></p>
         </div>
       </div>
 
-      <!-- لوحة تعديل البيانات -->
       <div id="panel-edit" class="settings-panel hidden">
         <div class="panel-header">
           <h3><i class="fa-solid fa-pen text-emerald-600"></i> تعديل البيانات</h3>
           <button class="close-panel" onclick="closeSettingsPanel()">✕</button>
         </div>
-        
-        <div id="editWarning" class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3 text-xs text-amber-700">
-          <i class="fa-solid fa-circle-info"></i> <strong>ملاحظة:</strong> يمكنك التعديل <strong>مرة واحدة فقط مجاناً</strong>. بعدها ستحتاج موافقة الإدارة.
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3 text-xs text-amber-700">
+          <i class="fa-solid fa-info-circle"></i> يمكنك التعديل <strong>مرة واحدة مجاناً</strong>
         </div>
-
         <div class="space-y-2">
-          <div>
-            <label class="text-[10px] font-bold text-slate-500">البريد الإلكتروني (لا يمكن تغييره):</label>
-            <input type="email" id="editEmailDisplay" readonly class="w-full p-2 bg-slate-100 border rounded-xl text-sm mt-0.5 outline-none cursor-not-allowed" style="color: #94a3b8;">
-          </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-500">المدرسة:</label>
-            <input type="text" id="profSchool" placeholder="اسم المدرسة" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none">
-          </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-500">رقم ولي الأمر:</label>
-            <input type="tel" id="profParentPhone" placeholder="رقم ولي الأمر" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none">
-          </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-500">المرحلة:</label>
-            <select id="profStage" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none">
-              <option value="ثانوي">ثانوي</option>
-              <option value="إعدادي">إعدادي</option>
+          <div><label class="text-[10px] font-bold text-slate-500">البريد (لا يمكن تغييره):</label><input type="email" id="editEmailDisplay" readonly class="w-full p-2 bg-slate-100 border rounded-xl text-sm outline-none" style="color:#94a3b8;"></div>
+          <div><label class="text-[10px] font-bold text-slate-500">المدرسة:</label><input type="text" id="profSchool" class="w-full p-2 bg-slate-50 border rounded-xl text-sm outline-none"></div>
+          <div><label class="text-[10px] font-bold text-slate-500">رقم ولي الأمر:</label><input type="tel" id="profParentPhone" class="w-full p-2 bg-slate-50 border rounded-xl text-sm outline-none"></div>
+          <div><label class="text-[10px] font-bold text-slate-500">المرحلة:</label>
+            <select id="profStage" class="w-full p-2 bg-slate-50 border rounded-xl text-sm outline-none">
+              <option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option>
             </select>
           </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-500">الصف:</label>
-            <select id="profGrade" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none">
-              <option value="1">الصف الأول</option>
-              <option value="2">الصف الثاني</option>
-              <option value="3">الصف الثالث</option>
+          <div><label class="text-[10px] font-bold text-slate-500">الصف:</label>
+            <select id="profGrade" class="w-full p-2 bg-slate-50 border rounded-xl text-sm outline-none">
+              <option value="1">الأول</option><option value="2">الثاني</option><option value="3">الثالث</option>
             </select>
           </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-500">رقم الهاتف:</label>
-            <input type="tel" id="profPhone" placeholder="مثال: 01012345678" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none">
-          </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-500">المواد:</label>
-            <div id="subjectsCheckbox" class="mt-1 grid grid-cols-2 gap-1"></div>
-          </div>
-          <button onclick="saveProfile()" class="publish-btn blue">
-            <i class="fa-solid fa-save"></i> حفظ التعديلات
-          </button>
+          <div><label class="text-[10px] font-bold text-slate-500">الهاتف:</label><input type="tel" id="profPhone" class="w-full p-2 bg-slate-50 border rounded-xl text-sm outline-none"></div>
+          <div><label class="text-[10px] font-bold text-slate-500">المواد:</label><div id="subjectsCheckbox" class="mt-1 grid grid-cols-2 gap-1"></div></div>
+          <button onclick="saveProfile()" class="publish-btn blue"><i class="fa-solid fa-save"></i> حفظ</button>
         </div>
       </div>
 
-      <!-- لوحة الأمان -->
       <div id="panel-security" class="settings-panel hidden">
         <div class="panel-header">
           <h3><i class="fa-solid fa-shield-halved text-amber-500"></i> الأمان</h3>
           <button class="close-panel" onclick="closeSettingsPanel()">✕</button>
         </div>
-        
         <div class="space-y-2">
-          <div style="position: relative;">
+          <div style="position:relative;">
             <label class="text-[10px] font-bold text-slate-500">كلمة المرور الحالية:</label>
-            <input type="password" id="currentPassword" placeholder="••••••••" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none" style="padding-left: 40px;">
-            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('currentPassword', this)" style="position: absolute; left: 12px; top: 30px; cursor: pointer; color: #94a3b8;"></i>
+            <input type="password" id="currentPassword" class="w-full p-2 bg-slate-50 border rounded-xl text-sm outline-none" style="padding-left:40px;">
+            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('currentPassword', this)" style="position:absolute;left:12px;top:30px;cursor:pointer;color:#94a3b8;"></i>
           </div>
-          <div style="position: relative;">
+          <div style="position:relative;">
             <label class="text-[10px] font-bold text-slate-500">كلمة المرور الجديدة:</label>
-            <input type="password" id="newPassword" placeholder="••••••••" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none" style="padding-left: 40px;">
-            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('newPassword', this)" style="position: absolute; left: 12px; top: 30px; cursor: pointer; color: #94a3b8;"></i>
+            <input type="password" id="newPassword" class="w-full p-2 bg-slate-50 border rounded-xl text-sm outline-none" style="padding-left:40px;">
+            <i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('newPassword', this)" style="position:absolute;left:12px;top:30px;cursor:pointer;color:#94a3b8;"></i>
           </div>
-          <button onclick="changePassword()" class="publish-btn orange">
-            <i class="fa-solid fa-key"></i> تغيير كلمة المرور
-          </button>
+          <button onclick="changePassword()" class="publish-btn orange"><i class="fa-solid fa-key"></i> تغيير كلمة المرور</button>
         </div>
       </div>
 
-      <!-- لوحة أرقام السنتر -->
       <div id="panel-contacts" class="settings-panel hidden">
         <div class="panel-header">
           <h3><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر والدعم</h3>
           <button class="close-panel" onclick="closeSettingsPanel()">✕</button>
         </div>
         <div class="space-y-3">
-          <div>
-            <h4 class="text-xs font-bold text-slate-600 mb-2">📞 أرقام السنتر</h4>
-            <div id="centerContacts" class="space-y-1.5"></div>
-          </div>
-          <div>
-            <h4 class="text-xs font-bold text-slate-600 mb-2">🛠️ الدعم الفني</h4>
-            <div id="supportContacts" class="space-y-1.5"></div>
-          </div>
+          <div><h4 class="text-xs font-bold text-slate-600 mb-2">📞 السنتر</h4><div id="centerContacts"></div></div>
+          <div><h4 class="text-xs font-bold text-slate-600 mb-2">🛠️ الدعم الفني</h4><div id="supportContacts"></div></div>
         </div>
       </div>
 
-      <!-- لوحة الشكاوى -->
       <div id="panel-complaints" class="settings-panel hidden">
         <div class="panel-header">
-          <h3><i class="fa-solid fa-comment text-amber-500"></i> تقديم شكوى</h3>
+          <h3><i class="fa-solid fa-comment text-amber-500"></i> شكوى</h3>
           <button class="close-panel" onclick="closeSettingsPanel()">✕</button>
         </div>
-        <textarea id="complaintText" placeholder="اكتب شكواك هنا..." class="w-full p-3 bg-slate-50 border rounded-xl text-sm h-24 outline-none"></textarea>
-        <button onclick="sendComplaint()" class="publish-btn orange mt-2">
-          <i class="fa-solid fa-paper-plane"></i> إرسال الشكوى
-        </button>
+        <textarea id="complaintText" placeholder="اكتب شكواك..." class="w-full p-3 bg-slate-50 border rounded-xl text-sm h-24 outline-none"></textarea>
+        <button onclick="sendComplaint()" class="publish-btn orange mt-2"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
       </div>
 
-      <!-- لوحة حذف الحساب -->
       <div id="panel-delete" class="settings-panel hidden">
         <div class="panel-header">
           <h3><i class="fa-solid fa-trash text-red-500"></i> حذف الحساب</h3>
@@ -751,11 +949,9 @@
         <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-3 text-center">
           <i class="fa-solid fa-triangle-exclamation text-red-500 text-3xl mb-2"></i>
           <p class="text-xs text-red-700 font-bold">تحذير!</p>
-          <p class="text-xs text-red-600 mt-1">هذا الإجراء نهائي ولا يمكن التراجع عنه</p>
+          <p class="text-xs text-red-600 mt-1">لا يمكن التراجع عن هذا الإجراء</p>
         </div>
-        <button onclick="deleteAccount()" class="publish-btn red">
-          <i class="fa-solid fa-trash-can"></i> حذف حسابي نهائياً
-        </button>
+        <button onclick="deleteAccount()" class="publish-btn red"><i class="fa-solid fa-trash-can"></i> حذف حسابي</button>
       </div>
 
     </section>
@@ -769,8 +965,7 @@
 
       <div id="adminDenied" class="hidden bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
         <i class="fa-solid fa-ban text-red-500 text-4xl mb-2"></i>
-        <h3 class="font-bold text-red-700 text-sm">⛔ غير مصرح بالدخول</h3>
-        <p class="text-xs text-red-600 mt-1">هذه الصفحة للإداريين فقط</p>
+        <h3 class="font-bold text-red-700 text-sm">⛔ غير مصرح</h3>
         <button onclick="switchTab('home')" class="mt-3 bg-red-600 text-white px-4 py-1.5 rounded-xl text-xs">الرجوع</button>
       </div>
 
@@ -785,21 +980,34 @@
 
       <div id="adminPanel" class="hidden space-y-2">
         
-        <!-- الإحصائيات اللحظية الحقيقية -->
+        <!-- الإحصائيات -->
         <div class="admin-panel-section">
-          <div class="header">
-            <h4><i class="fa-solid fa-chart-line text-blue-400"></i> الإحصائيات اللحظية</h4>
-          </div>
+          <div class="header"><h4><i class="fa-solid fa-chart-line text-blue-400"></i> الإحصائيات اللحظية</h4></div>
           <div class="content open">
             <div class="grid grid-cols-2 gap-2 text-white bg-slate-800 rounded-xl p-3">
               <div><div class="text-xl font-bold" id="statUsers">0</div><div class="text-[10px] opacity-70">👥 الطلاب</div></div>
               <div><div class="text-xl font-bold" id="statActive">0</div><div class="text-[10px] opacity-70">🟢 نشطاء</div></div>
               <div><div class="text-xl font-bold" id="statBoys">0</div><div class="text-[10px] opacity-70">🧑 أولاد</div></div>
               <div><div class="text-xl font-bold" id="statGirls">0</div><div class="text-[10px] opacity-70">👧 بنات</div></div>
+              <div><div class="text-xl font-bold" id="statPending">0</div><div class="text-[10px] opacity-70">⏳ قيد المراجعة</div></div>
               <div><div class="text-xl font-bold" id="statSchedules">0</div><div class="text-[10px] opacity-70">📚 حصص</div></div>
-              <div><div class="text-xl font-bold" id="statMaterials">0</div><div class="text-[10px] opacity-70">📄 ملفات</div></div>
-              <div><div class="text-xl font-bold" id="statExams">0</div><div class="text-[10px] opacity-70">📝 امتحانات</div></div>
-              <div><div class="text-xl font-bold" id="statNotifs">0</div><div class="text-[10px] opacity-70">🔔 إشعارات</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PDF تقرير الطلاب -->
+        <div class="admin-panel-section">
+          <div class="header" onclick="toggleSection(this)">
+            <h4><i class="fa-solid fa-file-pdf text-red-600"></i> تقرير الطلاب PDF</h4>
+            <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
+          <div class="content">
+            <p class="text-[11px] text-slate-500 mb-2">إنشاء تقرير PDF يحتوي على جميع الطلاب مرتبين حسب المرحلة والصف</p>
+            <button onclick="generateStudentsPDF()" class="publish-btn red">
+              <i class="fa-solid fa-file-pdf"></i> إنشاء تقرير PDF
+            </button>
+            <div id="pdfGeneratedInfo" class="hidden mt-2 p-2 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700">
+              ✅ تم إنشاء التقرير
             </div>
           </div>
         </div>
@@ -820,6 +1028,19 @@
             </div>
             <button onclick="addSubject()" class="publish-btn purple mt-1">➕ إضافة مادة</button>
             <div id="subjectsList" class="mt-2 space-y-1 max-h-40 overflow-y-auto"></div>
+          </div>
+        </div>
+
+        <!-- طلبات تعديل البيانات -->
+        <div class="admin-panel-section">
+          <div class="header" onclick="toggleSection(this)">
+            <h4><i class="fa-solid fa-user-check text-amber-500"></i> طلبات تعديل البيانات</h4>
+            <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
+          <div class="content">
+            <div id="profileRequestsList" class="max-h-40 overflow-y-auto space-y-1.5">
+              <div class="text-center py-3 text-slate-400 text-xs">لا توجد طلبات</div>
+            </div>
           </div>
         </div>
 
@@ -865,12 +1086,12 @@
               <label class="text-[10px] text-slate-500">صورة:</label>
               <input type="file" id="schImage" accept="image/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border">
             </div>
-            <button onclick="addSchedule()" class="publish-btn blue mt-2">💾 حفظ الحصة</button>
+            <button onclick="addSchedule()" class="publish-btn blue mt-2">💾 حفظ</button>
             <div id="scheduleList" class="mt-2 space-y-1"></div>
           </div>
         </div>
 
-        <!-- إرسال إشعار -->
+        <!-- إشعار -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار</h4>
@@ -890,26 +1111,24 @@
               <input type="text" id="notifSubject" placeholder="المادة" class="p-1.5 bg-slate-50 border rounded-lg text-[10px]">
             </div>
             <button onclick="sendNotif()" class="publish-btn orange mt-2">📨 إرسال</button>
-            <div id="notifList" class="mt-2 space-y-1"></div>
           </div>
         </div>
 
-        <!-- نشر خبر -->
+        <!-- خبر -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر</h4>
             <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
           </div>
           <div class="content">
-            <input type="text" id="newsTitle" placeholder="عنوان الخبر" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
+            <input type="text" id="newsTitle" placeholder="العنوان" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
             <textarea id="newsContent" placeholder="التفاصيل..." class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs h-12 mt-1"></textarea>
             <input type="file" id="newsImage" accept="image/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border mt-1">
             <button onclick="addNews()" class="publish-btn green mt-2">📢 نشر</button>
-            <div id="newsList" class="mt-2 space-y-1"></div>
           </div>
         </div>
 
-        <!-- رفع مذكرة -->
+        <!-- مذكرة -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
             <h4><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة</h4>
@@ -925,23 +1144,20 @@
             </div>
             <input type="file" id="matFile" class="w-full text-xs p-1 bg-slate-50 rounded-lg border mt-1">
             <button onclick="uploadMat()" class="publish-btn purple mt-2">📤 رفع</button>
-            <div id="matList" class="mt-2 space-y-1"></div>
           </div>
         </div>
 
-        <!-- أرقام السنتر -->
+        <!-- أرقام -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
-            <h4><i class="fa-solid fa-address-book text-green-600"></i> أرقام السنتر والدعم</h4>
+            <h4><i class="fa-solid fa-address-book text-green-600"></i> أرقام السنتر</h4>
             <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
           </div>
           <div class="content">
             <div class="flex gap-1">
-              <input type="text" id="newContact" placeholder="رقم الهاتف" class="flex-1 p-1.5 bg-slate-50 border rounded-lg text-xs">
+              <input type="text" id="newContact" placeholder="الرقم" class="flex-1 p-1.5 bg-slate-50 border rounded-lg text-xs">
               <select id="contactType" class="p-1.5 bg-slate-50 border rounded-lg text-xs">
-                <option value="phone">📞 سنتر</option>
-                <option value="whatsapp">💬 سنتر</option>
-                <option value="support">🛠️ دعم</option>
+                <option value="phone">📞</option><option value="whatsapp">💬</option><option value="support">🛠️</option>
               </select>
               <button onclick="addContact()" class="bg-green-600 text-white px-3 rounded-lg text-xs">+</button>
             </div>
@@ -952,28 +1168,12 @@
         <!-- الشكاوى -->
         <div class="admin-panel-section">
           <div class="header" onclick="toggleSection(this)">
-            <h4><i class="fa-solid fa-message text-amber-500"></i> رسائل الشكاوى</h4>
+            <h4><i class="fa-solid fa-message text-amber-500"></i> الشكاوى</h4>
             <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
           </div>
           <div class="content">
             <div id="complaintsList" class="max-h-40 overflow-y-auto space-y-1.5">
               <div class="text-center py-3 text-slate-400 text-xs">لا توجد شكاوى</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- حذف الكل -->
-        <div class="admin-panel-section">
-          <div class="header" onclick="toggleSection(this)">
-            <h4><i class="fa-solid fa-trash-can text-red-500"></i> حذف الكل</h4>
-            <span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
-          </div>
-          <div class="content">
-            <div class="grid grid-cols-2 gap-1">
-              <button onclick="deleteAll('notifications')" class="publish-btn red">🗑️ الإشعارات</button>
-              <button onclick="deleteAll('news')" class="publish-btn red">🗑️ الأخبار</button>
-              <button onclick="deleteAll('schedules')" class="publish-btn red">🗑️ الحصص</button>
-              <button onclick="deleteAll('materials')" class="publish-btn red">🗑️ الملفات</button>
             </div>
           </div>
         </div>
@@ -998,8 +1198,25 @@
 <!-- ===== FIREBASE ===== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, push, onValue, set, remove, update, query, orderByChild, limitToFirst } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, deleteUser, sendPasswordResetEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged, 
+    setPersistence, 
+    browserLocalPersistence, 
+    deleteUser, 
+    sendPasswordResetEmail, 
+    updatePassword, 
+    reauthenticateWithCredential, 
+    EmailAuthProvider,
+    GoogleAuthProvider,
+    signInWithPopup,
+    fetchSignInMethodsForEmail,
+    linkWithCredential
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
@@ -1014,6 +1231,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
 
   if (window.navigator && window.navigator.userAgent) {
     const isWebView = /wv|android|iphone|ipad|webview/i.test(navigator.userAgent);
@@ -1024,7 +1242,7 @@
 
   window.db = db; window.auth = auth;
   window.ref = ref; window.push = push; window.set = set; window.remove = remove; window.update = update;
-  window.onValue = onValue; window.query = query; window.orderByChild = orderByChild; window.limitToFirst = limitToFirst;
+  window.onValue = onValue;
   window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
   window.signInWithEmailAndPassword = signInWithEmailAndPassword;
   window.signOut = signOut;
@@ -1034,6 +1252,9 @@
   window.updatePassword = updatePassword;
   window.reauthenticateWithCredential = reauthenticateWithCredential;
   window.EmailAuthProvider = EmailAuthProvider;
+  window.GoogleAuthProvider = GoogleAuthProvider;
+  window.signInWithPopup = signInWithPopup;
+  window.googleProvider = googleProvider;
 </script>
 
 <!-- ===== APPLICATION ===== -->
@@ -1046,129 +1267,451 @@ let currentFilter = 'today', isAdmin = false, darkMode = false;
 let allUsers = {}, contacts = [], complaints = [], subjectsData = [];
 let scheduleOption = 'full', scheduleDayOption = 'today';
 let currentViewerImage = '';
-let userSubjectsByStage = {
-  'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية'],
-  'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية']
-};
+let selectedLoginMethod = 'phone';
+let selectedRegisterMethod = 'phone';
+
+// إعداد البيانات
+let setupStage = '', setupGrade = '', setupSubjects = [];
+let setupProfileImg = '', setupIdImg = '';
 
 const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2', 'ADMIN_UID_2', 'ADMIN_UID_3'];
-const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
+const subjectsByStage = {
+  'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية', 'فرنسية', 'تاريخ', 'جغرافيا', 'فلسفة'],
+  'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية', 'دراسات', 'حاسب آلي']
+};
 
 // ============================================
-// Toast الجديد بألوان الموقع
+// Toast
 // ============================================
 function showToast(msg, type = 'info') {
   const old = document.querySelector('.toast');
   if (old) old.remove();
-  
-  const icons = {
-    success: 'fa-circle-check',
-    error: 'fa-circle-xmark',
-    warning: 'fa-triangle-exclamation',
-    info: 'fa-circle-info'
-  };
-  
+  const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', warning: 'fa-triangle-exclamation', info: 'fa-circle-info' };
   const t = document.createElement('div');
   t.className = `toast toast-${type}`;
   t.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i><span>${msg}</span>`;
   document.body.appendChild(t);
-  
   setTimeout(() => t.classList.add('show'), 10);
-  setTimeout(() => {
-    t.classList.remove('show');
-    setTimeout(() => t.remove(), 400);
-  }, 3500);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
 }
 window.showToast = showToast;
 
 // ============================================
-// عرض/إخفاء كلمة المرور
+// Toggle Password
 // ============================================
 function togglePasswordVisibility(inputId, icon) {
   const input = document.getElementById(inputId);
   if (!input) return;
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.className = 'fa-solid fa-eye-slash eye-icon';
-  } else {
-    input.type = 'password';
-    icon.className = 'fa-solid fa-eye eye-icon';
-  }
+  if (input.type === 'password') { input.type = 'text'; icon.className = 'fa-solid fa-eye-slash eye-icon'; }
+  else { input.type = 'password'; icon.className = 'fa-solid fa-eye eye-icon'; }
 }
 window.togglePasswordVisibility = togglePasswordVisibility;
 
 // ============================================
-// لوحات الإعدادات
+// Login Method Selection
 // ============================================
-function openSettingsPanel(panel) {
-  document.querySelectorAll('.settings-panel').forEach(p => p.classList.add('hidden'));
-  document.getElementById('settingsMain').classList.add('hidden');
+function selectLoginMethod(method) {
+  selectedLoginMethod = method;
+  ['Phone', 'Google', 'Email'].forEach(m => {
+    document.getElementById(`loginOpt${m}`)?.classList.remove('active');
+  });
+  document.getElementById(`loginOpt${method.charAt(0).toUpperCase() + method.slice(1)}`)?.classList.add('active');
   
-  const target = document.getElementById(`panel-${panel}`);
-  if (target) target.classList.remove('hidden');
+  // إظهار/إخفاء النماذج
+  document.getElementById('loginFormPhone').classList.toggle('hidden', method !== 'phone');
+  document.getElementById('loginFormEmail').classList.toggle('hidden', method !== 'email');
+  document.getElementById('loginFormGoogle').classList.toggle('hidden', method !== 'google');
 }
-window.openSettingsPanel = openSettingsPanel;
+window.selectLoginMethod = selectLoginMethod;
 
-function closeSettingsPanel() {
-  document.querySelectorAll('.settings-panel').forEach(p => p.classList.add('hidden'));
-  document.getElementById('settingsMain').classList.remove('hidden');
+function selectRegisterMethod(method) {
+  selectedRegisterMethod = method;
+  ['Phone', 'Google', 'Email'].forEach(m => {
+    document.getElementById(`regOpt${m}`)?.classList.remove('active');
+  });
+  document.getElementById(`regOpt${method.charAt(0).toUpperCase() + method.slice(1)}`)?.classList.add('active');
+  
+  document.getElementById('regFormPhone').classList.toggle('hidden', method !== 'phone');
+  document.getElementById('regFormEmail').classList.toggle('hidden', method !== 'email');
+  document.getElementById('regFormGoogle').classList.toggle('hidden', method !== 'google');
 }
-window.closeSettingsPanel = closeSettingsPanel;
+window.selectRegisterMethod = selectRegisterMethod;
 
 // ============================================
-// عرض الصور
+// Login by Phone (البريد الوهمي = الرقم)
 // ============================================
-function openImageViewer(imageSrc, title = 'صورة') {
-  const viewer = document.getElementById('imageViewer');
-  const img = document.getElementById('viewerImage');
-  const info = document.getElementById('imageInfo');
-  if (!viewer || !img) return;
-  currentViewerImage = imageSrc;
-  img.src = imageSrc;
-  if (info) info.textContent = title;
-  viewer.classList.add('show');
-  document.body.style.overflow = 'hidden';
+function loginByPhone() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  const password = document.getElementById('loginPhonePassword').value;
+  
+  if (!phone || !password) return showToast('⚠️ املأ جميع الحقول', 'warning');
+  if (!/^[0-9]{10,11}$/.test(phone)) return showToast('⚠️ رقم الهاتف غير صحيح', 'warning');
+  
+  // استخدام البريد الوهمي بناءً على الرقم
+  const email = `user_${phone}@sigma-center.com`;
+  
+  showToast('⏳ جاري تسجيل الدخول...', 'info');
+  
+  window.signInWithEmailAndPassword(window.auth, email, password)
+    .then(() => showToast('✅ مرحباً بك!', 'success'))
+    .catch(error => {
+      if (error.code === 'auth/user-not-found') showToast('❌ لا يوجد حساب بهذا الرقم', 'error');
+      else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') showToast('❌ البيانات خاطئة', 'error');
+      else showToast('❌ ' + error.message, 'error');
+    });
 }
-window.openImageViewer = openImageViewer;
+window.loginByPhone = loginByPhone;
 
-function closeImageViewer() {
-  document.getElementById('imageViewer')?.classList.remove('show');
-  document.body.style.overflow = '';
+// ============================================
+// Login by Email
+// ============================================
+function loginByEmail() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginEmailPassword').value;
+  
+  if (!email || !password) return showToast('⚠️ املأ جميع الحقول', 'warning');
+  
+  showToast('⏳ جاري تسجيل الدخول...', 'info');
+  
+  window.signInWithEmailAndPassword(window.auth, email, password)
+    .then(() => showToast('✅ مرحباً بك!', 'success'))
+    .catch(error => {
+      if (error.code === 'auth/user-not-found') showToast('❌ لا يوجد حساب', 'error');
+      else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') showToast('❌ البيانات خاطئة', 'error');
+      else showToast('❌ ' + error.message, 'error');
+    });
 }
-window.closeImageViewer = closeImageViewer;
+window.loginByEmail = loginByEmail;
 
-function downloadImage() {
-  if (currentViewerImage) {
-    const link = document.createElement('a');
-    link.href = currentViewerImage;
-    link.download = 'sigma_' + Date.now() + '.jpg';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast('✅ جاري التحميل', 'success');
+// ============================================
+// Login with Google
+// ============================================
+function loginWithGoogle() {
+  showToast('⏳ جاري تسجيل الدخول بجوجل...', 'info');
+  
+  window.signInWithPopup(window.auth, window.googleProvider)
+    .then(result => {
+      const user = result.user;
+      showToast('✅ مرحباً بك!', 'success');
+      
+      // التحقق من وجود بيانات
+      window.onValue(window.ref(window.db, `users/${user.uid}`), snap => {
+        const data = snap.val();
+        if (!data) {
+          // حساب جديد بحاجة لإعداد بيانات
+          setTimeout(() => { switchTab('setup'); initSetupScreen(); }, 500);
+        }
+      }, { onlyOnce: true });
+    })
+    .catch(error => {
+      if (error.code === 'auth/popup-closed-by-user') showToast('⚠️ تم إلغاء الدخول', 'warning');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.loginWithGoogle = loginWithGoogle;
+
+// ============================================
+// Register by Phone
+// ============================================
+function registerByPhone() {
+  const name = document.getElementById('regPhoneName').value.trim();
+  const phone = document.getElementById('regPhoneNumber').value.trim();
+  const password = document.getElementById('regPhonePassword').value;
+  const confirm = document.getElementById('regPhoneConfirm').value;
+  
+  if (!name || !phone || !password) return showToast('⚠️ املأ جميع الحقول', 'warning');
+  if (!/^[0-9]{10,11}$/.test(phone)) return showToast('⚠️ رقم الهاتف غير صحيح', 'warning');
+  if (password !== confirm) return showToast('⚠️ كلمتا المرور غير متطابقتين', 'warning');
+  if (password.length < 6) return showToast('⚠️ كلمة المرور 6 أحرف على الأقل', 'warning');
+  
+  const email = `user_${phone}@sigma-center.com`;
+  
+  showToast('⏳ جاري إنشاء الحساب...', 'info');
+  
+  window.createUserWithEmailAndPassword(window.auth, email, password)
+    .then(result => {
+      const user = result.user;
+      window.set(window.ref(window.db, `users/${user.uid}`), {
+        name, email, phone,
+        authMethod: 'phone',
+        stage: '', grade: '', subjects: [],
+        school: '', parentPhone: '',
+        profileImage: '', idImage: '',
+        profileStatus: 'setup_pending',
+        freeEditUsed: false,
+        createdAt: new Date().toISOString(),
+        online: true, lastSeen: Date.now()
+      }).then(() => {
+        showToast('✅ تم إنشاء الحساب!', 'success');
+        setTimeout(() => { switchTab('setup'); initSetupScreen(); }, 800);
+      });
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') showToast('❌ الرقم مستخدم بالفعل', 'error');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.registerByPhone = registerByPhone;
+
+// ============================================
+// Register by Email
+// ============================================
+function registerByEmail() {
+  const name = document.getElementById('regEmailName').value.trim();
+  const email = document.getElementById('regEmailAddress').value.trim();
+  const phone = document.getElementById('regEmailPhone').value.trim();
+  const password = document.getElementById('regEmailPassword').value;
+  const confirm = document.getElementById('regEmailConfirm').value;
+  
+  if (!name || !email || !phone || !password) return showToast('⚠️ املأ جميع الحقول', 'warning');
+  if (password !== confirm) return showToast('⚠️ كلمتا المرور غير متطابقتين', 'warning');
+  if (password.length < 6) return showToast('⚠️ كلمة المرور 6 أحرف على الأقل', 'warning');
+  
+  showToast('⏳ جاري إنشاء الحساب...', 'info');
+  
+  window.createUserWithEmailAndPassword(window.auth, email, password)
+    .then(result => {
+      const user = result.user;
+      window.set(window.ref(window.db, `users/${user.uid}`), {
+        name, email, phone,
+        authMethod: 'email',
+        stage: '', grade: '', subjects: [],
+        school: '', parentPhone: '',
+        profileImage: '', idImage: '',
+        profileStatus: 'setup_pending',
+        freeEditUsed: false,
+        createdAt: new Date().toISOString(),
+        online: true, lastSeen: Date.now()
+      }).then(() => {
+        showToast('✅ تم إنشاء الحساب!', 'success');
+        setTimeout(() => { switchTab('setup'); initSetupScreen(); }, 800);
+      });
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') showToast('❌ البريد مستخدم', 'error');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.registerByEmail = registerByEmail;
+
+// ============================================
+// Register with Google
+// ============================================
+function registerWithGoogle() {
+  showToast('⏳ جاري التسجيل بجوجل...', 'info');
+  
+  window.signInWithPopup(window.auth, window.googleProvider)
+    .then(result => {
+      const user = result.user;
+      
+      // حفظ البيانات الأساسية
+      window.set(window.ref(window.db, `users/${user.uid}`), {
+        name: user.displayName || 'طالب',
+        email: user.email,
+        phone: '',
+        authMethod: 'google',
+        profileImage: user.photoURL || '',
+        stage: '', grade: '', subjects: [],
+        school: '', parentPhone: '',
+        idImage: '',
+        profileStatus: 'setup_pending',
+        freeEditUsed: false,
+        createdAt: new Date().toISOString(),
+        online: true, lastSeen: Date.now()
+      }).then(() => {
+        showToast('✅ تم التسجيل!', 'success');
+        setTimeout(() => { switchTab('setup'); initSetupScreen(); }, 800);
+      });
+    })
+    .catch(error => {
+      if (error.code === 'auth/popup-closed-by-user') showToast('⚠️ تم الإلغاء', 'warning');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.registerWithGoogle = registerWithGoogle;
+
+// ============================================
+// إعداد البيانات - Init
+// ============================================
+function initSetupScreen() {
+  setupStage = '';
+  setupGrade = '';
+  setupSubjects = [];
+  setupProfileImg = '';
+  setupIdImg = '';
+  
+  // إعادة تعيين الحقول
+  document.querySelectorAll('#setupStageOptions .stage-option').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('#setupGradeOptions .grade-option').forEach(el => el.classList.remove('active'));
+  document.getElementById('setupSubjectsOptions').innerHTML = '<p class="text-xs text-slate-400">اختر المرحلة أولاً</p>';
+  document.getElementById('setupParentPhone').value = '';
+  document.getElementById('setupSchool').value = '';
+  document.getElementById('profilePreview').classList.add('hidden');
+  document.getElementById('idPreview').classList.add('hidden');
+  document.getElementById('uploadProfileBox').classList.remove('uploaded');
+  document.getElementById('uploadIdBox').classList.remove('uploaded');
+  
+  // إذا كان Google، عرض الصورة كصورة ملف شخصي
+  if (userData?.authMethod === 'google' && userData?.profileImage) {
+    setupProfileImg = userData.profileImage;
+    document.getElementById('profilePreview').src = userData.profileImage;
+    document.getElementById('profilePreview').classList.remove('hidden');
+    document.getElementById('uploadProfileBox').classList.add('uploaded');
+    document.querySelector('#uploadProfileBox .upload-text').textContent = '✅ صورة Google محملة';
   }
 }
-window.downloadImage = downloadImage;
+window.initSetupScreen = initSetupScreen;
+
+function selectSetupStage(stage, el) {
+  setupStage = stage;
+  document.querySelectorAll('#setupStageOptions .stage-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  
+  // تحديث المواد
+  let subjects = [];
+  const dbSubjects = subjectsData.filter(s => s.stage === stage);
+  if (dbSubjects.length > 0) subjects = dbSubjects.map(s => s.name);
+  else subjects = subjectsByStage[stage] || [];
+  
+  const container = document.getElementById('setupSubjectsOptions');
+  container.innerHTML = subjects.map(s => 
+    `<div class="subject-option" onclick="toggleSetupSubject('${s}', this)">${s}</div>`
+  ).join('');
+}
+window.selectSetupStage = selectSetupStage;
+
+function selectSetupGrade(grade, el) {
+  setupGrade = grade;
+  document.querySelectorAll('#setupGradeOptions .grade-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+}
+window.selectSetupGrade = selectSetupGrade;
+
+function toggleSetupSubject(subject, el) {
+  if (setupSubjects.includes(subject)) {
+    setupSubjects = setupSubjects.filter(s => s !== subject);
+    el.classList.remove('active');
+  } else {
+    setupSubjects.push(subject);
+    el.classList.add('active');
+  }
+}
+window.toggleSetupSubject = toggleSetupSubject;
+
+function handleProfileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) return showToast('⚠️ الصورة كبيرة (2MB max)', 'warning');
+  
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = e => {
+    setupProfileImg = e.target.result;
+    const preview = document.getElementById('profilePreview');
+    preview.src = setupProfileImg;
+    preview.classList.remove('hidden');
+    document.getElementById('uploadProfileBox').classList.add('uploaded');
+    document.querySelector('#uploadProfileBox .upload-text').textContent = '✅ تم تحميل الصورة';
+  };
+}
+window.handleProfileUpload = handleProfileUpload;
+
+function handleIdUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) return showToast('⚠️ الصورة كبيرة (2MB max)', 'warning');
+  
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = e => {
+    setupIdImg = e.target.result;
+    const preview = document.getElementById('idPreview');
+    preview.src = setupIdImg;
+    preview.classList.remove('hidden');
+    document.getElementById('uploadIdBox').classList.add('uploaded');
+    document.querySelector('#uploadIdBox .upload-text').textContent = '✅ تم تحميل الصورة';
+  };
+}
+window.handleIdUpload = handleIdUpload;
+
+// ============================================
+// حفظ إعداد البيانات
+// ============================================
+function saveSetupData() {
+  // التحقق من جميع الحقول
+  if (!setupStage) return showToast('⚠️ اختر المرحلة', 'warning');
+  if (!setupGrade) return showToast('⚠️ اختر الصف', 'warning');
+  if (setupSubjects.length === 0) return showToast('⚠️ اختر مادة واحدة على الأقل', 'warning');
+  
+  const parentPhone = document.getElementById('setupParentPhone').value.trim();
+  const school = document.getElementById('setupSchool').value.trim();
+  
+  if (!parentPhone) return showToast('⚠️ أدخل رقم ولي الأمر', 'warning');
+  if (!school) return showToast('⚠️ أدخل اسم المدرسة', 'warning');
+  if (!setupProfileImg) return showToast('⚠️ أضف صورة الملف الشخصي', 'warning');
+  if (!setupIdImg) return showToast('⚠️ أضف صورة البطاقة أو شهادة الميلاد', 'warning');
+  
+  // تحقق من صحة الصور
+  if (!isValidImage(setupProfileImg)) return showToast('❌ صورة الملف الشخصي غير صحيحة', 'error');
+  if (!isValidImage(setupIdImg)) return showToast('❌ صورة البطاقة غير صحيحة', 'error');
+  
+  showToast('⏳ جاري حفظ البيانات...', 'info');
+  
+  window.update(window.ref(window.db, `users/${currentUser.uid}`), {
+    stage: setupStage,
+    grade: setupGrade,
+    subjects: setupSubjects,
+    parentPhone: parentPhone,
+    school: school,
+    profileImage: setupProfileImg,
+    idImage: setupIdImg,
+    profileStatus: 'pending',
+    setupCompleted: true,
+    updatedAt: new Date().toISOString()
+  }).then(() => {
+    showToast('✅ تم حفظ البيانات! مرحباً بك', 'success');
+    setTimeout(() => switchTab('home'), 800);
+  }).catch(error => {
+    showToast('❌ ' + error.message, 'error');
+  });
+}
+window.saveSetupData = saveSetupData;
+
+// ============================================
+// التحقق من صحة الصور
+// ============================================
+function isValidImage(dataUrl) {
+  if (!dataUrl || typeof dataUrl !== 'string') return false;
+  if (!dataUrl.startsWith('data:image/')) return false;
+  // التحقق من الحجم (على الأقل 1KB)
+  if (dataUrl.length < 1000) return false;
+  return true;
+}
+window.isValidImage = isValidImage;
 
 // ============================================
 // نسيت كلمة المرور
 // ============================================
 function handleResetPassword() {
-  const email = document.getElementById('forgotEmail').value.trim();
-  if (!email) return showToast('⚠️ أدخل بريدك الإلكتروني', 'warning');
+  let email = document.getElementById('forgotEmail').value.trim();
   
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return showToast('⚠️ بريد إلكتروني غير صحيح', 'warning');
+  if (!email) return showToast('⚠️ أدخل البريد الإلكتروني', 'warning');
+  
+  // إذا كان رقم هاتف، تحويله لبريد وهمي
+  if (/^[0-9]{10,11}$/.test(email)) {
+    email = `user_${email}@sigma-center.com`;
+  }
   
   showToast('⏳ جاري الإرسال...', 'info');
   
   window.sendPasswordResetEmail(window.auth, email)
     .then(() => {
-      showToast('✅ تم إرسال الرابط إلى بريدك!', 'success');
+      showToast('✅ تم إرسال الرابط', 'success');
       document.getElementById('forgotEmail').value = '';
     })
-    .catch((error) => {
-      if (error.code === 'auth/user-not-found') showToast('❌ لا يوجد حساب بهذا البريد', 'error');
+    .catch(error => {
+      if (error.code === 'auth/user-not-found') showToast('❌ لا يوجد حساب', 'error');
       else showToast('❌ ' + error.message, 'error');
     });
 }
@@ -1178,13 +1721,11 @@ window.handleResetPassword = handleResetPassword;
 // تغيير كلمة المرور
 // ============================================
 async function changePassword() {
-  if (!currentUser) return showToast('⚠️ سجل دخول أولاً', 'warning');
-  
+  if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
   const current = document.getElementById('currentPassword').value;
   const newPass = document.getElementById('newPassword').value;
-  
   if (!current || !newPass) return showToast('⚠️ املأ الحقول', 'warning');
-  if (newPass.length < 6) return showToast('⚠️ كلمة المرور 6 أحرف على الأقل', 'warning');
+  if (newPass.length < 6) return showToast('⚠️ كلمة المرور 6 أحرف', 'warning');
   
   try {
     const cred = window.EmailAuthProvider.credential(currentUser.email, current);
@@ -1201,6 +1742,53 @@ async function changePassword() {
 window.changePassword = changePassword;
 
 // ============================================
+// Settings Panels
+// ============================================
+function openSettingsPanel(panel) {
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.add('hidden'));
+  document.getElementById('settingsMain').classList.add('hidden');
+  document.getElementById(`panel-${panel}`)?.classList.remove('hidden');
+}
+window.openSettingsPanel = openSettingsPanel;
+
+function closeSettingsPanel() {
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.add('hidden'));
+  document.getElementById('settingsMain').classList.remove('hidden');
+}
+window.closeSettingsPanel = closeSettingsPanel;
+
+// ============================================
+// عرض الصور
+// ============================================
+function openImageViewer(src, title = 'صورة') {
+  const viewer = document.getElementById('imageViewer');
+  const img = document.getElementById('viewerImage');
+  if (!viewer || !img) return;
+  currentViewerImage = src;
+  img.src = src;
+  viewer.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+window.openImageViewer = openImageViewer;
+
+function closeImageViewer() {
+  document.getElementById('imageViewer')?.classList.remove('show');
+  document.body.style.overflow = '';
+}
+window.closeImageViewer = closeImageViewer;
+
+function downloadImage() {
+  if (currentViewerImage) {
+    const link = document.createElement('a');
+    link.href = currentViewerImage;
+    link.download = 'sigma_' + Date.now() + '.jpg';
+    link.click();
+    showToast('✅ جاري التحميل', 'success');
+  }
+}
+window.downloadImage = downloadImage;
+
+// ============================================
 // التبويبات
 // ============================================
 function switchTab(id) {
@@ -1210,8 +1798,7 @@ function switchTab(id) {
     b.classList.remove('text-blue-600');
     b.classList.add('text-slate-400');
   });
-  const nav = document.getElementById(`nav-${id}`);
-  if (nav) { nav.classList.remove('text-slate-400'); nav.classList.add('text-blue-600'); }
+  document.getElementById(`nav-${id}`)?.classList.add('text-blue-600');
   if (id === 'admin') handleAdminTab();
 }
 window.switchTab = switchTab;
@@ -1220,7 +1807,6 @@ function handleAdminTab() {
   const denied = document.getElementById('adminDenied');
   const login = document.getElementById('adminLogin');
   const panel = document.getElementById('adminPanel');
-  
   if (!currentUser || !ADMIN_UIDS.includes(currentUser.uid)) {
     denied.classList.remove('hidden');
     login.classList.add('hidden');
@@ -1234,406 +1820,162 @@ function handleAdminTab() {
     login.classList.add('hidden');
     panel.classList.remove('hidden');
     startRealtimeStats();
-    loadAdminData();
   }
 }
 
 // ============================================
-// الإحصائيات اللحظية الحقيقية
+// الإحصائيات اللحظية
 // ============================================
-let statsUnsubscribers = [];
-
 function startRealtimeStats() {
-  // إلغاء المستمعات القديمة
-  statsUnsubscribers.forEach(unsub => { try { unsub(); } catch(e){} });
-  statsUnsubscribers = [];
-  
-  // مستمع المستخدمين
-  const usersRef = window.ref(window.db, 'users');
-  const unsubUsers = window.onValue(usersRef, snap => {
+  window.onValue(window.ref(window.db, 'users'), snap => {
     const data = snap.val() || {};
     allUsers = data;
     const total = Object.keys(data).length;
-    let active = 0, boys = 0, girls = 0;
+    let active = 0, boys = 0, girls = 0, pending = 0;
     const now = Date.now();
     
     Object.keys(data).forEach(k => {
       const u = data[k];
-      // نشطاء آخر 24 ساعة
       if (u.online === true || (u.lastSeen && u.lastSeen > now - 86400000)) active++;
-      
-      // الأولاد والبنات
+      if (u.profileStatus === 'pending' || u.profileStatus === 'setup_pending') pending++;
       const name = (u.name || '').toLowerCase();
-      const maleNames = ['ahmed','mohamed','khaled','ali','hassan','mostafa','omar','youssef','ibrahim','mahmoud','abd','عمرو','أحمد','محمد','علي'];
-      if (maleNames.some(m => name.includes(m))) boys++;
+      if (['ahmed','mohamed','khaled','ali','hassan','mostafa','omar','youssef','ibrahim','عمرو','أحمد','محمد'].some(m => name.includes(m))) boys++;
       else if (name) girls++;
     });
     
-    // تحديث فوري
-    const statUsers = document.getElementById('statUsers');
-    const statActive = document.getElementById('statActive');
-    const statBoys = document.getElementById('statBoys');
-    const statGirls = document.getElementById('statGirls');
-    
-    if (statUsers) statUsers.textContent = total;
-    if (statActive) statActive.textContent = active;
-    if (statBoys) statBoys.textContent = boys;
-    if (statGirls) statGirls.textContent = girls;
+    document.getElementById('statUsers').textContent = total;
+    document.getElementById('statActive').textContent = active;
+    document.getElementById('statBoys').textContent = boys;
+    document.getElementById('statGirls').textContent = girls;
+    document.getElementById('statPending').textContent = pending;
   });
-  statsUnsubscribers.push(unsubUsers);
   
-  // مستمع الحصص
-  const unsubSchedules = window.onValue(window.ref(window.db, 'schedules'), snap => {
+  window.onValue(window.ref(window.db, 'schedules'), snap => {
     const d = snap.val();
-    const el = document.getElementById('statSchedules');
-    if (el) el.textContent = d ? Object.keys(d).length : 0;
+    document.getElementById('statSchedules').textContent = d ? Object.keys(d).length : 0;
   });
-  statsUnsubscribers.push(unsubSchedules);
-  
-  // مستمع الملفات
-  const unsubMaterials = window.onValue(window.ref(window.db, 'materials'), snap => {
-    const d = snap.val();
-    const el = document.getElementById('statMaterials');
-    if (el) el.textContent = d ? Object.keys(d).length : 0;
-  });
-  statsUnsubscribers.push(unsubMaterials);
-  
-  // مستمع الامتحانات
-  const unsubExams = window.onValue(window.ref(window.db, 'exams'), snap => {
-    const d = snap.val();
-    const el = document.getElementById('statExams');
-    if (el) el.textContent = d ? Object.keys(d).length : 0;
-  });
-  statsUnsubscribers.push(unsubExams);
-  
-  // مستمع الإشعارات
-  const unsubNotifs = window.onValue(window.ref(window.db, 'notifications'), snap => {
-    const d = snap.val();
-    const el = document.getElementById('statNotifs');
-    if (el) el.textContent = d ? Object.keys(d).length : 0;
-  });
-  statsUnsubscribers.push(unsubNotifs);
 }
 
 // ============================================
-// تسجيل الدخول
+// توليد تقرير PDF للطلاب
 // ============================================
-function loginUserWithRetry() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
+function generateStudentsPDF() {
+  if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
   
-  if (!email || !password) return showToast('⚠️ املأ جميع الحقول', 'warning');
+  const users = allUsers;
+  if (!users || Object.keys(users).length === 0) {
+    return showToast('⚠️ لا يوجد طلاب لإنشاء تقرير', 'warning');
+  }
   
-  showToast('⏳ جاري تسجيل الدخول...', 'info');
+  showToast('⏳ جاري إنشاء التقرير...', 'info');
   
-  window.signInWithEmailAndPassword(window.auth, email, password)
-    .then(() => showToast('✅ مرحباً بك!', 'success'))
-    .catch(error => {
-      if (error.code === 'auth/user-not-found') showToast('❌ لا يوجد حساب', 'error');
-      else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') showToast('❌ بيانات الدخول خاطئة', 'error');
-      else if (error.code === 'auth/too-many-requests') showToast('❌ حاول لاحقاً', 'error');
-      else showToast('❌ ' + error.message, 'error');
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    
+    // الترتيب حسب المرحلة والصف
+    const students = Object.keys(users).map(uid => ({ uid, ...users[uid] }))
+      .filter(s => s.name)
+      .sort((a, b) => {
+        const stageOrder = { 'ثانوي': 1, 'إعدادي': 2 };
+        const stageA = stageOrder[a.stage] || 3;
+        const stageB = stageOrder[b.stage] || 3;
+        if (stageA !== stageB) return stageA - stageB;
+        return (parseInt(a.grade) || 0) - (parseInt(b.grade) || 0);
+      });
+    
+    // عنوان التقرير
+    doc.setFontSize(22);
+    doc.setTextColor(37, 99, 235);
+    doc.text('تقرير طلاب سنتر سيجما', 148, 20, { align: 'center' });
+    
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`تاريخ الإنشاء: ${new Date().toLocaleString('ar-EG')}`, 148, 28, { align: 'center' });
+    doc.text(`إجمالي الطلاب: ${students.length}`, 148, 34, { align: 'center' });
+    
+    // الجدول
+    const tableData = students.map((s, idx) => [
+      (idx + 1).toString(),
+      s.name || '-',
+      s.email || '-',
+      s.phone || '-',
+      s.stage || '-',
+      s.grade ? `الصف ${s.grade}` : '-',
+      (s.subjects || []).join(', ') || '-',
+      s.parentPhone || '-',
+      s.school || '-',
+      s.profileStatus === 'approved' ? 'معتمد' : s.profileStatus === 'pending' ? 'قيد المراجعة' : 'غير مكتمل'
+    ]);
+    
+    doc.autoTable({
+      head: [['#', 'الاسم', 'البريد', 'الهاتف', 'المرحلة', 'الصف', 'المواد', 'ولي الأمر', 'المدرسة', 'الحالة']],
+      body: tableData,
+      startY: 42,
+      styles: {
+        font: 'helvetica',
+        fontSize: 9,
+        cellPadding: 2,
+        halign: 'right',
+        valign: 'middle'
+      },
+      headStyles: {
+        fillColor: [37, 99, 235],
+        textColor: [255, 255, 255],
+        fontSize: 10,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [241, 245, 249]
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center' },
+        1: { cellWidth: 35 },
+        2: { cellWidth: 40 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 18 },
+        5: { cellWidth: 18 },
+        6: { cellWidth: 40 },
+        7: { cellWidth: 25 },
+        8: { cellWidth: 30 },
+        9: { cellWidth: 22 }
+      }
     });
-}
-window.loginUserWithRetry = loginUserWithRetry;
-
-// ============================================
-// إنشاء حساب
-// ============================================
-function registerUserWithRetry() {
-  const name = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const phone = document.getElementById('regPhone').value.trim();
-  const password = document.getElementById('regPassword').value;
-  const confirmPassword = document.getElementById('regConfirmPassword').value;
-  const idFile = document.getElementById('regIdImage').files[0];
-  
-  if (!name || !email || !phone || !password) return showToast('⚠️ املأ جميع الحقول', 'warning');
-  if (password !== confirmPassword) return showToast('⚠️ كلمتا المرور غير متطابقتين', 'warning');
-  if (password.length < 6) return showToast('⚠️ كلمة المرور 6 أحرف على الأقل', 'warning');
-  if (!idFile) return showToast('⚠️ ارفع صورة البطاقة', 'warning');
-  
-  showToast('⏳ جاري إنشاء الحساب...', 'info');
-  
-  const reader = new FileReader();
-  reader.readAsDataURL(idFile);
-  reader.onload = async function() {
-    try {
-      const result = await window.createUserWithEmailAndPassword(window.auth, email, password);
-      const user = result.user;
-      
-      await window.set(window.ref(window.db, `users/${user.uid}`), {
-        name, email, phone,
-        idImage: reader.result,
-        stage: '', grade: '', subjects: [],
-        school: '', parentPhone: '',
-        profileStatus: 'pending',
-        freeEditUsed: false,
-        createdAt: new Date().toISOString(),
-        online: true, lastSeen: Date.now()
-      });
-      
-      showToast('✅ تم إنشاء الحساب! انتظر موافقة الإدارة', 'success');
-      ['regName','regEmail','regPhone','regPassword','regConfirmPassword','regIdImage'].forEach(id => {
-        const el = document.getElementById(id); if (el) el.value = '';
-      });
-      switchTab('login');
-      
-    } catch (error) {
-      if (error.code === 'auth/email-already-in-use') showToast('❌ البريد مستخدم', 'error');
-      else if (error.code === 'auth/weak-password') showToast('❌ كلمة المرور ضعيفة', 'error');
-      else showToast('❌ ' + error.message, 'error');
-    }
-  };
-}
-window.registerUserWithRetry = registerUserWithRetry;
-
-// ============================================
-// تسجيل الخروج
-// ============================================
-function logoutUser() {
-  if (currentUser) window.set(window.ref(window.db, `users/${currentUser.uid}/online`), false);
-  window.signOut(window.auth);
-  showToast('👋 تم تسجيل الخروج', 'warning');
-}
-window.logoutUser = logoutUser;
-
-// ============================================
-// بدء التطبيق
-// ============================================
-function initApp() {
-  window.onAuthStateChanged(window.auth, user => {
-    if (user) {
-      currentUser = user;
-      window.onValue(window.ref(window.db, `users/${user.uid}`), snap => {
-        userData = snap.val();
-        renderUser();
-        updateInfo();
-        
-        if (!userData) {
-          setTimeout(() => { switchTab('settings'); showToast('📝 أكمل بياناتك', 'warning'); }, 1000);
-        }
-        
-        // تحديث حالة زر التعديل
-        updateEditStatus();
-        
-        document.getElementById('tab-login').classList.add('hidden');
-        document.getElementById('tab-register').classList.add('hidden');
-        document.getElementById('tab-forgot').classList.add('hidden');
-        document.getElementById('tab-home').classList.remove('hidden');
-        document.querySelectorAll('nav button').forEach(b => {
-          b.classList.remove('text-blue-600');
-          b.classList.add('text-slate-400');
-        });
-        document.getElementById('nav-home')?.classList.add('text-blue-600');
-      });
-      window.set(window.ref(window.db, `users/${user.uid}/online`), true);
-      window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
-    } else {
-      currentUser = null; userData = null; isAdmin = false;
-      document.getElementById('tab-login').classList.remove('hidden');
-      document.getElementById('tab-register').classList.add('hidden');
-      document.getElementById('tab-forgot').classList.add('hidden');
-      document.getElementById('tab-home').classList.add('hidden');
-      document.querySelectorAll('nav button').forEach(b => {
-        b.classList.remove('text-blue-600');
-        b.classList.add('text-slate-400');
-      });
-      renderUser();
-      document.getElementById('adminDenied').classList.add('hidden');
-      document.getElementById('adminLogin').classList.remove('hidden');
-      document.getElementById('adminPanel').classList.add('hidden');
-    }
-  });
-  
-  setTimeout(() => {
-    initListeners();
-    loadContacts();
-    loadComplaints();
-    loadSubjectsList();
-    loadAdminSubjects();
-  }, 500);
-}
-
-// ============================================
-// تحديث حالة زر التعديل
-// ============================================
-function updateEditStatus() {
-  const sub = document.getElementById('editStatusSub');
-  if (!sub || !userData) return;
-  
-  if (userData.freeEditUsed) {
-    sub.textContent = '⚠️ يحتاج موافقة الإدارة';
-    sub.style.color = '#f59e0b';
-  } else {
-    sub.textContent = '✅ تعديل مجاني متاح';
-    sub.style.color = '#22c55e';
-  }
-}
-
-// ============================================
-// renderUser - مبسط
-// ============================================
-function renderUser() {
-  const avatar = document.getElementById('userAvatar');
-  const name = document.getElementById('userName');
-  const sub = document.getElementById('userSubtitle');
-  const subjects = document.getElementById('userSubjects');
-
-  if (!avatar || !name || !sub || !subjects) return;
-
-  if (currentUser && userData) {
-    avatar.src = userData.idImage || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
-    avatar.style.display = 'block';
-    name.textContent = `مرحباً ${userData.name || ''}`;
-    sub.textContent = `${userData.stage || ''} • صف ${userData.grade || ''}`;
-    subjects.innerHTML = (userData.subjects || []).map(s => `<span class="subject-chip">${s}</span>`).join('');
-  } else if (currentUser) {
-    avatar.src = 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
-    avatar.style.display = 'block';
-    name.textContent = 'مرحباً';
-    sub.textContent = 'أكمل بياناتك';
-    subjects.innerHTML = '';
-  } else {
-    avatar.style.display = 'none';
-    name.textContent = 'مرحباً بك';
-    sub.textContent = 'سجل دخولك';
-    subjects.innerHTML = '';
-  }
-}
-
-function openProfile() { if (currentUser) switchTab('settings'); else showToast('⚠️ سجل دخول', 'warning'); }
-window.openProfile = openProfile;
-
-// ============================================
-// حفظ الملف الشخصي - مرة واحدة مجاناً
-// ============================================
-function saveProfile() {
-  if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
-  
-  // التحقق من التعديل المجاني
-  if (userData?.freeEditUsed && userData?.profileStatus !== 'pending') {
-    // يحتاج موافقة الإدارة
-    if (!confirm('⚠️ لقد استخدمت التعديل المجاني. هل تريد إرسال طلب للإدارة؟')) return;
     
-    // إرسال طلب
-    const stage = document.getElementById('profStage').value;
-    const grade = document.getElementById('profGrade').value;
-    const phone = document.getElementById('profPhone').value;
-    const school = document.getElementById('profSchool').value;
-    const parentPhone = document.getElementById('profParentPhone').value;
-    const checked = document.querySelectorAll('.subject-check:checked');
-    const subjects = Array.from(checked).map(cb => cb.value);
-    
-    if (!subjects.length) return showToast('⚠️ اختر مادة واحدة', 'warning');
-    
-    window.push(window.ref(window.db, 'profile_requests'), {
-      userId: currentUser.uid,
-      userName: userData.name,
-      email: currentUser.email,
-      stage, grade, subjects, phone, school, parentPhone,
-      status: 'pending',
-      date: new Date().toLocaleString('ar-EG')
-    }).then(() => {
-      showToast('✅ تم إرسال الطلب للإدارة', 'success');
-      closeSettingsPanel();
+    // إضافة تفاصيل المراحل
+    const stageCounts = {};
+    students.forEach(s => {
+      const key = `${s.stage || 'غير محدد'} - الصف ${s.grade || '?'}`;
+      stageCounts[key] = (stageCounts[key] || 0) + 1;
     });
-    return;
-  }
-  
-  const stage = document.getElementById('profStage').value;
-  const grade = document.getElementById('profGrade').value;
-  const phone = document.getElementById('profPhone').value;
-  const school = document.getElementById('profSchool').value;
-  const parentPhone = document.getElementById('profParentPhone').value;
-  const checked = document.querySelectorAll('.subject-check:checked');
-  const subjects = Array.from(checked).map(cb => cb.value);
-  
-  if (!subjects.length) return showToast('⚠️ اختر مادة', 'warning');
-
-  window.update(window.ref(window.db, `users/${currentUser.uid}`), {
-    stage, grade, subjects, phone, school, parentPhone,
-    freeEditUsed: true,
-    profileStatus: 'approved',
-    updatedAt: new Date().toISOString()
-  }).then(() => {
-    showToast('✅ تم حفظ البيانات (استُخدم التعديل المجاني)', 'success');
-    renderUser();
-    updateInfo();
-    updateEditStatus();
-    closeSettingsPanel();
-  });
-}
-window.saveProfile = saveProfile;
-
-// ============================================
-// تحميل المواد حسب المرحلة
-// ============================================
-function loadSubjects() {
-  const container = document.getElementById('subjectsCheckbox');
-  if (!container) return;
-  container.innerHTML = '';
-  const stage = document.getElementById('profStage').value;
-  
-  // استخدام المواد من قاعدة البيانات إن وجدت
-  let subjects = [];
-  const dbSubjects = subjectsData.filter(s => s.stage === stage);
-  if (dbSubjects.length > 0) {
-    subjects = dbSubjects.map(s => s.name);
-  } else {
-    subjects = userSubjectsByStage[stage] || [];
-  }
-  
-  subjects.forEach(s => {
-    const checked = userData?.subjects?.includes(s) || false;
-    container.innerHTML += `<label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded-lg text-xs cursor-pointer"><input type="checkbox" value="${s}" class="subject-check" ${checked?'checked':''}> ${s}</label>`;
-  });
-  document.getElementById('profStage').onchange = loadSubjects;
-}
-window.loadSubjects = loadSubjects;
-
-function updateInfo() {
-  if (currentUser && userData) {
-    document.getElementById('infoName').textContent = userData.name || '-';
-    document.getElementById('infoEmail').textContent = userData.email || '-';
-    document.getElementById('infoPhone').textContent = userData.phone || '-';
-    document.getElementById('infoParentPhone').textContent = userData.parentPhone || '-';
-    document.getElementById('infoSchool').textContent = userData.school || '-';
-    document.getElementById('infoStage').textContent = userData.stage || '-';
-    document.getElementById('infoGrade').textContent = userData.grade || '-';
-    document.getElementById('infoSubjects').textContent = (userData.subjects || []).join('، ') || '-';
-    document.getElementById('infoStatus').textContent = userData.profileStatus === 'approved' ? '✅ معتمدة' : '⏳ قيد المراجعة';
-    document.getElementById('infoStatus').className = userData.profileStatus === 'approved' ? 'font-bold text-green-600' : 'font-bold text-amber-600';
     
-    document.getElementById('editEmailDisplay').value = userData.email || '';
-    document.getElementById('profPhone').value = userData.phone || '';
-    document.getElementById('profSchool').value = userData.school || '';
-    document.getElementById('profParentPhone').value = userData.parentPhone || '';
+    doc.addPage();
+    doc.setFontSize(16);
+    doc.setTextColor(37, 99, 235);
+    doc.text('إحصائيات المراحل والصفوف', 148, 20, { align: 'center' });
+    
+    const statsData = Object.entries(stageCounts).map(([key, count]) => [key, count.toString()]);
+    doc.autoTable({
+      head: [['المرحلة والصف', 'عدد الطلاب']],
+      body: statsData,
+      startY: 30,
+      styles: { font: 'helvetica', fontSize: 11, halign: 'right' },
+      headStyles: { fillColor: [34, 197, 94], textColor: [255, 255, 255] }
+    });
+    
+    // حفظ الملف
+    const fileName = `تقرير_طلاب_سيجما_${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.pdf`;
+    doc.save(fileName);
+    
+    document.getElementById('pdfGeneratedInfo').classList.remove('hidden');
+    showToast('✅ تم إنشاء التقرير!', 'success');
+    
+  } catch (error) {
+    console.error('PDF Error:', error);
+    showToast('❌ فشل إنشاء التقرير: ' + error.message, 'error');
   }
 }
-
-// ============================================
-// حذف الحساب
-// ============================================
-function deleteAccount() {
-  if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
-  if (!confirm('⚠️ هل أنت متأكد من حذف حسابك نهائياً؟')) return;
-  
-  const uid = currentUser.uid;
-  window.remove(window.ref(window.db, `users/${uid}`))
-    .then(() => window.deleteUser(currentUser))
-    .then(() => {
-      showToast('✅ تم حذف الحساب', 'success');
-      setTimeout(() => window.location.reload(), 1500);
-    })
-    .catch(error => {
-      if (error.code === 'auth/requires-recent-login') {
-        showToast('⚠️ أعد تسجيل الدخول', 'warning');
-        logoutUser();
-      } else showToast('❌ ' + error.message, 'error');
-    });
-}
-window.deleteAccount = deleteAccount;
+window.generateStudentsPDF = generateStudentsPDF;
 
 // ============================================
 // إدارة المواد
@@ -1641,7 +1983,7 @@ window.deleteAccount = deleteAccount;
 function loadAdminSubjects() {
   window.onValue(window.ref(window.db, 'subjects'), snap => {
     const data = snap.val();
-    subjectsData = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
+    subjectsData = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
     renderSubjectsList();
   });
 }
@@ -1649,47 +1991,123 @@ function loadAdminSubjects() {
 function renderSubjectsList() {
   const container = document.getElementById('subjectsList');
   if (!container) return;
-  container.innerHTML = '';
-  
   if (!subjectsData.length) {
     container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد مواد</div>';
     return;
   }
-  
-  subjectsData.forEach(s => {
-    container.innerHTML += `
-      <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg text-xs">
-        <span><strong>${s.name}</strong> <span class="text-slate-400">(${s.stage})</span></span>
-        <button onclick="deleteSubject('${s.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
-      </div>
-    `;
-  });
+  container.innerHTML = subjectsData.map(s => `
+    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg text-xs">
+      <span><strong>${s.name}</strong> <span class="text-slate-400">(${s.stage})</span></span>
+      <button onclick="deleteSubject('${s.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
+    </div>
+  `).join('');
 }
 
 function addSubject() {
   if (!isAdmin) return;
   const name = document.getElementById('newSubjectName').value.trim();
   const stage = document.getElementById('newSubjectStage').value;
-  
   if (!name) return showToast('⚠️ اكتب اسم المادة', 'warning');
-  
-  window.push(window.ref(window.db, 'subjects'), { name, stage })
-    .then(() => {
-      showToast('✅ تم إضافة المادة', 'success');
-      document.getElementById('newSubjectName').value = '';
-    });
+  window.push(window.ref(window.db, 'subjects'), { name, stage });
+  document.getElementById('newSubjectName').value = '';
+  showToast('✅ تم الإضافة', 'success');
 }
 window.addSubject = addSubject;
 
 function deleteSubject(id) {
-  if (!isAdmin || !confirm('حذف المادة؟')) return;
+  if (!isAdmin || !confirm('حذف؟')) return;
   window.remove(window.ref(window.db, `subjects/${id}`));
   showToast('✅ تم الحذف', 'success');
 }
 window.deleteSubject = deleteSubject;
 
 // ============================================
-// خيارات الإضافة
+// إدارة
+// ============================================
+function adminLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
+  if (!ADMIN_UIDS.includes(currentUser.uid)) {
+    showToast('⛔ ليس إدارياً', 'error');
+    document.getElementById('adminDenied').classList.remove('hidden');
+    document.getElementById('adminLogin').classList.add('hidden');
+    return;
+  }
+  if (pass === 'Sigma@2024') {
+    isAdmin = true;
+    document.getElementById('adminLogin').classList.add('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    document.getElementById('adminPass').value = '';
+    startRealtimeStats();
+    loadAdminSubjects();
+    loadManageLists();
+    showToast('✅ مرحباً!', 'success');
+  } else showToast('❌ كلمة السر خاطئة', 'error');
+}
+window.adminLogin = adminLogin;
+
+function toggleSection(el) {
+  const content = el.closest('.admin-panel-section').querySelector('.content');
+  const arrow = el.querySelector('.fa-chevron-down, .fa-chevron-up');
+  content.classList.toggle('open');
+  arrow.className = content.classList.contains('open') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+}
+window.toggleSection = toggleSection;
+
+function loadManageLists() {
+  window.onValue(window.ref(window.db, 'schedules'), snap => {
+    const d = snap.val();
+    const c = document.getElementById('scheduleList');
+    if (!c) return;
+    c.innerHTML = '';
+    if (d) Object.keys(d).reverse().slice(0, 15).forEach(k => {
+      const i = d[k];
+      c.innerHTML += `<div class="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg text-xs"><span>${i.subject||'صورة'} - ${i.day}</span><button onclick="deleteItem('schedules','${k}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></div>`;
+    });
+  });
+  
+  window.onValue(window.ref(window.db, 'profile_requests'), snap => {
+    const d = snap.val();
+    const c = document.getElementById('profileRequestsList');
+    if (!c) return;
+    c.innerHTML = '';
+    if (!d) { c.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد طلبات</div>'; return; }
+    Object.keys(d).reverse().slice(0, 15).forEach(k => {
+      const r = d[k];
+      c.innerHTML += `
+        <div class="p-2 bg-slate-50 rounded-lg text-xs">
+          <div class="flex justify-between"><span class="font-bold">${r.userName||'طالب'}</span><span class="${r.status==='pending'?'text-amber-500':'text-green-500'}">${r.status==='pending'?'⏳':'✅'}</span></div>
+          <div class="text-slate-500">🏫 ${r.school||''} • 📱 ${r.parentPhone||''}</div>
+          ${r.status==='pending' ? `<div class="flex gap-1 mt-1"><button onclick="approveProfile('${k}')" class="bg-green-500 text-white px-2 py-0.5 rounded text-[10px]">✅</button><button onclick="rejectProfile('${k}')" class="bg-red-500 text-white px-2 py-0.5 rounded text-[10px]">❌</button></div>` : ''}
+        </div>
+      `;
+    });
+  });
+}
+
+function approveProfile(key) {
+  if (!isAdmin) return;
+  window.update(window.ref(window.db, `profile_requests/${key}/status`), 'approved');
+  showToast('✅ تمت الموافقة', 'success');
+}
+window.approveProfile = approveProfile;
+
+function rejectProfile(key) {
+  if (!isAdmin) return;
+  window.update(window.ref(window.db, `profile_requests/${key}/status`), 'rejected');
+  showToast('❌ تم الرفض', 'warning');
+}
+window.rejectProfile = rejectProfile;
+
+function deleteItem(path, key) {
+  if (!isAdmin || !confirm('حذف؟')) return;
+  window.remove(window.ref(window.db, `${path}/${key}`));
+  showToast('✅ تم الحذف', 'success');
+}
+window.deleteItem = deleteItem;
+
+// ============================================
+// الخيارات
 // ============================================
 function setOption(opt) {
   scheduleOption = opt;
@@ -1704,98 +2122,11 @@ function setScheduleDay(day) {
   scheduleDayOption = day;
   ['dayToday','dayTomorrow','dayWeek'].forEach(id => document.getElementById(id)?.classList.remove('active'));
   document.getElementById(`day${day.charAt(0).toUpperCase()+day.slice(1)}`)?.classList.add('active');
-  
   const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-  const today = days[new Date().getDay()];
-  const tomorrow = days[(new Date().getDay()+1)%7];
-  
-  if (day === 'today') document.getElementById('schDay').value = today;
-  else if (day === 'tomorrow') document.getElementById('schDay').value = tomorrow;
+  if (day === 'today') document.getElementById('schDay').value = days[new Date().getDay()];
+  else if (day === 'tomorrow') document.getElementById('schDay').value = days[(new Date().getDay()+1)%7];
 }
 window.setScheduleDay = setScheduleDay;
-
-// ============================================
-// إدارة
-// ============================================
-function adminLogin() {
-  const pass = document.getElementById('adminPass').value;
-  if (!currentUser) return showToast('⚠️ سجل دخول بحساب إداري', 'warning');
-  if (!ADMIN_UIDS.includes(currentUser.uid)) {
-    showToast('⛔ ليس إدارياً', 'error');
-    document.getElementById('adminDenied').classList.remove('hidden');
-    document.getElementById('adminLogin').classList.add('hidden');
-    return;
-  }
-  if (pass === 'Sigma@2024') {
-    isAdmin = true;
-    document.getElementById('adminLogin').classList.add('hidden');
-    document.getElementById('adminPanel').classList.remove('hidden');
-    document.getElementById('adminPass').value = '';
-    startRealtimeStats();
-    loadAdminData();
-    showToast('✅ مرحباً في لوحة التحكم', 'success');
-  } else {
-    showToast('❌ كلمة السر خاطئة', 'error');
-  }
-}
-window.adminLogin = adminLogin;
-
-function toggleSection(el) {
-  const content = el.closest('.admin-panel-section').querySelector('.content');
-  const arrow = el.querySelector('.fa-chevron-down, .fa-chevron-up');
-  content.classList.toggle('open');
-  arrow.className = content.classList.contains('open') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
-}
-window.toggleSection = toggleSection;
-
-function loadAdminData() {
-  loadManage('schedules', 'scheduleList', renderScheduleItem);
-  loadManage('notifications', 'notifList', renderNotifItem);
-  loadManage('news', 'newsList', renderNewsItem);
-  loadManage('materials', 'matList', renderMatItem);
-}
-
-function loadManage(path, containerId, renderFn) {
-  window.onValue(window.ref(window.db, path), snap => {
-    const data = snap.val();
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
-    if (!data) return;
-    Object.keys(data).reverse().slice(0, 20).forEach(k => container.innerHTML += renderFn(k, data[k]));
-  });
-}
-
-function renderScheduleItem(k, i) {
-  return `<div class="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg text-xs"><span class="font-bold">${i.subject||'صورة'}</span><span class="text-slate-500">${i.day}</span><button onclick="deleteItem('schedules','${k}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></div>`;
-}
-function renderNotifItem(k, i) {
-  return `<div class="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg text-xs"><span class="font-bold">${i.title}</span><button onclick="deleteItem('notifications','${k}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></div>`;
-}
-function renderNewsItem(k, i) {
-  return `<div class="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg text-xs"><span class="font-bold">${i.title}</span><button onclick="deleteItem('news','${k}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></div>`;
-}
-function renderMatItem(k, i) {
-  return `<div class="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg text-xs"><span class="font-bold">${i.title}</span><button onclick="deleteItem('materials','${k}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></div>`;
-}
-
-function deleteItem(path, key) {
-  if (!isAdmin) return;
-  if (confirm('حذف العنصر؟')) {
-    window.remove(window.ref(window.db, `${path}/${key}`));
-    showToast('✅ تم الحذف', 'success');
-  }
-}
-window.deleteItem = deleteItem;
-
-function deleteAll(path) {
-  if (!isAdmin) return;
-  if (confirm(`⚠️ حذف كل العناصر؟`)) {
-    window.set(window.ref(window.db, path), null);
-    showToast('✅ تم الحذف', 'success');
-  }
-}
-window.deleteAll = deleteAll;
 
 // ============================================
 // Base64
@@ -1814,156 +2145,130 @@ function fileToBase64(file) {
 // ============================================
 async function addSchedule() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
-  
   let day = document.getElementById('schDay').value;
-  let subject = document.getElementById('schSubject').value;
-  let teacher = document.getElementById('schTeacher').value;
-  let time = document.getElementById('schTime').value;
-  let room = document.getElementById('schRoom').value;
-  let stage = document.getElementById('schStage').value;
+  const subject = document.getElementById('schSubject').value;
+  const teacher = document.getElementById('schTeacher').value;
+  const time = document.getElementById('schTime').value;
+  const room = document.getElementById('schRoom').value;
+  const stage = document.getElementById('schStage').value;
   let imageData = '';
   
-  if (scheduleDayOption === 'today') {
-    day = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
-  } else if (scheduleDayOption === 'tomorrow') {
-    day = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][(new Date().getDay()+1)%7];
-  }
+  if (scheduleDayOption === 'today') day = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
+  else if (scheduleDayOption === 'tomorrow') day = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][(new Date().getDay()+1)%7];
   
-  if (scheduleOption !== 'image' && !subject && scheduleOption === 'full') return showToast('⚠️ اكتب المادة', 'warning');
+  if (scheduleOption !== 'image' && !subject) return showToast('⚠️ اكتب المادة', 'warning');
   
   if (scheduleOption !== 'text') {
     const file = document.getElementById('schImage').files[0];
-    if (file) {
-      if (file.size > MAX_FILE_SIZE) return showToast('⚠️ الصورة كبيرة', 'warning');
-      imageData = await fileToBase64(file);
-    } else if (scheduleOption === 'image') return showToast('⚠️ اختر صورة', 'warning');
+    if (file) imageData = await fileToBase64(file);
+    else if (scheduleOption === 'image') return showToast('⚠️ اختر صورة', 'warning');
   }
-  
-  if (!subject && !imageData) return showToast('⚠️ أضف مادة أو صورة', 'warning');
   
   await window.push(window.ref(window.db, 'schedules'), { day, subject, teacher, time, room, stage, imageData });
   showToast('✅ تمت الإضافة', 'success');
-  ['schSubject','schTeacher','schTime','schRoom','schImage'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
+  ['schSubject','schTeacher','schTime','schRoom','schImage'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 }
 window.addSchedule = addSchedule;
 
 // ============================================
-// إرسال إشعار
+// إشعار
 // ============================================
 async function sendNotif() {
   if (!isAdmin) return;
   const title = document.getElementById('notifTitle').value;
   const body = document.getElementById('notifBody').value;
-  const stage = document.getElementById('notifStage').value;
-  const grade = document.getElementById('notifGrade').value;
-  const subject = document.getElementById('notifSubject').value;
-  let imageData = '';
-  
   if (!title || !body) return showToast('⚠️ املأ الحقول', 'warning');
-  
+  let imageData = '';
   const file = document.getElementById('notifImage').files[0];
   if (file) imageData = await fileToBase64(file);
-  
   await window.push(window.ref(window.db, 'notifications'), {
-    title, body, stage, grade, subject, imageData,
+    title, body, imageData,
+    stage: document.getElementById('notifStage').value,
+    grade: document.getElementById('notifGrade').value,
+    subject: document.getElementById('notifSubject').value,
     date: new Date().toLocaleDateString('ar-EG')
   });
-  
   showToast('✅ تم الإرسال', 'success');
-  ['notifTitle','notifBody','notifSubject','notifImage'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
+  ['notifTitle','notifBody','notifSubject','notifImage'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 }
 window.sendNotif = sendNotif;
 
 // ============================================
-// نشر خبر
+// خبر
 // ============================================
 async function addNews() {
   if (!isAdmin) return;
   const title = document.getElementById('newsTitle').value;
   const content = document.getElementById('newsContent').value;
   if (!title || !content) return showToast('⚠️ املأ الحقول', 'warning');
-  
   let imageData = '';
   const file = document.getElementById('newsImage').files[0];
   if (file) imageData = await fileToBase64(file);
-  
   await window.push(window.ref(window.db, 'news'), { title, content, imageData, date: new Date().toLocaleDateString('ar-EG') });
   showToast('✅ تم النشر', 'success');
-  ['newsTitle','newsContent','newsImage'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
-  });
+  ['newsTitle','newsContent','newsImage'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 }
 window.addNews = addNews;
 
 // ============================================
-// رفع مذكرة
+// مذكرة
 // ============================================
 async function uploadMat() {
   if (!isAdmin) return;
   const title = document.getElementById('matTitle').value;
-  const subject = document.getElementById('matSubject').value;
-  const type = document.getElementById('matType').value;
   const file = document.getElementById('matFile').files[0];
   if (!title || !file) return showToast('⚠️ املأ الحقول', 'warning');
-  
   const fileData = await fileToBase64(file);
-  await window.push(window.ref(window.db, 'materials'), { title, subject, type, fileData, fileName: file.name, date: new Date().toLocaleDateString('ar-EG') });
-  showToast('✅ تم الرفع', 'success');
-  ['matTitle','matSubject','matFile'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
+  await window.push(window.ref(window.db, 'materials'), {
+    title,
+    subject: document.getElementById('matSubject').value,
+    type: document.getElementById('matType').value,
+    fileData, fileName: file.name,
+    date: new Date().toLocaleDateString('ar-EG')
   });
+  showToast('✅ تم الرفع', 'success');
+  ['matTitle','matSubject','matFile'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 }
 window.uploadMat = uploadMat;
 
 // ============================================
-// أرقام السنتر
+// جهات الاتصال
 // ============================================
 function loadContacts() {
   window.onValue(window.ref(window.db, 'contacts'), snap => {
     const data = snap.val();
-    contacts = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
+    contacts = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
     renderContacts();
   });
 }
 
 function renderContacts() {
-  const container = document.getElementById('contactsList');
   const center = document.getElementById('centerContacts');
   const support = document.getElementById('supportContacts');
+  const adminList = document.getElementById('contactsList');
   
-  const centerNumbers = contacts.filter(c => c.type === 'phone' || c.type === 'whatsapp');
-  const supportNumbers = contacts.filter(c => c.type === 'support');
+  const centerNums = contacts.filter(c => c.type === 'phone' || c.type === 'whatsapp');
+  const supportNums = contacts.filter(c => c.type === 'support');
   
-  if (container) {
-    container.innerHTML = contacts.map(c => `
-      <div class="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg text-xs">
-        <span>${c.type === 'whatsapp' ? '💬' : c.type === 'support' ? '🛠️' : '📞'} ${c.number}</span>
-        <button onclick="deleteContact('${c.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
-      </div>
-    `).join('');
-  }
+  if (center) center.innerHTML = centerNums.length ? centerNums.map(c => `
+    <div class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg text-xs">
+      <i class="${c.type === 'whatsapp' ? 'fa-brands fa-whatsapp text-green-600' : 'fa-solid fa-phone text-blue-600'}"></i>
+      <span>${c.number}</span>
+    </div>
+  `).join('') : '<p class="text-xs text-slate-400 text-center">لا توجد أرقام</p>';
   
-  if (center) {
-    center.innerHTML = centerNumbers.length ? centerNumbers.map(c => `
-      <div class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg text-xs">
-        <i class="${c.type === 'whatsapp' ? 'fa-brands fa-whatsapp text-green-600' : 'fa-solid fa-phone text-blue-600'}"></i>
-        <span>${c.number}</span>
-      </div>
-    `).join('') : '<p class="text-xs text-slate-400 text-center">لا توجد أرقام</p>';
-  }
+  if (support) support.innerHTML = supportNums.length ? supportNums.map(c => `
+    <div class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg text-xs">
+      <i class="fa-solid fa-headset text-cyan-600"></i><span>${c.number}</span>
+    </div>
+  `).join('') : '<p class="text-xs text-slate-400 text-center">لا توجد أرقام</p>';
   
-  if (support) {
-    support.innerHTML = supportNumbers.length ? supportNumbers.map(c => `
-      <div class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg text-xs">
-        <i class="fa-solid fa-headset text-cyan-600"></i>
-        <span>${c.number}</span>
-      </div>
-    `).join('') : '<p class="text-xs text-slate-400 text-center">لا توجد أرقام دعم</p>';
-  }
+  if (adminList) adminList.innerHTML = contacts.map(c => `
+    <div class="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg text-xs">
+      <span>${c.type === 'whatsapp' ? '💬' : c.type === 'support' ? '🛠️' : '📞'} ${c.number}</span>
+      <button onclick="deleteContact('${c.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
+    </div>
+  `).join('');
 }
 
 function addContact() {
@@ -1978,19 +2283,19 @@ function addContact() {
 window.addContact = addContact;
 
 function deleteContact(id) {
-  if (!isAdmin || !confirm('حذف الرقم؟')) return;
+  if (!isAdmin || !confirm('حذف؟')) return;
   window.remove(window.ref(window.db, `contacts/${id}`));
   showToast('✅ تم الحذف', 'success');
 }
 window.deleteContact = deleteContact;
 
 // ============================================
-// الشكاوى
+// شكاوى
 // ============================================
 function loadComplaints() {
   window.onValue(window.ref(window.db, 'complaints'), snap => {
     const data = snap.val();
-    complaints = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
+    complaints = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
     renderComplaints();
   });
 }
@@ -2004,10 +2309,10 @@ function renderComplaints() {
   }
   container.innerHTML = complaints.reverse().slice(0, 15).map(c => `
     <div class="complaint-card">
-      <div class="flex justify-between"><span class="name">${c.userName||'طالب'}</span><span class="phone">📱 ${c.userPhone||''}</span></div>
+      <div class="flex justify-between"><span class="name">${c.userName || 'طالب'}</span><span class="phone">📱 ${c.userPhone || ''}</span></div>
       <div class="text">${c.text}</div>
       <div class="flex justify-between mt-1">
-        <span class="date">${c.date||''}</span>
+        <span class="date">${c.date || ''}</span>
         <button onclick="deleteComplaint('${c.id}')" class="text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
       </div>
     </div>
@@ -2015,7 +2320,7 @@ function renderComplaints() {
 }
 
 function deleteComplaint(id) {
-  if (!isAdmin || !confirm('حذف الشكوى؟')) return;
+  if (!isAdmin || !confirm('حذف؟')) return;
   window.remove(window.ref(window.db, `complaints/${id}`));
   showToast('✅ تم الحذف', 'success');
 }
@@ -2025,11 +2330,14 @@ function sendComplaint() {
   const text = document.getElementById('complaintText').value;
   if (!text) return showToast('⚠️ اكتب الشكوى', 'warning');
   if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
-  
   window.push(window.ref(window.db, 'complaints'), {
-    text, userId: currentUser.uid, userName: userData?.name || currentUser.email,
-    userEmail: currentUser.email, userPhone: userData?.phone || '',
-    date: new Date().toLocaleString('ar-EG'), timestamp: Date.now()
+    text,
+    userId: currentUser.uid,
+    userName: userData?.name || currentUser.email,
+    userEmail: currentUser.email,
+    userPhone: userData?.phone || '',
+    date: new Date().toLocaleString('ar-EG'),
+    timestamp: Date.now()
   });
   document.getElementById('complaintText').value = '';
   showToast('✅ تم الإرسال', 'success');
@@ -2037,14 +2345,310 @@ function sendComplaint() {
 window.sendComplaint = sendComplaint;
 
 // ============================================
+// حفظ الملف الشخصي
+// ============================================
+function saveProfile() {
+  if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
+  
+  const stage = document.getElementById('profStage').value;
+  const grade = document.getElementById('profGrade').value;
+  const phone = document.getElementById('profPhone').value;
+  const school = document.getElementById('profSchool').value;
+  const parentPhone = document.getElementById('profParentPhone').value;
+  const checked = document.querySelectorAll('.subject-check:checked');
+  const subjects = Array.from(checked).map(cb => cb.value);
+  
+  if (!subjects.length) return showToast('⚠️ اختر مادة', 'warning');
+  
+  window.update(window.ref(window.db, `users/${currentUser.uid}`), {
+    stage, grade, subjects, phone, school, parentPhone,
+    freeEditUsed: true,
+    profileStatus: 'pending',
+    updatedAt: new Date().toISOString()
+  }).then(() => {
+    showToast('✅ تم الحفظ!', 'success');
+    updateInfo();
+    updateEditStatus();
+    closeSettingsPanel();
+  });
+}
+window.saveProfile = saveProfile;
+
+function updateEditStatus() {
+  const sub = document.getElementById('editStatusSub');
+  if (!sub || !userData) return;
+  if (userData.freeEditUsed) {
+    sub.textContent = '⚠️ يحتاج موافقة الإدارة';
+    sub.style.color = '#f59e0b';
+  } else {
+    sub.textContent = '✅ تعديل مجاني متاح';
+    sub.style.color = '#22c55e';
+  }
+}
+
+// ============================================
+// loadSubjects
+// ============================================
+function loadSubjectsList() {
+  const container = document.getElementById('subjectsCheckbox');
+  if (!container) return;
+  container.innerHTML = '';
+  const stage = document.getElementById('profStage').value;
+  let subjects = [];
+  const dbSubjects = subjectsData.filter(s => s.stage === stage);
+  if (dbSubjects.length > 0) subjects = dbSubjects.map(s => s.name);
+  else subjects = subjectsByStage[stage] || [];
+  
+  subjects.forEach(s => {
+    const checked = userData?.subjects?.includes(s) || false;
+    container.innerHTML += `<label class="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded-lg text-xs cursor-pointer"><input type="checkbox" value="${s}" class="subject-check" ${checked?'checked':''}> ${s}</label>`;
+  });
+  document.getElementById('profStage').onchange = loadSubjectsList;
+}
+window.loadSubjectsList = loadSubjectsList;
+
+// ============================================
+// updateInfo
+// ============================================
+function updateInfo() {
+  if (!currentUser || !userData) return;
+  document.getElementById('infoName').textContent = userData.name || '-';
+  document.getElementById('infoEmail').textContent = userData.email || '-';
+  document.getElementById('infoPhone').textContent = userData.phone || '-';
+  document.getElementById('infoParentPhone').textContent = userData.parentPhone || '-';
+  document.getElementById('infoSchool').textContent = userData.school || '-';
+  document.getElementById('infoStage').textContent = userData.stage || '-';
+  document.getElementById('infoGrade').textContent = userData.grade || '-';
+  document.getElementById('infoSubjects').textContent = (userData.subjects || []).join('، ') || '-';
+  document.getElementById('infoStatus').textContent = userData.profileStatus === 'approved' ? '✅ معتمدة' : userData.profileStatus === 'pending' ? '⏳ قيد المراجعة' : '⚠️ ناقص';
+  
+  const avatar = document.getElementById('infoAvatar');
+  if (avatar && userData.profileImage) {
+    avatar.src = userData.profileImage;
+    avatar.style.display = 'block';
+  }
+  
+  document.getElementById('editEmailDisplay').value = userData.email || '';
+  document.getElementById('profPhone').value = userData.phone || '';
+  document.getElementById('profSchool').value = userData.school || '';
+  document.getElementById('profParentPhone').value = userData.parentPhone || '';
+}
+
+// ============================================
+// renderUser
+// ============================================
+function renderUser() {
+  const avatar = document.getElementById('userAvatar');
+  const name = document.getElementById('userName');
+  const sub = document.getElementById('userSubtitle');
+  const subjectsList = document.getElementById('userSubjectsList');
+
+  if (!avatar || !name) return;
+
+  if (currentUser && userData) {
+    avatar.src = userData.profileImage || userData.idImage || 'https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';
+    name.textContent = `مرحباً ${userData.name || ''}`;
+    sub.textContent = `${userData.stage || ''} • الصف ${userData.grade || ''}`;
+    
+    if (subjectsList) {
+      subjectsList.innerHTML = (userData.subjects || []).map(s => 
+        `<span class="subject-chip">${s}</span>`
+      ).join('');
+    }
+  }
+}
+
+function openProfile() { if (currentUser) switchTab('settings'); }
+window.openProfile = openProfile;
+
+// ============================================
+// حذف الحساب
+// ============================================
+function deleteAccount() {
+  if (!currentUser) return;
+  if (!confirm('⚠️ حذف الحساب نهائياً؟')) return;
+  window.remove(window.ref(window.db, `users/${currentUser.uid}`))
+    .then(() => window.deleteUser(currentUser))
+    .then(() => {
+      showToast('✅ تم الحذف', 'success');
+      setTimeout(() => window.location.reload(), 1500);
+    })
+    .catch(error => {
+      if (error.code === 'auth/requires-recent-login') {
+        showToast('⚠️ أعد تسجيل الدخول', 'warning');
+        window.signOut(window.auth);
+      } else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.deleteAccount = deleteAccount;
+
+// ============================================
+// بدء التطبيق
+// ============================================
+function initApp() {
+  window.onAuthStateChanged(window.auth, user => {
+    if (user) {
+      currentUser = user;
+      window.onValue(window.ref(window.db, `users/${user.uid}`), snap => {
+        userData = snap.val();
+        renderUser();
+        updateInfo();
+        updateEditStatus();
+        
+        // التحقق من إكمال الإعدادات
+        const setupDone = userData && userData.setupCompleted && userData.stage && userData.grade && 
+                          userData.subjects && userData.subjects.length > 0 && 
+                          userData.parentPhone && userData.school && 
+                          userData.profileImage && userData.idImage;
+        
+        document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+        
+        if (!setupDone) {
+          // بحاجة لإكمال الإعدادات
+          document.getElementById('tab-setup').classList.remove('hidden');
+          initSetupScreen();
+        } else {
+          // كل شيء تمام
+          document.getElementById('tab-home').classList.remove('hidden');
+          document.querySelectorAll('nav button').forEach(b => {
+            b.classList.remove('text-blue-600');
+            b.classList.add('text-slate-400');
+          });
+          document.getElementById('nav-home')?.classList.add('text-blue-600');
+        }
+      });
+      
+      window.set(window.ref(window.db, `users/${user.uid}/online`), true);
+      window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
+    } else {
+      currentUser = null; userData = null; isAdmin = false;
+      document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+      document.getElementById('tab-login').classList.remove('hidden');
+      document.querySelectorAll('nav button').forEach(b => {
+        b.classList.remove('text-blue-600');
+        b.classList.add('text-slate-400');
+      });
+      renderUser();
+    }
+  });
+  
+  setTimeout(() => {
+    initListeners();
+    loadContacts();
+    loadComplaints();
+    loadAdminSubjects();
+    loadSubjectsList();
+  }, 500);
+}
+
+// ============================================
+// المستمعات
+// ============================================
+function initListeners() {
+  window.onValue(window.ref(window.db, 'schedules'), snap => {
+    const d = snap.val();
+    scheduleData = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
+    renderSchedule();
+    renderMySchedule();
+    const today = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
+    const el = document.getElementById('todayCount');
+    if (el) el.textContent = scheduleData.filter(i => i.day === today).length;
+  });
+  
+  window.onValue(window.ref(window.db, 'materials'), snap => {
+    const d = snap.val();
+    const el = document.getElementById('materialCount');
+    if (el) el.textContent = d ? Object.keys(d).length : 0;
+    
+    const container = document.getElementById('libraryContainer');
+    if (!container) return;
+    if (!d) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد ملفات</div>'; return; }
+    const keys = Object.keys(d).reverse().slice(0, 20);
+    container.innerHTML = keys.map(k => {
+      const i = d[k];
+      const isImage = i.type === 'image' || (i.fileData && i.fileData.startsWith('data:image'));
+      return `<div class="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 rounded-xl ${i.type==='pdf'?'bg-red-50':'bg-green-50'} flex items-center justify-center">
+            <i class="fa-solid ${i.type==='pdf'?'fa-file-pdf text-red-500':'fa-image text-green-500'} text-xl"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm">${i.title}</h4>
+            <p class="text-[9px] text-slate-400">${i.subject||''} • ${i.date||''}</p>
+          </div>
+        </div>
+        ${isImage ? `<button onclick="openImageViewer('${i.fileData}','${i.title}')" class="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-lg text-xs">عرض</button>` : 
+        `<a href="${i.fileData||'#'}" download="${i.fileName||'file'}" class="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-lg text-xs">تحميل</a>`}
+      </div>`;
+    }).join('');
+  });
+  
+  window.onValue(window.ref(window.db, 'news'), snap => {
+    const d = snap.val();
+    ['homeNewsContainer', 'allNewsContainer'].forEach(id => {
+      const c = document.getElementById(id);
+      if (!c) return;
+      if (!d) { c.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد أخبار</div>'; return; }
+      const keys = Object.keys(d).reverse().slice(0, id === 'homeNewsContainer' ? 3 : 20);
+      c.innerHTML = keys.map(k => {
+        const i = d[k];
+        return `<div class="bg-white rounded-xl overflow-hidden border border-slate-200">
+          ${i.imageData ? `<img src="${i.imageData}" class="w-full h-28 object-cover cursor-pointer" onclick="openImageViewer('${i.imageData}','${i.title}')">` : ''}
+          <div class="p-3">
+            <div class="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded inline-block">${i.date||''}</div>
+            <h4 class="font-bold text-sm mt-1">${i.title}</h4>
+            <p class="text-xs text-slate-500">${i.content}</p>
+          </div>
+        </div>`;
+      }).join('');
+    });
+  });
+  
+  window.onValue(window.ref(window.db, 'notifications'), snap => {
+    const d = snap.val();
+    const container = document.getElementById('notificationsContainer');
+    const badge = document.getElementById('notifBadge');
+    if (!container) return;
+    if (!d) {
+      badge?.classList.add('hidden');
+      container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs"><i class="fa-regular fa-bell-slash text-2xl block mb-1"></i>لا توجد إشعارات</div>';
+      return;
+    }
+    let found = false;
+    badge?.classList.remove('hidden');
+    container.innerHTML = Object.keys(d).reverse().slice(0, 20).map(k => {
+      const i = d[k];
+      let target = true;
+      if (userData) {
+        if (i.stage !== 'الكل' && i.stage !== userData.stage) target = false;
+        if (i.grade !== 'الكل' && i.grade !== userData.grade) target = false;
+      }
+      if (!target) return '';
+      found = true;
+      return `<div class="bg-white p-3 rounded-xl border border-slate-200">
+        <div class="flex gap-2">
+          ${i.imageData ? `<img src="${i.imageData}" class="w-12 h-12 rounded-lg object-cover cursor-pointer" onclick="openImageViewer('${i.imageData}','${i.title}')">` : ''}
+          <div>
+            <h4 class="font-bold text-sm">${i.title}</h4>
+            <p class="text-xs text-slate-600">${i.body}</p>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    if (!found) { container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs">لا توجد إشعارات لك</div>'; badge?.classList.add('hidden'); }
+  });
+}
+
+// ============================================
 // الجدول
 // ============================================
 function filterSchedule(type) {
   currentFilter = type;
-  document.querySelectorAll('#tab-schedule .flex button').forEach(b => {
-    b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+  ['btnToday','btnTomorrow','btnAll'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
   });
-  const map = {today:'btnToday', tomorrow:'btnTomorrow', all:'btnAll'};
+  const map = { today: 'btnToday', tomorrow: 'btnTomorrow', all: 'btnAll' };
   document.getElementById(map[type])?.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
   renderSchedule();
 }
@@ -2126,105 +2730,6 @@ function renderMySchedule() {
 }
 
 // ============================================
-// المستمعات الرئيسية
-// ============================================
-function initListeners() {
-  window.onValue(window.ref(window.db, 'schedules'), snap => {
-    const d = snap.val();
-    scheduleData = d ? Object.keys(d).map(k => ({id: k, ...d[k]})) : [];
-    renderSchedule();
-    renderMySchedule();
-    const today = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
-    const el = document.getElementById('todayCount');
-    if (el) el.textContent = scheduleData.filter(i => i.day === today).length;
-  });
-  
-  window.onValue(window.ref(window.db, 'materials'), snap => {
-    const d = snap.val();
-    const el = document.getElementById('materialCount');
-    if (el) el.textContent = d ? Object.keys(d).length : 0;
-    
-    const container = document.getElementById('libraryContainer');
-    if (!container) return;
-    if (!d) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد ملفات</div>'; return; }
-    const keys = Object.keys(d).reverse().slice(0, 20);
-    container.innerHTML = keys.map(k => {
-      const i = d[k];
-      const isImage = i.type === 'image' || (i.fileData && i.fileData.startsWith('data:image'));
-      return `<div class="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-10 h-10 rounded-xl ${i.type==='pdf'?'bg-red-50':'bg-green-50'} flex items-center justify-center">
-            <i class="fa-solid ${i.type==='pdf'?'fa-file-pdf text-red-500':'fa-image text-green-500'} text-xl"></i>
-          </div>
-          <div>
-            <h4 class="font-bold text-sm">${i.title}</h4>
-            <p class="text-[9px] text-slate-400">${i.subject||''} • ${i.date||''}</p>
-          </div>
-        </div>
-        ${isImage ? `<button onclick="openImageViewer('${i.fileData}','${i.title}')" class="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-lg text-xs">عرض</button>` : 
-        `<a href="${i.fileData||'#'}" download="${i.fileName||'file'}" class="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-lg text-xs">تحميل</a>`}
-      </div>`;
-    }).join('');
-  });
-  
-  window.onValue(window.ref(window.db, 'news'), snap => {
-    const d = snap.val();
-    ['homeNewsContainer', 'allNewsContainer'].forEach(id => {
-      const c = document.getElementById(id);
-      if (!c) return;
-      if (!d) { c.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد أخبار</div>'; return; }
-      const keys = Object.keys(d).reverse().slice(0, id === 'homeNewsContainer' ? 3 : 20);
-      c.innerHTML = keys.map(k => {
-        const i = d[k];
-        return `<div class="bg-white rounded-xl overflow-hidden border border-slate-200">
-          ${i.imageData ? `<img src="${i.imageData}" class="w-full h-28 object-cover cursor-pointer" onclick="openImageViewer('${i.imageData}','${i.title}')">` : ''}
-          <div class="p-3">
-            <div class="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded inline-block">${i.date||''}</div>
-            <h4 class="font-bold text-sm mt-1">${i.title}</h4>
-            <p class="text-xs text-slate-500">${i.content}</p>
-          </div>
-        </div>`;
-      }).join('');
-    });
-  });
-  
-  window.onValue(window.ref(window.db, 'notifications'), snap => {
-    const d = snap.val();
-    const container = document.getElementById('notificationsContainer');
-    const badge = document.getElementById('notifBadge');
-    if (!container) return;
-    if (!d) {
-      badge?.classList.add('hidden');
-      container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs"><i class="fa-regular fa-bell-slash text-2xl block mb-1"></i>لا توجد إشعارات</div>';
-      return;
-    }
-    let found = false;
-    badge?.classList.remove('hidden');
-    const keys = Object.keys(d).reverse().slice(0, 20);
-    container.innerHTML = keys.map(k => {
-      const i = d[k];
-      let target = true;
-      if (userData) {
-        if (i.stage !== 'الكل' && i.stage !== userData.stage) target = false;
-        if (i.grade !== 'الكل' && i.grade !== userData.grade) target = false;
-      }
-      if (!target) return '';
-      found = true;
-      return `<div class="bg-white p-3 rounded-xl border border-slate-200">
-        <div class="flex gap-2">
-          ${i.imageData ? `<img src="${i.imageData}" class="w-12 h-12 rounded-lg object-cover cursor-pointer" onclick="openImageViewer('${i.imageData}','${i.title}')">` : ''}
-          <div>
-            <h4 class="font-bold text-sm">${i.title}</h4>
-            <p class="text-xs text-slate-600">${i.body}</p>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-    if (!found) { container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs">لا توجد إشعارات لك</div>'; badge?.classList.add('hidden'); }
-  });
-}
-
-// ============================================
 // وضع الليل
 // ============================================
 function toggleDarkMode() {
@@ -2250,16 +2755,6 @@ waitForFirebase().then(() => {
   console.log('🚀 سنتر سيجما جاهز!');
   initApp();
 });
-
-// دعم Enter
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('forgotEmail')?.addEventListener('keypress', e => {
-    if (e.key === 'Enter') handleResetPassword();
-  });
-  document.getElementById('loginPassword')?.addEventListener('keypress', e => {
-    if (e.key === 'Enter') loginUserWithRetry();
-  });
-});
 </script>
 </body>
-        </html>
+              </html>
