@@ -20,6 +20,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
 body{background:#f1f5f9;transition:background-color .3s}
 .app-container{max-width:480px;margin:0 auto;background:#f8fafc;min-height:100vh;position:relative}
+.wide-container{max-width:1200px;margin:0 auto}
 .no-select{user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;-webkit-touch-callout:none}
 .slide-up{animation:slideUp .3s ease-out}
 @keyframes slideUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
@@ -28,41 +29,64 @@ body{background:#f1f5f9;transition:background-color .3s}
 .toast-success{background:linear-gradient(135deg,#22c55e,#16a34a)}
 .toast-error{background:linear-gradient(135deg,#ef4444,#dc2626)}
 .toast-warning{background:linear-gradient(135deg,#f59e0b,#d97706)}
-.toast-info{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
+.toast-info{background:linear-gradient(135deg,#7c3aed,#ec4899)}
 .stat-card{background:#fff;border-radius:12px;padding:10px 8px;text-align:center;border:1px solid #e2e8f0;cursor:pointer;transition:all .2s}
 .stat-card:active{transform:scale(.96)}
 .stat-number{font-size:18px;font-weight:800}
 .stat-label{font-size:9px;color:#64748b;margin-top:2px}
 .profile-avatar{width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid #fff;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.2)}
 .subject-chip{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;margin:2px;background:rgba(255,255,255,.25);color:#fff}
-.login-option-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:2px solid #e2e8f0;border-radius:14px;cursor:pointer;transition:all .25s;text-align:right}
+.platform-switch{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.2);border-radius:14px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3);margin-top:8px}
+.platform-switch button{flex:1;padding:8px 12px;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:rgba(255,255,255,.8);background:transparent;transition:all .25s;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:6px}
+.platform-switch button.active{background:#fff;color:#7c3aed;box-shadow:0 4px 15px rgba(0,0,0,.15)}
+.platform-switch button:hover:not(.active){background:rgba(255,255,255,.15);color:#fff}
+.login-option-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:2px solid #e2e8f0;border-radius:14px;cursor:pointer;transition:all .25s;text-align:right;font-size:14px;font-weight:600;color:#1e293b}
 .login-option-btn:hover{border-color:#7c3aed;background:#f5f3ff}
+.login-option-btn.active{border-color:#7c3aed;background:#f5f3ff;color:#7c3aed}
 .login-option-btn .icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0}
+.login-option-btn .text{flex:1}
+.login-option-btn .text .main{font-size:14px;font-weight:700}
+.login-option-btn .text .sub{font-size:10px;color:#94a3b8;font-weight:400;margin-top:2px}
+.icon-phone{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.icon-google{background:linear-gradient(135deg,#ea4335,#dc2626)}
+.icon-email{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
 .icon-facebook{background:linear-gradient(135deg,#1877f2,#0c63d4)}
-.publish-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;color:#fff;transition:all .2s}
-.publish-btn:active{transform:scale(.97)}
-.publish-btn.blue{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
-.publish-btn.green{background:linear-gradient(135deg,#22c55e,#16a34a)}
-.publish-btn.purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
-.publish-btn.orange{background:linear-gradient(135deg,#f59e0b,#d97706)}
-.publish-btn.red{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.publish-btn.facebook{background:linear-gradient(135deg,#1877f2,#0c63d4)}
+.login-section{background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0;text-align:center}
+.login-section .logo{font-size:48px;color:#7c3aed;margin-bottom:10px}
+.login-section h2{font-size:18px;font-weight:700;color:#1e293b;margin-bottom:5px}
+.login-section p{font-size:12px;color:#64748b;margin-bottom:15px}
 .input-group{margin-bottom:12px;text-align:right;position:relative}
 .input-group label{font-size:11px;font-weight:600;color:#475569;display:block;margin-bottom:3px}
 .input-group input,.input-group select,.input-group textarea{width:100%;padding:10px;padding-left:40px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;background:#f8fafc}
 .input-group input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1)}
 .input-group .eye-icon{position:absolute;left:12px;top:34px;cursor:pointer;color:#94a3b8;font-size:16px}
+.login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
+.link-text{color:#7c3aed;cursor:pointer;font-weight:600}
+.publish-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;color:#fff;transition:all .2s}
+.publish-btn:active{transform:scale(.97)}
+.publish-btn.blue{background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 15px rgba(37,99,235,.3)}
+.publish-btn.green{background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 4px 15px rgba(34,197,94,.3)}
+.publish-btn.purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed);box-shadow:0 4px 15px rgba(139,92,246,.3)}
+.publish-btn.orange{background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 15px rgba(245,158,11,.3)}
+.publish-btn.red{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 15px rgba(239,68,68,.3)}
+.publish-btn.teal{background:linear-gradient(135deg,#14b8a6,#0d9488);box-shadow:0 4px 15px rgba(20,184,166,.3)}
+.publish-btn.facebook{background:linear-gradient(135deg,#1877f2,#0c63d4)}
 .setup-step{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;margin-bottom:10px}
+.setup-step .step-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .step-number{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
-.stage-option,.grade-option{display:inline-block;padding:8px 16px;margin:3px;border-radius:10px;border:2px solid #e2e8f0;background:#fff;cursor:pointer;font-size:12px;font-weight:600}
+.step-title{font-size:14px;font-weight:700;color:#1e293b}
+.step-title small{font-size:10px;color:#ef4444;font-weight:400}
+.stage-option,.grade-option{display:inline-block;padding:8px 16px;margin:3px;border-radius:10px;border:2px solid #e2e8f0;background:#fff;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s}
 .stage-option.active,.grade-option.active{border-color:#7c3aed;background:#f5f3ff;color:#7c3aed}
-.subject-option{display:inline-block;padding:6px 12px;margin:3px;border-radius:10px;border:2px solid #e2e8f0;background:#fff;cursor:pointer;font-size:11px;font-weight:600}
+.subject-option{display:inline-block;padding:6px 12px;margin:3px;border-radius:10px;border:2px solid #e2e8f0;background:#fff;cursor:pointer;font-size:11px;font-weight:600;transition:all .2s}
 .subject-option.active{border-color:#22c55e;background:#f0fdf4;color:#16a34a}
-.upload-box{border:2px dashed #cbd5e1;border-radius:12px;padding:16px;text-align:center;cursor:pointer;background:#f8fafc}
+.upload-box{border:2px dashed #cbd5e1;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:#f8fafc}
+.upload-box:hover{border-color:#7c3aed;background:#f5f3ff}
 .upload-box.uploaded{border-color:#22c55e;background:#f0fdf4;border-style:solid}
 .upload-box .upload-icon{font-size:32px;color:#94a3b8;margin-bottom:6px}
 .upload-box.uploaded .upload-icon{color:#22c55e}
-.upload-preview{max-width:100%;max-height:120px;border-radius:8px;margin-top:8px}
+.upload-box .upload-text{font-size:11px;color:#64748b;font-weight:600}
+.upload-box .upload-preview{max-width:100%;max-height:120px;border-radius:8px;margin-top:8px}
 .admin-panel-section{background:#fff;border-radius:16px;padding:12px;border:1px solid #e2e8f0;margin-bottom:8px}
 .admin-panel-section .header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:4px 0}
 .admin-panel-section .header h4{font-size:13px;font-weight:700;color:#1e293b}
@@ -80,18 +104,24 @@ body{background:#f1f5f9;transition:background-color .3s}
 .image-viewer{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}
 .image-viewer.show{display:flex}
 .image-viewer img{max-width:100%;max-height:85vh;object-fit:contain;border-radius:12px}
-.dark-mode .app-container{background:#0f172a}
-.dark-mode .bg-white{background:#1e293b!important}
-.dark-mode .text-slate-800{color:#e2e8f0!important}
-.dark-mode .text-slate-600{color:#94a3b8!important}
-.dark-mode .border-slate-100,.dark-mode .border-slate-200{border-color:#334155!important}
-.dark-mode .bg-slate-50{background:#0f172a!important}
-.dark-mode .stat-card{background:#1e293b!important}
-.dark-mode .admin-panel-section{background:#1e293b!important}
-.dark-mode .setup-step{background:#1e293b!important}
-.dark-mode .input-group input,.dark-mode .input-group select,.dark-mode .input-group textarea{background:#0f172a!important;border-color:#334155!important;color:#e2e8f0!important}
-.dark-mode .login-option-btn{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important}
-.dark-mode .building-block{background:#1e293b!important}
+.image-viewer .close-btn{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:28px;width:50px;height:50px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.image-viewer .download-btn{position:absolute;bottom:30px;background:rgba(255,255,255,.2);border:none;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:10px}
+.schedule-item{background:#fff;border-radius:12px;padding:10px;border:1px solid #e2e8f0;margin-bottom:6px}
+.schedule-item .subject{font-weight:700;font-size:13px}
+.schedule-item .time{font-weight:700;color:#d97706}
+.schedule-item .teacher{font-size:11px;color:#64748b}
+.complaint-card{background:#f8fafc;border-radius:10px;padding:10px;border-right:3px solid #f59e0b;margin-bottom:6px}
+.course-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid #e2e8f0;transition:transform .3s,box-shadow .3s}
+.course-card:hover{transform:translateY(-4px);box-shadow:0 15px 40px rgba(0,0,0,.1)}
+.star{cursor:pointer;font-size:22px;color:#cbd5e1;transition:color .2s}
+.star.filled,.star.hover{color:#fbbf24}
+.nav-tab{padding:10px 16px;font-size:13px;font-weight:700;color:#64748b;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none}
+.nav-tab.active{color:#7c3aed;border-bottom-color:#7c3aed}
+.admin-sub-btn{padding:8px 16px;font-size:13px;font-weight:700;background:#fff;border:1px solid #e2e8f0;border-radius:12px;color:#64748b;white-space:nowrap;cursor:pointer}
+.admin-sub-btn.active{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-content{background:#fff;border-radius:20px;padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease-out}
 .spinner{border:3px solid #e2e8f0;border-top-color:#7c3aed;border-radius:50%;width:40px;height:40px;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .fade-in{animation:fadeIn .4s ease-out}
@@ -101,12 +131,61 @@ body{background:#f1f5f9;transition:background-color .3s}
 .install-banner{position:fixed;top:100px;left:50%;transform:translateX(-50%) translateY(-200px);background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;padding:14px 20px;border-radius:16px;box-shadow:0 10px 40px rgba(124,58,237,.4);display:flex;align-items:center;gap:12px;z-index:9998;transition:transform .5s cubic-bezier(.68,-.55,.265,1.55);max-width:90%;width:auto}
 .install-banner.show{transform:translateX(-50%) translateY(0)}
 .install-banner button{background:#fff;color:#7c3aed;border:none;padding:8px 16px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer}
-.platform-switch{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.2);border-radius:14px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3);margin-top:8px}
-.platform-switch button{flex:1;padding:8px 12px;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:rgba(255,255,255,.8);background:transparent;transition:all .25s;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:6px}
-.platform-switch button.active{background:#fff;color:#7c3aed;box-shadow:0 4px 15px rgba(0,0,0,.15)}
-.platform-switch button:hover:not(.active){background:rgba(255,255,255,.15);color:#fff}
+.dark-mode .app-container{background:#0f172a}
+.dark-mode .bg-white{background:#1e293b!important}
+.dark-mode .text-slate-800{color:#e2e8f0!important}
+.dark-mode .text-slate-600{color:#94a3b8!important}
+.dark-mode .text-slate-500{color:#94a3b8!important}
+.dark-mode .border-slate-100,.dark-mode .border-slate-200{border-color:#334155!important}
+.dark-mode .bg-slate-50{background:#0f172a!important}
+.dark-mode .bg-slate-100{background:#1e293b!important}
+.dark-mode .stat-card{background:#1e293b!important;border-color:#334155!important}
+.dark-mode .admin-panel-section{background:#1e293b!important;border-color:#334155!important}
+.dark-mode .settings-menu-btn{background:#1e293b!important;border-color:#334155!important}
+.dark-mode .settings-panel{background:#1e293b!important;border-color:#334155!important}
+.dark-mode .login-section{background:#1e293b!important;border-color:#334155!important}
+.dark-mode .login-section h2{color:#e2e8f0!important}
+.dark-mode .login-section p{color:#94a3b8!important}
+.dark-mode .input-group input,.dark-mode .input-group select,.dark-mode .input-group textarea{background:#0f172a!important;border-color:#334155!important;color:#e2e8f0!important}
+.dark-mode .login-option-btn{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important}
+.dark-mode .setup-step{background:#1e293b!important;border-color:#334155!important}
+.dark-mode .stage-option,.dark-mode .grade-option,.dark-mode .subject-option{background:#0f172a!important;border-color:#334155!important;color:#e2e8f0!important}
+.dark-mode .upload-box{background:#0f172a!important;border-color:#475569!important}
+.dark-mode .course-card{background:#1e293b!important;border-color:#334155!important}
+.dark-mode .nav-tab{color:#94a3b8}
+.dark-mode .nav-tab.active{color:#a78bfa;border-bottom-color:#a78bfa}
+.dark-mode .admin-sub-btn{background:#1e293b!important;border-color:#334155!important;color:#94a3b8!important}
+.dark-mode .admin-sub-btn.active{background:#7c3aed!important;color:#fff!important;border-color:#7c3aed!important}
+.dark-mode .modal-content{background:#1e293b;color:#e2e8f0}
+.dark-mode .building-block{background:#1e293b!important}
+.settings-menu-btn{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:8px;border:1px solid #e2e8f0;cursor:pointer;transition:all .2s}
+.settings-menu-btn:active{transform:scale(.98);background:#f8fafc}
+.settings-menu-btn .left{display:flex;align-items:center;gap:12px}
+.settings-menu-btn .icon-box{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+.settings-menu-btn .text-box{text-align:right}
+.settings-menu-btn .text-box .title{font-size:13px;font-weight:700;color:#1e293b}
+.settings-menu-btn .text-box .subtitle{font-size:10px;color:#94a3b8}
+.settings-menu-btn .arrow{color:#cbd5e1;font-size:14px}
+.icon-blue{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
+.icon-green{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.icon-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.icon-purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.icon-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.icon-cyan{background:linear-gradient(135deg,#14b8a6,#0d9488)}
+.icon-amber{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.icon-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+.settings-panel{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid #e2e8f0;animation:slideUp .3s ease-out}
+.settings-panel .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #f1f5f9}
+.settings-panel .panel-header h3{font-size:14px;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px}
+.settings-panel .close-panel{background:#f1f5f9;border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;color:#64748b;font-size:14px}
+@media (max-width:400px){
+.stat-number{font-size:15px}
+.stat-label{font-size:8px}
+.profile-avatar{width:50px;height:50px}
+}
 </style>
 </head>
+
 <body class="no-select">
 
 <div id="installBanner" class="install-banner">
@@ -119,10 +198,10 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="app" class="app-container flex flex-col pb-16">
 
 <header class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 shadow-lg sticky top-0 z-30">
-<div class="flex items-center justify-between gap-2">
+<div class="flex items-center justify-between gap-2 mb-2">
 <div class="flex items-center gap-2">
-<div class="w-9 h-9 rounded-xl overflow-hidden border border-white/30 shadow-lg">
-<img src="icon-192.png" alt="Σ" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span style=\'font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;\'>Σ</span>'">
+<div class="w-9 h-9 rounded-xl overflow-hidden border border-white/30 shadow-lg bg-white/20 flex items-center justify-center">
+<img src="icon-192.png" alt="Σ" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span style=\'font-weight:900;font-size:20px;\'>Σ</span>'">
 </div>
 <div>
 <h1 class="font-extrabold text-sm leading-tight">سيجما</h1>
@@ -150,19 +229,173 @@ body{background:#f1f5f9;transition:background-color .3s}
 </header>
 
 <div id="imageViewerModal" class="image-viewer" onclick="closeImageViewer()">
-<button style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:28px;width:50px;height:50px;border-radius:50%;cursor:pointer" onclick="closeImageViewer()">✕</button>
+<button class="close-btn" onclick="closeImageViewer()">✕</button>
 <img id="viewerImage2" src="" alt="صورة">
+<button class="download-btn" onclick="downloadImage()"><i class="fa-solid fa-download"></i> تحميل</button>
 </div>
 
 <main class="flex-1 p-3 space-y-3 overflow-y-auto" style="padding-bottom:70px">
 
 <section id="tab-login" class="slide-up">
-<div class="bg-white rounded-2xl p-6 border border-slate-200 text-center">
-<img src="icon-192.png" style="width:80px;height:80px;margin:0 auto 16px;border-radius:50%;box-shadow:0 8px 30px rgba(124,58,237,.3)" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%237c3aed%22/%3E%3Cstop offset=%221%22 stop-color=%22%23ec4899%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22url(%23g)%22/%3E%3Ctext x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22serif%22 font-weight=%22bold%22%3E%CE%A3%3C/text%3E%3C/svg%3E'">
-<h2 class="text-xl font-extrabold mb-2">مرحباً بك في سيجما</h2>
-<p class="text-xs text-slate-500 mb-6">سجّل دخولك للبدء</p>
-<button class="publish-btn facebook" onclick="loginWithFacebook()" style="padding:14px"><i class="fa-brands fa-facebook text-xl"></i> تسجيل الدخول بفيسبوك</button>
-<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b"><i class="fa-solid fa-shield-halved text-purple-500"></i> تسجيل آمن 100% عبر فيسبوك</div>
+<div class="login-section">
+<div class="logo">Σ</div>
+<h2>مرحباً بك في سيجما</h2>
+<p>اختر طريقة تسجيل الدخول</p>
+<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+<div class="login-option-btn active" onclick="selectLoginMethod('phone')" id="loginOptPhone">
+<div class="icon icon-phone"><i class="fa-solid fa-mobile-screen"></i></div>
+<div class="text"><div class="main">📱 رقم الهاتف</div><div class="sub">الطريقة الأساسية</div></div>
+</div>
+<div class="login-option-btn" onclick="selectLoginMethod('facebook')" id="loginOptFacebook">
+<div class="icon icon-facebook"><i class="fa-brands fa-facebook"></i></div>
+<div class="text"><div class="main">🔵 تسجيل بفيسبوك</div><div class="sub">سريع وآمن</div></div>
+</div>
+<div class="login-option-btn" onclick="selectLoginMethod('google')" id="loginOptGoogle">
+<div class="icon icon-google"><i class="fa-brands fa-google"></i></div>
+<div class="text"><div class="main">🔴 تسجيل بجوجل</div><div class="sub">سريع وآمن</div></div>
+</div>
+<div class="login-option-btn" onclick="selectLoginMethod('email')" id="loginOptEmail">
+<div class="icon icon-email"><i class="fa-solid fa-envelope"></i></div>
+<div class="text"><div class="main">📧 البريد الإلكتروني</div><div class="sub">تسجيل تقليدي</div></div>
+</div>
+</div>
+
+<div id="loginFormPhone" class="mt-2">
+<div class="input-group">
+<label>📱 رقم الهاتف</label>
+<input type="tel" id="loginPhone" placeholder="01012345678">
+</div>
+<div class="input-group">
+<label>🔒 كلمة المرور</label>
+<input type="password" id="loginPhonePassword" placeholder="••••••••">
+<i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('loginPhonePassword', this)"></i>
+</div>
+<button class="login-btn" onclick="loginByPhone()">🚀 تسجيل الدخول</button>
+<div style="margin-top:10px;font-size:12px">
+<span onclick="switchTab('forgot')" class="link-text">🔑 نسيت كلمة المرور؟</span>
+</div>
+</div>
+
+<div id="loginFormEmail" class="mt-2 hidden">
+<div class="input-group">
+<label>📧 البريد الإلكتروني</label>
+<input type="email" id="loginEmail" placeholder="example@email.com">
+</div>
+<div class="input-group">
+<label>🔒 كلمة المرور</label>
+<input type="password" id="loginEmailPassword" placeholder="••••••••">
+<i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('loginEmailPassword', this)"></i>
+</div>
+<button class="login-btn" onclick="loginByEmail()">🚀 تسجيل الدخول</button>
+<div style="margin-top:10px;font-size:12px">
+<span onclick="switchTab('forgot')" class="link-text">🔑 نسيت كلمة المرور؟</span>
+</div>
+</div>
+
+<div id="loginFormGoogle" class="mt-2 hidden">
+<button class="login-btn" onclick="loginWithGoogle()" style="background:#fff;color:#1e293b;border:2px solid #e2e8f0">
+<i class="fa-brands fa-google text-red-500"></i> تسجيل الدخول بجوجل
+</button>
+<p style="font-size:11px;color:#64748b;margin-top:10px">سيتم استخدام حسابك في Google</p>
+</div>
+
+<div id="loginFormFacebook" class="mt-2 hidden">
+<button class="login-btn" onclick="loginWithFacebook()" style="background:linear-gradient(135deg,#1877f2,#0c63d4);color:#fff">
+<i class="fa-brands fa-facebook"></i> تسجيل الدخول بفيسبوك
+</button>
+<p style="font-size:11px;color:#64748b;margin-top:10px">سيتم استخدام حسابك في Facebook</p>
+</div>
+
+<div style="margin-top:16px;font-size:12px;color:#64748b">
+ليس لديك حساب؟ <span onclick="switchTab('register')" class="link-text">إنشاء حساب جديد</span>
+</div>
+</div>
+</section>
+
+<section id="tab-forgot" class="hidden slide-up">
+<div class="login-section">
+<div class="logo">🔑</div>
+<h2>استعادة كلمة المرور</h2>
+<p>أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين</p>
+<div class="input-group">
+<label>📧 البريد الإلكتروني</label>
+<input type="email" id="forgotEmail" placeholder="example@email.com">
+</div>
+<button class="login-btn" onclick="handleResetPassword()">📧 إرسال رابط إعادة التعيين</button>
+<div style="margin-top:12px;font-size:12px;color:#64748b">
+تذكرت كلمة المرور؟ <span onclick="switchTab('login')" class="link-text">تسجيل الدخول</span>
+</div>
+</div>
+</section>
+
+<section id="tab-register" class="hidden slide-up">
+<div class="login-section">
+<div class="logo">Σ</div>
+<h2>إنشاء حساب جديد</h2>
+<p>اختر طريقة التسجيل</p>
+<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+<div class="login-option-btn active" onclick="selectRegisterMethod('phone')" id="regOptPhone">
+<div class="icon icon-phone"><i class="fa-solid fa-mobile-screen"></i></div>
+<div class="text"><div class="main">📱 رقم الهاتف</div><div class="sub">الطريقة الأساسية</div></div>
+</div>
+<div class="login-option-btn" onclick="selectRegisterMethod('facebook')" id="regOptFacebook">
+<div class="icon icon-facebook"><i class="fa-brands fa-facebook"></i></div>
+<div class="text"><div class="main">🔵 تسجيل بفيسبوك</div><div class="sub">سريع وآمن</div></div>
+</div>
+<div class="login-option-btn" onclick="selectRegisterMethod('google')" id="regOptGoogle">
+<div class="icon icon-google"><i class="fa-brands fa-google"></i></div>
+<div class="text"><div class="main">🔴 تسجيل بجوجل</div><div class="sub">سريع وآمن</div></div>
+</div>
+<div class="login-option-btn" onclick="selectRegisterMethod('email')" id="regOptEmail">
+<div class="icon icon-email"><i class="fa-solid fa-envelope"></i></div>
+<div class="text"><div class="main">📧 البريد الإلكتروني</div><div class="sub">تسجيل تقليدي</div></div>
+</div>
+</div>
+
+<div id="regFormPhone" class="mt-2">
+<div class="input-group"><label>👤 الاسم الكامل</label><input type="text" id="regPhoneName" placeholder="أحمد محمد"></div>
+<div class="input-group"><label>📱 رقم الهاتف</label><input type="tel" id="regPhoneNumber" placeholder="01012345678"></div>
+<div class="input-group"><label>🔒 كلمة المرور</label>
+<input type="password" id="regPhonePassword" placeholder="••••••••">
+<i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regPhonePassword', this)"></i>
+</div>
+<div class="input-group"><label>🔒 تأكيد كلمة المرور</label>
+<input type="password" id="regPhoneConfirm" placeholder="••••••••">
+<i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regPhoneConfirm', this)"></i>
+</div>
+<button class="login-btn" onclick="registerByPhone()">📝 إنشاء حساب</button>
+</div>
+
+<div id="regFormEmail" class="mt-2 hidden">
+<div class="input-group"><label>👤 الاسم الكامل</label><input type="text" id="regEmailName" placeholder="أحمد محمد"></div>
+<div class="input-group"><label>📧 البريد الإلكتروني</label><input type="email" id="regEmailAddress" placeholder="example@email.com"></div>
+<div class="input-group"><label>📱 رقم الهاتف</label><input type="tel" id="regEmailPhone" placeholder="01012345678"></div>
+<div class="input-group"><label>🔒 كلمة المرور</label>
+<input type="password" id="regEmailPassword" placeholder="••••••••">
+<i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regEmailPassword', this)"></i>
+</div>
+<div class="input-group"><label>🔒 تأكيد كلمة المرور</label>
+<input type="password" id="regEmailConfirm" placeholder="••••••••">
+<i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('regEmailConfirm', this)"></i>
+</div>
+<button class="login-btn" onclick="registerByEmail()">📝 إنشاء حساب</button>
+</div>
+
+<div id="regFormGoogle" class="mt-2 hidden">
+<button class="login-btn" onclick="registerWithGoogle()" style="background:#fff;color:#1e293b;border:2px solid #e2e8f0">
+<i class="fa-brands fa-google text-red-500"></i> التسجيل بجوجل
+</button>
+</div>
+
+<div id="regFormFacebook" class="mt-2 hidden">
+<button class="login-btn" onclick="registerWithFacebook()" style="background:linear-gradient(135deg,#1877f2,#0c63d4);color:#fff">
+<i class="fa-brands fa-facebook"></i> التسجيل بفيسبوك
+</button>
+</div>
+
+<div style="margin-top:16px;font-size:12px;color:#64748b">
+لديك حساب بالفعل؟ <span onclick="switchTab('login')" class="link-text">تسجيل الدخول</span>
+</div>
 </div>
 </section>
 
@@ -173,28 +406,44 @@ body{background:#f1f5f9;transition:background-color .3s}
 <p class="text-xs text-purple-100 mt-1">لا يمكن الدخول قبل إكمال جميع البيانات</p>
 </div>
 <div class="setup-step">
-<div class="flex items-center gap-2 mb-3"><div class="step-number">1</div><div class="font-bold text-sm">المرحلة والصف <span style="color:#ef4444;font-size:10px">(إجباري)</span></div></div>
+<div class="step-header"><div class="step-number">1</div><div class="step-title">المرحلة والصف <small>(إجباري)</small></div></div>
 <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:8px">المرحلة:</label>
-<div id="setupStageOptions"><div class="stage-option" onclick="selectSetupStage('ثانوي',this)">ثانوي</div><div class="stage-option" onclick="selectSetupStage('إعدادي',this)">إعدادي</div></div>
-<label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin:12px 0 8px">الصف:</label>
-<div id="setupGradeOptions"><div class="grade-option" onclick="selectSetupGrade('1',this)">الأول</div><div class="grade-option" onclick="selectSetupGrade('2',this)">الثاني</div><div class="grade-option" onclick="selectSetupGrade('3',this)">الثالث</div></div>
+<div id="setupStageOptions">
+<div class="stage-option" onclick="selectSetupStage('ثانوي', this)">ثانوي</div>
+<div class="stage-option" onclick="selectSetupStage('إعدادي', this)">إعدادي</div>
+</div>
+<label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:8px;margin-top:12px">الصف:</label>
+<div id="setupGradeOptions">
+<div class="grade-option" onclick="selectSetupGrade('1', this)">الأول</div>
+<div class="grade-option" onclick="selectSetupGrade('2', this)">الثاني</div>
+<div class="grade-option" onclick="selectSetupGrade('3', this)">الثالث</div>
+</div>
 </div>
 <div class="setup-step">
-<div class="flex items-center gap-2 mb-3"><div class="step-number">2</div><div class="font-bold text-sm">اختر موادك <span style="color:#ef4444;font-size:10px">(إجباري)</span></div></div>
-<div id="setupSubjectsOptions" class="flex flex-wrap"><p class="text-xs text-slate-400">اختر المرحلة أولاً</p></div>
+<div class="step-header"><div class="step-number">2</div><div class="step-title">اختر موادك <small>(إجباري)</small></div></div>
+<p style="font-size:10px;color:#64748b;margin-bottom:8px">اختر مادة واحدة على الأقل</p>
+<div id="setupSubjectsOptions" style="display:flex;flex-wrap:wrap">
+<p style="font-size:12px;color:#94a3b8">اختر المرحلة أولاً</p>
+</div>
 </div>
 <div class="setup-step">
-<div class="flex items-center gap-2 mb-3"><div class="step-number">3</div><div class="font-bold text-sm">بيانات التواصل <span style="color:#ef4444;font-size:10px">(إجباري)</span></div></div>
-<div class="input-group"><label>📱 رقم ولي الأمر:</label><input type="tel" id="setupParentPhone" placeholder="01012345678" style="padding-left:12px"></div>
-<div class="input-group"><label>🏫 اسم المدرسة:</label><input type="text" id="setupSchool" placeholder="اسم مدرستك" style="padding-left:12px"></div>
+<div class="step-header"><div class="step-number">3</div><div class="step-title">بيانات التواصل <small>(إجباري)</small></div></div>
+<div class="input-group mb-2">
+<label>📱 رقم ولي الأمر:</label>
+<input type="tel" id="setupParentPhone" placeholder="01012345678" style="padding-left:12px">
+</div>
+<div class="input-group">
+<label>🏫 اسم المدرسة:</label>
+<input type="text" id="setupSchool" placeholder="اسم مدرستك" style="padding-left:12px">
+</div>
 </div>
 <div class="setup-step">
-<div class="flex items-center gap-2 mb-3"><div class="step-number">4</div><div class="font-bold text-sm">الصور <span style="color:#ef4444;font-size:10px">(إجباري)</span></div></div>
-<div style="margin-bottom:12px">
+<div class="step-header"><div class="step-number">4</div><div class="step-title">الصور <small>(إجباري)</small></div></div>
+<div class="mb-3">
 <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:8px">📷 صورة الملف الشخصي:</label>
 <div class="upload-box" id="uploadProfileBox" onclick="document.getElementById('setupProfileImg').click()">
 <div class="upload-icon"><i class="fa-solid fa-user-circle"></i></div>
-<div style="font-size:11px;color:#64748b;font-weight:600">اضغط لاختيار صورة</div>
+<div class="upload-text">اضغط لاختيار صورة شخصية</div>
 <img id="profilePreview" class="upload-preview hidden" src="">
 </div>
 <input type="file" id="setupProfileImg" accept="image/*" style="display:none" onchange="handleProfileUpload(event)">
@@ -203,33 +452,73 @@ body{background:#f1f5f9;transition:background-color .3s}
 <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:8px">📄 صورة البطاقة أو شهادة الميلاد:</label>
 <div class="upload-box" id="uploadIdBox" onclick="document.getElementById('setupIdImg').click()">
 <div class="upload-icon"><i class="fa-solid fa-id-card"></i></div>
-<div style="font-size:11px;color:#64748b;font-weight:600">اضغط لاختيار صورة</div>
+<div class="upload-text">اضغط لاختيار صورة البطاقة</div>
 <img id="idPreview" class="upload-preview hidden" src="">
 </div>
 <input type="file" id="setupIdImg" accept="image/*" style="display:none" onchange="handleIdUpload(event)">
 </div>
 </div>
-<button onclick="saveSetupData()" class="publish-btn green" style="padding:16px"><i class="fa-solid fa-check-circle"></i> حفظ البيانات والدخول</button>
+<button onclick="saveSetupData()" class="publish-btn green" style="padding:16px">
+<i class="fa-solid fa-check-circle"></i> حفظ البيانات والدخول
+</button>
 </section>
 
 <section id="tab-home" class="hidden space-y-3 slide-up">
 <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-5 text-white shadow-lg">
 <div class="flex items-center gap-3">
 <img id="userAvatar" src="" class="profile-avatar" onclick="openImageViewer(this.src)">
-<div class="flex-1"><h2 id="userName" class="font-bold text-base">مرحباً</h2><p id="userSubtitle" class="text-xs text-purple-100 mt-1"></p></div>
+<div class="flex-1">
+<h2 id="userName" class="font-bold text-base">مرحباً</h2>
+<p id="userSubtitle" class="text-xs text-purple-100 mt-1"></p>
+</div>
 </div>
 <div id="userSubjectsHome" class="mt-3 pt-3" style="border-top:1px solid rgba(255,255,255,.2)">
 <p class="text-[10px] text-purple-100 mb-1">📚 المواد المشترك بها:</p>
 <div id="userSubjectsList"></div>
 </div>
 </div>
+<div class="grid grid-cols-3 gap-2">
+<div class="stat-card" onclick="switchTab('schedule')">
+<div class="text-purple-600 text-lg"><i class="fa-solid fa-calendar-check"></i></div>
+<div class="stat-number text-purple-600" id="todayCount">0</div>
+<div class="stat-label">حصص اليوم</div>
+</div>
+<div class="stat-card" onclick="switchTab('library')">
+<div class="text-purple-600 text-lg"><i class="fa-solid fa-book"></i></div>
+<div class="stat-number text-purple-600" id="materialCount">0</div>
+<div class="stat-label">الملفات</div>
+</div>
+<div class="stat-card" onclick="switchTab('notifications')">
+<div class="text-amber-500 text-lg"><i class="fa-solid fa-bell"></i></div>
+<div class="stat-number text-amber-500" id="notifCount">0</div>
+<div class="stat-label">تنبيهات</div>
+</div>
+</div>
 <div id="customBlocksContainer"></div>
 <div id="videosContainer"></div>
+<div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-clock text-purple-600 ml-1"></i> حصصي اليوم</h3>
+<button onclick="switchTab('schedule')" class="text-[10px] text-purple-600 font-bold">عرض الكل</button>
+</div>
+<div id="myScheduleToday" class="space-y-1.5">
+<div class="text-center py-3 text-slate-400 text-xs">جاري التحميل...</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-newspaper text-purple-600 ml-1"></i> آخر الأخبار</h3>
+<button onclick="switchTab('news')" class="text-[10px] text-purple-600 font-bold">عرض الكل</button>
+</div>
+<div id="homeNewsContainer" class="space-y-2">
+<div class="text-center py-3 text-slate-400 text-xs">جاري التحميل...</div>
+</div>
+</div>
 </section>
 
 <section id="tab-schedule" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
-<h2 class="font-bold text-sm"><i class="fa-solid fa-calendar-days text-purple-600"></i> جدول السنتر</h2>
+<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-calendar-days text-purple-600 ml-1"></i> جدول السنتر</h2>
 <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
 </div>
 <div class="flex bg-slate-200/80 p-1 rounded-xl text-[10px] font-bold text-slate-600">
@@ -237,119 +526,211 @@ body{background:#f1f5f9;transition:background-color .3s}
 <button onclick="filterSchedule('tomorrow')" id="btnTomorrow" class="flex-1 py-1.5 rounded-lg">غداً</button>
 <button onclick="filterSchedule('all')" id="btnAll" class="flex-1 py-1.5 rounded-lg">الأسبوع</button>
 </div>
-<div id="scheduleContainer" class="space-y-2"></div>
+<div id="scheduleContainer" class="space-y-2">
+<div class="text-center py-4 text-slate-400 text-xs">جاري التحميل...</div>
+</div>
 </section>
 
 <section id="tab-library" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
-<h2 class="font-bold text-sm"><i class="fa-solid fa-book-open text-purple-600"></i> المكتبة الرقمية</h2>
+<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-book-open text-purple-600 ml-1"></i> المكتبة الرقمية</h2>
 <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
 </div>
-<div id="libraryContainer" class="space-y-2"></div>
+<div id="libraryContainer" class="space-y-2">
+<div class="text-center py-4 text-slate-400 text-xs">جاري التحميل...</div>
+</div>
 </section>
 
 <section id="tab-videos" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
-<h2 class="font-bold text-sm"><i class="fa-solid fa-video text-purple-600"></i> الفيديوهات</h2>
+<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-video text-purple-600 ml-1"></i> الفيديوهات</h2>
 <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
 </div>
-<div id="videosListContainer" class="space-y-3"></div>
+<div id="videosListContainer" class="space-y-3">
+<div class="text-center py-4 text-slate-400 text-xs">جاري التحميل...</div>
+</div>
 </section>
 
 <section id="tab-news" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
-<h2 class="font-bold text-sm"><i class="fa-solid fa-newspaper text-purple-600"></i> الأخبار</h2>
+<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-newspaper text-purple-600 ml-1"></i> الأخبار</h2>
 <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
 </div>
-<div id="allNewsContainer" class="space-y-3"></div>
+<div id="allNewsContainer" class="space-y-3">
+<div class="text-center py-4 text-slate-400 text-xs">جاري التحميل...</div>
+</div>
 </section>
 
 <section id="tab-notifications" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
-<h2 class="font-bold text-sm"><i class="fa-solid fa-bell text-amber-500"></i> الإشعارات</h2>
+<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-bell text-amber-500 ml-1"></i> الإشعارات</h2>
 <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
 </div>
-<div id="notificationsContainer" class="space-y-2"></div>
+<div id="notificationsContainer" class="space-y-2">
+<div class="text-center py-6 text-slate-400 text-xs"><i class="fa-regular fa-bell-slash text-2xl block mb-1"></i> لا توجد إشعارات</div>
+</div>
+</section>
+
+<section id="tab-exams" class="hidden space-y-3 slide-up">
+<div class="flex items-center justify-between">
+<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-pen-to-square text-red-600 ml-1"></i> نظام الامتحانات</h2>
+<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+</div>
+<div id="examsContainer" class="space-y-2">
+<div class="text-center py-4 text-slate-400 text-xs">جاري التحميل...</div>
+</div>
+</section>
+
+<section id="tab-results" class="hidden space-y-3 slide-up">
+<div class="flex items-center justify-between">
+<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-chart-simple text-green-600 ml-1"></i> لوحة النتائج</h2>
+<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
+</div>
+<div id="resultsContainer" class="space-y-2">
+<div class="text-center py-4 text-slate-400 text-xs">جاري التحميل...</div>
+</div>
 </section>
 
 <section id="tab-settings" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between mb-2">
-<h2 class="font-bold text-base"><i class="fa-solid fa-gear text-purple-600"></i> الإعدادات</h2>
+<h2 class="font-bold text-base text-slate-800"><i class="fa-solid fa-gear text-purple-600 ml-1"></i> الإعدادات</h2>
 <button onclick="switchTab('home')" class="text-xs text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
 </div>
-<div id="settingsMain" class="space-y-2">
-<div onclick="openSettingsPanel('info')" style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:14px 16px;border:1px solid #e2e8f0;cursor:pointer">
-<div style="display:flex;align-items:center;gap:12px">
-<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#1d4ed8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px"><i class="fa-solid fa-user"></i></div>
-<div><div style="font-size:13px;font-weight:700">معلوماتي</div><div style="font-size:10px;color:#94a3b8">عرض بياناتك</div></div>
+
+<div id="settingsMain">
+<div class="settings-menu-btn" onclick="openSettingsPanel('info')">
+<div class="left"><div class="icon-box icon-blue"><i class="fa-solid fa-user"></i></div>
+<div class="text-box"><div class="title">معلوماتي</div><div class="subtitle">عرض بياناتك</div></div></div>
+<i class="fa-solid fa-chevron-left arrow"></i>
 </div>
-<i class="fa-solid fa-chevron-left" style="color:#cbd5e1"></i>
+<div class="settings-menu-btn" onclick="openSettingsPanel('edit')">
+<div class="left"><div class="icon-box icon-green"><i class="fa-solid fa-pen"></i></div>
+<div class="text-box"><div class="title">تعديل البيانات</div><div class="subtitle" id="editStatusSub">متاح</div></div></div>
+<i class="fa-solid fa-chevron-left arrow"></i>
 </div>
-<div onclick="openSettingsPanel('notifications')" style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:14px 16px;border:1px solid #e2e8f0;cursor:pointer">
-<div style="display:flex;align-items:center;gap:12px">
-<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px"><i class="fa-solid fa-bell"></i></div>
-<div><div style="font-size:13px;font-weight:700">الإشعارات</div><div style="font-size:10px;color:#94a3b8">تفعيل الإشعارات</div></div>
+<div class="settings-menu-btn" onclick="openSettingsPanel('security')">
+<div class="left"><div class="icon-box icon-amber"><i class="fa-solid fa-shield-halved"></i></div>
+<div class="text-box"><div class="title">الأمان</div><div class="subtitle">تغيير كلمة المرور</div></div></div>
+<i class="fa-solid fa-chevron-left arrow"></i>
 </div>
-<i class="fa-solid fa-chevron-left" style="color:#cbd5e1"></i>
+<div class="settings-menu-btn" onclick="openSettingsPanel('contacts')">
+<div class="left"><div class="icon-box icon-cyan"><i class="fa-solid fa-phone"></i></div>
+<div class="text-box"><div class="title">أرقام السنتر</div><div class="subtitle">تواصل معنا</div></div></div>
+<i class="fa-solid fa-chevron-left arrow"></i>
 </div>
-<div onclick="openSettingsPanel('install')" style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:14px 16px;border:1px solid #e2e8f0;cursor:pointer">
-<div style="display:flex;align-items:center;gap:12px">
-<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#ec4899);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px"><i class="fa-solid fa-download"></i></div>
-<div><div style="font-size:13px;font-weight:700">تثبيت التطبيق</div><div style="font-size:10px;color:#94a3b8">على الشاشة الرئيسية</div></div>
+<div class="settings-menu-btn" onclick="openSettingsPanel('complaints')">
+<div class="left"><div class="icon-box icon-orange"><i class="fa-solid fa-comment"></i></div>
+<div class="text-box"><div class="title">شكوى</div><div class="subtitle">أرسل استفسارك</div></div></div>
+<i class="fa-solid fa-chevron-left arrow"></i>
 </div>
-<i class="fa-solid fa-chevron-left" style="color:#cbd5e1"></i>
+<div class="settings-menu-btn" onclick="openSettingsPanel('notifications')">
+<div class="left"><div class="icon-box icon-amber"><i class="fa-solid fa-bell"></i></div>
+<div class="text-box"><div class="title">الإشعارات</div><div class="subtitle">تفعيل الإشعارات</div></div></div>
+<i class="fa-solid fa-chevron-left arrow"></i>
 </div>
-<div onclick="openSettingsPanel('delete')" style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:14px 16px;border:1px solid #e2e8f0;cursor:pointer">
-<div style="display:flex;align-items:center;gap:12px">
-<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px"><i class="fa-solid fa-trash"></i></div>
-<div><div style="font-size:13px;font-weight:700">حذف الحساب</div><div style="font-size:10px;color:#94a3b8">إجراء نهائي</div></div>
+<div class="settings-menu-btn" onclick="openSettingsPanel('install')">
+<div class="left"><div class="icon-box icon-pink"><i class="fa-solid fa-download"></i></div>
+<div class="text-box"><div class="title">تثبيت التطبيق</div><div class="subtitle">على الشاشة الرئيسية</div></div></div>
+<i class="fa-solid fa-chevron-left arrow"></i>
 </div>
-<i class="fa-solid fa-chevron-left" style="color:#cbd5e1"></i>
+<div class="settings-menu-btn" onclick="openSettingsPanel('delete')">
+<div class="left"><div class="icon-box icon-red"><i class="fa-solid fa-trash"></i></div>
+<div class="text-box"><div class="title">حذف الحساب</div><div class="subtitle">إجراء نهائي</div></div></div>
+<i class="fa-solid fa-chevron-left arrow"></i>
 </div>
 </div>
-<div id="panel-info" class="hidden bg-white rounded-2xl p-4 border border-slate-200">
-<div class="flex items-center justify-between mb-4 pb-3" style="border-bottom:1px solid #f1f5f9">
-<h3 class="font-bold text-sm"><i class="fa-solid fa-user text-blue-600"></i> معلوماتي</h3>
-<button onclick="closeSettingsPanel()" style="background:#f1f5f9;border:none;width:30px;height:30px;border-radius:8px;cursor:pointer">✕</button>
-</div>
+
+<div id="panel-info" class="settings-panel hidden">
+<div class="panel-header"><h3><i class="fa-solid fa-user text-blue-600"></i> معلوماتي</h3><button class="close-panel" onclick="closeSettingsPanel()">✕</button></div>
 <div class="space-y-2 text-xs">
 <img id="infoAvatar" src="" class="w-20 h-20 rounded-full mx-auto mb-2 border-2 border-purple-500" style="display:none">
-<p><span class="text-slate-500">الاسم:</span> <span id="infoName" class="font-bold">-</span></p>
-<p><span class="text-slate-500">البريد:</span> <span id="infoEmail" class="font-bold">-</span></p>
-<p><span class="text-slate-500">ولي الأمر:</span> <span id="infoParentPhone" class="font-bold">-</span></p>
-<p><span class="text-slate-500">المدرسة:</span> <span id="infoSchool" class="font-bold">-</span></p>
-<p><span class="text-slate-500">المرحلة:</span> <span id="infoStage" class="font-bold">-</span></p>
-<p><span class="text-slate-500">الصف:</span> <span id="infoGrade" class="font-bold">-</span></p>
-<p><span class="text-slate-500">المواد:</span> <span id="infoSubjects" class="font-bold">-</span></p>
+<p><span class="text-slate-500">الاسم:</span> <span id="infoName" class="font-bold text-slate-800">-</span></p>
+<p><span class="text-slate-500">البريد:</span> <span id="infoEmail" class="font-bold text-slate-800">-</span></p>
+<p><span class="text-slate-500">الهاتف:</span> <span id="infoPhone" class="font-bold text-slate-800">-</span></p>
+<p><span class="text-slate-500">ولي الأمر:</span> <span id="infoParentPhone" class="font-bold text-slate-800">-</span></p>
+<p><span class="text-slate-500">المدرسة:</span> <span id="infoSchool" class="font-bold text-slate-800">-</span></p>
+<p><span class="text-slate-500">المرحلة:</span> <span id="infoStage" class="font-bold text-slate-800">-</span></p>
+<p><span class="text-slate-500">الصف:</span> <span id="infoGrade" class="font-bold text-slate-800">-</span></p>
+<p><span class="text-slate-500">المواد:</span> <span id="infoSubjects" class="font-bold text-slate-800">-</span></p>
 <p><span class="text-slate-500">حالة البيانات:</span> <span id="infoStatus" class="font-bold text-amber-600">-</span></p>
 </div>
 </div>
-<div id="panel-notifications" class="hidden bg-white rounded-2xl p-4 border border-slate-200">
-<div class="flex items-center justify-between mb-4 pb-3" style="border-bottom:1px solid #f1f5f9">
-<h3 class="font-bold text-sm"><i class="fa-solid fa-bell text-amber-500"></i> الإشعارات</h3>
-<button onclick="closeSettingsPanel()" style="background:#f1f5f9;border:none;width:30px;height:30px;border-radius:8px;cursor:pointer">✕</button>
+
+<div id="panel-edit" class="settings-panel hidden">
+<div class="panel-header"><h3><i class="fa-solid fa-pen text-emerald-600"></i> تعديل البيانات</h3><button class="close-panel" onclick="closeSettingsPanel()">✕</button></div>
+<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:12px;margin-bottom:12px;font-size:12px;color:#92400e">
+<i class="fa-solid fa-info-circle"></i> يمكنك التعديل <strong>مرة واحدة مجاناً</strong>
 </div>
+<div class="space-y-2">
+<div><label style="font-size:10px;font-weight:700;color:#64748b">البريد (لا يمكن تغييره):</label><input type="email" id="editEmailDisplay" readonly style="width:100%;padding:8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;color:#94a3b8"></div>
+<div><label style="font-size:10px;font-weight:700;color:#64748b">المدرسة:</label><input type="text" id="profSchool" style="width:100%;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px"></div>
+<div><label style="font-size:10px;font-weight:700;color:#64748b">رقم ولي الأمر:</label><input type="tel" id="profParentPhone" style="width:100%;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px"></div>
+<div><label style="font-size:10px;font-weight:700;color:#64748b">المرحلة:</label>
+<select id="profStage" style="width:100%;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px">
+<option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option>
+</select>
+</div>
+<div><label style="font-size:10px;font-weight:700;color:#64748b">الصف:</label>
+<select id="profGrade" style="width:100%;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px">
+<option value="1">الأول</option><option value="2">الثاني</option><option value="3">الثالث</option>
+</select>
+</div>
+<div><label style="font-size:10px;font-weight:700;color:#64748b">الهاتف:</label><input type="tel" id="profPhone" style="width:100%;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px"></div>
+<div><label style="font-size:10px;font-weight:700;color:#64748b">المواد:</label><div id="subjectsCheckbox" style="margin-top:4px;display:grid;grid-template-columns:repeat(2,1fr);gap:4px"></div></div>
+<button onclick="saveProfile()" class="publish-btn blue"><i class="fa-solid fa-save"></i> حفظ</button>
+</div>
+</div>
+
+<div id="panel-security" class="settings-panel hidden">
+<div class="panel-header"><h3><i class="fa-solid fa-shield-halved text-amber-500"></i> الأمان</h3><button class="close-panel" onclick="closeSettingsPanel()">✕</button></div>
+<div class="space-y-2">
+<div style="position:relative">
+<label style="font-size:10px;font-weight:700;color:#64748b">كلمة المرور الحالية:</label>
+<input type="password" id="currentPassword" style="width:100%;padding:8px;padding-left:40px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px">
+<i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('currentPassword', this)" style="position:absolute;left:12px;top:32px;cursor:pointer;color:#94a3b8"></i>
+</div>
+<div style="position:relative">
+<label style="font-size:10px;font-weight:700;color:#64748b">كلمة المرور الجديدة:</label>
+<input type="password" id="newPassword" style="width:100%;padding:8px;padding-left:40px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px">
+<i class="fa-solid fa-eye eye-icon" onclick="togglePasswordVisibility('newPassword', this)" style="position:absolute;left:12px;top:32px;cursor:pointer;color:#94a3b8"></i>
+</div>
+<button onclick="changePassword()" class="publish-btn orange"><i class="fa-solid fa-key"></i> تغيير كلمة المرور</button>
+</div>
+</div>
+
+<div id="panel-contacts" class="settings-panel hidden">
+<div class="panel-header"><h3><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر والدعم</h3><button class="close-panel" onclick="closeSettingsPanel()">✕</button></div>
+<div class="space-y-3">
+<div><h4 style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px">📞 السنتر</h4><div id="centerContacts"></div></div>
+<div><h4 style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px">🛠️ الدعم الفني</h4><div id="supportContacts"></div></div>
+</div>
+</div>
+
+<div id="panel-complaints" class="settings-panel hidden">
+<div class="panel-header"><h3><i class="fa-solid fa-comment text-amber-500"></i> شكوى</h3><button class="close-panel" onclick="closeSettingsPanel()">✕</button></div>
+<textarea id="complaintText" placeholder="اكتب شكواك..." style="width:100%;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;height:96px"></textarea>
+<button onclick="sendComplaint()" class="publish-btn orange" style="margin-top:8px"><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+</div>
+
+<div id="panel-notifications" class="settings-panel hidden">
+<div class="panel-header"><h3><i class="fa-solid fa-bell text-amber-500"></i> الإشعارات</h3><button class="close-panel" onclick="closeSettingsPanel()">✕</button></div>
 <p style="font-size:12px;color:#64748b;margin-bottom:12px">فعّل الإشعارات لتصلك التحديثات فوراً</p>
 <button onclick="requestNotificationPermission()" class="publish-btn purple"><i class="fa-solid fa-bell"></i> تفعيل الإشعارات</button>
 <div id="notifPermStatus" style="margin-top:10px;font-size:12px;text-align:center"></div>
 </div>
-<div id="panel-install" class="hidden bg-white rounded-2xl p-4 border border-slate-200">
-<div class="flex items-center justify-between mb-4 pb-3" style="border-bottom:1px solid #f1f5f9">
-<h3 class="font-bold text-sm"><i class="fa-solid fa-download text-purple-500"></i> تثبيت التطبيق</h3>
-<button onclick="closeSettingsPanel()" style="background:#f1f5f9;border:none;width:30px;height:30px;border-radius:8px;cursor:pointer">✕</button>
-</div>
-<p style="font-size:12px;color:#64748b;margin-bottom:12px">ثبّت التطبيق على شاشة هاتفك</p>
+
+<div id="panel-install" class="settings-panel hidden">
+<div class="panel-header"><h3><i class="fa-solid fa-download text-purple-500"></i> تثبيت التطبيق</h3><button class="close-panel" onclick="closeSettingsPanel()">✕</button></div>
+<p style="font-size:12px;color:#64748b;margin-bottom:12px">ثبّت التطبيق على شاشة هاتفك للوصول السريع</p>
 <button onclick="installPWA()" class="publish-btn purple"><i class="fa-solid fa-download"></i> تثبيت الآن</button>
 </div>
-<div id="panel-delete" class="hidden bg-white rounded-2xl p-4 border border-slate-200">
-<div class="flex items-center justify-between mb-4 pb-3" style="border-bottom:1px solid #f1f5f9">
-<h3 class="font-bold text-sm"><i class="fa-solid fa-trash text-red-500"></i> حذف الحساب</h3>
-<button onclick="closeSettingsPanel()" style="background:#f1f5f9;border:none;width:30px;height:30px;border-radius:8px;cursor:pointer">✕</button>
-</div>
+
+<div id="panel-delete" class="settings-panel hidden">
+<div class="panel-header"><h3><i class="fa-solid fa-trash text-red-500"></i> حذف الحساب</h3><button class="close-panel" onclick="closeSettingsPanel()">✕</button></div>
 <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:12px;padding:16px;margin-bottom:12px;text-align:center">
 <i class="fa-solid fa-triangle-exclamation text-red-500" style="font-size:30px;margin-bottom:8px;display:block"></i>
 <p style="font-size:12px;color:#991b1b;font-weight:700">تحذير!</p>
-<p style="font-size:12px;color:#dc2626;margin-top:4px">لا يمكن التراجع</p>
+<p style="font-size:12px;color:#dc2626;margin-top:4px">لا يمكن التراجع عن هذا الإجراء</p>
 </div>
 <button onclick="deleteAccount()" class="publish-btn red"><i class="fa-solid fa-trash-can"></i> حذف حسابي</button>
 </div>
@@ -357,26 +738,51 @@ body{background:#f1f5f9;transition:background-color .3s}
 
 <section id="tab-admin" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
-<h2 class="font-bold text-sm"><i class="fa-solid fa-user-shield text-purple-600"></i> لوحة الإدارة</h2>
+<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-user-shield text-purple-600 ml-1"></i> لوحة الإدارة</h2>
 <button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
 </div>
-<div id="adminLogin" class="bg-white p-4 rounded-2xl border border-slate-200">
-<div class="font-bold text-sm mb-2"><i class="fa-solid fa-lock text-amber-500"></i> دخول الإدارة</div>
-<input type="password" id="adminPass" placeholder="كلمة السر" style="width:100%;padding:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px">
+
+<div id="adminDenied" class="hidden" style="background:#fee2e2;border:1px solid #fca5a5;border-radius:16px;padding:24px;text-align:center">
+<i class="fa-solid fa-ban text-red-500" style="font-size:36px;margin-bottom:8px"></i>
+<h3 style="font-weight:700;color:#991b1b;font-size:14px">⛔ غير مصرح</h3>
+<button onclick="switchTab('home')" style="margin-top:12px;background:#dc2626;color:#fff;padding:6px 16px;border-radius:12px;font-size:12px;border:none">الرجوع</button>
+</div>
+
+<div id="adminLogin" style="background:#fff;padding:16px;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);border:1px solid #e2e8f0">
+<div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#334155"><i class="fa-solid fa-lock text-amber-500"></i> دخول الإدارة</div>
+<div style="position:relative;margin-top:8px">
+<input type="password" id="adminPass" placeholder="كلمة السر" style="width:100%;padding:10px;padding-right:40px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px">
+<i class="fa-solid fa-key" style="position:absolute;left:12px;top:12px;color:#94a3b8"></i>
+</div>
 <button onclick="adminLogin()" class="publish-btn purple" style="margin-top:8px">دخول</button>
 </div>
+
 <div id="adminPanel" class="hidden space-y-2">
 <div class="admin-panel-section">
-<div class="header"><h4><i class="fa-solid fa-chart-line text-purple-400"></i> الإحصائيات</h4></div>
+<div class="header"><h4><i class="fa-solid fa-chart-line text-purple-400"></i> الإحصائيات اللحظية</h4></div>
 <div class="content open">
-<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;color:#fff;background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:12px;padding:12px">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;color:#fff;background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:12px;padding:12px">
 <div><div style="font-size:20px;font-weight:800" id="statUsers">0</div><div style="font-size:10px;opacity:.7">👥 الطلاب</div></div>
 <div><div style="font-size:20px;font-weight:800" id="statActive">0</div><div style="font-size:10px;opacity:.7">🟢 نشطاء</div></div>
-<div><div style="font-size:20px;font-weight:800" id="statVideos">0</div><div style="font-size:10px;opacity:.7">🎬 فيديوهات</div></div>
+<div><div style="font-size:20px;font-weight:800" id="statPending">0</div><div style="font-size:10px;opacity:.7">⏳ مراجعة</div></div>
+<div><div style="font-size:20px;font-weight:800" id="statSchedules">0</div><div style="font-size:10px;opacity:.7">📚 حصص</div></div>
+<div><div style="font-size:20px;font-weight:800" id="statVideos">0</div><div style="font-size:10px;opacity:.7">🎬 فيديو</div></div>
 <div><div style="font-size:20px;font-weight:800" id="statBlocks">0</div><div style="font-size:10px;opacity:.7">🧩 قوالب</div></div>
 </div>
 </div>
 </div>
+
+<div class="admin-panel-section">
+<div class="header" onclick="toggleSection(this)">
+<h4><i class="fa-solid fa-file-pdf text-red-600"></i> تقرير الطلاب PDF</h4>
+<span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
+</div>
+<div class="content">
+<p style="font-size:11px;color:#64748b;margin-bottom:8px">إنشاء تقرير PDF بكل الطلاب</p>
+<button onclick="generateStudentsPDF()" class="publish-btn red"><i class="fa-solid fa-file-pdf"></i> إنشاء التقرير</button>
+</div>
+</div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-cubes text-purple-600"></i> إضافة قالب / كتلة</h4>
@@ -405,6 +811,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="blocksList" style="margin-top:12px;display:grid;gap:8px"></div>
 </div>
 </div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-video text-purple-600"></i> رفع فيديو</h4>
@@ -439,6 +846,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="videosAdminList" style="margin-top:12px;display:grid;gap:8px"></div>
 </div>
 </div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-book text-purple-600"></i> إدارة المواد</h4>
@@ -454,6 +862,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="subjectsList" style="margin-top:12px"></div>
 </div>
 </div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-plus-circle text-purple-600"></i> إضافة حصة</h4>
@@ -475,10 +884,12 @@ body{background:#f1f5f9;transition:background-color .3s}
 <option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option>
 </select>
 </div>
+<input type="file" id="schImage" accept="image/*" style="width:100%;margin-top:6px;font-size:12px">
 <button onclick="addSchedule()" class="publish-btn purple" style="margin-top:8px">💾 حفظ</button>
 <div id="scheduleList" style="margin-top:12px;display:grid;gap:6px"></div>
 </div>
 </div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-paper-plane text-purple-600"></i> إرسال إشعار</h4>
@@ -487,6 +898,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div class="content">
 <input type="text" id="notifTitle" placeholder="العنوان" style="width:100%;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:13px">
 <textarea id="notifBody" placeholder="النص..." style="width:100%;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;height:60px;margin-top:6px"></textarea>
+<input type="file" id="notifImage" accept="image/*" style="width:100%;margin-top:6px;font-size:12px">
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:6px">
 <select id="notifStage" style="padding:6px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:11px">
 <option value="الكل">الكل</option><option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option>
@@ -500,6 +912,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="notifList" style="margin-top:12px;display:grid;gap:6px"></div>
 </div>
 </div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر</h4>
@@ -513,6 +926,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="newsList" style="margin-top:12px;display:grid;gap:6px"></div>
 </div>
 </div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة</h4>
@@ -531,6 +945,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="matList" style="margin-top:12px;display:grid;gap:6px"></div>
 </div>
 </div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-users text-purple-600"></i> قائمة الطلاب</h4>
@@ -541,6 +956,34 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="studentsAdminList" style="display:grid;gap:6px;max-height:400px;overflow-y:auto"></div>
 </div>
 </div>
+
+<div class="admin-panel-section">
+<div class="header" onclick="toggleSection(this)">
+<h4><i class="fa-solid fa-address-book text-green-600"></i> أرقام السنتر</h4>
+<span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
+</div>
+<div class="content">
+<div style="display:flex;gap:4px">
+<input type="text" id="newContact" placeholder="الرقم" style="flex:1;padding:6px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px">
+<select id="contactType" style="padding:6px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px">
+<option value="phone">📞</option><option value="whatsapp">💬</option><option value="support">🛠️</option>
+</select>
+<button onclick="addContact()" style="background:#16a34a;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;border:none">+</button>
+</div>
+<div id="contactsList" style="margin-top:8px"></div>
+</div>
+</div>
+
+<div class="admin-panel-section">
+<div class="header" onclick="toggleSection(this)">
+<h4><i class="fa-solid fa-message text-amber-500"></i> الشكاوى</h4>
+<span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span>
+</div>
+<div class="content">
+<div id="complaintsList" style="max-height:200px;overflow-y:auto"></div>
+</div>
+</div>
+
 <div class="admin-panel-section">
 <div class="header" onclick="toggleSection(this)">
 <h4><i class="fa-solid fa-trash-can text-red-500"></i> حذف جماعي</h4>
@@ -561,44 +1004,44 @@ body{background:#f1f5f9;transition:background-color .3s}
 </section>
 
 <section id="tab-courses-home" class="hidden fade-in">
-<div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-6 text-white mb-4 shadow-xl">
-<h2 class="text-2xl font-extrabold mb-3">مرحباً بك في منصة الكورسات 🎓</h2>
-<p class="text-purple-100 mb-6 text-sm">تعلم المهارات الحديثة من أفضل المدربين</p>
-<div class="grid grid-cols-3 gap-3">
-<div class="bg-white/10 rounded-2xl p-3 text-center backdrop-blur">
-<div id="courseStatTotal" class="text-2xl font-extrabold">0</div>
-<div class="text-xs text-purple-100">كورس</div>
+<div style="background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:24px;padding:32px 24px;color:#fff;margin-bottom:20px">
+<h2 style="font-size:24px;font-weight:800;margin-bottom:12px">مرحباً بك في منصة الكورسات 🎓</h2>
+<p style="color:rgba(219,234,254,.9);margin-bottom:24px;font-size:14px">تعلم المهارات الحديثة من أفضل المدربين</p>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+<div style="background:rgba(255,255,255,.15);border-radius:14px;padding:12px;text-align:center">
+<div id="courseStatTotal" style="font-size:22px;font-weight:800">0</div>
+<div style="font-size:11px;color:#fce7f3">كورس</div>
 </div>
-<div class="bg-white/10 rounded-2xl p-3 text-center backdrop-blur">
-<div id="courseStatUsers" class="text-2xl font-extrabold">0</div>
-<div class="text-xs text-purple-100">طالب</div>
+<div style="background:rgba(255,255,255,.15);border-radius:14px;padding:12px;text-align:center">
+<div id="courseStatUsers" style="font-size:22px;font-weight:800">0</div>
+<div style="font-size:11px;color:#fce7f3">طالب</div>
 </div>
-<div class="bg-white/10 rounded-2xl p-3 text-center backdrop-blur">
-<div id="courseStatBookings" class="text-2xl font-extrabold">0</div>
-<div class="text-xs text-purple-100">حجز</div>
+<div style="background:rgba(255,255,255,.15);border-radius:14px;padding:12px;text-align:center">
+<div id="courseStatBookings" style="font-size:22px;font-weight:800">0</div>
+<div style="font-size:11px;color:#fce7f3">حجز</div>
 </div>
 </div>
 </div>
-<h3 class="text-lg font-extrabold mb-4">🔥 الكورسات المميزة</h3>
-<div id="featuredCourses" class="space-y-3"></div>
+<h3 style="font-size:18px;font-weight:800;margin-bottom:16px">🔥 الكورسات المميزة</h3>
+<div id="featuredCourses" style="display:grid;grid-template-columns:1fr;gap:12px"></div>
 </section>
 
 <section id="tab-courses" class="hidden fade-in">
-<h2 class="text-xl font-extrabold mb-4">📚 جميع الكورسات</h2>
-<div class="bg-white rounded-2xl p-4 mb-4 border border-slate-200">
-<div class="space-y-2">
-<div class="relative">
-<i class="fa-solid fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-<input id="searchInput" oninput="renderCourses()" type="text" placeholder="ابحث بالعنوان..." class="w-full pr-10 pl-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+<h2 style="font-size:20px;font-weight:800;margin-bottom:16px">📚 جميع الكورسات</h2>
+<div style="background:#fff;border-radius:16px;padding:12px;margin-bottom:16px;border:1px solid #e2e8f0">
+<div style="display:grid;grid-template-columns:1fr;gap:8px">
+<div style="position:relative">
+<i class="fa-solid fa-search" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
+<input id="searchInput" oninput="renderCourses()" type="text" placeholder="ابحث بالعنوان..." style="width:100%;padding:10px 36px 10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px">
 </div>
-<div class="grid grid-cols-2 gap-2">
-<select id="filterLevel" onchange="renderCourses()" class="py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<select id="filterLevel" onchange="renderCourses()" style="padding:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:13px">
 <option value="">جميع المستويات</option>
 <option value="beginner">مبتدئ</option>
 <option value="intermediate">متوسط</option>
 <option value="advanced">متقدم</option>
 </select>
-<select id="filterPrice" onchange="renderCourses()" class="py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+<select id="filterPrice" onchange="renderCourses()" style="padding:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:13px">
 <option value="">جميع الأسعار</option>
 <option value="free">مجاني</option>
 <option value="paid">مدفوع</option>
@@ -606,53 +1049,53 @@ body{background:#f1f5f9;transition:background-color .3s}
 </div>
 </div>
 </div>
-<div id="allCourses" class="space-y-3"></div>
+<div id="allCourses" style="display:grid;grid-template-columns:1fr;gap:12px"></div>
 </section>
 
 <section id="tab-courses-favorites" class="hidden fade-in">
-<h2 class="text-xl font-extrabold mb-4">❤️ المفضلة</h2>
-<div id="favoritesList" class="space-y-3"></div>
-<div id="favoritesEmpty" class="hidden text-center py-16 text-slate-400">
-<i class="fa-regular fa-heart text-5xl mb-3 block"></i>
+<h2 style="font-size:20px;font-weight:800;margin-bottom:16px">❤️ المفضلة</h2>
+<div id="favoritesList" style="display:grid;grid-template-columns:1fr;gap:12px"></div>
+<div id="favoritesEmpty" class="hidden" style="text-align:center;padding:60px 20px;color:#94a3b8">
+<i class="fa-regular fa-heart" style="font-size:40px;margin-bottom:12px;display:block"></i>
 <p>لم تقم بإضافة أي كورس للمفضلة</p>
 </div>
 </section>
 
 <section id="tab-courses-bookings" class="hidden fade-in">
-<h2 class="text-xl font-extrabold mb-4">📅 حجوزاتي</h2>
-<div id="bookingsList" class="space-y-3"></div>
-<div id="bookingsEmpty" class="hidden text-center py-16 text-slate-400">
-<i class="fa-solid fa-calendar-xmark text-5xl mb-3 block"></i>
+<h2 style="font-size:20px;font-weight:800;margin-bottom:16px">📅 حجوزاتي</h2>
+<div id="bookingsList" style="display:grid;gap:12px"></div>
+<div id="bookingsEmpty" class="hidden" style="text-align:center;padding:60px 20px;color:#94a3b8">
+<i class="fa-solid fa-calendar-xmark" style="font-size:40px;margin-bottom:12px;display:block"></i>
 <p>لا توجد حجوزات حتى الآن</p>
 </div>
 </section>
 
 <section id="tab-courses-admin" class="hidden fade-in">
-<h2 class="text-xl font-extrabold mb-4">🛡️ لوحة الأدمن</h2>
-<div class="grid grid-cols-2 gap-3 mb-5">
-<div class="bg-white rounded-2xl p-4 border border-slate-200">
-<div id="adminUsersCount" class="text-2xl font-extrabold text-blue-600">0</div>
-<div class="text-xs text-slate-500 mt-1">👥 المستخدمون</div>
+<h2 style="font-size:20px;font-weight:800;margin-bottom:16px">🛡️ لوحة الأدمن</h2>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px">
+<div style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0">
+<div id="adminUsersCount" style="font-size:26px;font-weight:800;color:#7c3aed">0</div>
+<div style="font-size:11px;color:#64748b;margin-top:4px">👥 المستخدمون</div>
 </div>
-<div class="bg-white rounded-2xl p-4 border border-slate-200">
-<div id="adminCoursesCount" class="text-2xl font-extrabold text-purple-600">0</div>
-<div class="text-xs text-slate-500 mt-1">📚 الكورسات</div>
+<div style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0">
+<div id="adminCoursesCount" style="font-size:26px;font-weight:800;color:#8b5cf6">0</div>
+<div style="font-size:11px;color:#64748b;margin-top:4px">📚 الكورسات</div>
 </div>
-<div class="bg-white rounded-2xl p-4 border border-slate-200">
-<div id="adminBookingsCount" class="text-2xl font-extrabold text-green-600">0</div>
-<div class="text-xs text-slate-500 mt-1">📅 الحجوزات</div>
+<div style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0">
+<div id="adminBookingsCount" style="font-size:26px;font-weight:800;color:#16a34a">0</div>
+<div style="font-size:11px;color:#64748b;margin-top:4px">📅 الحجوزات</div>
 </div>
-<div class="bg-white rounded-2xl p-4 border border-slate-200">
-<div id="adminReviewsCount" class="text-2xl font-extrabold text-amber-500">0</div>
-<div class="text-xs text-slate-500 mt-1">⭐ التقييمات</div>
+<div style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0">
+<div id="adminReviewsCount" style="font-size:26px;font-weight:800;color:#f59e0b">0</div>
+<div style="font-size:11px;color:#64748b;margin-top:4px">⭐ التقييمات</div>
 </div>
 </div>
-<div class="flex gap-2 mb-4 overflow-x-auto">
-<button onclick="coursesAdminSubTab('bookings')" id="cadmin-bookings" class="admin-sub-btn active" style="padding:8px 16px;font-size:13px;font-weight:700;background:#7c3aed;color:#fff;border:1px solid #7c3aed;border-radius:12px;white-space:nowrap;cursor:pointer">📅 الحجوزات</button>
-<button onclick="coursesAdminSubTab('users')" id="cadmin-users" class="admin-sub-btn" style="padding:8px 16px;font-size:13px;font-weight:700;background:#fff;border:1px solid #e2e8f0;border-radius:12px;color:#64748b;white-space:nowrap;cursor:pointer">👥 المستخدمون</button>
-<button onclick="coursesAdminSubTab('courses')" id="cadmin-courses" class="admin-sub-btn" style="padding:8px 16px;font-size:13px;font-weight:700;background:#fff;border:1px solid #e2e8f0;border-radius:12px;color:#64748b;white-space:nowrap;cursor:pointer">📚 الكورسات</button>
+<div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto">
+<button onclick="coursesAdminSubTab('bookings')" id="cadmin-bookings" class="admin-sub-btn active">📅 الحجوزات</button>
+<button onclick="coursesAdminSubTab('users')" id="cadmin-users" class="admin-sub-btn">👥 المستخدمون</button>
+<button onclick="coursesAdminSubTab('courses')" id="cadmin-courses" class="admin-sub-btn">📚 الكورسات</button>
 </div>
-<div id="cadminPanel-bookings" class="bg-white rounded-2xl p-4 border border-slate-200 overflow-x-auto">
+<div id="cadminPanel-bookings" style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;overflow-x:auto">
 <table style="width:100%;font-size:13px;border-collapse:collapse">
 <thead>
 <tr style="border-bottom:1px solid #f1f5f9">
@@ -665,7 +1108,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <tbody id="cAdminBookingsBody"></tbody>
 </table>
 </div>
-<div id="cadminPanel-users" class="hidden bg-white rounded-2xl p-4 border border-slate-200 overflow-x-auto">
+<div id="cadminPanel-users" class="hidden" style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;overflow-x:auto">
 <table style="width:100%;font-size:13px;border-collapse:collapse">
 <thead>
 <tr style="border-bottom:1px solid #f1f5f9">
@@ -677,7 +1120,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <tbody id="cAdminUsersBody"></tbody>
 </table>
 </div>
-<div id="cadminPanel-courses" class="hidden bg-white rounded-2xl p-4 border border-slate-200">
+<div id="cadminPanel-courses" class="hidden" style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
 <h3 style="font-weight:800">إدارة الكورسات</h3>
 <button onclick="showAddCourseForm()" style="padding:8px 16px;background:#7c3aed;color:#fff;border-radius:12px;font-size:13px;font-weight:700;border:none;cursor:pointer">
@@ -701,9 +1144,9 @@ body{background:#f1f5f9;transition:background-color .3s}
 </section>
 
 <section id="tab-courses-settings" class="hidden fade-in">
-<h2 class="text-xl font-extrabold mb-4">⚙️ الإعدادات</h2>
-<div class="bg-white rounded-2xl p-5 border border-slate-200">
-<div class="text-center mb-5">
+<h2 style="font-size:20px;font-weight:800;margin-bottom:16px">⚙️ الإعدادات</h2>
+<div style="background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0">
+<div style="text-align:center;margin-bottom:20px">
 <img id="cProfileAvatar" src="" style="width:80px;height:80px;border-radius:50%;border:3px solid #7c3aed;object-fit:cover;margin:0 auto 8px;display:block">
 <div style="font-weight:700" id="cProfileName">-</div>
 <div style="font-size:13px;color:#64748b" id="cProfileEmail">-</div>
@@ -722,25 +1165,25 @@ body{background:#f1f5f9;transition:background-color .3s}
 
 </div>
 
-<div id="reviewsModal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px">
-<div style="background:#fff;border-radius:20px;padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto">
+<div id="reviewsModal" class="modal-overlay">
+<div class="modal-content">
 <h3 id="reviewsTitle" style="font-size:18px;font-weight:800;margin-bottom:16px">⭐ التقييمات</h3>
 <div id="addReviewBox" style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:16px">
 <div style="margin-bottom:8px">
 <span style="font-size:11px;font-weight:700;color:#64748b">تقييمك:</span>
 <div id="reviewStars" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:4px;margin-top:4px">
-<span class="star" data-value="5" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
-<span class="star" data-value="4" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
-<span class="star" data-value="3" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
-<span class="star" data-value="2" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
-<span class="star" data-value="1" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
+<span class="star" data-value="5">★</span>
+<span class="star" data-value="4">★</span>
+<span class="star" data-value="3">★</span>
+<span class="star" data-value="2">★</span>
+<span class="star" data-value="1">★</span>
 </div>
 </div>
 <textarea id="reviewComment" placeholder="اكتب تعليقك..." style="width:100%;padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;height:80px"></textarea>
 <button onclick="submitCourseReview()" class="publish-btn blue" style="margin-top:8px">إرسال التقييم</button>
 </div>
 <div id="reviewsList" style="display:grid;gap:8px;max-height:250px;overflow-y:auto"></div>
-<button onclick="closeReviewsModal()" style="width:100%;margin-top:16px;padding:8px;font-size:13px;color:#64748b;background:none;border:none;cursor:pointer">إغلاق</button>
+<button onclick="closeModal('reviewsModal')" style="width:100%;margin-top:16px;padding:8px;font-size:13px;color:#64748b;background:none;border:none;cursor:pointer">إغلاق</button>
 </div>
 </div>
 
@@ -749,7 +1192,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import {
   getAuth, signInWithPopup, signOut, onAuthStateChanged, setPersistence,
-  browserLocalPersistence, deleteUser, FacebookAuthProvider
+  browserLocalPersistence, deleteUser, FacebookAuthProvider, GoogleAuthProvider,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail,
+  updatePassword, reauthenticateWithCredential, EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
   getStorage, ref as stRef, uploadBytesResumable, getDownloadURL
@@ -780,6 +1225,7 @@ const firestore = getFirestore(app);
 const facebookProvider = new FacebookAuthProvider();
 facebookProvider.addScope('email');
 facebookProvider.addScope('public_profile');
+const googleProvider = new GoogleAuthProvider();
 
 if (window.navigator?.userAgent && /wv|android|iphone|ipad|webview/i.test(navigator.userAgent)) {
   auth.settings.appVerificationDisabledForTesting = true;
@@ -802,6 +1248,13 @@ window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;
 window.deleteUser = deleteUser;
 window.facebookProvider = facebookProvider;
+window.googleProvider = googleProvider;
+window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+window.sendPasswordResetEmail = sendPasswordResetEmail;
+window.updatePassword = updatePassword;
+window.reauthenticateWithCredential = reauthenticateWithCredential;
+window.EmailAuthProvider = EmailAuthProvider;
 window.stRef = stRef;
 window.uploadBytesResumable = uploadBytesResumable;
 window.getDownloadURL = getDownloadURL;
@@ -838,6 +1291,8 @@ let blocksData = [];
 let newsData = [];
 let notificationsData = [];
 let materialsData = [];
+let contacts = [];
+let complaints = [];
 let currentViewerImage = '';
 let setupStage = '', setupGrade = '', setupSubjects = [];
 let setupProfileImg = '', setupIdImg = '';
@@ -846,6 +1301,8 @@ let deferredPrompt = null;
 let messaging = null;
 let currentPlatform = 'center';
 let currentCoursesTab = 'courses-home';
+let selectedLoginMethod = 'phone';
+let selectedRegisterMethod = 'phone';
 
 let courses = [];
 let courseReviews = [];
@@ -862,8 +1319,8 @@ const ADMIN_PASSWORD = 'Sigma@2024';
 const ADMIN_PASSWORD_COURSES = 'Sigma@2026';
 
 const subjectsByStage = {
-  'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية'],
-  'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية']
+  'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية', 'فرنسية', 'تاريخ', 'جغرافيا', 'فلسفة'],
+  'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية', 'دراسات', 'حاسب آلي']
 };
 
 function showToast(msg, type = 'info') {
@@ -887,6 +1344,11 @@ function togglePasswordVisibility(id, icon) {
 }
 window.togglePasswordVisibility = togglePasswordVisibility;
 
+function openModal(id) { document.getElementById(id)?.classList.add('show'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
+window.openModal = openModal;
+window.closeModal = closeModal;
+
 function openImageViewer(src) {
   const v = document.getElementById('imageViewerModal');
   const img = document.getElementById('viewerImage2');
@@ -895,8 +1357,18 @@ function openImageViewer(src) {
   v.classList.add('show');
 }
 function closeImageViewer() { document.getElementById('imageViewerModal')?.classList.remove('show'); }
+function downloadImage() {
+  if (currentViewerImage) {
+    const a = document.createElement('a');
+    a.href = currentViewerImage;
+    a.download = 'sigma_' + Date.now() + '.jpg';
+    a.click();
+    showToast('✅ جاري التحميل', 'success');
+  }
+}
 window.openImageViewer = openImageViewer;
 window.closeImageViewer = closeImageViewer;
+window.downloadImage = downloadImage;
 
 function toggleDarkMode() {
   darkMode = !darkMode;
@@ -922,6 +1394,7 @@ function openSettingsPanel(name) {
   });
   document.getElementById(`panel-${name}`)?.classList.remove('hidden');
   if (name === 'notifications') updateNotifPermStatus();
+  if (name === 'edit') loadSubjectsList();
 }
 function closeSettingsPanel() {
   document.getElementById('settingsMain').classList.remove('hidden');
@@ -1017,8 +1490,97 @@ function switchCoursesTab(id) {
 }
 window.switchCoursesTab = switchCoursesTab;
 
+function selectLoginMethod(method) {
+  selectedLoginMethod = method;
+  ['Phone', 'Google', 'Email', 'Facebook'].forEach(m => {
+    document.getElementById(`loginOpt${m}`)?.classList.remove('active');
+  });
+  document.getElementById(`loginOpt${method.charAt(0).toUpperCase() + method.slice(1)}`)?.classList.add('active');
+  document.getElementById('loginFormPhone').classList.toggle('hidden', method !== 'phone');
+  document.getElementById('loginFormEmail').classList.toggle('hidden', method !== 'email');
+  document.getElementById('loginFormGoogle').classList.toggle('hidden', method !== 'google');
+  document.getElementById('loginFormFacebook').classList.toggle('hidden', method !== 'facebook');
+}
+window.selectLoginMethod = selectLoginMethod;
+
+function selectRegisterMethod(method) {
+  selectedRegisterMethod = method;
+  ['Phone', 'Google', 'Email', 'Facebook'].forEach(m => {
+    document.getElementById(`regOpt${m}`)?.classList.remove('active');
+  });
+  document.getElementById(`regOpt${method.charAt(0).toUpperCase() + method.slice(1)}`)?.classList.add('active');
+  document.getElementById('regFormPhone').classList.toggle('hidden', method !== 'phone');
+  document.getElementById('regFormEmail').classList.toggle('hidden', method !== 'email');
+  document.getElementById('regFormGoogle').classList.toggle('hidden', method !== 'google');
+  document.getElementById('regFormFacebook').classList.toggle('hidden', method !== 'facebook');
+}
+window.selectRegisterMethod = selectRegisterMethod;
+
+function loginByPhone() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  const password = document.getElementById('loginPhonePassword').value;
+  if (!phone || !password) return showToast('⚠️ املأ جميع الحقول', 'warning');
+  if (!/^[0-9]{10,11}$/.test(phone)) return showToast('⚠️ رقم الهاتف غير صحيح', 'warning');
+  const email = `user_${phone}@sigma-center.com`;
+  showToast('⏳ جاري تسجيل الدخول...', 'info');
+  window.signInWithEmailAndPassword(window.auth, email, password)
+    .then(() => showToast('✅ مرحباً بك!', 'success'))
+    .catch(error => {
+      if (error.code === 'auth/user-not-found') showToast('❌ لا يوجد حساب', 'error');
+      else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') showToast('❌ البيانات خاطئة', 'error');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.loginByPhone = loginByPhone;
+
+function loginByEmail() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginEmailPassword').value;
+  if (!email || !password) return showToast('⚠️ املأ جميع الحقول', 'warning');
+  showToast('⏳ جاري تسجيل الدخول...', 'info');
+  window.signInWithEmailAndPassword(window.auth, email, password)
+    .then(() => showToast('✅ مرحباً بك!', 'success'))
+    .catch(error => {
+      if (error.code === 'auth/user-not-found') showToast('❌ لا يوجد حساب', 'error');
+      else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') showToast('❌ البيانات خاطئة', 'error');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.loginByEmail = loginByEmail;
+
+function loginWithGoogle() {
+  showToast('⏳ جاري الدخول بجوجل...', 'info');
+  window.signInWithPopup(window.auth, window.googleProvider)
+    .then(result => {
+      const user = result.user;
+      showToast('✅ مرحباً بك!', 'success');
+      window.onValue(window.ref(window.db, `users/${user.uid}`), snap => {
+        const data = snap.val();
+        if (!data) {
+          window.set(window.ref(window.db, `users/${user.uid}`), {
+            name: user.displayName || 'طالب',
+            email: user.email,
+            phone: '',
+            authMethod: 'google',
+            photoURL: user.photoURL || '',
+            setupCompleted: false,
+            profileStatus: 'setup_pending',
+            createdAt: new Date().toISOString(),
+            online: true,
+            lastSeen: Date.now()
+          });
+        }
+      }, { onlyOnce: true });
+    })
+    .catch(error => {
+      if (error.code === 'auth/popup-closed-by-user') showToast('⚠️ تم الإلغاء', 'warning');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.loginWithGoogle = loginWithGoogle;
+
 function loginWithFacebook() {
-  showToast('⏳ جاري الدخول عبر فيسبوك...', 'info');
+  showToast('⏳ جاري الدخول بفيسبوك...', 'info');
   window.signInWithPopup(window.auth, window.facebookProvider)
     .then(result => {
       const user = result.user;
@@ -1037,8 +1599,6 @@ function loginWithFacebook() {
             online: true,
             lastSeen: Date.now()
           });
-        } else {
-          window.set(window.ref(window.db, `users/${user.uid}/online`), true);
         }
       }, { onlyOnce: true });
     })
@@ -1049,6 +1609,111 @@ function loginWithFacebook() {
     });
 }
 window.loginWithFacebook = loginWithFacebook;
+
+function registerByPhone() {
+  const name = document.getElementById('regPhoneName').value.trim();
+  const phone = document.getElementById('regPhoneNumber').value.trim();
+  const password = document.getElementById('regPhonePassword').value;
+  const confirm = document.getElementById('regPhoneConfirm').value;
+  if (!name || !phone || !password) return showToast('⚠️ املأ الحقول', 'warning');
+  if (!/^[0-9]{10,11}$/.test(phone)) return showToast('⚠️ رقم الهاتف غير صحيح', 'warning');
+  if (password !== confirm) return showToast('⚠️ كلمتا المرور غير متطابقتين', 'warning');
+  if (password.length < 6) return showToast('⚠️ كلمة المرور 6 أحرف', 'warning');
+  const email = `user_${phone}@sigma-center.com`;
+  showToast('⏳ جاري إنشاء الحساب...', 'info');
+  window.createUserWithEmailAndPassword(window.auth, email, password)
+    .then(result => {
+      const user = result.user;
+      window.set(window.ref(window.db, `users/${user.uid}`), {
+        name, email, phone, authMethod: 'phone',
+        stage: '', grade: '', subjects: [],
+        school: '', parentPhone: '', profileImage: '', idImage: '',
+        profileStatus: 'setup_pending', freeEditUsed: false, setupCompleted: false,
+        createdAt: new Date().toISOString(), online: true, lastSeen: Date.now()
+      }).then(() => {
+        showToast('✅ تم إنشاء الحساب!', 'success');
+      });
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') showToast('❌ الرقم مستخدم', 'error');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.registerByPhone = registerByPhone;
+
+function registerByEmail() {
+  const name = document.getElementById('regEmailName').value.trim();
+  const email = document.getElementById('regEmailAddress').value.trim();
+  const phone = document.getElementById('regEmailPhone').value.trim();
+  const password = document.getElementById('regEmailPassword').value;
+  const confirm = document.getElementById('regEmailConfirm').value;
+  if (!name || !email || !phone || !password) return showToast('⚠️ املأ الحقول', 'warning');
+  if (password !== confirm) return showToast('⚠️ كلمتا المرور غير متطابقتين', 'warning');
+  if (password.length < 6) return showToast('⚠️ كلمة المرور 6 أحرف', 'warning');
+  showToast('⏳ جاري إنشاء الحساب...', 'info');
+  window.createUserWithEmailAndPassword(window.auth, email, password)
+    .then(result => {
+      const user = result.user;
+      window.set(window.ref(window.db, `users/${user.uid}`), {
+        name, email, phone, authMethod: 'email',
+        stage: '', grade: '', subjects: [],
+        school: '', parentPhone: '', profileImage: '', idImage: '',
+        profileStatus: 'setup_pending', freeEditUsed: false, setupCompleted: false,
+        createdAt: new Date().toISOString(), online: true, lastSeen: Date.now()
+      }).then(() => {
+        showToast('✅ تم إنشاء الحساب!', 'success');
+      });
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') showToast('❌ البريد مستخدم', 'error');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.registerByEmail = registerByEmail;
+
+function registerWithGoogle() {
+  showToast('⏳ جاري التسجيل بجوجل...', 'info');
+  window.signInWithPopup(window.auth, window.googleProvider)
+    .then(result => {
+      const user = result.user;
+      window.set(window.ref(window.db, `users/${user.uid}`), {
+        name: user.displayName || 'طالب',
+        email: user.email, phone: '', authMethod: 'google',
+        photoURL: user.photoURL || '',
+        stage: '', grade: '', subjects: [],
+        school: '', parentPhone: '', profileImage: '', idImage: '',
+        profileStatus: 'setup_pending', freeEditUsed: false, setupCompleted: false,
+        createdAt: new Date().toISOString(), online: true, lastSeen: Date.now()
+      }).then(() => showToast('✅ تم التسجيل!', 'success'));
+    })
+    .catch(error => {
+      if (error.code === 'auth/popup-closed-by-user') showToast('⚠️ تم الإلغاء', 'warning');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.registerWithGoogle = registerWithGoogle;
+
+function registerWithFacebook() {
+  showToast('⏳ جاري التسجيل بفيسبوك...', 'info');
+  window.signInWithPopup(window.auth, window.facebookProvider)
+    .then(result => {
+      const user = result.user;
+      window.set(window.ref(window.db, `users/${user.uid}`), {
+        name: user.displayName || 'مستخدم',
+        email: user.email || '', phone: '', authMethod: 'facebook',
+        photoURL: user.photoURL || '',
+        stage: '', grade: '', subjects: [],
+        school: '', parentPhone: '', profileImage: '', idImage: '',
+        profileStatus: 'setup_pending', freeEditUsed: false, setupCompleted: false,
+        createdAt: new Date().toISOString(), online: true, lastSeen: Date.now()
+      }).then(() => showToast('✅ تم التسجيل!', 'success'));
+    })
+    .catch(error => {
+      if (error.code === 'auth/popup-closed-by-user') showToast('⚠️ تم الإلغاء', 'warning');
+      else showToast('❌ ' + error.message, 'error');
+    });
+}
+window.registerWithFacebook = registerWithFacebook;
 
 function initSetupScreen() {
   setupStage = ''; setupGrade = ''; setupSubjects = [];
@@ -1062,9 +1727,9 @@ function initSetupScreen() {
   document.getElementById('idPreview').classList.add('hidden');
   document.getElementById('uploadProfileBox').classList.remove('uploaded');
   document.getElementById('uploadIdBox').classList.remove('uploaded');
-  if (userData?.photoURL && !setupProfileImg) {
-    setupProfileImg = userData.photoURL;
-    document.getElementById('profilePreview').src = userData.photoURL;
+  if (userData?.photoURL || userData?.profileImage) {
+    setupProfileImg = userData.photoURL || userData.profileImage;
+    document.getElementById('profilePreview').src = setupProfileImg;
     document.getElementById('profilePreview').classList.remove('hidden');
     document.getElementById('uploadProfileBox').classList.add('uploaded');
   }
@@ -1151,18 +1816,61 @@ function saveSetupData() {
     updatedAt: new Date().toISOString()
   }).then(() => {
     showToast('✅ تم الحفظ!', 'success');
-    setTimeout(() => switchTab('home'), 800);
   });
 }
 window.saveSetupData = saveSetupData;
 
+function handleResetPassword() {
+  let email = document.getElementById('forgotEmail').value.trim();
+  if (!email) return showToast('⚠️ أدخل البريد', 'warning');
+  if (/^[0-9]{10,11}$/.test(email)) email = `user_${email}@sigma-center.com`;
+  showToast('⏳ جاري الإرسال...', 'info');
+  window.sendPasswordResetEmail(window.auth, email)
+    .then(() => {
+      showToast('✅ تم الإرسال', 'success');
+      document.getElementById('forgotEmail').value = '';
+    })
+    .catch(e => {
+      if (e.code === 'auth/user-not-found') showToast('❌ لا يوجد حساب', 'error');
+      else showToast('❌ ' + e.message, 'error');
+    });
+}
+window.handleResetPassword = handleResetPassword;
+
+async function changePassword() {
+  if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
+  const current = document.getElementById('currentPassword').value;
+  const newPass = document.getElementById('newPassword').value;
+  if (!current || !newPass) return showToast('⚠️ املأ الحقول', 'warning');
+  if (newPass.length < 6) return showToast('⚠️ كلمة المرور 6 أحرف', 'warning');
+  try {
+    const cred = window.EmailAuthProvider.credential(currentUser.email, current);
+    await window.reauthenticateWithCredential(currentUser, cred);
+    await window.updatePassword(currentUser, newPass);
+    showToast('✅ تم التغيير', 'success');
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+  } catch (e) {
+    if (e.code === 'auth/wrong-password') showToast('❌ كلمة المرور خاطئة', 'error');
+    else showToast('❌ ' + e.message, 'error');
+  }
+}
+window.changePassword = changePassword;
+
 function handleAdminTab() {
+  const denied = document.getElementById('adminDenied');
   const login = document.getElementById('adminLogin');
   const panel = document.getElementById('adminPanel');
-  if (!currentUser || !ADMIN_UIDS.includes(currentUser.uid) || !isAdmin) {
+  if (!currentUser || !ADMIN_UIDS.includes(currentUser.uid)) {
+    denied.classList.remove('hidden');
+    login.classList.add('hidden');
+    panel.classList.add('hidden');
+  } else if (!isAdmin) {
+    denied.classList.add('hidden');
     login.classList.remove('hidden');
     panel.classList.add('hidden');
   } else {
+    denied.classList.add('hidden');
     login.classList.add('hidden');
     panel.classList.remove('hidden');
     startStats();
@@ -1173,7 +1881,12 @@ function handleAdminTab() {
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
   if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
-  if (!ADMIN_UIDS.includes(currentUser.uid)) return showToast('⛔ ليس إدارياً', 'error');
+  if (!ADMIN_UIDS.includes(currentUser.uid)) {
+    showToast('⛔ ليس إدارياً', 'error');
+    document.getElementById('adminDenied').classList.remove('hidden');
+    document.getElementById('adminLogin').classList.add('hidden');
+    return;
+  }
   if (pass === ADMIN_PASSWORD) {
     isAdmin = true;
     document.getElementById('adminLogin').classList.add('hidden');
@@ -1191,9 +1904,20 @@ function startStats() {
     const data = snap.val() || {};
     allUsers = data;
     const total = Object.keys(data).length;
-    const active = Object.values(data).filter(u => u.online === true).length;
+    let active = 0, pending = 0;
+    const now = Date.now();
+    Object.keys(data).forEach(k => {
+      const u = data[k];
+      if (u.online === true || (u.lastSeen && u.lastSeen > now - 86400000)) active++;
+      if (u.profileStatus === 'pending' || u.profileStatus === 'setup_pending') pending++;
+    });
     document.getElementById('statUsers').textContent = total;
     document.getElementById('statActive').textContent = active;
+    document.getElementById('statPending').textContent = pending;
+  });
+  window.onValue(window.ref(window.db, 'schedules'), snap => {
+    const d = snap.val();
+    document.getElementById('statSchedules').textContent = d ? Object.keys(d).length : 0;
   });
   window.onValue(window.ref(window.db, 'videos'), snap => {
     const d = snap.val() || {};
@@ -1222,14 +1946,14 @@ function loadAdminStudents() {
           <div style="font-size:10px;color:#64748b;">${s.stage || ''} • ${s.grade ? 'الصف ' + s.grade : ''}</div>
         </div>
         <div style="display:flex;gap:4px;">
-          ${s.photoURL || s.profileImage ? `<img src="${s.profileImage || s.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;cursor:pointer;" onclick="openImageViewer('${s.profileImage || s.photoURL}')">` : ''}
+          ${s.profileImage || s.photoURL ? `<img src="${s.profileImage || s.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;cursor:pointer;" onclick="openImageViewer('${s.profileImage || s.photoURL}')">` : ''}
         </div>
       </div>
     `).join('');
   });
 }
 
-function exportStudentsPDF() {
+function generateStudentsPDF() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
   const students = Object.keys(allUsers).map(k => ({ id: k, ...allUsers[k] })).filter(s => s.name);
   if (!students.length) return showToast('⚠️ لا يوجد طلاب', 'warning');
@@ -1260,7 +1984,8 @@ function exportStudentsPDF() {
     showToast('✅ تم التصدير', 'success');
   } catch (e) { showToast('❌ ' + e.message, 'error'); }
 }
-window.exportStudentsPDF = exportStudentsPDF;
+window.generateStudentsPDF = generateStudentsPDF;
+window.exportStudentsPDF = generateStudentsPDF;
 
 function addBuildingBlock() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
@@ -1391,11 +2116,9 @@ function renderVideosList() {
     return `
       <div class="bg-white rounded-2xl overflow-hidden border border-slate-200" style="margin-bottom:12px;">
         <div style="position:relative;background:black;aspect-ratio:16/9;overflow:hidden;" class="video-protected-wrapper">
-          ${v.uploadMethod === 'url' && !isYoutube 
+          ${v.uploadMethod === 'url' || isYoutube
             ? `<iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`
-            : isYoutube
-              ? `<iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`
-              : `<video src="${v.url}" controls style="width:100%;height:100%;" controlsList="nodownload" disablePictureInPicture></video>`
+            : `<video src="${v.url}" controls style="width:100%;height:100%;" controlsList="nodownload" disablePictureInPicture></video>`
           }
           <div class="video-watermark" style="top:10%;right:10%;">${userData?.name || ''}</div>
           <div class="video-watermark" style="bottom:15%;left:10%;">© سيجما</div>
@@ -1470,10 +2193,13 @@ async function addSchedule() {
   const time = document.getElementById('schTime').value;
   const room = document.getElementById('schRoom').value;
   const stage = document.getElementById('schStage').value;
+  let imageData = '';
+  const file = document.getElementById('schImage').files[0];
+  if (file) imageData = await fileToBase64(file);
   if (!subject) return showToast('⚠️ اكتب المادة', 'warning');
-  await window.push(window.ref(window.db, 'schedules'), { day, subject, teacher, time, room, stage });
+  await window.push(window.ref(window.db, 'schedules'), { day, subject, teacher, time, room, stage, imageData });
   showToast('✅ تمت الإضافة', 'success');
-  ['schSubject','schTeacher','schTime','schRoom'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['schSubject','schTeacher','schTime','schRoom','schImage'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 }
 window.addSchedule = addSchedule;
 
@@ -1501,20 +2227,49 @@ function renderSchedule() {
   if (currentFilter === 'tomorrow') items = items.filter(i => i.day === tomorrow);
   if (!items.length) { container.innerHTML = '<div style="text-align:center;padding:16px;color:#94a3b8;font-size:12px;">لا توجد حصص</div>'; return; }
   container.innerHTML = items.slice(0, 20).map(i => `
-    <div style="background:white;border-radius:12px;padding:10px;border:1px solid #e2e8f0;margin-bottom:6px;">
+    <div class="schedule-item">
       ${i.imageData ? `<img src="${i.imageData}" style="width:100%;height:96px;object-fit:cover;border-radius:8px;margin-bottom:8px;" onclick="openImageViewer('${i.imageData}')">` : ''}
       <div style="display:flex;justify-content:space-between;">
         <div>
-          <span style="font-size:9px;background:#f3e8ff;color:#7c3aed;padding:2px 6px;border-radius:4px;">${i.day}</span>
-          <span style="font-size:9px;background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:4px;margin-right:4px;">${i.stage||''}</span>
-          <div style="font-weight:700;font-size:13px;margin-top:4px;">${i.subject||''}</div>
-          <div style="font-size:11px;color:#64748b;"><i class="fa-solid fa-chalkboard-user"></i> ${i.teacher||''}</div>
+          <div style="display:flex;gap:4px;margin-bottom:2px;">
+            <span style="font-size:9px;background:#f3e8ff;color:#7c3aed;padding:2px 6px;border-radius:4px;">${i.day}</span>
+            <span style="font-size:9px;background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:4px;">${i.stage||''}</span>
+          </div>
+          <div class="subject">${i.subject||''}</div>
+          <div class="teacher"><i class="fa-solid fa-chalkboard-user"></i> ${i.teacher||''}</div>
         </div>
         <div style="text-align:center;">
-          <div style="font-weight:800;color:#d97706;">${i.time||''}</div>
+          <div class="time">${i.time||''}</div>
           <div style="font-size:9px;color:#94a3b8;">${i.room||''}</div>
         </div>
       </div>
+    </div>
+  `).join('');
+}
+
+function renderMySchedule() {
+  const container = document.getElementById('myScheduleToday');
+  if (!container) return;
+  if (!scheduleData.length || !userData) {
+    container.innerHTML = '<div style="text-align:center;padding:12px;color:#94a3b8;font-size:12px;">لا توجد حصص لك اليوم</div>';
+    return;
+  }
+  const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const today = days[new Date().getDay()];
+  const my = scheduleData.filter(i => {
+    const dayMatch = i.day === today;
+    const stageMatch = i.stage === userData.stage || !i.stage;
+    const subjectMatch = !i.subject || (userData.subjects && userData.subjects.includes(i.subject));
+    return dayMatch && stageMatch && subjectMatch;
+  });
+  if (!my.length) {
+    container.innerHTML = '<div style="text-align:center;padding:12px;color:#94a3b8;font-size:12px;">📭 لا توجد حصص لك اليوم</div>';
+    return;
+  }
+  container.innerHTML = my.slice(0, 10).map(i => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f5f3ff;border-radius:8px;border:1px solid #ddd6fe;">
+      <div><span style="font-weight:700;font-size:13px;">${i.subject||''}</span><span style="font-size:11px;color:#64748b;display:block;">${i.teacher||''}</span></div>
+      <div style="text-align:center;"><span style="font-size:13px;font-weight:800;color:#d97706;">${i.time||''}</span><span style="font-size:9px;color:#94a3b8;display:block;">${i.room||''}</span></div>
     </div>
   `).join('');
 }
@@ -1538,23 +2293,21 @@ async function sendRealNotification() {
   const stage = document.getElementById('notifStage').value;
   const grade = document.getElementById('notifGrade').value;
   const subject = document.getElementById('notifSubject').value;
+  let imageData = '';
+  const file = document.getElementById('notifImage').files[0];
+  if (file) imageData = await fileToBase64(file);
   await window.push(window.ref(window.db, 'notifications'), {
-    title, body, stage, grade, subject,
+    title, body, imageData, stage, grade, subject,
     date: new Date().toLocaleString('ar-EG'),
     timestamp: Date.now()
   });
-  try { await sendFCMToAll(title, body); } catch (e) { console.warn('FCM:', e); }
   showToast('✅ تم الإرسال', 'success');
   document.getElementById('notifTitle').value = '';
   document.getElementById('notifBody').value = '';
   document.getElementById('notifSubject').value = '';
+  document.getElementById('notifImage').value = '';
 }
 window.sendRealNotification = sendRealNotification;
-
-async function sendFCMToAll(title, body) {
-  console.log('📤 Sending FCM:', { title, body });
-}
-window.sendFCMToAll = sendFCMToAll;
 
 async function addNews() {
   if (!isAdmin) return;
@@ -1592,6 +2345,189 @@ async function uploadMat() {
 }
 window.uploadMat = uploadMat;
 
+function addContact() {
+  if (!isAdmin) return;
+  const number = document.getElementById('newContact').value;
+  const type = document.getElementById('contactType').value;
+  if (!number) return showToast('⚠️ اكتب الرقم', 'warning');
+  window.push(window.ref(window.db, 'contacts'), { number, type });
+  document.getElementById('newContact').value = '';
+  showToast('✅ تم الإضافة', 'success');
+}
+window.addContact = addContact;
+
+function renderContacts() {
+  const center = document.getElementById('centerContacts');
+  const support = document.getElementById('supportContacts');
+  const adminList = document.getElementById('contactsList');
+  const centerNums = contacts.filter(c => c.type === 'phone' || c.type === 'whatsapp');
+  const supportNums = contacts.filter(c => c.type === 'support');
+  if (center) center.innerHTML = centerNums.length ? centerNums.map(c => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#f8fafc;border-radius:8px;font-size:12px;margin-bottom:4px;">
+      <i class="${c.type === 'whatsapp' ? 'fa-brands fa-whatsapp text-green-600' : 'fa-solid fa-phone text-blue-600'}"></i>
+      <span>${c.number}</span>
+    </div>
+  `).join('') : '<p style="text-align:center;color:#94a3b8;font-size:12px;">لا توجد أرقام</p>';
+  if (support) support.innerHTML = supportNums.length ? supportNums.map(c => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#f8fafc;border-radius:8px;font-size:12px;margin-bottom:4px;">
+      <i class="fa-solid fa-headset text-cyan-600"></i><span>${c.number}</span>
+    </div>
+  `).join('') : '<p style="text-align:center;color:#94a3b8;font-size:12px;">لا توجد أرقام</p>';
+  if (adminList) adminList.innerHTML = contacts.map(c => `
+    <div style="display:flex;justify-content:space-between;padding:6px;background:#f8fafc;border-radius:8px;font-size:12px;margin-bottom:4px;">
+      <span>${c.type === 'whatsapp' ? '💬' : c.type === 'support' ? '🛠️' : '📞'} ${c.number}</span>
+      <button onclick="deleteItemFromPath('contacts','${c.id}')" style="color:#ef4444;background:none;border:none;"><i class="fa-solid fa-trash"></i></button>
+    </div>
+  `).join('');
+}
+
+function renderComplaints() {
+  const container = document.getElementById('complaintsList');
+  if (!container) return;
+  if (!complaints.length) {
+    container.innerHTML = '<div style="text-align:center;padding:12px;color:#94a3b8;font-size:12px;">لا توجد شكاوى</div>';
+    return;
+  }
+  container.innerHTML = complaints.slice().reverse().slice(0, 15).map(c => `
+    <div class="complaint-card">
+      <div style="display:flex;justify-content:space-between;"><span style="font-weight:700;">${c.userName || 'طالب'}</span><span style="color:#7c3aed;font-size:11px;">📱 ${c.userPhone || ''}</span></div>
+      <div style="font-size:12px;color:#475569;margin-top:4px;">${c.text}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        <span style="color:#94a3b8;font-size:10px;">${c.date || ''}</span>
+        <button onclick="deleteItemFromPath('complaints','${c.id}')" style="color:#ef4444;background:none;border:none;font-size:11px;"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function sendComplaint() {
+  const text = document.getElementById('complaintText').value;
+  if (!text) return showToast('⚠️ اكتب الشكوى', 'warning');
+  if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
+  window.push(window.ref(window.db, 'complaints'), {
+    text, userId: currentUser.uid,
+    userName: userData?.name || currentUser.email,
+    userEmail: currentUser.email,
+    userPhone: userData?.phone || '',
+    date: new Date().toLocaleString('ar-EG'),
+    timestamp: Date.now()
+  });
+  document.getElementById('complaintText').value = '';
+  showToast('✅ تم الإرسال', 'success');
+}
+window.sendComplaint = sendComplaint;
+
+function saveProfile() {
+  if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
+  const stage = document.getElementById('profStage').value;
+  const grade = document.getElementById('profGrade').value;
+  const phone = document.getElementById('profPhone').value;
+  const school = document.getElementById('profSchool').value;
+  const parentPhone = document.getElementById('profParentPhone').value;
+  const checked = document.querySelectorAll('.subject-check:checked');
+  const subjects = Array.from(checked).map(cb => cb.value);
+  if (!subjects.length) return showToast('⚠️ اختر مادة', 'warning');
+  window.update(window.ref(window.db, `users/${currentUser.uid}`), {
+    stage, grade, subjects, phone, school, parentPhone,
+    freeEditUsed: true, profileStatus: 'pending',
+    updatedAt: new Date().toISOString()
+  }).then(() => {
+    showToast('✅ تم الحفظ', 'success');
+    closeSettingsPanel();
+  });
+}
+window.saveProfile = saveProfile;
+
+function loadSubjectsList() {
+  const container = document.getElementById('subjectsCheckbox');
+  if (!container) return;
+  container.innerHTML = '';
+  const stage = document.getElementById('profStage').value;
+  let subjects = [];
+  const dbSubjects = subjectsData.filter(s => s.stage === stage);
+  if (dbSubjects.length > 0) subjects = dbSubjects.map(s => s.name);
+  else subjects = subjectsByStage[stage] || [];
+  subjects.forEach(s => {
+    const checked = userData?.subjects?.includes(s) || false;
+    container.innerHTML += `<label style="display:flex;align-items:center;gap:6px;padding:6px;background:#f8fafc;border-radius:8px;font-size:12px;cursor:pointer;"><input type="checkbox" value="${s}" class="subject-check" ${checked?'checked':''}> ${s}</label>`;
+  });
+  document.getElementById('profStage').onchange = loadSubjectsList;
+}
+window.loadSubjectsList = loadSubjectsList;
+
+function renderUser() {
+  const avatar = document.getElementById('userAvatar');
+  const name = document.getElementById('userName');
+  const sub = document.getElementById('userSubtitle');
+  const subjectsList = document.getElementById('userSubjectsList');
+  if (!avatar || !name) return;
+  if (currentUser && userData) {
+    avatar.src = userData.profileImage || userData.photoURL || 'https://ui-avatars.com/api/?name=User&background=7c3aed&color=fff';
+    name.textContent = `مرحباً ${userData.name || ''}`;
+    sub.textContent = `${userData.stage || ''} • الصف ${userData.grade || ''}`;
+    if (subjectsList) {
+      subjectsList.innerHTML = (userData.subjects || []).map(s => `<span class="subject-chip">${s}</span>`).join('');
+    }
+    document.getElementById('infoName').textContent = userData.name || '-';
+    document.getElementById('infoEmail').textContent = userData.email || '-';
+    document.getElementById('infoPhone').textContent = userData.phone || '-';
+    document.getElementById('infoParentPhone').textContent = userData.parentPhone || '-';
+    document.getElementById('infoSchool').textContent = userData.school || '-';
+    document.getElementById('infoStage').textContent = userData.stage || '-';
+    document.getElementById('infoGrade').textContent = userData.grade || '-';
+    document.getElementById('infoSubjects').textContent = (userData.subjects || []).join('، ') || '-';
+    document.getElementById('infoStatus').textContent = userData.profileStatus === 'approved' ? '✅ معتمدة' : userData.profileStatus === 'pending' ? '⏳ قيد المراجعة' : '⚠️ ناقص';
+    const infoAvatar = document.getElementById('infoAvatar');
+    if (userData.profileImage) {
+      infoAvatar.src = userData.profileImage;
+      infoAvatar.style.display = 'block';
+    }
+    document.getElementById('editEmailDisplay').value = userData.email || '';
+    document.getElementById('profPhone').value = userData.phone || '';
+    document.getElementById('profSchool').value = userData.school || '';
+    document.getElementById('profParentPhone').value = userData.parentPhone || '';
+    if (userData.stage) document.getElementById('profStage').value = userData.stage;
+    if (userData.grade) document.getElementById('profGrade').value = userData.grade;
+    const sub2 = document.getElementById('editStatusSub');
+    if (sub2) {
+      if (userData.freeEditUsed) {
+        sub2.textContent = '⚠️ يحتاج موافقة';
+        sub2.style.color = '#f59e0b';
+      } else {
+        sub2.textContent = '✅ تعديل مجاني متاح';
+        sub2.style.color = '#22c55e';
+      }
+    }
+  }
+}
+
+function deleteAccount() {
+  if (!currentUser) return;
+  if (!confirm('⚠️ حذف الحساب نهائياً؟')) return;
+  window.remove(window.ref(window.db, `users/${currentUser.uid}`))
+    .then(() => window.deleteUser(currentUser))
+    .then(() => { showToast('✅ تم الحذف', 'success'); setTimeout(() => window.location.reload(), 1500); })
+    .catch(e => {
+      if (e.code === 'auth/requires-recent-login') { showToast('⚠️ أعد تسجيل الدخول', 'warning'); window.signOut(window.auth); }
+      else showToast('❌ ' + e.message, 'error');
+    });
+}
+window.deleteAccount = deleteAccount;
+
+function deleteItemFromPath(path, key) {
+  if (!isAdmin || !confirm('حذف؟')) return;
+  window.remove(window.ref(window.db, `${path}/${key}`));
+  showToast('✅ تم الحذف', 'success');
+}
+window.deleteItemFromPath = deleteItemFromPath;
+
+function deleteAllFromPath(path) {
+  if (!isAdmin || !confirm(`حذف كل ${path}؟`)) return;
+  window.set(window.ref(window.db, path), null);
+  showToast('✅ تم الحذف', 'success');
+}
+window.deleteAllFromPath = deleteAllFromPath;
+
 async function requestNotificationPermission() {
   try {
     const permission = await Notification.requestPermission();
@@ -1626,38 +2562,12 @@ function updateNotifPermStatus() {
   else el.innerHTML = '<span style="color:#f59e0b;">⏳ لم يتم التفعيل</span>';
 }
 
-function deleteItemFromPath(path, key) {
-  if (!isAdmin || !confirm('حذف؟')) return;
-  window.remove(window.ref(window.db, `${path}/${key}`));
-  showToast('✅ تم الحذف', 'success');
-}
-window.deleteItemFromPath = deleteItemFromPath;
-
-function deleteAllFromPath(path) {
-  if (!isAdmin || !confirm(`حذف كل ${path}؟`)) return;
-  window.set(window.ref(window.db, path), null);
-  showToast('✅ تم الحذف', 'success');
-}
-window.deleteAllFromPath = deleteAllFromPath;
-
-function deleteAccount() {
-  if (!currentUser) return;
-  if (!confirm('⚠️ حذف الحساب نهائياً؟')) return;
-  window.remove(window.ref(window.db, `users/${currentUser.uid}`))
-    .then(() => window.deleteUser(currentUser))
-    .then(() => { showToast('✅ تم الحذف', 'success'); setTimeout(() => window.location.reload(), 1500); })
-    .catch(e => {
-      if (e.code === 'auth/requires-recent-login') { showToast('⚠️ أعد تسجيل الدخول', 'warning'); window.signOut(window.auth); }
-      else showToast('❌ ' + e.message, 'error');
-    });
-}
-window.deleteAccount = deleteAccount;
-
 function getDemoCourses() {
   return [
     { id: 'demo-1', title: 'أساسيات البرمجة بلغة Python', description: 'تعلم البرمجة من الصفر', level: 'beginner', price: 0, image: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=600', instructor: 'م. أحمد علي' },
     { id: 'demo-2', title: 'تطوير الويب الحديث - React', description: 'احترف بناء تطبيقات الويب', level: 'intermediate', price: 250, image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600', instructor: 'م. محمد سامي' },
-    { id: 'demo-3', title: 'الذكاء الاصطناعي وتعلم الآلة', description: 'مدخل شامل للذكاء الاصطناعي', level: 'advanced', price: 500, image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600', instructor: 'د. سارة إبراهيم' }
+    { id: 'demo-3', title: 'الذكاء الاصطناعي وتعلم الآلة', description: 'مدخل شامل للذكاء الاصطناعي', level: 'advanced', price: 500, image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600', instructor: 'د. سارة إبراهيم' },
+    { id: 'demo-4', title: 'تصميم واجهات المستخدم UI/UX', description: 'أسس تصميم تجارب المستخدم', level: 'beginner', price: 150, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600', instructor: 'أ. نورة خالد' }
   ];
 }
 
@@ -1700,7 +2610,7 @@ function createCourseCard(course) {
   const levelColor = { beginner: 'background:#dcfce7;color:#166534;', intermediate: 'background:#fef3c7;color:#92400e;', advanced: 'background:#fee2e2;color:#991b1b;' };
   const priceText = course.price === 0 ? '<span style="color:#16a34a;font-weight:700;">مجاني</span>' : `<span style="font-weight:700;">${course.price} ج.م</span>`;
   return `
-    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid #e2e8f0;">
+    <div class="course-card">
       <div style="position:relative;height:160px;background:linear-gradient(135deg,#7c3aed,#ec4899);">
         ${course.image ? `<img src="${course.image}" style="width:100%;height:100%;object-fit:cover;">` : ''}
         <button onclick="toggleFavorite('${course.id}')" style="position:absolute;top:12px;left:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
@@ -1711,6 +2621,9 @@ function createCourseCard(course) {
       <div style="padding:16px;">
         <h4 style="font-weight:800;margin-bottom:6px;">${course.title}</h4>
         <p style="font-size:12px;color:#64748b;margin-bottom:8px;">${course.description || ''}</p>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b;margin-bottom:12px;">
+          <i class="fa-solid fa-user-tie"></i><span>${course.instructor || ''}</span>
+        </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:12px;">${priceText}</div>
         <div style="display:flex;gap:8px;">
           <button onclick="bookCourse('${course.id}')" style="flex:1;padding:10px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">
@@ -1817,17 +2730,12 @@ async function showReviews(courseId) {
   document.getElementById('reviewsTitle').textContent = `⭐ تقييمات: ${course?.title || ''}`;
   await loadCourseReviews(courseId);
   renderReviewsList();
-  document.getElementById('reviewsModal').style.display = 'flex';
+  openModal('reviewsModal');
 }
 window.showReviews = showReviews;
 
-function closeReviewsModal() {
-  document.getElementById('reviewsModal').style.display = 'none';
-}
-window.closeReviewsModal = closeReviewsModal;
-
 document.addEventListener('click', e => {
-  if (e.target.classList.contains('star')) {
+  if (e.target.classList.contains('star') && e.target.closest('#reviewStars')) {
     const val = parseInt(e.target.dataset.value);
     currentReviewRating = val;
     document.querySelectorAll('#reviewStars .star').forEach(s => {
@@ -1873,12 +2781,7 @@ function renderReviewsList() {
 function coursesAdminSubTab(tab) {
   ['bookings', 'users', 'courses'].forEach(t => {
     document.getElementById(`cadminPanel-${t}`).classList.toggle('hidden', t !== tab);
-    const btn = document.getElementById(`cadmin-${t}`);
-    if (btn) {
-      btn.style.background = t === tab ? '#7c3aed' : '#fff';
-      btn.style.color = t === tab ? '#fff' : '#64748b';
-      btn.style.borderColor = t === tab ? '#7c3aed' : '#e2e8f0';
-    }
+    document.getElementById(`cadmin-${t}`).classList.toggle('active', t === tab);
   });
 }
 window.coursesAdminSubTab = coursesAdminSubTab;
@@ -2073,7 +2976,11 @@ function initListeners() {
     const d = snap.val();
     scheduleData = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
     renderSchedule();
+    renderMySchedule();
     renderScheduleAdmin();
+    const today = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
+    const el = document.getElementById('todayCount');
+    if (el) el.textContent = scheduleData.filter(i => i.day === today).length;
   });
   window.onValue(window.ref(window.db, 'videos'), snap => {
     const d = snap.val();
@@ -2092,15 +2999,38 @@ function initListeners() {
     subjectsData = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
     renderSubjectsList();
   });
+  window.onValue(window.ref(window.db, 'contacts'), snap => {
+    const d = snap.val();
+    contacts = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
+    renderContacts();
+  });
+  window.onValue(window.ref(window.db, 'complaints'), snap => {
+    const d = snap.val();
+    complaints = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
+    renderComplaints();
+  });
   window.onValue(window.ref(window.db, 'news'), snap => {
     const d = snap.val();
     newsData = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
     const c = document.getElementById('allNewsContainer');
+    const homeC = document.getElementById('homeNewsContainer');
     const list = document.getElementById('newsList');
-    if (c) {
-      c.innerHTML = newsData.length ? newsData.reverse().slice(0, 20).map(i => `
+    if (homeC) {
+      homeC.innerHTML = newsData.length ? newsData.slice().reverse().slice(0, 3).map(i => `
         <div style="background:white;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
-          ${i.imageData ? `<img src="${i.imageData}" style="width:100%;height:112px;object-fit:cover;">` : ''}
+          ${i.imageData ? `<img src="${i.imageData}" style="width:100%;height:112px;object-fit:cover;cursor:pointer;" onclick="openImageViewer('${i.imageData}')">` : ''}
+          <div style="padding:12px;">
+            <div style="font-size:9px;background:#f3e8ff;color:#7c3aed;padding:2px 6px;border-radius:4px;display:inline-block;">${i.date||''}</div>
+            <h4 style="font-weight:700;font-size:13px;margin-top:4px;">${i.title}</h4>
+            <p style="font-size:12px;color:#64748b;">${i.content}</p>
+          </div>
+        </div>
+      `).join('') : '<div style="text-align:center;padding:12px;color:#94a3b8;font-size:12px;">لا توجد أخبار</div>';
+    }
+    if (c) {
+      c.innerHTML = newsData.length ? newsData.slice().reverse().slice(0, 20).map(i => `
+        <div style="background:white;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
+          ${i.imageData ? `<img src="${i.imageData}" style="width:100%;height:112px;object-fit:cover;cursor:pointer;" onclick="openImageViewer('${i.imageData}')">` : ''}
           <div style="padding:12px;">
             <div style="font-size:9px;background:#f3e8ff;color:#7c3aed;padding:2px 6px;border-radius:4px;display:inline-block;">${i.date||''}</div>
             <h4 style="font-weight:700;font-size:13px;margin-top:4px;">${i.title}</h4>
@@ -2123,15 +3053,19 @@ function initListeners() {
     notificationsData = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
     const c = document.getElementById('notificationsContainer');
     const badge = document.getElementById('notifBadge');
+    const countEl = document.getElementById('notifCount');
     const list = document.getElementById('notifList');
     if (c) {
       if (!notificationsData.length) {
         badge?.classList.add('hidden');
-        c.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;">لا توجد إشعارات</div>';
+        if (countEl) countEl.textContent = '0';
+        c.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:12px;"><i class="fa-regular fa-bell-slash text-2xl block mb-1"></i>لا توجد إشعارات</div>';
       } else {
         badge?.classList.remove('hidden');
-        c.innerHTML = notificationsData.reverse().slice(0, 20).map(i => `
+        if (countEl) countEl.textContent = notificationsData.length;
+        c.innerHTML = notificationsData.slice().reverse().slice(0, 20).map(i => `
           <div style="background:white;padding:12px;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:8px;">
+            ${i.imageData ? `<img src="${i.imageData}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-bottom:8px;cursor:pointer;" onclick="openImageViewer('${i.imageData}')">` : ''}
             <h4 style="font-weight:700;font-size:13px;">${i.title}</h4>
             <p style="font-size:12px;color:#475569;">${i.body}</p>
             <div style="font-size:10px;color:#94a3b8;margin-top:4px;">${i.date||''}</div>
@@ -2153,13 +3087,15 @@ function initListeners() {
     materialsData = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
     const c = document.getElementById('libraryContainer');
     const list = document.getElementById('matList');
+    const countEl = document.getElementById('materialCount');
+    if (countEl) countEl.textContent = materialsData.length;
     if (c) {
-      c.innerHTML = materialsData.length ? materialsData.reverse().slice(0, 20).map(i => {
+      c.innerHTML = materialsData.length ? materialsData.slice().reverse().slice(0, 20).map(i => {
         const isImg = i.type === 'image' || (i.fileData && i.fileData.startsWith('data:image'));
         return `<div style="background:white;padding:12px;border-radius:12px;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <div style="width:40px;height:40px;border-radius:12px;${i.type==='pdf'?'background:#fee2e2;':'background:#dcfce7;'}display:flex;align-items:center;justify-content:center;">
-              <i class="fa-solid ${i.type==='pdf'?'fa-file-pdf text-red-500':'fa-image text-green-500'}"></i>
+              <i class="fa-solid ${i.type==='pdf'?'fa-file-pdf text-red-500':'fa-image text-green-500'}" style="font-size:20px;"></i>
             </div>
             <div><div style="font-weight:700;font-size:13px;">${i.title}</div><div style="font-size:10px;color:#94a3b8;">${i.subject||''}</div></div>
           </div>
@@ -2177,35 +3113,6 @@ function initListeners() {
       `).join('');
     }
   });
-}
-
-function renderUser() {
-  const avatar = document.getElementById('userAvatar');
-  const name = document.getElementById('userName');
-  const sub = document.getElementById('userSubtitle');
-  const subjectsList = document.getElementById('userSubjectsList');
-  if (!avatar || !name) return;
-  if (currentUser && userData) {
-    avatar.src = userData.profileImage || userData.photoURL || 'https://ui-avatars.com/api/?name=User&background=7c3aed&color=fff';
-    name.textContent = `مرحباً ${userData.name || ''}`;
-    sub.textContent = `${userData.stage || ''} • الصف ${userData.grade || ''}`;
-    if (subjectsList) {
-      subjectsList.innerHTML = (userData.subjects || []).map(s => `<span class="subject-chip">${s}</span>`).join('');
-    }
-    document.getElementById('infoName').textContent = userData.name || '-';
-    document.getElementById('infoEmail').textContent = userData.email || '-';
-    document.getElementById('infoParentPhone').textContent = userData.parentPhone || '-';
-    document.getElementById('infoSchool').textContent = userData.school || '-';
-    document.getElementById('infoStage').textContent = userData.stage || '-';
-    document.getElementById('infoGrade').textContent = userData.grade || '-';
-    document.getElementById('infoSubjects').textContent = (userData.subjects || []).join('، ') || '-';
-    document.getElementById('infoStatus').textContent = userData.profileStatus === 'approved' ? '✅ معتمدة' : userData.profileStatus === 'pending' ? '⏳ قيد المراجعة' : '⚠️ ناقص';
-    const infoAvatar = document.getElementById('infoAvatar');
-    if (userData.profileImage) {
-      infoAvatar.src = userData.profileImage;
-      infoAvatar.style.display = 'block';
-    }
-  }
 }
 
 window.addEventListener('beforeinstallprompt', e => {
@@ -2275,23 +3182,30 @@ function initApp() {
                           userData.subjects && userData.subjects.length > 0 &&
                           userData.parentPhone && userData.school &&
                           userData.profileImage && userData.idImage;
-        if (!setupDone) {
-          switchTab('setup');
-          initSetupScreen();
-        } else {
-          switchTab('home');
-          renderBlocks();
-          renderVideosList();
+        if (currentPlatform === 'center') {
+          if (!setupDone) {
+            switchTab('setup');
+            initSetupScreen();
+          } else {
+            switchTab('home');
+            renderBlocks();
+            renderVideosList();
+          }
         }
         buildBottomNavCenter();
+        buildBottomNavCourses();
       });
       window.set(window.ref(window.db, `users/${user.uid}/online`), true);
       window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
-      loadFavorites();
-      loadBookings();
+      loadFavorites().then(() => {
+        if (currentCoursesTab === 'courses-favorites') renderFavorites();
+      });
+      loadBookings().then(() => {
+        if (currentCoursesTab === 'courses-bookings') renderBookings();
+      });
     } else {
       currentUser = null; userData = null;
-      switchTab('login');
+      if (currentPlatform === 'center') switchTab('login');
       document.getElementById('bottomNav').innerHTML = '';
     }
   });
@@ -2303,6 +3217,7 @@ function initApp() {
     document.getElementById('app').classList.add('dark-mode');
     document.getElementById('darkIcon').className = 'fa-solid fa-sun text-lg';
   }
+  switchPlatform('center');
 }
 
 function waitForFirebase() {
