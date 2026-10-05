@@ -21,6 +21,8 @@
 body{background:#f1f5f9;transition:background-color .3s}
 .app-container{max-width:480px;margin:0 auto;background:#f8fafc;min-height:100vh;position:relative}
 .no-select{user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;-webkit-touch-callout:none}
+.slide-up{animation:slideUp .3s ease-out}
+@keyframes slideUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 .toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:99999;padding:14px 24px;border-radius:16px;color:#fff;font-weight:700;font-size:13px;box-shadow:0 15px 50px rgba(0,0,0,.25);max-width:90%;text-align:center;opacity:0;transition:all .4s cubic-bezier(.68,-.55,.265,1.55);display:flex;align-items:center;gap:10px;justify-content:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast-success{background:linear-gradient(135deg,#22c55e,#16a34a)}
@@ -96,20 +98,28 @@ body{background:#f1f5f9;transition:background-color .3s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes pulse-badge{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
 .pulse-badge{animation:pulse-badge 1.5s ease-in-out infinite}
-.install-banner{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;padding:12px 20px;border-radius:16px;box-shadow:0 10px 40px rgba(124,58,237,.4);display:flex;align-items:center;gap:12px;z-index:9998;transition:transform .4s cubic-bezier(.68,-.55,.265,1.55);max-width:90%}
+.install-banner{position:fixed;top:100px;left:50%;transform:translateX(-50%) translateY(-200px);background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;padding:14px 20px;border-radius:16px;box-shadow:0 10px 40px rgba(124,58,237,.4);display:flex;align-items:center;gap:12px;z-index:9998;transition:transform .5s cubic-bezier(.68,-.55,.265,1.55);max-width:90%;width:auto}
 .install-banner.show{transform:translateX(-50%) translateY(0)}
 .install-banner button{background:#fff;color:#7c3aed;border:none;padding:8px 16px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer}
+.platform-switch{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.2);border-radius:14px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3);margin-top:8px}
+.platform-switch button{flex:1;padding:8px 12px;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:rgba(255,255,255,.8);background:transparent;transition:all .25s;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:6px}
+.platform-switch button.active{background:#fff;color:#7c3aed;box-shadow:0 4px 15px rgba(0,0,0,.15)}
+.platform-switch button:hover:not(.active){background:rgba(255,255,255,.15);color:#fff}
 </style>
 </head>
 <body class="no-select">
+
 <div id="installBanner" class="install-banner">
 <i class="fa-solid fa-download text-2xl"></i>
 <div style="flex:1"><div style="font-weight:800;font-size:13px">ثبّت التطبيق</div><div style="font-size:10px;opacity:.9">للوصول السريع</div></div>
 <button onclick="installPWA()">تثبيت</button>
 <button onclick="closeInstallBanner()" style="background:transparent;color:#fff;font-size:18px;padding:4px 8px">✕</button>
 </div>
+
 <div id="app" class="app-container flex flex-col pb-16">
-<header class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 shadow-lg sticky top-0 z-30 flex items-center justify-between">
+
+<header class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 shadow-lg sticky top-0 z-30">
+<div class="flex items-center justify-between gap-2">
 <div class="flex items-center gap-2">
 <div class="w-9 h-9 rounded-xl overflow-hidden border border-white/30 shadow-lg">
 <img src="icon-192.png" alt="Σ" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span style=\'font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;\'>Σ</span>'">
@@ -128,12 +138,24 @@ body{background:#f1f5f9;transition:background-color .3s}
 <i id="darkIcon" class="fa-solid fa-moon text-lg"></i>
 </button>
 </div>
+</div>
+<div id="platformSwitcher" class="platform-switch">
+<button id="psBtnCenter" onclick="switchPlatform('center')" class="active">
+<i class="fa-solid fa-school"></i> <span>السنتر</span>
+</button>
+<button id="psBtnCourses" onclick="switchPlatform('courses')">
+<i class="fa-solid fa-graduation-cap"></i> <span>الكورسات</span>
+</button>
+</div>
 </header>
+
 <div id="imageViewerModal" class="image-viewer" onclick="closeImageViewer()">
 <button style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:28px;width:50px;height:50px;border-radius:50%;cursor:pointer" onclick="closeImageViewer()">✕</button>
 <img id="viewerImage2" src="" alt="صورة">
 </div>
+
 <main class="flex-1 p-3 space-y-3 overflow-y-auto" style="padding-bottom:70px">
+
 <section id="tab-login" class="slide-up">
 <div class="bg-white rounded-2xl p-6 border border-slate-200 text-center">
 <img src="icon-192.png" style="width:80px;height:80px;margin:0 auto 16px;border-radius:50%;box-shadow:0 8px 30px rgba(124,58,237,.3)" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%237c3aed%22/%3E%3Cstop offset=%221%22 stop-color=%22%23ec4899%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22url(%23g)%22/%3E%3Ctext x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22serif%22 font-weight=%22bold%22%3E%CE%A3%3C/text%3E%3C/svg%3E'">
@@ -143,6 +165,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b"><i class="fa-solid fa-shield-halved text-purple-500"></i> تسجيل آمن 100% عبر فيسبوك</div>
 </div>
 </section>
+
 <section id="tab-setup" class="hidden slide-up space-y-3">
 <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-2xl text-center">
 <i class="fa-solid fa-clipboard-check text-3xl mb-2"></i>
@@ -188,6 +211,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 </div>
 <button onclick="saveSetupData()" class="publish-btn green" style="padding:16px"><i class="fa-solid fa-check-circle"></i> حفظ البيانات والدخول</button>
 </section>
+
 <section id="tab-home" class="hidden space-y-3 slide-up">
 <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-5 text-white shadow-lg">
 <div class="flex items-center gap-3">
@@ -202,6 +226,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <div id="customBlocksContainer"></div>
 <div id="videosContainer"></div>
 </section>
+
 <section id="tab-schedule" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
 <h2 class="font-bold text-sm"><i class="fa-solid fa-calendar-days text-purple-600"></i> جدول السنتر</h2>
@@ -214,6 +239,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 </div>
 <div id="scheduleContainer" class="space-y-2"></div>
 </section>
+
 <section id="tab-library" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
 <h2 class="font-bold text-sm"><i class="fa-solid fa-book-open text-purple-600"></i> المكتبة الرقمية</h2>
@@ -221,6 +247,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 </div>
 <div id="libraryContainer" class="space-y-2"></div>
 </section>
+
 <section id="tab-videos" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
 <h2 class="font-bold text-sm"><i class="fa-solid fa-video text-purple-600"></i> الفيديوهات</h2>
@@ -228,6 +255,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 </div>
 <div id="videosListContainer" class="space-y-3"></div>
 </section>
+
 <section id="tab-news" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
 <h2 class="font-bold text-sm"><i class="fa-solid fa-newspaper text-purple-600"></i> الأخبار</h2>
@@ -235,6 +263,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 </div>
 <div id="allNewsContainer" class="space-y-3"></div>
 </section>
+
 <section id="tab-notifications" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
 <h2 class="font-bold text-sm"><i class="fa-solid fa-bell text-amber-500"></i> الإشعارات</h2>
@@ -242,6 +271,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 </div>
 <div id="notificationsContainer" class="space-y-2"></div>
 </section>
+
 <section id="tab-settings" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between mb-2">
 <h2 class="font-bold text-base"><i class="fa-solid fa-gear text-purple-600"></i> الإعدادات</h2>
@@ -324,6 +354,7 @@ body{background:#f1f5f9;transition:background-color .3s}
 <button onclick="deleteAccount()" class="publish-btn red"><i class="fa-solid fa-trash-can"></i> حذف حسابي</button>
 </div>
 </section>
+
 <section id="tab-admin" class="hidden space-y-3 slide-up">
 <div class="flex items-center justify-between">
 <h2 class="font-bold text-sm"><i class="fa-solid fa-user-shield text-purple-600"></i> لوحة الإدارة</h2>
@@ -528,9 +559,191 @@ body{background:#f1f5f9;transition:background-color .3s}
 </div>
 </div>
 </section>
-</main>
-<nav id="bottomNav" class="fixed bottom-0 w-full max-w-[480px] bg-white/95 backdrop-blur-sm border-t border-slate-200 py-1 px-2 flex justify-around items-center z-30 shadow-lg" style="left:50%;transform:translateX(-50%)"></nav>
+
+<section id="tab-courses-home" class="hidden fade-in">
+<div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-6 text-white mb-4 shadow-xl">
+<h2 class="text-2xl font-extrabold mb-3">مرحباً بك في منصة الكورسات 🎓</h2>
+<p class="text-purple-100 mb-6 text-sm">تعلم المهارات الحديثة من أفضل المدربين</p>
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-white/10 rounded-2xl p-3 text-center backdrop-blur">
+<div id="courseStatTotal" class="text-2xl font-extrabold">0</div>
+<div class="text-xs text-purple-100">كورس</div>
 </div>
+<div class="bg-white/10 rounded-2xl p-3 text-center backdrop-blur">
+<div id="courseStatUsers" class="text-2xl font-extrabold">0</div>
+<div class="text-xs text-purple-100">طالب</div>
+</div>
+<div class="bg-white/10 rounded-2xl p-3 text-center backdrop-blur">
+<div id="courseStatBookings" class="text-2xl font-extrabold">0</div>
+<div class="text-xs text-purple-100">حجز</div>
+</div>
+</div>
+</div>
+<h3 class="text-lg font-extrabold mb-4">🔥 الكورسات المميزة</h3>
+<div id="featuredCourses" class="space-y-3"></div>
+</section>
+
+<section id="tab-courses" class="hidden fade-in">
+<h2 class="text-xl font-extrabold mb-4">📚 جميع الكورسات</h2>
+<div class="bg-white rounded-2xl p-4 mb-4 border border-slate-200">
+<div class="space-y-2">
+<div class="relative">
+<i class="fa-solid fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+<input id="searchInput" oninput="renderCourses()" type="text" placeholder="ابحث بالعنوان..." class="w-full pr-10 pl-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+</div>
+<div class="grid grid-cols-2 gap-2">
+<select id="filterLevel" onchange="renderCourses()" class="py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+<option value="">جميع المستويات</option>
+<option value="beginner">مبتدئ</option>
+<option value="intermediate">متوسط</option>
+<option value="advanced">متقدم</option>
+</select>
+<select id="filterPrice" onchange="renderCourses()" class="py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+<option value="">جميع الأسعار</option>
+<option value="free">مجاني</option>
+<option value="paid">مدفوع</option>
+</select>
+</div>
+</div>
+</div>
+<div id="allCourses" class="space-y-3"></div>
+</section>
+
+<section id="tab-courses-favorites" class="hidden fade-in">
+<h2 class="text-xl font-extrabold mb-4">❤️ المفضلة</h2>
+<div id="favoritesList" class="space-y-3"></div>
+<div id="favoritesEmpty" class="hidden text-center py-16 text-slate-400">
+<i class="fa-regular fa-heart text-5xl mb-3 block"></i>
+<p>لم تقم بإضافة أي كورس للمفضلة</p>
+</div>
+</section>
+
+<section id="tab-courses-bookings" class="hidden fade-in">
+<h2 class="text-xl font-extrabold mb-4">📅 حجوزاتي</h2>
+<div id="bookingsList" class="space-y-3"></div>
+<div id="bookingsEmpty" class="hidden text-center py-16 text-slate-400">
+<i class="fa-solid fa-calendar-xmark text-5xl mb-3 block"></i>
+<p>لا توجد حجوزات حتى الآن</p>
+</div>
+</section>
+
+<section id="tab-courses-admin" class="hidden fade-in">
+<h2 class="text-xl font-extrabold mb-4">🛡️ لوحة الأدمن</h2>
+<div class="grid grid-cols-2 gap-3 mb-5">
+<div class="bg-white rounded-2xl p-4 border border-slate-200">
+<div id="adminUsersCount" class="text-2xl font-extrabold text-blue-600">0</div>
+<div class="text-xs text-slate-500 mt-1">👥 المستخدمون</div>
+</div>
+<div class="bg-white rounded-2xl p-4 border border-slate-200">
+<div id="adminCoursesCount" class="text-2xl font-extrabold text-purple-600">0</div>
+<div class="text-xs text-slate-500 mt-1">📚 الكورسات</div>
+</div>
+<div class="bg-white rounded-2xl p-4 border border-slate-200">
+<div id="adminBookingsCount" class="text-2xl font-extrabold text-green-600">0</div>
+<div class="text-xs text-slate-500 mt-1">📅 الحجوزات</div>
+</div>
+<div class="bg-white rounded-2xl p-4 border border-slate-200">
+<div id="adminReviewsCount" class="text-2xl font-extrabold text-amber-500">0</div>
+<div class="text-xs text-slate-500 mt-1">⭐ التقييمات</div>
+</div>
+</div>
+<div class="flex gap-2 mb-4 overflow-x-auto">
+<button onclick="coursesAdminSubTab('bookings')" id="cadmin-bookings" class="admin-sub-btn active" style="padding:8px 16px;font-size:13px;font-weight:700;background:#7c3aed;color:#fff;border:1px solid #7c3aed;border-radius:12px;white-space:nowrap;cursor:pointer">📅 الحجوزات</button>
+<button onclick="coursesAdminSubTab('users')" id="cadmin-users" class="admin-sub-btn" style="padding:8px 16px;font-size:13px;font-weight:700;background:#fff;border:1px solid #e2e8f0;border-radius:12px;color:#64748b;white-space:nowrap;cursor:pointer">👥 المستخدمون</button>
+<button onclick="coursesAdminSubTab('courses')" id="cadmin-courses" class="admin-sub-btn" style="padding:8px 16px;font-size:13px;font-weight:700;background:#fff;border:1px solid #e2e8f0;border-radius:12px;color:#64748b;white-space:nowrap;cursor:pointer">📚 الكورسات</button>
+</div>
+<div id="cadminPanel-bookings" class="bg-white rounded-2xl p-4 border border-slate-200 overflow-x-auto">
+<table style="width:100%;font-size:13px;border-collapse:collapse">
+<thead>
+<tr style="border-bottom:1px solid #f1f5f9">
+<th style="text-align:right;padding:10px 6px;font-weight:700">الطالب</th>
+<th style="text-align:right;padding:10px 6px;font-weight:700">الكورس</th>
+<th style="text-align:right;padding:10px 6px;font-weight:700">الحالة</th>
+<th style="text-align:right;padding:10px 6px;font-weight:700">إجراء</th>
+</tr>
+</thead>
+<tbody id="cAdminBookingsBody"></tbody>
+</table>
+</div>
+<div id="cadminPanel-users" class="hidden bg-white rounded-2xl p-4 border border-slate-200 overflow-x-auto">
+<table style="width:100%;font-size:13px;border-collapse:collapse">
+<thead>
+<tr style="border-bottom:1px solid #f1f5f9">
+<th style="text-align:right;padding:10px 6px;font-weight:700">الاسم</th>
+<th style="text-align:right;padding:10px 6px;font-weight:700">البريد</th>
+<th style="text-align:right;padding:10px 6px;font-weight:700">إجراء</th>
+</tr>
+</thead>
+<tbody id="cAdminUsersBody"></tbody>
+</table>
+</div>
+<div id="cadminPanel-courses" class="hidden bg-white rounded-2xl p-4 border border-slate-200">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+<h3 style="font-weight:800">إدارة الكورسات</h3>
+<button onclick="showAddCourseForm()" style="padding:8px 16px;background:#7c3aed;color:#fff;border-radius:12px;font-size:13px;font-weight:700;border:none;cursor:pointer">
+<i class="fa-solid fa-plus"></i> إضافة
+</button>
+</div>
+<div id="cAddCourseForm" class="hidden" style="background:#f8fafc;border-radius:12px;padding:12px;margin-bottom:12px">
+<input id="cNewTitle" type="text" placeholder="عنوان الكورس" style="width:100%;padding:8px;margin-bottom:6px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px">
+<textarea id="cNewDesc" placeholder="الوصف" style="width:100%;padding:8px;margin-bottom:6px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;height:60px"></textarea>
+<select id="cNewLevel" style="width:100%;padding:8px;margin-bottom:6px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px">
+<option value="beginner">مبتدئ</option>
+<option value="intermediate">متوسط</option>
+<option value="advanced">متقدم</option>
+</select>
+<input id="cNewPrice" type="number" placeholder="السعر" style="width:100%;padding:8px;margin-bottom:6px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px">
+<input id="cNewImage" type="url" placeholder="رابط الصورة" style="width:100%;padding:8px;margin-bottom:6px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px">
+<button onclick="createCourse()" class="publish-btn green">حفظ</button>
+</div>
+<div id="cAdminCoursesBody" style="display:grid;gap:8px"></div>
+</div>
+</section>
+
+<section id="tab-courses-settings" class="hidden fade-in">
+<h2 class="text-xl font-extrabold mb-4">⚙️ الإعدادات</h2>
+<div class="bg-white rounded-2xl p-5 border border-slate-200">
+<div class="text-center mb-5">
+<img id="cProfileAvatar" src="" style="width:80px;height:80px;border-radius:50%;border:3px solid #7c3aed;object-fit:cover;margin:0 auto 8px;display:block">
+<div style="font-weight:700" id="cProfileName">-</div>
+<div style="font-size:13px;color:#64748b" id="cProfileEmail">-</div>
+</div>
+<input id="cUpdateName" type="text" placeholder="الاسم الجديد" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px">
+<button onclick="updateCourseProfileName()" class="publish-btn blue" style="margin-bottom:8px">تحديث الاسم</button>
+<button onclick="updateCourseProfilePhoto()" class="publish-btn purple">تحديث الصورة</button>
+<hr style="margin:16px 0;border:none;border-top:1px solid #e2e8f0">
+<button onclick="logoutFromCourses()" class="publish-btn red">🚪 تسجيل الخروج</button>
+</div>
+</section>
+
+</main>
+
+<nav id="bottomNav" class="fixed bottom-0 w-full max-w-[480px] bg-white/95 backdrop-blur-sm border-t border-slate-200 py-1 px-2 flex justify-around items-center z-30 shadow-lg" style="left:50%;transform:translateX(-50%)"></nav>
+
+</div>
+
+<div id="reviewsModal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px">
+<div style="background:#fff;border-radius:20px;padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto">
+<h3 id="reviewsTitle" style="font-size:18px;font-weight:800;margin-bottom:16px">⭐ التقييمات</h3>
+<div id="addReviewBox" style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:16px">
+<div style="margin-bottom:8px">
+<span style="font-size:11px;font-weight:700;color:#64748b">تقييمك:</span>
+<div id="reviewStars" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:4px;margin-top:4px">
+<span class="star" data-value="5" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
+<span class="star" data-value="4" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
+<span class="star" data-value="3" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
+<span class="star" data-value="2" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
+<span class="star" data-value="1" style="cursor:pointer;font-size:22px;color:#cbd5e1">★</span>
+</div>
+</div>
+<textarea id="reviewComment" placeholder="اكتب تعليقك..." style="width:100%;padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;height:80px"></textarea>
+<button onclick="submitCourseReview()" class="publish-btn blue" style="margin-top:8px">إرسال التقييم</button>
+</div>
+<div id="reviewsList" style="display:grid;gap:8px;max-height:250px;overflow-y:auto"></div>
+<button onclick="closeReviewsModal()" style="width:100%;margin-top:16px;padding:8px;font-size:13px;color:#64748b;background:none;border:none;cursor:pointer">إغلاق</button>
+</div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -541,7 +754,12 @@ import {
 import {
   getStorage, ref as stRef, uploadBytesResumable, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+import {
+  getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc,
+  updateDoc, deleteDoc, query, where, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
   authDomain: "sigma-6f162.firebaseapp.com",
@@ -551,21 +769,28 @@ const firebaseConfig = {
   messagingSenderId: "420365348074",
   appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
 };
+
 const VAPID_KEY = "BAvFGZaWYDPWbTpY0Iq-BcM9pcTfxrysn0S0hZ2KrkDijLCyLAzSF8sfwN9P5rrsL0PVoFhksW1mAHbRkhSGPR0";
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const firestore = getFirestore(app);
 const facebookProvider = new FacebookAuthProvider();
 facebookProvider.addScope('email');
 facebookProvider.addScope('public_profile');
+
 if (window.navigator?.userAgent && /wv|android|iphone|ipad|webview/i.test(navigator.userAgent)) {
   auth.settings.appVerificationDisabledForTesting = true;
 }
+
 await setPersistence(auth, browserLocalPersistence);
+
 window.db = db;
 window.auth = auth;
 window.storage = storage;
+window.firestore = firestore;
 window.ref = ref;
 window.push = push;
 window.set = set;
@@ -584,8 +809,21 @@ window.VAPID_KEY = VAPID_KEY;
 window.getMessaging = getMessaging;
 window.getToken = getToken;
 window.onMessage = onMessage;
+window.fsCollection = collection;
+window.fsDoc = doc;
+window.fsSetDoc = setDoc;
+window.fsGetDoc = getDoc;
+window.fsGetDocs = getDocs;
+window.fsAddDoc = addDoc;
+window.fsUpdateDoc = updateDoc;
+window.fsDeleteDoc = deleteDoc;
+window.fsQuery = query;
+window.fsWhere = where;
+window.fsServerTimestamp = serverTimestamp;
+
 window.dispatchEvent(new Event('firebase-ready'));
 </script>
+
 <script>
 let currentUser = null;
 let userData = null;
@@ -606,12 +844,28 @@ let setupProfileImg = '', setupIdImg = '';
 let videoUploadMethod = 'file';
 let deferredPrompt = null;
 let messaging = null;
+let currentPlatform = 'center';
+let currentCoursesTab = 'courses-home';
+
+let courses = [];
+let courseReviews = [];
+let favorites = [];
+let bookings = [];
+let allBookings = [];
+let allUsersCourses = [];
+let currentCourseForReview = null;
+let currentReviewRating = 5;
+let isCoursesAdminUnlocked = false;
+
 const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2'];
 const ADMIN_PASSWORD = 'Sigma@2024';
+const ADMIN_PASSWORD_COURSES = 'Sigma@2026';
+
 const subjectsByStage = {
   'ثانوي': ['فيزياء', 'كيمياء', 'رياضيات', 'أحياء', 'لغة عربية', 'لغة إنجليزية'],
   'إعدادي': ['رياضيات', 'علوم', 'لغة عربية', 'لغة إنجليزية']
 };
+
 function showToast(msg, type = 'info') {
   const old = document.querySelector('.toast');
   if (old) old.remove();
@@ -624,6 +878,7 @@ function showToast(msg, type = 'info') {
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
 }
 window.showToast = showToast;
+
 function togglePasswordVisibility(id, icon) {
   const input = document.getElementById(id);
   if (!input) return;
@@ -631,6 +886,7 @@ function togglePasswordVisibility(id, icon) {
   icon.className = input.type === 'password' ? 'fa-solid fa-eye eye-icon' : 'fa-solid fa-eye-slash eye-icon';
 }
 window.togglePasswordVisibility = togglePasswordVisibility;
+
 function openImageViewer(src) {
   const v = document.getElementById('imageViewerModal');
   const img = document.getElementById('viewerImage2');
@@ -641,6 +897,7 @@ function openImageViewer(src) {
 function closeImageViewer() { document.getElementById('imageViewerModal')?.classList.remove('show'); }
 window.openImageViewer = openImageViewer;
 window.closeImageViewer = closeImageViewer;
+
 function toggleDarkMode() {
   darkMode = !darkMode;
   document.getElementById('app').classList.toggle('dark-mode', darkMode);
@@ -649,6 +906,7 @@ function toggleDarkMode() {
   localStorage.setItem('sigma-theme', darkMode ? 'dark' : 'light');
 }
 window.toggleDarkMode = toggleDarkMode;
+
 function toggleSection(el) {
   const content = el.closest('.admin-panel-section').querySelector('.content');
   const arrow = el.querySelector('.fa-chevron-down, .fa-chevron-up');
@@ -656,6 +914,7 @@ function toggleSection(el) {
   arrow.className = content.classList.contains('open') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
 }
 window.toggleSection = toggleSection;
+
 function openSettingsPanel(name) {
   document.getElementById('settingsMain').classList.add('hidden');
   document.querySelectorAll('#tab-settings > div').forEach(d => {
@@ -672,7 +931,35 @@ function closeSettingsPanel() {
 }
 window.openSettingsPanel = openSettingsPanel;
 window.closeSettingsPanel = closeSettingsPanel;
-function buildBottomNav() {
+
+function switchPlatform(platform) {
+  currentPlatform = platform;
+  document.getElementById('psBtnCenter')?.classList.toggle('active', platform === 'center');
+  document.getElementById('psBtnCourses')?.classList.toggle('active', platform === 'courses');
+  const label = document.getElementById('platformLabel');
+  if (label) label.textContent = platform === 'center' ? 'المنصة التعليمية' : 'منصة الكورسات';
+  document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+  if (platform === 'center') {
+    if (currentUser && (!userData || !userData.setupCompleted)) {
+      document.getElementById('tab-setup').classList.remove('hidden');
+      initSetupScreen();
+    } else if (currentUser && userData) {
+      document.getElementById('tab-home').classList.remove('hidden');
+      renderBlocks();
+      renderVideosList();
+    } else {
+      document.getElementById('tab-login').classList.remove('hidden');
+    }
+    buildBottomNavCenter();
+  } else {
+    document.getElementById('tab-courses-home').classList.remove('hidden');
+    renderCoursesHome();
+    buildBottomNavCourses();
+  }
+}
+window.switchPlatform = switchPlatform;
+
+function buildBottomNavCenter() {
   const nav = document.getElementById('bottomNav');
   if (!currentUser) { nav.innerHTML = ''; return; }
   nav.innerHTML = `
@@ -684,6 +971,20 @@ function buildBottomNav() {
     <button onclick="switchTab('admin')" id="nav-admin" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-user-shield text-lg"></i><span>الإدارة</span></button>
   `;
 }
+
+function buildBottomNavCourses() {
+  const nav = document.getElementById('bottomNav');
+  const isAdminUser = currentUser && (userData?.role === 'admin' || ADMIN_UIDS.includes(currentUser.uid));
+  nav.innerHTML = `
+    <button onclick="switchCoursesTab('courses-home')" id="cnav-home" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-house text-lg"></i><span>الرئيسية</span></button>
+    <button onclick="switchCoursesTab('courses')" id="cnav-courses" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-graduation-cap text-lg"></i><span>الكورسات</span></button>
+    <button onclick="switchCoursesTab('courses-favorites')" id="cnav-favorites" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-heart text-lg"></i><span>المفضلة</span></button>
+    <button onclick="switchCoursesTab('courses-bookings')" id="cnav-bookings" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-calendar-check text-lg"></i><span>حجوزاتي</span></button>
+    ${isAdminUser ? `<button onclick="switchCoursesTab('courses-admin')" id="cnav-cadmin" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-shield-halved text-lg"></i><span>الأدمن</span></button>` : ''}
+    <button onclick="switchCoursesTab('courses-settings')" id="cnav-settings" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-gear text-lg"></i><span>الإعدادات</span></button>
+  `;
+}
+
 function switchTab(id) {
   document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
   document.getElementById(`tab-${id}`)?.classList.remove('hidden');
@@ -697,6 +998,25 @@ function switchTab(id) {
   if (id === 'home') { renderBlocks(); renderVideosList(); }
 }
 window.switchTab = switchTab;
+
+function switchCoursesTab(id) {
+  currentCoursesTab = id;
+  document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(`tab-${id}`)?.classList.remove('hidden');
+  document.querySelectorAll('#bottomNav button').forEach(b => {
+    b.classList.remove('text-purple-600');
+    b.classList.add('text-slate-400');
+  });
+  document.getElementById(`cnav-${id.replace('courses-', '')}`)?.classList.add('text-purple-600');
+  if (id === 'courses-home') renderCoursesHome();
+  if (id === 'courses') renderCourses();
+  if (id === 'courses-favorites') renderFavorites();
+  if (id === 'courses-bookings') renderBookings();
+  if (id === 'courses-admin') renderCoursesAdmin();
+  if (id === 'courses-settings') renderCoursesSettings();
+}
+window.switchCoursesTab = switchCoursesTab;
+
 function loginWithFacebook() {
   showToast('⏳ جاري الدخول عبر فيسبوك...', 'info');
   window.signInWithPopup(window.auth, window.facebookProvider)
@@ -717,6 +1037,8 @@ function loginWithFacebook() {
             online: true,
             lastSeen: Date.now()
           });
+        } else {
+          window.set(window.ref(window.db, `users/${user.uid}/online`), true);
         }
       }, { onlyOnce: true });
     })
@@ -727,6 +1049,7 @@ function loginWithFacebook() {
     });
 }
 window.loginWithFacebook = loginWithFacebook;
+
 function initSetupScreen() {
   setupStage = ''; setupGrade = ''; setupSubjects = [];
   setupProfileImg = ''; setupIdImg = '';
@@ -747,6 +1070,7 @@ function initSetupScreen() {
   }
 }
 window.initSetupScreen = initSetupScreen;
+
 function selectSetupStage(stage, el) {
   setupStage = stage;
   document.querySelectorAll('#setupStageOptions .stage-option').forEach(o => o.classList.remove('active'));
@@ -760,12 +1084,14 @@ function selectSetupStage(stage, el) {
   ).join('');
 }
 window.selectSetupStage = selectSetupStage;
+
 function selectSetupGrade(grade, el) {
   setupGrade = grade;
   document.querySelectorAll('#setupGradeOptions .grade-option').forEach(o => o.classList.remove('active'));
   el.classList.add('active');
 }
 window.selectSetupGrade = selectSetupGrade;
+
 function toggleSetupSubject(subject, el) {
   if (setupSubjects.includes(subject)) {
     setupSubjects = setupSubjects.filter(s => s !== subject);
@@ -776,6 +1102,7 @@ function toggleSetupSubject(subject, el) {
   }
 }
 window.toggleSetupSubject = toggleSetupSubject;
+
 function handleProfileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -790,6 +1117,7 @@ function handleProfileUpload(event) {
   };
 }
 window.handleProfileUpload = handleProfileUpload;
+
 function handleIdUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -804,6 +1132,7 @@ function handleIdUpload(event) {
   };
 }
 window.handleIdUpload = handleIdUpload;
+
 function saveSetupData() {
   if (!setupStage) return showToast('⚠️ اختر المرحلة', 'warning');
   if (!setupGrade) return showToast('⚠️ اختر الصف', 'warning');
@@ -826,6 +1155,7 @@ function saveSetupData() {
   });
 }
 window.saveSetupData = saveSetupData;
+
 function handleAdminTab() {
   const login = document.getElementById('adminLogin');
   const panel = document.getElementById('adminPanel');
@@ -839,6 +1169,7 @@ function handleAdminTab() {
     loadAdminStudents();
   }
 }
+
 function adminLogin() {
   const pass = document.getElementById('adminPass').value;
   if (!currentUser) return showToast('⚠️ سجل دخول', 'warning');
@@ -854,6 +1185,7 @@ function adminLogin() {
   } else showToast('❌ كلمة السر خاطئة', 'error');
 }
 window.adminLogin = adminLogin;
+
 function startStats() {
   window.onValue(window.ref(window.db, 'users'), snap => {
     const data = snap.val() || {};
@@ -872,6 +1204,7 @@ function startStats() {
     document.getElementById('statBlocks').textContent = Object.keys(d).length;
   });
 }
+
 function loadAdminStudents() {
   const c = document.getElementById('studentsAdminList');
   if (!c) return;
@@ -895,6 +1228,7 @@ function loadAdminStudents() {
     `).join('');
   });
 }
+
 function exportStudentsPDF() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
   const students = Object.keys(allUsers).map(k => ({ id: k, ...allUsers[k] })).filter(s => s.name);
@@ -927,6 +1261,7 @@ function exportStudentsPDF() {
   } catch (e) { showToast('❌ ' + e.message, 'error'); }
 }
 window.exportStudentsPDF = exportStudentsPDF;
+
 function addBuildingBlock() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
   const title = document.getElementById('blockTitle').value.trim();
@@ -944,6 +1279,7 @@ function addBuildingBlock() {
   showToast('✅ تم إضافة القالب', 'success');
 }
 window.addBuildingBlock = addBuildingBlock;
+
 function renderBlocks() {
   const container = document.getElementById('customBlocksContainer');
   if (!container) return;
@@ -962,6 +1298,7 @@ function renderBlocks() {
     container.appendChild(block);
   });
 }
+
 function renderBlocksAdmin() {
   const c = document.getElementById('blocksList');
   if (!c) return;
@@ -972,12 +1309,14 @@ function renderBlocksAdmin() {
     </div>
   `).join('') : '<div style="text-align:center;padding:8px;color:#94a3b8;font-size:11px;">لا توجد قوالب</div>';
 }
+
 function toggleVideoMethod() {
   videoUploadMethod = document.getElementById('videoUploadMethod').value;
   document.getElementById('videoFileBox').classList.toggle('hidden', videoUploadMethod !== 'file');
   document.getElementById('videoUrlBox').classList.toggle('hidden', videoUploadMethod !== 'url');
 }
 window.toggleVideoMethod = toggleVideoMethod;
+
 async function uploadVideo() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
   const title = document.getElementById('videoTitle').value.trim();
@@ -1030,6 +1369,7 @@ async function uploadVideo() {
   document.getElementById('videoProgress').classList.add('hidden');
 }
 window.uploadVideo = uploadVideo;
+
 function renderVideosList() {
   const container = document.getElementById('videosListContainer');
   const homeContainer = document.getElementById('videosContainer');
@@ -1079,6 +1419,7 @@ function renderVideosList() {
     homeContainer.innerHTML = latest.length ? latest.map(renderFn).join('') : '';
   }
 }
+
 function renderVideosAdmin() {
   const c = document.getElementById('videosAdminList');
   if (!c) return;
@@ -1089,6 +1430,7 @@ function renderVideosAdmin() {
     </div>
   `).join('') : '<div style="text-align:center;padding:8px;color:#94a3b8;font-size:11px;">لا توجد فيديوهات</div>';
 }
+
 function addSubject() {
   if (!isAdmin) return showToast('⚠️ غير مصرح', 'error');
   const name = document.getElementById('newSubjectName').value.trim();
@@ -1099,6 +1441,7 @@ function addSubject() {
   showToast('✅ تم الإضافة', 'success');
 }
 window.addSubject = addSubject;
+
 function renderSubjectsList() {
   const c = document.getElementById('subjectsList');
   if (!c) return;
@@ -1109,6 +1452,7 @@ function renderSubjectsList() {
     </div>
   `).join('') : '<div style="text-align:center;padding:12px;color:#94a3b8;font-size:12px;">لا توجد مواد</div>';
 }
+
 async function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -1117,6 +1461,7 @@ async function fileToBase64(file) {
     r.onerror = () => reject(r.error);
   });
 }
+
 async function addSchedule() {
   if (!isAdmin) return;
   const day = document.getElementById('schDay').value;
@@ -1131,6 +1476,7 @@ async function addSchedule() {
   ['schSubject','schTeacher','schTime','schRoom'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 }
 window.addSchedule = addSchedule;
+
 function filterSchedule(type) {
   currentFilter = type;
   ['btnToday','btnTomorrow','btnAll'].forEach(id => {
@@ -1142,6 +1488,7 @@ function filterSchedule(type) {
   renderSchedule();
 }
 window.filterSchedule = filterSchedule;
+
 function renderSchedule() {
   const container = document.getElementById('scheduleContainer');
   if (!container) return;
@@ -1171,6 +1518,7 @@ function renderSchedule() {
     </div>
   `).join('');
 }
+
 function renderScheduleAdmin() {
   const c = document.getElementById('scheduleList');
   if (!c) return;
@@ -1181,6 +1529,7 @@ function renderScheduleAdmin() {
     </div>
   `).join('') : '<div style="text-align:center;padding:8px;color:#94a3b8;font-size:11px;">لا توجد حصص</div>';
 }
+
 async function sendRealNotification() {
   if (!isAdmin) return;
   const title = document.getElementById('notifTitle').value;
@@ -1194,19 +1543,19 @@ async function sendRealNotification() {
     date: new Date().toLocaleString('ar-EG'),
     timestamp: Date.now()
   });
-  try {
-    await sendFCMToAll(title, body);
-  } catch (e) { console.warn('FCM:', e); }
+  try { await sendFCMToAll(title, body); } catch (e) { console.warn('FCM:', e); }
   showToast('✅ تم الإرسال', 'success');
   document.getElementById('notifTitle').value = '';
   document.getElementById('notifBody').value = '';
   document.getElementById('notifSubject').value = '';
 }
 window.sendRealNotification = sendRealNotification;
+
 async function sendFCMToAll(title, body) {
   console.log('📤 Sending FCM:', { title, body });
 }
 window.sendFCMToAll = sendFCMToAll;
+
 async function addNews() {
   if (!isAdmin) return;
   const title = document.getElementById('newsTitle').value;
@@ -1222,6 +1571,7 @@ async function addNews() {
   document.getElementById('newsImage').value = '';
 }
 window.addNews = addNews;
+
 async function uploadMat() {
   if (!isAdmin) return;
   const title = document.getElementById('matTitle').value;
@@ -1241,6 +1591,7 @@ async function uploadMat() {
   document.getElementById('matFile').value = '';
 }
 window.uploadMat = uploadMat;
+
 async function requestNotificationPermission() {
   try {
     const permission = await Notification.requestPermission();
@@ -1251,7 +1602,6 @@ async function requestNotificationPermission() {
         const token = await window.getToken(messaging, { vapidKey: window.VAPID_KEY });
         if (token && currentUser) {
           await window.set(window.ref(window.db, `users/${currentUser.uid}/fcmToken`), token);
-          console.log('✅ FCM Token saved');
         }
         window.onMessage(messaging, payload => {
           showToast(payload.notification?.title || 'إشعار جديد', 'info');
@@ -1266,6 +1616,7 @@ async function requestNotificationPermission() {
   }
 }
 window.requestNotificationPermission = requestNotificationPermission;
+
 function updateNotifPermStatus() {
   const el = document.getElementById('notifPermStatus');
   if (!el) return;
@@ -1274,18 +1625,21 @@ function updateNotifPermStatus() {
   else if (perm === 'denied') el.innerHTML = '<span style="color:#dc2626;">❌ الإشعارات مرفوضة</span>';
   else el.innerHTML = '<span style="color:#f59e0b;">⏳ لم يتم التفعيل</span>';
 }
+
 function deleteItemFromPath(path, key) {
   if (!isAdmin || !confirm('حذف؟')) return;
   window.remove(window.ref(window.db, `${path}/${key}`));
   showToast('✅ تم الحذف', 'success');
 }
 window.deleteItemFromPath = deleteItemFromPath;
+
 function deleteAllFromPath(path) {
   if (!isAdmin || !confirm(`حذف كل ${path}؟`)) return;
   window.set(window.ref(window.db, path), null);
   showToast('✅ تم الحذف', 'success');
 }
 window.deleteAllFromPath = deleteAllFromPath;
+
 function deleteAccount() {
   if (!currentUser) return;
   if (!confirm('⚠️ حذف الحساب نهائياً؟')) return;
@@ -1298,6 +1652,422 @@ function deleteAccount() {
     });
 }
 window.deleteAccount = deleteAccount;
+
+function getDemoCourses() {
+  return [
+    { id: 'demo-1', title: 'أساسيات البرمجة بلغة Python', description: 'تعلم البرمجة من الصفر', level: 'beginner', price: 0, image: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=600', instructor: 'م. أحمد علي' },
+    { id: 'demo-2', title: 'تطوير الويب الحديث - React', description: 'احترف بناء تطبيقات الويب', level: 'intermediate', price: 250, image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600', instructor: 'م. محمد سامي' },
+    { id: 'demo-3', title: 'الذكاء الاصطناعي وتعلم الآلة', description: 'مدخل شامل للذكاء الاصطناعي', level: 'advanced', price: 500, image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600', instructor: 'د. سارة إبراهيم' }
+  ];
+}
+
+async function loadCourses() {
+  try {
+    const snap = await window.fsGetDocs(window.fsCollection(window.firestore, 'courses'));
+    courses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (courses.length === 0) courses = getDemoCourses();
+  } catch (e) { courses = getDemoCourses(); }
+}
+
+async function loadCourseReviews(courseId) {
+  try {
+    const q = window.fsQuery(window.fsCollection(window.firestore, 'reviews'), window.fsWhere('courseId', '==', courseId));
+    const snap = await window.fsGetDocs(q);
+    courseReviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) { courseReviews = []; }
+}
+
+async function loadFavorites() {
+  if (!currentUser) { favorites = []; return; }
+  try {
+    const snap = await window.fsGetDocs(window.fsCollection(window.firestore, 'users', currentUser.uid, 'favorites'));
+    favorites = snap.docs.map(d => d.id);
+  } catch (e) { favorites = []; }
+}
+
+async function loadBookings() {
+  if (!currentUser) { bookings = []; return; }
+  try {
+    const q = window.fsQuery(window.fsCollection(window.firestore, 'bookings'), window.fsWhere('userId', '==', currentUser.uid));
+    const snap = await window.fsGetDocs(q);
+    bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) { bookings = []; }
+}
+
+function createCourseCard(course) {
+  const isFav = favorites.includes(course.id);
+  const levelMap = { beginner: 'مبتدئ', intermediate: 'متوسط', advanced: 'متقدم' };
+  const levelColor = { beginner: 'background:#dcfce7;color:#166534;', intermediate: 'background:#fef3c7;color:#92400e;', advanced: 'background:#fee2e2;color:#991b1b;' };
+  const priceText = course.price === 0 ? '<span style="color:#16a34a;font-weight:700;">مجاني</span>' : `<span style="font-weight:700;">${course.price} ج.م</span>`;
+  return `
+    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid #e2e8f0;">
+      <div style="position:relative;height:160px;background:linear-gradient(135deg,#7c3aed,#ec4899);">
+        ${course.image ? `<img src="${course.image}" style="width:100%;height:100%;object-fit:cover;">` : ''}
+        <button onclick="toggleFavorite('${course.id}')" style="position:absolute;top:12px;left:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <i class="${isFav ? 'fa-solid text-red-500' : 'fa-regular text-slate-700'} fa-heart"></i>
+        </button>
+        <span style="position:absolute;top:12px;right:12px;padding:4px 10px;border-radius:16px;font-size:11px;font-weight:700;${levelColor[course.level]}">${levelMap[course.level]}</span>
+      </div>
+      <div style="padding:16px;">
+        <h4 style="font-weight:800;margin-bottom:6px;">${course.title}</h4>
+        <p style="font-size:12px;color:#64748b;margin-bottom:8px;">${course.description || ''}</p>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">${priceText}</div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="bookCourse('${course.id}')" style="flex:1;padding:10px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">
+            <i class="fa-solid fa-calendar-plus"></i> احجز
+          </button>
+          <button onclick="showReviews('${course.id}')" style="padding:10px 14px;background:#f1f5f9;border:none;border-radius:10px;cursor:pointer;">
+            <i class="fa-solid fa-star"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCoursesHome() {
+  const featured = courses.slice(0, 3);
+  document.getElementById('featuredCourses').innerHTML = featured.map(createCourseCard).join('');
+  document.getElementById('courseStatTotal').textContent = courses.length;
+  document.getElementById('courseStatUsers').textContent = Object.keys(allUsers).length || 0;
+  document.getElementById('courseStatBookings').textContent = bookings.length || 0;
+}
+window.renderCoursesHome = renderCoursesHome;
+
+function renderCourses() {
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const level = document.getElementById('filterLevel')?.value || '';
+  const price = document.getElementById('filterPrice')?.value || '';
+  let filtered = courses.filter(c => {
+    if (search && !c.title.toLowerCase().includes(search)) return false;
+    if (level && c.level !== level) return false;
+    if (price === 'free' && c.price !== 0) return false;
+    if (price === 'paid' && c.price === 0) return false;
+    return true;
+  });
+  document.getElementById('allCourses').innerHTML = filtered.map(createCourseCard).join('') || '<div style="text-align:center;padding:40px;color:#94a3b8;">لا توجد نتائج</div>';
+}
+window.renderCourses = renderCourses;
+
+async function toggleFavorite(courseId) {
+  if (!currentUser) return showToast('سجّل دخولك أولاً', 'warning');
+  const isFav = favorites.includes(courseId);
+  try {
+    if (isFav) {
+      await window.fsDeleteDoc(window.fsDoc(window.firestore, 'users', currentUser.uid, 'favorites', courseId));
+      favorites = favorites.filter(id => id !== courseId);
+      showToast('تم الحذف من المفضلة', 'info');
+    } else {
+      await window.fsSetDoc(window.fsDoc(window.firestore, 'users', currentUser.uid, 'favorites', courseId), { addedAt: window.fsServerTimestamp() });
+      favorites.push(courseId);
+      showToast('تمت الإضافة ❤️', 'success');
+    }
+    renderCourses();
+    renderCoursesHome();
+    if (currentCoursesTab === 'courses-favorites') renderFavorites();
+  } catch (e) { showToast('خطأ: ' + e.message, 'error'); }
+}
+window.toggleFavorite = toggleFavorite;
+
+function renderFavorites() {
+  const favCourses = courses.filter(c => favorites.includes(c.id));
+  document.getElementById('favoritesList').innerHTML = favCourses.map(createCourseCard).join('');
+  document.getElementById('favoritesEmpty').classList.toggle('hidden', favCourses.length > 0);
+}
+window.renderFavorites = renderFavorites;
+
+async function bookCourse(courseId) {
+  if (!currentUser) return showToast('سجّل دخولك أولاً', 'warning');
+  const course = courses.find(c => c.id === courseId);
+  if (!course) return;
+  if (bookings.some(b => b.courseId === courseId)) return showToast('لديك حجز بالفعل', 'warning');
+  try {
+    await window.fsAddDoc(window.fsCollection(window.firestore, 'bookings'), {
+      userId: currentUser.uid,
+      userName: userData?.name || currentUser.email,
+      userEmail: currentUser.email,
+      courseId, courseTitle: course.title,
+      status: 'pending',
+      createdAt: window.fsServerTimestamp()
+    });
+    await loadBookings();
+    showToast('تم الحجز ✓', 'success');
+  } catch (e) { showToast('خطأ: ' + e.message, 'error'); }
+}
+window.bookCourse = bookCourse;
+
+function renderBookings() {
+  const statusMap = { pending: { t: 'قيد المراجعة', c: 'background:#fef3c7;color:#92400e;' }, confirmed: { t: 'مؤكد', c: 'background:#dcfce7;color:#166534;' }, cancelled: { t: 'ملغي', c: 'background:#fee2e2;color:#991b1b;' } };
+  document.getElementById('bookingsList').innerHTML = bookings.map(b => {
+    const s = statusMap[b.status] || statusMap.pending;
+    return `
+      <div style="background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
+        <h4 style="font-weight:700;">${b.courseTitle}</h4>
+        <span style="padding:6px 12px;border-radius:16px;font-size:12px;font-weight:700;${s.c}">${s.t}</span>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('bookingsEmpty').classList.toggle('hidden', bookings.length > 0);
+}
+window.renderBookings = renderBookings;
+
+async function showReviews(courseId) {
+  currentCourseForReview = courseId;
+  const course = courses.find(c => c.id === courseId);
+  document.getElementById('reviewsTitle').textContent = `⭐ تقييمات: ${course?.title || ''}`;
+  await loadCourseReviews(courseId);
+  renderReviewsList();
+  document.getElementById('reviewsModal').style.display = 'flex';
+}
+window.showReviews = showReviews;
+
+function closeReviewsModal() {
+  document.getElementById('reviewsModal').style.display = 'none';
+}
+window.closeReviewsModal = closeReviewsModal;
+
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('star')) {
+    const val = parseInt(e.target.dataset.value);
+    currentReviewRating = val;
+    document.querySelectorAll('#reviewStars .star').forEach(s => {
+      s.style.color = parseInt(s.dataset.value) <= val ? '#fbbf24' : '#cbd5e1';
+    });
+  }
+});
+
+async function submitCourseReview() {
+  if (!currentUser) return showToast('سجّل دخولك أولاً', 'warning');
+  const comment = document.getElementById('reviewComment').value.trim();
+  try {
+    await window.fsAddDoc(window.fsCollection(window.firestore, 'reviews'), {
+      courseId: currentCourseForReview,
+      userId: currentUser.uid,
+      userName: userData?.name || currentUser.email,
+      rating: currentReviewRating, comment,
+      createdAt: window.fsServerTimestamp()
+    });
+    showToast('تم إرسال التقييم ✓', 'success');
+    await loadCourseReviews(currentCourseForReview);
+    renderReviewsList();
+  } catch (e) { showToast('خطأ: ' + e.message, 'error'); }
+}
+window.submitCourseReview = submitCourseReview;
+
+function renderReviewsList() {
+  if (courseReviews.length === 0) {
+    document.getElementById('reviewsList').innerHTML = '<p style="text-align:center;font-size:13px;color:#94a3b8;padding:16px;">لا توجد تقييمات</p>';
+    return;
+  }
+  document.getElementById('reviewsList').innerHTML = courseReviews.map(r => `
+    <div style="background:#f8fafc;border-radius:12px;padding:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-weight:700;font-size:13px;">${r.userName}</span>
+        <span style="color:#f59e0b;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+      </div>
+      ${r.comment ? `<p style="font-size:12px;color:#475569;">${r.comment}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+function coursesAdminSubTab(tab) {
+  ['bookings', 'users', 'courses'].forEach(t => {
+    document.getElementById(`cadminPanel-${t}`).classList.toggle('hidden', t !== tab);
+    const btn = document.getElementById(`cadmin-${t}`);
+    if (btn) {
+      btn.style.background = t === tab ? '#7c3aed' : '#fff';
+      btn.style.color = t === tab ? '#fff' : '#64748b';
+      btn.style.borderColor = t === tab ? '#7c3aed' : '#e2e8f0';
+    }
+  });
+}
+window.coursesAdminSubTab = coursesAdminSubTab;
+
+async function renderCoursesAdmin() {
+  if (!currentUser) return showToast('سجل دخول', 'warning');
+  const isAdminUser = userData?.role === 'admin' || ADMIN_UIDS.includes(currentUser.uid);
+  if (!isAdminUser && !isCoursesAdminUnlocked) {
+    const pass = prompt('أدخل كلمة مرور الأدمن:');
+    if (pass === ADMIN_PASSWORD_COURSES) {
+      isCoursesAdminUnlocked = true;
+      showToast('مرحباً بك ✓', 'success');
+    } else {
+      return showToast('كلمة مرور خاطئة', 'error');
+    }
+  }
+  try {
+    const bSnap = await window.fsGetDocs(window.fsCollection(window.firestore, 'bookings'));
+    allBookings = bSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) { allBookings = []; }
+  try {
+    const uSnap = await window.fsGetDocs(window.fsCollection(window.firestore, 'users'));
+    allUsersCourses = uSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) { allUsersCourses = []; }
+  let reviewsCount = 0;
+  try {
+    const rSnap = await window.fsGetDocs(window.fsCollection(window.firestore, 'reviews'));
+    reviewsCount = rSnap.size;
+  } catch (e) {}
+  document.getElementById('adminUsersCount').textContent = allUsersCourses.length;
+  document.getElementById('adminCoursesCount').textContent = courses.length;
+  document.getElementById('adminBookingsCount').textContent = allBookings.length;
+  document.getElementById('adminReviewsCount').textContent = reviewsCount;
+  document.getElementById('cAdminBookingsBody').innerHTML = allBookings.map(b => `
+    <tr style="border-bottom:1px solid #f1f5f9;">
+      <td style="padding:10px 6px;">${b.userName || b.userEmail}</td>
+      <td style="padding:10px 6px;">${b.courseTitle}</td>
+      <td style="padding:10px 6px;">
+        <select onchange="updateCourseBookingStatus('${b.id}', this.value)" style="font-size:12px;padding:4px;border:1px solid #e2e8f0;border-radius:6px;">
+          <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>قيد المراجعة</option>
+          <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>مؤكد</option>
+          <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>ملغي</option>
+        </select>
+      </td>
+      <td style="padding:10px 6px;"><button onclick="deleteCourseBooking('${b.id}')" style="color:#ef4444;background:none;border:none;cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
+    </tr>
+  `).join('') || '<tr><td colspan="4" style="text-align:center;padding:16px;color:#94a3b8;">لا توجد حجوزات</td></tr>';
+  document.getElementById('cAdminUsersBody').innerHTML = allUsersCourses.map(u => `
+    <tr style="border-bottom:1px solid #f1f5f9;">
+      <td style="padding:10px 6px;">${u.name || '-'}</td>
+      <td style="padding:10px 6px;font-size:12px;">${u.email || ''}</td>
+      <td style="padding:10px 6px;">
+        ${u.role !== 'admin' ? `<button onclick="promoteCourseUser('${u.id}')" style="color:#16a34a;background:none;border:none;cursor:pointer;font-size:12px;">ترقية</button>` : ''}
+        <button onclick="deleteCourseUser('${u.id}')" style="color:#ef4444;background:none;border:none;cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="3" style="text-align:center;padding:16px;color:#94a3b8;">لا يوجد مستخدمون</td></tr>';
+  document.getElementById('cAdminCoursesBody').innerHTML = courses.map(c => `
+    <div style="display:flex;justify-content:space-between;background:#f8fafc;border-radius:12px;padding:12px;">
+      <div>
+        <div style="font-weight:700;font-size:13px;">${c.title}</div>
+        <div style="font-size:11px;color:#64748b;">${c.level} • ${c.price === 0 ? 'مجاني' : c.price + ' ج.م'}</div>
+      </div>
+      <button onclick="deleteCourse('${c.id}')" style="color:#ef4444;background:none;border:none;cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+    </div>
+  `).join('');
+}
+window.renderCoursesAdmin = renderCoursesAdmin;
+
+async function updateCourseBookingStatus(id, status) {
+  try {
+    await window.fsUpdateDoc(window.fsDoc(window.firestore, 'bookings', id), { status });
+    showToast('تم التحديث ✓', 'success');
+  } catch (e) { showToast('خطأ', 'error'); }
+}
+window.updateCourseBookingStatus = updateCourseBookingStatus;
+
+async function deleteCourseBooking(id) {
+  if (!confirm('حذف؟')) return;
+  try {
+    await window.fsDeleteDoc(window.fsDoc(window.firestore, 'bookings', id));
+    await renderCoursesAdmin();
+    showToast('تم الحذف', 'success');
+  } catch (e) {}
+}
+window.deleteCourseBooking = deleteCourseBooking;
+
+async function promoteCourseUser(id) {
+  if (!confirm('ترقية المستخدم؟')) return;
+  try {
+    await window.fsUpdateDoc(window.fsDoc(window.firestore, 'users', id), { role: 'admin' });
+    await renderCoursesAdmin();
+    showToast('تمت الترقية', 'success');
+  } catch (e) {}
+}
+window.promoteCourseUser = promoteCourseUser;
+
+async function deleteCourseUser(id) {
+  if (!confirm('حذف المستخدم؟')) return;
+  try {
+    await window.fsDeleteDoc(window.fsDoc(window.firestore, 'users', id));
+    await renderCoursesAdmin();
+    showToast('تم الحذف', 'success');
+  } catch (e) {}
+}
+window.deleteCourseUser = deleteCourseUser;
+
+function showAddCourseForm() {
+  document.getElementById('cAddCourseForm').classList.toggle('hidden');
+}
+window.showAddCourseForm = showAddCourseForm;
+
+async function createCourse() {
+  const title = document.getElementById('cNewTitle').value.trim();
+  const description = document.getElementById('cNewDesc').value.trim();
+  const level = document.getElementById('cNewLevel').value;
+  const price = parseInt(document.getElementById('cNewPrice').value) || 0;
+  const image = document.getElementById('cNewImage').value.trim();
+  if (!title) return showToast('أدخل عنوان الكورس', 'warning');
+  try {
+    await window.fsAddDoc(window.fsCollection(window.firestore, 'courses'), {
+      title, description, level, price, image,
+      instructor: userData?.name || 'الأدمن',
+      createdAt: window.fsServerTimestamp()
+    });
+    document.getElementById('cAddCourseForm').classList.add('hidden');
+    await loadCourses();
+    await renderCoursesAdmin();
+    showToast('تمت الإضافة ✓', 'success');
+  } catch (e) { showToast('خطأ: ' + e.message, 'error'); }
+}
+window.createCourse = createCourse;
+
+async function deleteCourse(id) {
+  if (!confirm('حذف الكورس؟')) return;
+  try {
+    await window.fsDeleteDoc(window.fsDoc(window.firestore, 'courses', id));
+    await loadCourses();
+    await renderCoursesAdmin();
+    showToast('تم الحذف', 'success');
+  } catch (e) {}
+}
+window.deleteCourse = deleteCourse;
+
+function renderCoursesSettings() {
+  if (!currentUser) return;
+  document.getElementById('cProfileAvatar').src = currentUser.photoURL || 'https://ui-avatars.com/api/?name=User&background=7c3aed&color=fff';
+  document.getElementById('cProfileName').textContent = userData?.name || currentUser.displayName || 'طالب';
+  document.getElementById('cProfileEmail').textContent = currentUser.email || '';
+  document.getElementById('cUpdateName').value = userData?.name || currentUser.displayName || '';
+}
+window.renderCoursesSettings = renderCoursesSettings;
+
+async function updateCourseProfileName() {
+  const name = document.getElementById('cUpdateName').value.trim();
+  if (!name) return showToast('أدخل الاسم', 'warning');
+  try {
+    await window.fsUpdateDoc(window.fsDoc(window.firestore, 'users', currentUser.uid), { name });
+    userData = { ...userData, name };
+    renderCoursesSettings();
+    showToast('تم التحديث ✓', 'success');
+  } catch (e) { showToast('خطأ: ' + e.message, 'error'); }
+}
+window.updateCourseProfileName = updateCourseProfileName;
+
+async function updateCourseProfilePhoto() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) return showToast('الصورة كبيرة', 'warning');
+    try {
+      const ref = window.stRef(window.storage, `avatars/${currentUser.uid}`);
+      await window.uploadBytesResumable(ref, file);
+      showToast('تم الرفع ✓', 'success');
+    } catch (err) { showToast('خطأ: ' + err.message, 'error'); }
+  };
+  input.click();
+}
+window.updateCourseProfilePhoto = updateCourseProfilePhoto;
+
+function logoutFromCourses() {
+  window.signOut(window.auth);
+  showToast('تم تسجيل الخروج', 'info');
+}
+window.logoutFromCourses = logoutFromCourses;
+
 function initListeners() {
   window.onValue(window.ref(window.db, 'schedules'), snap => {
     const d = snap.val();
@@ -1408,6 +2178,7 @@ function initListeners() {
     }
   });
 }
+
 function renderUser() {
   const avatar = document.getElementById('userAvatar');
   const name = document.getElementById('userName');
@@ -1436,15 +2207,22 @@ function renderUser() {
     }
   }
 }
+
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  document.getElementById('installBanner')?.classList.add('show');
+  const banner = document.getElementById('installBanner');
+  banner?.classList.add('show');
+  setTimeout(() => {
+    banner?.classList.remove('show');
+  }, 8000);
 });
+
 window.addEventListener('appinstalled', () => {
   document.getElementById('installBanner')?.classList.remove('show');
   showToast('✅ تم تثبيت التطبيق', 'success');
 });
+
 function installPWA() {
   if (deferredPrompt) {
     deferredPrompt.prompt();
@@ -1458,21 +2236,25 @@ function installPWA() {
   }
 }
 window.installPWA = installPWA;
+
 function closeInstallBanner() {
   document.getElementById('installBanner')?.classList.remove('show');
 }
 window.closeInstallBanner = closeInstallBanner;
+
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     document.querySelectorAll('video').forEach(v => v.pause());
   }
 });
+
 document.addEventListener('contextmenu', e => {
   if (e.target.closest('.video-protected-wrapper')) {
     e.preventDefault();
     showToast('⚠️ النسخ غير مسموح', 'warning');
   }
 });
+
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && ['s', 'p', 'u'].includes(e.key.toLowerCase())) {
     e.preventDefault();
@@ -1481,6 +2263,7 @@ document.addEventListener('keydown', e => {
     showToast('⚠️ تسجيل الشاشة غير مسموح', 'error');
   }
 });
+
 function initApp() {
   window.onAuthStateChanged(window.auth, user => {
     if (user) {
@@ -1497,11 +2280,15 @@ function initApp() {
           initSetupScreen();
         } else {
           switchTab('home');
+          renderBlocks();
+          renderVideosList();
         }
-        buildBottomNav();
+        buildBottomNavCenter();
       });
       window.set(window.ref(window.db, `users/${user.uid}/online`), true);
       window.set(window.ref(window.db, `users/${user.uid}/lastSeen`), Date.now());
+      loadFavorites();
+      loadBookings();
     } else {
       currentUser = null; userData = null;
       switchTab('login');
@@ -1509,6 +2296,7 @@ function initApp() {
     }
   });
   initListeners();
+  loadCourses();
   const saved = localStorage.getItem('sigma-theme');
   if (saved === 'dark') {
     darkMode = true;
@@ -1516,6 +2304,7 @@ function initApp() {
     document.getElementById('darkIcon').className = 'fa-solid fa-sun text-lg';
   }
 }
+
 function waitForFirebase() {
   return new Promise(resolve => {
     if (window.db && window.auth) return resolve();
@@ -1523,10 +2312,11 @@ function waitForFirebase() {
     setTimeout(resolve, 3000);
   });
 }
+
 waitForFirebase().then(() => {
   console.log('🚀 سيجما جاهز!');
   initApp();
 });
 </script>
 </body>
-</html>
+  </html>
