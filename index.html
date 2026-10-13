@@ -614,4 +614,1628 @@ body{font-family:'Cairo',sans-serif;background:#f1f5f9}
 <div id="playerModal" class="player-modal">
 <div class="player-top"><span id="playerTitle">-</span><button onclick="closePlayer()" class="w-9 h-9 rounded-full bg-white/20 text-white text-lg">✕</button></div>
 <div class="player-wrap" id="playerWrap"><div id="playerWatermark" class="watermark"></div></div>
-  </div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get, push, update, remove, onValue, query, orderByChild, equalTo, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
+authDomain: "sigma-6f162.firebaseapp.com",
+databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
+projectId: "sigma-6f162",
+storageBucket: "sigma-6f162.firebasestorage.app",
+messagingSenderId: "420365348074",
+appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2'];
+const ADMIN_PASSWORD = 'Sigma@2024';
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const SUBJECTS = ['رياضيات','فيزياء','كيمياء','أحياء','لغة عربية','لغة إنجليزية','لغة فرنسية','تاريخ','جغرافيا','فلسفة','علم نفس','إحصاء'];
+let currentUser = null;
+let currentUserData = null;
+let isAdmin = false;
+let isPlatformAdmin = false;
+let currentScheduleFilter = 'today';
+let currentCourse = null;
+let currentPayMethod = 'vodafone';
+let currentVideoMode = 'file';
+let currentNotifOption = 'full';
+let currentOption = 'full';
+let currentScheduleDay = 'today';
+let activeListeners = [];
+let editingCourseId = null;
+let viewerCurrentImage = null;
+let viewerCurrentName = '';
+
+window.switchTab = switchTab;
+window.toggleDarkMode = toggleDarkMode;
+window.loginUser = loginUser;
+window.registerUser = registerUser;
+window.logoutUser = logoutUser;
+window.openProfile = openProfile;
+window.filterSchedule = filterSchedule;
+window.openImageViewer = openImageViewer;
+window.closeImageViewer = closeImageViewer;
+window.downloadImage = downloadImage;
+window.toggleSection = toggleSection;
+window.toggleStats = toggleStats;
+window.adminLogin = adminLogin;
+window.addTeacher = addTeacher;
+window.addExam = addExam;
+window.addResult = addResult;
+window.addWeeklyFollow = addWeeklyFollow;
+window.setOption = setOption;
+window.setScheduleDay = setScheduleDay;
+window.addSchedule = addSchedule;
+window.setNotifOption = setNotifOption;
+window.sendNotif = sendNotif;
+window.addNews = addNews;
+window.uploadMat = uploadMat;
+window.addContact = addContact;
+window.deleteAll = deleteAll;
+window.saveProfile = saveProfile;
+window.sendComplaint = sendComplaint;
+window.deleteAccount = deleteAccount;
+window.openPlatform = openPlatform;
+window.closePlatform = closePlatform;
+window.pSwitch = pSwitch;
+window.renderCourses = renderCourses;
+window.selectPay = selectPay;
+window.confirmOrder = confirmOrder;
+window.pBackFromCheckout = pBackFromCheckout;
+window.pAdminLogin = pAdminLogin;
+window.saveCourse = saveCourse;
+window.resetCourseForm = resetCourseForm;
+window.setVideoMode = setVideoMode;
+window.savePaySettings = savePaySettings;
+window.openPlayer = openPlayer;
+window.closePlayer = closePlayer;
+window.approvePurchase = approvePurchase;
+window.rejectPurchase = rejectPurchase;
+window.toggleFav = toggleFav;
+window.approveProfileRequest = approveProfileRequest;
+window.rejectProfileRequest = rejectProfileRequest;
+window.deleteCourse = deleteCourse;
+window.editCourse = editCourse;
+window.deleteItem = deleteItem;
+window.buyNow = buyNow;
+
+function toast(msg, type = 'info') {
+const t = document.createElement('div');
+t.className = `toast toast-${type}`;
+t.textContent = msg;
+document.body.appendChild(t);
+setTimeout(() => t.remove(), 3500);
+}
+
+function toggleDarkMode() {
+document.body.classList.toggle('dark-mode');
+const isDark = document.body.classList.contains('dark-mode');
+document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+const pDark = document.getElementById('pDarkIcon');
+if (pDark) pDark.className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+localStorage.setItem('darkMode', isDark ? '1' : '0');
+}
+
+function compressImage(file, maxWidth = 1200, quality = 0.7) {
+return new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.onload = e => {
+const img = new Image();
+img.onload = () => {
+const canvas = document.createElement('canvas');
+let w = img.width, h = img.height;
+if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
+canvas.width = w; canvas.height = h;
+const ctx = canvas.getContext('2d');
+ctx.drawImage(img, 0, 0, w, h);
+resolve(canvas.toDataURL('image/jpeg', quality));
+};
+img.onerror = reject;
+img.src = e.target.result;
+};
+reader.onerror = reject;
+reader.readAsDataURL(file);
+});
+}
+
+function fileToBase64(file) {
+return new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.onload = e => resolve(e.target.result);
+reader.onerror = reject;
+reader.readAsDataURL(file);
+});
+}
+
+function switchTab(tab) {
+document.querySelectorAll('#mainContent > section').forEach(s => s.classList.add('hidden'));
+const el = document.getElementById('tab-' + tab);
+if (el) { el.classList.remove('hidden'); el.classList.add('slide-up'); }
+document.querySelectorAll('#mainNav button').forEach(b => b.classList.remove('text-blue-600'));
+const nav = document.getElementById('nav-' + tab);
+if (nav) nav.classList.add('text-blue-600');
+if (tab === 'home') loadHome();
+if (tab === 'schedule') renderSchedule();
+if (tab === 'library') loadLibrary();
+if (tab === 'news') loadAllNews();
+if (tab === 'notifications') loadNotifications();
+if (tab === 'exams') loadExams();
+if (tab === 'results') loadResults();
+if (tab === 'teachers') loadTeachers();
+if (tab === 'settings') loadSettings();
+if (tab === 'admin') checkAdminAccess();
+}
+
+function requireLogin() {
+if (!currentUser) { switchTab('login'); toast('يجب تسجيل الدخول أولاً', 'warning'); return false; }
+return true;
+}
+
+async function loginUser() {
+const email = document.getElementById('loginEmail').value.trim();
+const pass = document.getElementById('loginPassword').value;
+if (!email || !pass) { toast('أدخل البريد وكلمة المرور', 'error'); return; }
+try {
+await signInWithEmailAndPassword(auth, email, pass);
+toast('تم تسجيل الدخول بنجاح', 'success');
+} catch (e) { toast('فشل تسجيل الدخول: ' + e.message, 'error'); }
+}
+
+async function registerUser() {
+const name = document.getElementById('regName').value.trim();
+const email = document.getElementById('regEmail').value.trim();
+const phone = document.getElementById('regPhone').value.trim();
+const pass = document.getElementById('regPassword').value;
+const idFile = document.getElementById('regIdImage').files[0];
+if (!name || !email || !phone || !pass) { toast('أكمل جميع البيانات', 'error'); return; }
+if (pass.length < 6) { toast('كلمة المرور 6 أحرف على الأقل', 'error'); return; }
+if (!idFile) { toast('ارفع صورة البطاقة', 'error'); return; }
+if (idFile.size > MAX_FILE_SIZE) { toast('حجم الصورة كبير جداً', 'error'); return; }
+try {
+const idImage = await compressImage(idFile);
+const cred = await createUserWithEmailAndPassword(auth, email, pass);
+await set(ref(db, 'users/' + cred.user.uid), {
+name, email, phone, idImage, stage: '', grade: '', subjects: [], school: '', parentPhone: '', profileStatus: 'pending', online: true, lastSeen: Date.now(), createdAt: Date.now()
+});
+toast('تم إنشاء الحساب بنجاح', 'success');
+} catch (e) { toast('فشل التسجيل: ' + e.message, 'error'); }
+}
+
+async function logoutUser() {
+if (currentUser) {
+try { await update(ref(db, 'users/' + currentUser.uid), { online: false, lastSeen: Date.now() }); } catch (e) {}
+}
+await signOut(auth);
+toast('تم تسجيل الخروج', 'info');
+}
+
+function openProfile() { switchTab('settings'); }
+
+async function loadHome() {
+if (!currentUser || !currentUserData) return;
+const d = currentUserData;
+document.getElementById('userAvatar').src = d.idImage || '';
+document.getElementById('userAvatar').style.display = d.idImage ? 'block' : 'none';
+document.getElementById('userName').textContent = d.name || 'مستخدم';
+const stageMap = { 'ثانوي': 'ثانوي', 'إعدادي': 'إعدادي' };
+const gradeMap = { '1': 'الأول', '2': 'الثاني', '3': 'الثالث' };
+document.getElementById('userSubtitle').textContent = `${stageMap[d.stage] || 'لم تحدد المرحلة'} - الصف ${gradeMap[d.grade] || '؟'}`;
+const subsEl = document.getElementById('userSubjects');
+subsEl.innerHTML = (d.subjects || []).map(s => `<span class="subject-chip">${s}</span>`).join('');
+if (isAdmin) document.getElementById('nav-admin').classList.remove('hidden'); else document.getElementById('nav-admin').classList.add('hidden');
+loadScheduleToday();
+loadHomeNews();
+loadStatsCounts();
+}
+
+async function loadStatsCounts() {
+if (!currentUser) return;
+const todayName = getArabicDayName(new Date());
+const schSnap = await get(ref(db, 'schedules'));
+let todayCount = 0;
+if (schSnap.exists()) {
+const uStage = currentUserData?.stage || '';
+const uSubjects = currentUserData?.subjects || [];
+schSnap.forEach(c => {
+const s = c.val();
+if (s.day === todayName && s.stage === uStage && (!s.subject || uSubjects.includes(s.subject) || uSubjects.length === 0)) todayCount++;
+});
+}
+document.getElementById('todayCount').textContent = todayCount;
+const matSnap = await get(ref(db, 'materials'));
+let matCount = 0;
+if (matSnap.exists()) {
+const uSubjects = currentUserData?.subjects || [];
+matSnap.forEach(c => { const m = c.val(); if (!m.subject || uSubjects.includes(m.subject)) matCount++; });
+}
+document.getElementById('materialCount').textContent = matCount;
+const notifSnap = await get(ref(db, 'notifications'));
+let notifCount = 0;
+if (notifSnap.exists()) {
+const uStage = currentUserData?.stage || '';
+const uGrade = currentUserData?.grade || '';
+notifSnap.forEach(c => {
+const n = c.val();
+if ((n.stage === 'الكل' || n.stage === uStage) && (n.grade === 'الكل' || n.grade === uGrade)) notifCount++;
+});
+}
+document.getElementById('notifCount').textContent = notifCount;
+document.getElementById('notifBadge').classList.toggle('hidden', notifCount === 0);
+}
+
+function getArabicDayName(date) {
+const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+return days[date.getDay()];
+}
+
+async function loadScheduleToday() {
+if (!currentUser || !currentUserData) return;
+const todayName = getArabicDayName(new Date());
+const snap = await get(ref(db, 'schedules'));
+const container = document.getElementById('myScheduleToday');
+let items = [];
+if (snap.exists()) {
+const uStage = currentUserData.stage || '';
+const uSubjects = currentUserData.subjects || [];
+snap.forEach(c => {
+const s = c.val();
+if (s.day === todayName && s.stage === uStage && (uSubjects.length === 0 || !s.subject || uSubjects.includes(s.subject))) {
+items.push({ id: c.key, ...s });
+}
+});
+}
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد حصص اليوم</div>'; return; }
+container.innerHTML = items.map(s => `
+<div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
+<div><div class="text-xs font-bold text-slate-800">${s.subject || ''}</div><div class="text-[10px] text-slate-500">${s.teacher || ''} - ${s.room || ''}</div></div>
+<div class="text-[10px] font-bold text-amber-600">${s.time || ''}</div>
+</div>`).join('');
+}
+
+async function loadHomeNews() {
+const snap = await get(ref(db, 'news'));
+const container = document.getElementById('homeNewsContainer');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+items = items.slice(0, 3);
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد أخبار</div>'; return; }
+container.innerHTML = items.map(n => `
+<div class="flex gap-2 items-start">
+${n.imageData ? `<img src="${n.imageData}" class="w-14 h-14 rounded-xl object-cover cursor-pointer" onclick="openImageViewer('${n.imageData}','${(n.title||'').replace(/'/g,'')}')">` : `<div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white"><i class="fa-solid fa-newspaper"></i></div>`}
+<div class="flex-1 min-w-0">
+<div class="text-xs font-bold text-slate-800 truncate">${n.title || ''}</div>
+<div class="text-[10px] text-slate-500 line-clamp-2">${n.content || ''}</div>
+</div>
+</div>`).join('');
+}
+
+async function renderSchedule() {
+if (!currentUser || !currentUserData) return;
+const snap = await get(ref(db, 'schedules'));
+const container = document.getElementById('scheduleContainer');
+let items = [];
+const todayName = getArabicDayName(new Date());
+const tomorrowName = getArabicDayName(new Date(Date.now() + 86400000));
+if (snap.exists()) {
+const uStage = currentUserData.stage || '';
+const uSubjects = currentUserData.subjects || [];
+snap.forEach(c => {
+const s = c.val();
+if (s.stage && s.stage !== uStage) return;
+if (uSubjects.length > 0 && s.subject && !uSubjects.includes(s.subject)) return;
+if (currentScheduleFilter === 'today' && s.day !== todayName) return;
+if (currentScheduleFilter === 'tomorrow' && s.day !== tomorrowName) return;
+items.push({ id: c.key, ...s });
+});
+}
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد حصص</div>'; return; }
+container.innerHTML = items.map(s => `
+<div class="schedule-item">
+<div class="flex items-center justify-between">
+<div class="subject text-slate-800">${s.subject || ''}</div>
+<div class="time">${s.time || ''}</div>
+</div>
+<div class="teacher">${s.teacher || ''} ${s.room ? '- قاعة ' + s.room : ''} - ${s.day || ''} - ${s.stage || ''}</div>
+${s.imageData ? `<img src="${s.imageData}" class="mt-2 w-full h-24 object-cover rounded-xl cursor-pointer" onclick="openImageViewer('${s.imageData}','${(s.subject||'').replace(/'/g,'')}')">` : ''}
+</div>`).join('');
+}
+
+function filterSchedule(f) {
+currentScheduleFilter = f;
+['btnToday','btnTomorrow','btnAll'].forEach(id => document.getElementById(id).className = 'flex-1 py-1.5 rounded-lg');
+const map = { today: 'btnToday', tomorrow: 'btnTomorrow', all: 'btnAll' };
+document.getElementById(map[f]).className = 'flex-1 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm';
+renderSchedule();
+}
+
+async function loadLibrary() {
+if (!currentUser || !currentUserData) return;
+const snap = await get(ref(db, 'materials'));
+const container = document.getElementById('libraryContainer');
+let items = [];
+if (snap.exists()) {
+const uSubjects = currentUserData.subjects || [];
+snap.forEach(c => {
+const m = c.val();
+if (uSubjects.length > 0 && m.subject && !uSubjects.includes(m.subject)) return;
+items.push({ id: c.key, ...m });
+});
+}
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد ملفات</div>'; return; }
+container.innerHTML = items.map(m => `
+<div class="bg-white rounded-2xl p-3 border border-slate-100 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white"><i class="fa-solid ${m.type === 'pdf' ? 'fa-file-pdf' : 'fa-image'}"></i></div>
+<div class="flex-1 min-w-0">
+<div class="text-xs font-bold text-slate-800 truncate">${m.title || ''}</div>
+<div class="text-[10px] text-slate-500">${m.subject || ''} - ${m.type ? m.type.toUpperCase() : ''}</div>
+</div>
+<button onclick="${m.type === 'image' ? `openImageViewer('${m.fileData}','${(m.title||'').replace(/'/g,'')}')` : `downloadData('${m.fileData}','${(m.fileName||m.title||'file')}')`}" class="bg-purple-100 text-purple-600 text-[10px] font-bold px-3 py-1.5 rounded-xl">${m.type === 'image' ? 'عرض' : 'تحميل'}</button>
+</div>`).join('');
+}
+
+window.downloadData = function(data, name) {
+const a = document.createElement('a');
+a.href = data;
+a.download = name || 'file';
+a.click();
+};
+
+async function loadAllNews() {
+const snap = await get(ref(db, 'news'));
+const container = document.getElementById('allNewsContainer');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد أخبار</div>'; return; }
+container.innerHTML = items.map(n => `
+<div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
+${n.imageData ? `<img src="${n.imageData}" class="w-full h-40 object-cover cursor-pointer" onclick="openImageViewer('${n.imageData}','${(n.title||'').replace(/'/g,'')}')">` : ''}
+<div class="p-3">
+<div class="text-sm font-bold text-slate-800">${n.title || ''}</div>
+<div class="text-xs text-slate-600 mt-1">${n.content || ''}</div>
+<div class="text-[9px] text-slate-400 mt-2">${n.date ? new Date(n.date).toLocaleString('ar-EG') : ''}</div>
+</div>
+</div>`).join('');
+}
+
+async function loadNotifications() {
+if (!currentUser || !currentUserData) return;
+const snap = await get(ref(db, 'notifications'));
+const container = document.getElementById('notificationsContainer');
+let items = [];
+if (snap.exists()) {
+const uStage = currentUserData.stage || '';
+const uGrade = currentUserData.grade || '';
+const uSubjects = currentUserData.subjects || [];
+snap.forEach(c => {
+const n = c.val();
+if (n.stage && n.stage !== 'الكل' && n.stage !== uStage) return;
+if (n.grade && n.grade !== 'الكل' && n.grade !== uGrade) return;
+if (n.subject && uSubjects.length > 0 && !uSubjects.includes(n.subject)) return;
+items.push({ id: c.key, ...n });
+});
+}
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs"><i class="fa-regular fa-bell-slash text-2xl block mb-1"></i> لا توجد إشعارات</div>'; return; }
+container.innerHTML = items.map(n => `
+<div class="bg-white rounded-2xl p-3 border border-amber-100 shadow-sm">
+${n.imageData ? `<img src="${n.imageData}" class="w-full h-32 object-cover rounded-xl mb-2 cursor-pointer" onclick="openImageViewer('${n.imageData}','${(n.title||'').replace(/'/g,'')}')">` : ''}
+<div class="text-sm font-bold text-slate-800">${n.title || ''}</div>
+${n.body ? `<div class="text-xs text-slate-600 mt-1">${n.body}</div>` : ''}
+<div class="text-[9px] text-slate-400 mt-2">${n.date ? new Date(n.date).toLocaleString('ar-EG') : ''}</div>
+</div>`).join('');
+}
+
+async function loadExams() {
+const snap = await get(ref(db, 'exams'));
+const container = document.getElementById('examsContainer');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+items.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد امتحانات</div>'; return; }
+container.innerHTML = items.map(e => `
+<div class="exam-card">
+<div class="exam-title">${e.title || ''}</div>
+<div class="exam-info">${e.subject || ''} - ${e.date || ''}</div>
+</div>`).join('');
+}
+
+async function loadResults() {
+if (!currentUser) return;
+const snap = await get(ref(db, 'results'));
+const container = document.getElementById('resultsContainer');
+let items = [];
+if (snap.exists()) snap.forEach(c => {
+const r = c.val();
+if (r.userId === currentUser.uid) items.push({ id: c.key, ...r });
+});
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد نتائج</div>'; }
+else container.innerHTML = items.map(r => `
+<div class="result-card">
+<div class="flex items-center justify-between">
+<div class="result-subject">${r.subject || ''}</div>
+<div class="result-score">${r.score || 0}</div>
+</div>
+<div class="text-[10px] text-slate-500">${r.date ? new Date(r.date).toLocaleDateString('ar-EG') : ''}</div>
+</div>`).join('');
+const wSnap = await get(ref(db, 'weekly_follow'));
+const wContainer = document.getElementById('weeklyContainer');
+let wItems = [];
+if (wSnap.exists()) wSnap.forEach(c => {
+const w = c.val();
+if (w.userId === currentUser.uid) wItems.push({ id: c.key, ...w });
+});
+wItems.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (wItems.length === 0) { wContainer.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد متابعات</div>'; }
+else wContainer.innerHTML = wItems.map(w => `
+<div class="bg-white rounded-xl p-3 border border-cyan-100">
+<div class="text-xs font-bold text-slate-800">${w.subject || ''}</div>
+<div class="text-[11px] text-slate-600 mt-1">${w.note || ''}</div>
+<div class="text-[9px] text-slate-400 mt-1">${w.date ? new Date(w.date).toLocaleDateString('ar-EG') : ''}</div>
+</div>`).join('');
+}
+
+async function loadTeachers() {
+const snap = await get(ref(db, 'teachers'));
+const container = document.getElementById('teachersContainer');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا يوجد مدرسين</div>'; return; }
+container.innerHTML = items.map(t => `
+<div class="bg-white rounded-xl p-3 border border-indigo-100 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold"><i class="fa-solid fa-user-tie"></i></div>
+<div><div class="text-xs font-bold text-slate-800">${t.name || ''}</div><div class="text-[10px] text-slate-500">${t.subject || ''}</div></div>
+</div>`).join('');
+}
+
+async function loadSettings() {
+if (!currentUser || !currentUserData) return;
+const d = currentUserData;
+document.getElementById('infoName').textContent = d.name || '-';
+document.getElementById('infoEmail').textContent = d.email || '-';
+document.getElementById('infoPhone').textContent = d.phone || '-';
+document.getElementById('infoParentPhone').textContent = d.parentPhone || '-';
+document.getElementById('infoSchool').textContent = d.school || '-';
+document.getElementById('infoStage').textContent = d.stage || '-';
+document.getElementById('infoGrade').textContent = d.grade || '-';
+document.getElementById('infoSubjects').textContent = (d.subjects || []).join(', ') || '-';
+const statusMap = { pending: 'قيد المراجعة', approved: 'مقبول', rejected: 'مرفوض' };
+const statusEl = document.getElementById('infoStatus');
+statusEl.textContent = statusMap[d.profileStatus] || 'قيد المراجعة';
+statusEl.className = 'font-bold ' + (d.profileStatus === 'approved' ? 'text-green-600' : d.profileStatus === 'rejected' ? 'text-red-600' : 'text-amber-600');
+document.getElementById('profSchool').value = d.school || '';
+document.getElementById('profParentPhone').value = d.parentPhone || '';
+document.getElementById('profStage').value = d.stage || 'ثانوي';
+document.getElementById('profGrade').value = d.grade || '1';
+document.getElementById('profPhone').value = d.phone || '';
+const cbContainer = document.getElementById('subjectsCheckbox');
+cbContainer.innerHTML = SUBJECTS.map(s => `
+<label class="flex items-center gap-1 text-[10px] text-slate-700 bg-slate-50 p-1.5 rounded-lg cursor-pointer">
+<input type="checkbox" value="${s}" ${(d.subjects||[]).includes(s) ? 'checked' : ''} class="subject-check">
+<span>${s}</span>
+</label>`).join('');
+loadContacts();
+}
+
+async function loadContacts() {
+const snap = await get(ref(db, 'contacts'));
+const centerEl = document.getElementById('centerContacts');
+const supportEl = document.getElementById('supportContacts');
+let center = [], support = [];
+if (snap.exists()) snap.forEach(c => {
+const v = c.val();
+if (v.type === 'support') support.push(v);
+else center.push(v);
+});
+const renderC = (arr, el) => {
+if (arr.length === 0) { el.innerHTML = '<div class="text-[10px] text-slate-400">لا توجد أرقام</div>'; return; }
+el.innerHTML = arr.map(c => `
+<div class="flex items-center justify-between bg-slate-50 rounded-xl p-2">
+<div class="flex items-center gap-2 text-xs font-bold text-slate-700">
+<i class="fa-solid ${c.type === 'whatsapp' ? 'fa-whatsapp text-green-500' : c.type === 'support' ? 'fa-headset text-cyan-500' : 'fa-phone text-blue-500'}"></i>
+<span>${c.number}</span>
+</div>
+<a href="${c.type === 'whatsapp' ? 'https://wa.me/' + c.number.replace(/\D/g,'') : 'tel:' + c.number}" class="text-[10px] bg-blue-600 text-white px-3 py-1 rounded-lg font-bold">${c.type === 'whatsapp' ? 'واتساب' : 'اتصال'}</a>
+</div>`).join('');
+};
+renderC(center, centerEl);
+renderC(support, supportEl);
+}
+
+async function saveProfile() {
+if (!currentUser) return;
+const school = document.getElementById('profSchool').value.trim();
+const parentPhone = document.getElementById('profParentPhone').value.trim();
+const stage = document.getElementById('profStage').value;
+const grade = document.getElementById('profGrade').value;
+const phone = document.getElementById('profPhone').value.trim();
+const subjects = Array.from(document.querySelectorAll('.subject-check:checked')).map(c => c.value);
+try {
+await update(ref(db, 'users/' + currentUser.uid), { school, parentPhone, stage, grade, phone, subjects, profileStatus: 'pending' });
+await push(ref(db, 'profile_requests'), {
+userId: currentUser.uid, userName: currentUserData.name, userEmail: currentUserData.email,
+school, parentPhone, stage, grade, phone, subjects, idImage: currentUserData.idImage || '', status: 'pending', date: Date.now()
+});
+toast('تم حفظ البيانات وإرسالها للمراجعة', 'success');
+} catch (e) { toast('فشل الحفظ: ' + e.message, 'error'); }
+}
+
+async function sendComplaint() {
+if (!currentUser || !currentUserData) return;
+const text = document.getElementById('complaintText').value.trim();
+if (!text) { toast('اكتب شكواك أولاً', 'error'); return; }
+try {
+await push(ref(db, 'complaints'), {
+text, userId: currentUser.uid, userName: currentUserData.name,
+userEmail: currentUserData.email, userPhone: currentUserData.phone, date: Date.now()
+});
+document.getElementById('complaintText').value = '';
+toast('تم إرسال الشكوى', 'success');
+} catch (e) { toast('فشل الإرسال', 'error'); }
+}
+
+async function deleteAccount() {
+if (!currentUser) return;
+if (!confirm('هل أنت متأكد من حذف الحساب نهائياً؟')) return;
+try {
+await remove(ref(db, 'users/' + currentUser.uid));
+await deleteUser(currentUser);
+toast('تم حذف الحساب', 'success');
+switchTab('login');
+} catch (e) { toast('فشل الحذف: ' + e.message, 'error'); }
+}
+
+function openImageViewer(src, name) {
+viewerCurrentImage = src; viewerCurrentName = name || 'image';
+document.getElementById('viewerImage').src = src;
+document.getElementById('imageInfo').textContent = name || '';
+document.getElementById('imageViewer').classList.add('show');
+}
+function closeImageViewer() { document.getElementById('imageViewer').classList.remove('show'); }
+function downloadImage() {
+if (!viewerCurrentImage) return;
+const a = document.createElement('a');
+a.href = viewerCurrentImage;
+a.download = viewerCurrentName + '.jpg';
+a.click();
+}
+
+function toggleSection(header) {
+const content = header.nextElementSibling;
+content.classList.toggle('open');
+const icon = header.querySelector('i:last-child');
+if (icon) icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+async function checkAdminAccess() {
+if (!isAdmin) {
+document.getElementById('adminLogin').classList.remove('hidden');
+document.getElementById('adminPanel').classList.add('hidden');
+document.getElementById('adminDenied').classList.add('hidden');
+} else {
+document.getElementById('adminLogin').classList.add('hidden');
+document.getElementById('adminPanel').classList.remove('hidden');
+document.getElementById('adminDenied').classList.add('hidden');
+loadAdminData();
+}
+}
+
+async function adminLogin() {
+const pass = document.getElementById('adminPass').value;
+if (pass !== ADMIN_PASSWORD) { toast('كلمة السر غير صحيحة', 'error'); return; }
+isAdmin = true;
+toast('مرحباً بك في لوحة الإدارة', 'success');
+checkAdminAccess();
+loadAdminData();
+}
+
+async function loadAdminData() {
+loadAdminStats();
+loadProfileRequests();
+loadAdminTeachers();
+loadAdminExams();
+loadAdminResults();
+loadAdminWeekly();
+loadAdminSchedules();
+loadAdminNotifications();
+loadAdminNews();
+loadAdminMaterials();
+loadAdminContacts();
+loadAdminComplaints();
+loadStudentSelects();
+}
+
+function toggleStats() {
+const c = document.getElementById('statsContent');
+c.classList.toggle('open');
+document.getElementById('statsArrow').style.transform = c.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+async function loadAdminStats() {
+const [usersS, schS, matS, tS, eS, rS, nS] = await Promise.all([
+get(ref(db, 'users')), get(ref(db, 'schedules')), get(ref(db, 'materials')),
+get(ref(db, 'teachers')), get(ref(db, 'exams')), get(ref(db, 'results')), get(ref(db, 'notifications'))
+]);
+let totalUsers = 0, active = 0;
+if (usersS.exists()) usersS.forEach(c => { totalUsers++; if (c.val().online) active++; });
+document.getElementById('statUsers').textContent = totalUsers;
+document.getElementById('statActive').textContent = active;
+document.getElementById('statSchedules').textContent = schS.exists() ? Object.keys(schS.val()).length : 0;
+document.getElementById('statMaterials').textContent = matS.exists() ? Object.keys(matS.val()).length : 0;
+document.getElementById('statTeachers').textContent = tS.exists() ? Object.keys(tS.val()).length : 0;
+document.getElementById('statExams').textContent = eS.exists() ? Object.keys(eS.val()).length : 0;
+document.getElementById('statResults').textContent = rS.exists() ? Object.keys(rS.val()).length : 0;
+document.getElementById('statNotifs').textContent = nS.exists() ? Object.keys(nS.val()).length : 0;
+}
+
+async function loadProfileRequests() {
+const snap = await get(ref(db, 'profile_requests'));
+const container = document.getElementById('profileRequestsList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد طلبات</div>'; return; }
+container.innerHTML = items.map(r => `
+<div class="complaint-card">
+<div class="name">${r.userName || ''}</div>
+<div class="phone">${r.userEmail || ''} - ${r.phone || ''}</div>
+<div class="text">مدرسة: ${r.school || ''} - ولي أمر: ${r.parentPhone || ''}</div>
+<div class="text">المرحلة: ${r.stage || ''} - الصف: ${r.grade || ''}</div>
+<div class="text">المواد: ${(r.subjects || []).join(', ')}</div>
+${r.idImage ? `<img src="${r.idImage}" class="mt-2 w-20 h-20 object-cover rounded-lg cursor-pointer" onclick="openImageViewer('${r.idImage}','${(r.userName||'').replace(/'/g,'')}')">` : ''}
+<div class="flex gap-1 mt-2">
+<button onclick="approveProfileRequest('${r.id}','${r.userId}')" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-1.5 rounded-lg">✅ موافقة</button>
+<button onclick="rejectProfileRequest('${r.id}','${r.userId}')" class="flex-1 bg-red-600 text-white text-[10px] font-bold py-1.5 rounded-lg">❌ رفض</button>
+</div>
+<div class="date">${r.date ? new Date(r.date).toLocaleString('ar-EG') : ''}</div>
+</div>`).join('');
+}
+
+async function approveProfileRequest(reqId, userId) {
+await update(ref(db, 'users/' + userId), { profileStatus: 'approved' });
+await update(ref(db, 'profile_requests/' + reqId), { status: 'approved' });
+toast('تمت الموافقة', 'success');
+loadProfileRequests();
+}
+async function rejectProfileRequest(reqId, userId) {
+await update(ref(db, 'users/' + userId), { profileStatus: 'rejected' });
+await update(ref(db, 'profile_requests/' + reqId), { status: 'rejected' });
+toast('تم الرفض', 'info');
+loadProfileRequests();
+}
+
+async function addTeacher() {
+const name = document.getElementById('teacherName').value.trim();
+const subject = document.getElementById('teacherSubject').value.trim();
+if (!name || !subject) { toast('أدخل اسم المدرس والمادة', 'error'); return; }
+await push(ref(db, 'teachers'), { name, subject });
+document.getElementById('teacherName').value = '';
+document.getElementById('teacherSubject').value = '';
+toast('تم إضافة المدرس', 'success');
+loadAdminTeachers();
+loadTeachers();
+}
+async function loadAdminTeachers() {
+const snap = await get(ref(db, 'teachers'));
+const container = document.getElementById('teachersList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(t => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700">${t.name} - ${t.subject}</div>
+<button onclick="deleteItem('teachers','${t.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+async function addExam() {
+const title = document.getElementById('examTitle').value.trim();
+const subject = document.getElementById('examSubject').value.trim();
+const date = document.getElementById('examDate').value;
+if (!title || !subject || !date) { toast('أكمل بيانات الامتحان', 'error'); return; }
+await push(ref(db, 'exams'), { title, subject, date });
+document.getElementById('examTitle').value = '';
+document.getElementById('examSubject').value = '';
+document.getElementById('examDate').value = '';
+toast('تم إضافة الامتحان', 'success');
+loadAdminExams();
+loadExams();
+}
+async function loadAdminExams() {
+const snap = await get(ref(db, 'exams'));
+const container = document.getElementById('examsList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(e => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700">${e.title} - ${e.subject} - ${e.date}</div>
+<button onclick="deleteItem('exams','${e.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+async function addResult() {
+const userId = document.getElementById('resultStudent').value;
+const subject = document.getElementById('resultSubject').value.trim();
+const score = document.getElementById('resultScore').value;
+if (!userId || !subject || !score) { toast('أكمل بيانات النتيجة', 'error'); return; }
+await push(ref(db, 'results'), { userId, subject, score: Number(score), date: Date.now() });
+document.getElementById('resultSubject').value = '';
+document.getElementById('resultScore').value = '';
+toast('تم إضافة النتيجة', 'success');
+loadAdminResults();
+}
+async function loadAdminResults() {
+const snap = await get(ref(db, 'results'));
+const container = document.getElementById('resultsList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(r => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700">${r.subject} - ${r.score}</div>
+<button onclick="deleteItem('results','${r.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+async function addWeeklyFollow() {
+const userId = document.getElementById('weeklyStudent').value;
+const subject = document.getElementById('weeklySubject').value.trim();
+const note = document.getElementById('weeklyNote').value.trim();
+if (!userId || !subject || !note) { toast('أكمل بيانات المتابعة', 'error'); return; }
+await push(ref(db, 'weekly_follow'), { userId, subject, note, date: Date.now() });
+document.getElementById('weeklySubject').value = '';
+document.getElementById('weeklyNote').value = '';
+toast('تم إضافة المتابعة', 'success');
+loadAdminWeekly();
+}
+async function loadAdminWeekly() {
+const snap = await get(ref(db, 'weekly_follow'));
+const container = document.getElementById('weeklyList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(w => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700">${w.subject} - ${w.note}</div>
+<button onclick="deleteItem('weekly_follow','${w.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+function setOption(opt) {
+currentOption = opt;
+['optFull','optText','optImage'].forEach(id => document.getElementById(id).classList.remove('active'));
+document.getElementById(opt === 'full' ? 'optFull' : opt === 'text' ? 'optText' : 'optImage').classList.add('active');
+document.getElementById('scheduleImageField').style.display = opt === 'image' ? 'block' : 'none';
+document.getElementById('scheduleFields').style.display = opt === 'image' ? 'none' : 'block';
+}
+
+function setScheduleDay(day) {
+currentScheduleDay = day;
+['dayToday','dayTomorrow','dayWeek'].forEach(id => document.getElementById(id).classList.remove('active'));
+document.getElementById('day' + day.charAt(0).toUpperCase() + day.slice(1)).classList.add('active');
+}
+
+async function addSchedule() {
+if (currentOption === 'image') {
+const file = document.getElementById('schImage').files[0];
+if (!file) { toast('اختر صورة', 'error'); return; }
+if (file.size > MAX_FILE_SIZE) { toast('حجم الصورة كبير', 'error'); return; }
+const imageData = await compressImage(file);
+const dayMap = { today: getArabicDayName(new Date()), tomorrow: getArabicDayName(new Date(Date.now()+86400000)), week: 'الأسبوع' };
+await push(ref(db, 'schedules'), { day: dayMap[currentScheduleDay], imageData, type: 'image', date: Date.now() });
+} else {
+const day = document.getElementById('schDay').value;
+const subject = document.getElementById('schSubject').value.trim();
+const teacher = document.getElementById('schTeacher').value.trim();
+const time = document.getElementById('schTime').value;
+const room = document.getElementById('schRoom').value.trim();
+const stage = document.getElementById('schStage').value;
+if (!subject) { toast('أدخل المادة', 'error'); return; }
+await push(ref(db, 'schedules'), { day, subject, teacher, time, room, stage, date: Date.now() });
+}
+toast('تم إضافة الحصة', 'success');
+loadAdminSchedules();
+}
+async function loadAdminSchedules() {
+const snap = await get(ref(db, 'schedules'));
+const container = document.getElementById('scheduleList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(s => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700">${s.subject || 'صورة'} - ${s.day || ''} - ${s.time || ''}</div>
+<button onclick="deleteItem('schedules','${s.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+function setNotifOption(opt) {
+currentNotifOption = opt;
+['notifOptFull','notifOptText','notifOptImage'].forEach(id => document.getElementById(id).classList.remove('active'));
+document.getElementById(opt === 'full' ? 'notifOptFull' : opt === 'text' ? 'notifOptText' : 'notifOptImage').classList.add('active');
+document.getElementById('notifTextField').style.display = opt === 'image' ? 'none' : 'block';
+document.getElementById('notifImageField').style.display = (opt === 'image' || opt === 'full') ? 'block' : 'none';
+}
+
+async function sendNotif() {
+const title = document.getElementById('notifTitle').value.trim();
+const body = document.getElementById('notifBody').value.trim();
+const stage = document.getElementById('notifStage').value;
+const grade = document.getElementById('notifGrade').value;
+const subject = document.getElementById('notifSubject').value.trim();
+if (!title) { toast('أدخل عنوان الإشعار', 'error'); return; }
+let imageData = '';
+if ((currentNotifOption === 'image' || currentNotifOption === 'full')) {
+const file = document.getElementById('notifImage').files[0];
+if (file) imageData = await compressImage(file);
+}
+await push(ref(db, 'notifications'), { title, body: currentNotifOption === 'image' ? '' : body, imageData, stage, grade, subject, date: Date.now() });
+document.getElementById('notifTitle').value = '';
+document.getElementById('notifBody').value = '';
+document.getElementById('notifSubject').value = '';
+toast('تم إرسال الإشعار', 'success');
+loadAdminNotifications();
+}
+async function loadAdminNotifications() {
+const snap = await get(ref(db, 'notifications'));
+const container = document.getElementById('notifList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(n => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700 truncate">${n.title}</div>
+<button onclick="deleteItem('notifications','${n.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+async function addNews() {
+const title = document.getElementById('newsTitle').value.trim();
+const content = document.getElementById('newsContent').value.trim();
+const file = document.getElementById('newsImage').files[0];
+if (!title) { toast('أدخل عنوان الخبر', 'error'); return; }
+let imageData = '';
+if (file) { if (file.size > MAX_FILE_SIZE) { toast('حجم الصورة كبير', 'error'); return; } imageData = await compressImage(file); }
+await push(ref(db, 'news'), { title, content, imageData, date: Date.now() });
+document.getElementById('newsTitle').value = '';
+document.getElementById('newsContent').value = '';
+document.getElementById('newsImage').value = '';
+toast('تم نشر الخبر', 'success');
+loadAdminNews();
+}
+async function loadAdminNews() {
+const snap = await get(ref(db, 'news'));
+const container = document.getElementById('newsList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(n => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700 truncate">${n.title}</div>
+<button onclick="deleteItem('news','${n.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+async function uploadMat() {
+const title = document.getElementById('matTitle').value.trim();
+const subject = document.getElementById('matSubject').value.trim();
+const type = document.getElementById('matType').value;
+const file = document.getElementById('matFile').files[0];
+if (!title || !file) { toast('أكمل بيانات الملف', 'error'); return; }
+if (file.size > MAX_FILE_SIZE) { toast('حجم الملف كبير جداً (20MB كحد أقصى)', 'error'); return; }
+const fileData = type === 'image' ? await compressImage(file) : await fileToBase64(file);
+await push(ref(db, 'materials'), { title, subject, type, fileData, fileName: file.name, date: Date.now() });
+document.getElementById('matTitle').value = '';
+document.getElementById('matSubject').value = '';
+document.getElementById('matFile').value = '';
+toast('تم رفع الملف', 'success');
+loadAdminMaterials();
+}
+async function loadAdminMaterials() {
+const snap = await get(ref(db, 'materials'));
+const container = document.getElementById('matList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(m => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700 truncate">${m.title} - ${m.subject || ''}</div>
+<button onclick="deleteItem('materials','${m.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+async function addContact() {
+const number = document.getElementById('newContact').value.trim();
+const type = document.getElementById('contactType').value;
+if (!number) { toast('أدخل الرقم', 'error'); return; }
+await push(ref(db, 'contacts'), { number, type });
+document.getElementById('newContact').value = '';
+toast('تم إضافة الرقم', 'success');
+loadAdminContacts();
+loadContacts();
+}
+async function loadAdminContacts() {
+const snap = await get(ref(db, 'contacts'));
+const container = document.getElementById('contactsList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
+container.innerHTML = items.map(c => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
+<div class="text-xs font-bold text-slate-700">${c.number} - ${c.type}</div>
+<button onclick="deleteItem('contacts','${c.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+</div>`).join('');
+}
+
+async function loadAdminComplaints() {
+const snap = await get(ref(db, 'complaints'));
+const container = document.getElementById('complaintsList');
+let items = [];
+if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+items.sort((a, b) => (b.date || 0) - (a.date || 0));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد شكاوى</div>'; return; }
+container.innerHTML = items.map(c => `
+<div class="complaint-card">
+<div class="name">${c.userName || ''}</div>
+<div class="phone">${c.userPhone || ''} - ${c.userEmail || ''}</div>
+<div class="text">${c.text || ''}</div>
+<div class="date">${c.date ? new Date(c.date).toLocaleString('ar-EG') : ''}</div>
+<button onclick="deleteItem('complaints','${c.id}')" class="text-red-500 text-[10px] mt-1"><i class="fa-solid fa-trash"></i> حذف</button>
+</div>`).join('');
+}
+
+async function loadStudentSelects() {
+const snap = await get(ref(db, 'users'));
+const selects = ['resultStudent','weeklyStudent'];
+const options = ['<option value="">اختر الطالب</option>'];
+if (snap.exists()) snap.forEach(c => {
+const u = c.val();
+options.push(`<option value="${c.key}">${u.name || ''} (${u.email || ''})</option>`);
+});
+selects.forEach(id => document.getElementById(id).innerHTML = options.join(''));
+}
+
+async function deleteItem(path, id) {
+if (!confirm('تأكيد الحذف؟')) return;
+await remove(ref(db, path + '/' + id));
+toast('تم الحذف', 'info');
+if (path === 'teachers') loadAdminTeachers();
+if (path === 'exams') loadAdminExams();
+if (path === 'results') loadAdminResults();
+if (path === 'weekly_follow') loadAdminWeekly();
+if (path === 'schedules') loadAdminSchedules();
+if (path === 'notifications') loadAdminNotifications();
+if (path === 'news') loadAdminNews();
+if (path === 'materials') loadAdminMaterials();
+if (path === 'contacts') { loadAdminContacts(); loadContacts(); }
+if (path === 'complaints') loadAdminComplaints();
+}
+
+async function deleteAll(path) {
+if (!confirm('تأكيد حذف الكل؟')) return;
+await remove(ref(db, path));
+toast('تم حذف الكل', 'info');
+loadAdminData();
+}
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
+authDomain: "sigma-6f162.firebaseapp.com",
+databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
+projectId: "sigma-6f162",
+storageBucket: "sigma-6f162.firebasestorage.app",
+messagingSenderId: "420365348074",
+appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+};
+const app2 = initializeApp(firebaseConfig, 'platform');
+const auth2 = getAuth(app2);
+const db2 = getDatabase(app2);
+const ADMIN_PASSWORD = 'Sigma@2024';
+const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2'];
+const MAX_VIDEO_SIZE = 5 * 1024 * 1024;
+let pCurrentUser = null;
+let pCurrentUserData = null;
+let pIsAdmin = false;
+let pCourses = [];
+let pPurchases = [];
+let pFavorites = {};
+let pSettings = {};
+let pSelectedCourse = null;
+let pPayMethod = 'vodafone';
+let pVideoMode = 'file';
+let pCurrentVideoUrl = '';
+
+window.pSwitch = pSwitch;
+window.openPlatform = openPlatform;
+window.closePlatform = closePlatform;
+window.renderCourses = renderCourses;
+window.buyNow = buyNow;
+window.toggleFav = toggleFav;
+window.selectPay = selectPay;
+window.confirmOrder = confirmOrder;
+window.pBackFromCheckout = pBackFromCheckout;
+window.pAdminLogin = pAdminLogin;
+window.saveCourse = saveCourse;
+window.resetCourseForm = resetCourseForm;
+window.setVideoMode = setVideoMode;
+window.savePaySettings = savePaySettings;
+window.openPlayer = openPlayer;
+window.closePlayer = closePlayer;
+window.approvePurchase = approvePurchase;
+window.rejectPurchase = rejectPurchase;
+window.deleteCourse = deleteCourse;
+window.editCourse = editCourse;
+window.pShowCourse = pShowCourse;
+
+function pToast(msg, type = 'info') {
+const t = document.createElement('div');
+t.className = `toast toast-${type}`;
+t.textContent = msg;
+document.body.appendChild(t);
+setTimeout(() => t.remove(), 3500);
+}
+
+function pSwitch(tab) {
+document.querySelectorAll('#platformApp > main > section').forEach(s => s.classList.add('hidden'));
+const el = document.getElementById('p-' + tab);
+if (el) { el.classList.remove('hidden'); el.classList.add('slide-up'); }
+document.querySelectorAll('#platformApp > nav button').forEach(b => b.classList.remove('text-pink-500'));
+const nav = document.getElementById('pnav-' + tab);
+if (nav) nav.classList.add('text-pink-500');
+if (tab === 'home') pLoadHome();
+if (tab === 'courses') renderCourses();
+if (tab === 'favs') renderFavs();
+if (tab === 'purchases') renderPurchases();
+if (tab === 'account') renderAccount();
+if (tab === 'admin') pCheckAdmin();
+}
+
+function openPlatform() {
+document.getElementById('platform').classList.remove('hidden');
+document.getElementById('app').style.display = 'none';
+pLoadAll();
+pSwitch('home');
+}
+function closePlatform() {
+document.getElementById('platform').classList.add('hidden');
+document.getElementById('app').style.display = 'block';
+}
+
+async function pLoadAll() {
+const [cSnap, pSnap, sSnap] = await Promise.all([
+get(ref(db2, 'courses')), get(ref(db2, 'purchases')), get(ref(db2, 'platform_settings'))
+]);
+pCourses = [];
+if (cSnap.exists()) cSnap.forEach(c => pCourses.push({ id: c.key, ...c.val() }));
+pCourses.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+pPurchases = [];
+if (pSnap.exists()) pSnap.forEach(c => pPurchases.push({ id: c.key, ...c.val() }));
+pSettings = sSnap.exists() ? sSnap.val() : {};
+if (pCurrentUser) {
+const fSnap = await get(ref(db2, 'favorites/' + pCurrentUser.uid));
+pFavorites = fSnap.exists() ? fSnap.val() : {};
+}
+}
+
+async function pLoadHome() {
+document.getElementById('pStatCourses').textContent = pCourses.length;
+const usersSnap = await get(ref(db2, 'users'));
+document.getElementById('pStatStudents').textContent = usersSnap.exists() ? Object.keys(usersSnap.val()).length : 0;
+document.getElementById('pStatSales').textContent = pPurchases.filter(p => p.status === 'approved').length;
+const featured = pCourses.slice(0, 3);
+const container = document.getElementById('pFeatured');
+if (featured.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد كورسات بعد</div>'; return; }
+container.innerHTML = featured.map(c => courseCardHTML(c, true)).join('');
+}
+
+function courseCardHTML(c, featured = false) {
+const isFav = pFavorites[c.id] ? 'on' : '';
+return `
+<div class="course-card relative" onclick="pShowCourse('${c.id}')">
+${c.image ? `<img src="${c.image}" class="cover">` : `<div class="cover"></div>`}
+<button class="fav-btn ${isFav}" onclick="event.stopPropagation();toggleFav('${c.id}')"><i class="fa-solid fa-heart"></i></button>
+<div class="p-3">
+<div class="text-xs font-bold text-slate-800 line-clamp-1">${c.title || ''}</div>
+<div class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${c.description || ''}</div>
+<div class="flex items-center justify-between mt-2">
+<div class="price">${c.price > 0 ? c.price + ' ج.م' : 'مجاني'}</div>
+<div class="text-[10px] text-slate-400">${c.level || ''}</div>
+</div>
+<div class="text-[9px] text-slate-400 mt-1"><i class="fa-solid fa-user-tie"></i> ${c.instructor || ''}</div>
+</div>
+</div>`;
+}
+
+function renderCourses() {
+const q = (document.getElementById('pSearch').value || '').toLowerCase();
+const level = document.getElementById('pLevel').value;
+const price = document.getElementById('pPrice').value;
+let items = pCourses.filter(c => {
+if (q && !(c.title || '').toLowerCase().includes(q) && !(c.description || '').toLowerCase().includes(q)) return false;
+if (level && c.level !== level) return false;
+if (price === 'free' && Number(c.price) > 0) return false;
+if (price === 'low' && (Number(c.price) <= 0 || Number(c.price) >= 100)) return false;
+if (price === 'mid' && (Number(c.price) < 100 || Number(c.price) > 300)) return false;
+if (price === 'high' && Number(c.price) <= 300) return false;
+return true;
+});
+const container = document.getElementById('pCoursesList');
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد كورسات</div>'; return; }
+container.innerHTML = items.map(c => courseCardHTML(c)).join('');
+}
+
+function pShowCourse(courseId) {
+const c = pCourses.find(x => x.id === courseId);
+if (!c) return;
+pSelectedCourse = c;
+const isFav = pFavorites[c.id] ? 'on' : '';
+const purchased = pPurchases.find(p => p.courseId === c.id && p.userId === (pCurrentUser?.uid || '') && p.status === 'approved');
+document.getElementById('pCourseDetail').innerHTML = `
+<div class="course-card">
+${c.image ? `<img src="${c.image}" class="w-full h-48 object-cover">` : `<div class="w-full h-48 bg-gradient-to-br from-pink-500 to-purple-600"></div>`}
+<button class="fav-btn ${isFav}" style="top:56px" onclick="toggleFav('${c.id}')"><i class="fa-solid fa-heart"></i></button>
+<div class="p-4">
+<h2 class="font-bold text-sm text-slate-800">${c.title || ''}</h2>
+<p class="text-xs text-slate-600 mt-2">${c.description || ''}</p>
+<div class="grid grid-cols-2 gap-2 mt-3 text-[10px]">
+<div class="bg-pink-50 rounded-lg p-2"><i class="fa-solid fa-user-tie text-pink-500"></i> ${c.instructor || 'غير محدد'}</div>
+<div class="bg-purple-50 rounded-lg p-2"><i class="fa-solid fa-signal text-purple-500"></i> ${c.level || 'مبتدئ'}</div>
+</div>
+<div class="flex items-center justify-between mt-3">
+<div class="price text-lg">${c.price > 0 ? c.price + ' ج.م' : 'مجاني'}</div>
+</div>
+${purchased ? `<button onclick="openPlayer('${c.id}')" class="publish-btn green mt-3"><i class="fa-solid fa-play"></i> مشاهدة الكورس</button>` : pCurrentUser ? `<button onclick="buyNow('${c.id}')" class="publish-btn pink mt-3"><i class="fa-solid fa-cart-shopping"></i> اشترِ الآن</button>` : `<button onclick="pToast('سجل الدخول أولاً','warning')" class="publish-btn orange mt-3">سجل الدخول للشراء</button>`}
+</div>
+</div>`;
+pSwitch('course');
+}
+
+function buyNow(courseId) {
+if (!pCurrentUser) { pToast('سجل الدخول أولاً', 'warning'); return; }
+pSelectedCourse = pCourses.find(x => x.id === courseId);
+if (!pSelectedCourse) return;
+document.getElementById('pCheckoutCourse').innerHTML = `
+<div class="flex gap-2 items-center">
+${pSelectedCourse.image ? `<img src="${pSelectedCourse.image}" class="w-16 h-16 rounded-xl object-cover">` : `<div class="w-16 h-16 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600"></div>`}
+<div><div class="text-xs font-bold text-slate-800">${pSelectedCourse.title}</div><div class="text-sm font-bold text-pink-500 mt-1">${pSelectedCourse.price > 0 ? pSelectedCourse.price + ' ج.م' : 'مجاني'}</div></div>
+</div>`;
+updatePayInfo();
+pSwitch('checkout');
+}
+
+function selectPay(m) {
+pPayMethod = m;
+document.getElementById('payVodafone').classList.toggle('active', m === 'vodafone');
+document.getElementById('payFawry').classList.toggle('active', m === 'fawry');
+updatePayInfo();
+}
+
+function updatePayInfo() {
+const info = document.getElementById('payInfo');
+if (pPayMethod === 'vodafone') {
+info.innerHTML = `<div class="font-bold text-pink-600 mb-1">📱 فودافون كاش</div><div>حول المبلغ إلى الرقم:</div><div class="font-bold text-slate-800 text-sm mt-1">${pSettings.vodafoneNumber || 'غير محدد'}</div>`;
+} else {
+info.innerHTML = `<div class="font-bold text-pink-600 mb-1">🏪 فوري</div><div>كود فوري: <span class="font-bold text-slate-800">${pSettings.fawryCode || 'غير محدد'}</span></div><div>رقم فوري: <span class="font-bold text-slate-800">${pSettings.fawryNumber || 'غير محدد'}</span></div>`;
+}
+}
+
+async function confirmOrder() {
+if (!pSelectedCourse || !pCurrentUser) return;
+const txn = document.getElementById('payTxn').value.trim();
+const receiptFile = document.getElementById('payReceipt').files[0];
+if (!txn) { pToast('أدخل رقم العملية', 'error'); return; }
+if (!receiptFile) { pToast('ارفع صورة الإيصال', 'error'); return; }
+const btn = document.getElementById('confirmOrderBtn');
+btn.disabled = true;
+btn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+try {
+const receiptImage = await compressImage(receiptFile);
+await push(ref(db2, 'purchases'), {
+userId: pCurrentUser.uid, userName: pCurrentUserData.name, userEmail: pCurrentUserData.email,
+courseId: pSelectedCourse.id, courseTitle: pSelectedCourse.title, price: pSelectedCourse.price,
+paymentMethod: pPayMethod, receiptImage, transactionId: txn, status: 'pending', date: Date.now()
+});
+pToast('تم إرسال الطلب، بانتظار الموافقة', 'success');
+document.getElementById('payTxn').value = '';
+document.getElementById('payReceipt').value = '';
+pLoadAll();
+pSwitch('purchases');
+} catch (e) { pToast('فشل الإرسال: ' + e.message, 'error'); }
+btn.disabled = false;
+btn.innerHTML = '<i class="fa-solid fa-check"></i> تأكيد الطلب';
+}
+
+function pBackFromCheckout() {
+if (pSelectedCourse) pShowCourse(pSelectedCourse.id); else pSwitch('courses');
+}
+
+function renderPurchases() {
+const container = document.getElementById('pPurchasesList');
+const my = pPurchases.filter(p => p.userId === (pCurrentUser?.uid || ''));
+if (my.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد مشتريات</div>'; return; }
+container.innerHTML = my.map(p => {
+const badge = p.status === 'approved' ? '<span class="status-badge status-approved">مفتوح</span>' : p.status === 'rejected' ? '<span class="status-badge status-rejected">مرفوض</span>' : '<span class="status-badge status-pending">قيد المراجعة</span>';
+return `
+<div class="bg-white rounded-2xl p-3 border border-pink-100">
+<div class="flex items-center justify-between">
+<div class="text-xs font-bold text-slate-800">${p.courseTitle}</div>
+${badge}
+</div>
+<div class="text-[10px] text-slate-500 mt-1">${p.price} ج.م - ${p.paymentMethod}</div>
+${p.status === 'approved' ? `<button onclick="openPlayer('${p.courseId}')" class="publish-btn green mt-2"><i class="fa-solid fa-play"></i> مشاهدة</button>` : ''}
+</div>`;
+}).join('');
+}
+
+function renderFavs() {
+const container = document.getElementById('pFavsList');
+const favIds = Object.keys(pFavorites);
+const items = pCourses.filter(c => favIds.includes(c.id));
+if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد كورسات مفضلة</div>'; return; }
+container.innerHTML = items.map(c => courseCardHTML(c)).join('');
+}
+
+async function toggleFav(courseId) {
+if (!pCurrentUser) { pToast('سجل الدخول أولاً', 'warning'); return; }
+const favRef = ref(db2, 'favorites/' + pCurrentUser.uid + '/' + courseId);
+if (pFavorites[courseId]) {
+await remove(favRef);
+delete pFavorites[courseId];
+pToast('تم الإزالة من المفضلة', 'info');
+} else {
+await set(favRef, { addedAt: Date.now() });
+pFavorites[courseId] = { addedAt: Date.now() };
+pToast('تم الإضافة للمفضلة', 'success');
+}
+if (!document.getElementById('p-favs').classList.contains('hidden')) renderFavs();
+if (!document.getElementById('p-courses').classList.contains('hidden')) renderCourses();
+if (!document.getElementById('p-course').classList.contains('hidden') && pSelectedCourse) pShowCourse(pSelectedCourse.id);
+}
+
+function renderAccount() {
+if (!pCurrentUserData) return;
+document.getElementById('pAccAvatar').src = pCurrentUserData.idImage || '';
+document.getElementById('pAccName').textContent = pCurrentUserData.name || '';
+document.getElementById('pAccEmail').textContent = pCurrentUserData.email || '';
+document.getElementById('pAccPhone').textContent = pCurrentUserData.phone || '';
+}
+
+function pCheckAdmin() {
+if (pIsAdmin) {
+document.getElementById('pAdminLogin').classList.add('hidden');
+document.getElementById('pAdminPanel').classList.remove('hidden');
+document.getElementById('pAdminDenied').classList.add('hidden');
+pLoadAdminData();
+} else {
+document.getElementById('pAdminLogin').classList.remove('hidden');
+document.getElementById('pAdminPanel').classList.add('hidden');
+document.getElementById('pAdminDenied').classList.add('hidden');
+}
+}
+
+function pAdminLogin() {
+const pass = document.getElementById('pAdminPass').value;
+if (pass !== ADMIN_PASSWORD) { pToast('كلمة السر غير صحيحة', 'error'); return; }
+pIsAdmin = true;
+pToast('مرحباً بك في إدارة المنصة', 'success');
+pCheckAdmin();
+}
+
+async function pLoadAdminData() {
+await pLoadAll();
+document.getElementById('aStatCourses').textContent = pCourses.length;
+document.getElementById('aStatSales').textContent = pPurchases.filter(p => p.status === 'approved').length;
+const revenue = pPurchases.filter(p => p.status === 'approved').reduce((s, p) => s + (Number(p.price) || 0), 0);
+document.getElementById('aStatRevenue').textContent = revenue;
+document.getElementById('sVodafone').value = pSettings.vodafoneNumber || '';
+document.getElementById('sFawryCode').value = pSettings.fawryCode || '';
+document.getElementById('sFawryNumber').value = pSettings.fawryNumber || '';
+renderAdminCourses();
+renderAdminPurchases();
+}
+
+function renderAdminCourses() {
+const container = document.getElementById('pAdminCourses');
+if (pCourses.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد كورسات</div>'; return; }
+container.innerHTML = pCourses.map(c => `
+<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2 mb-1">
+<div class="flex items-center gap-2 flex-1 min-w-0">
+${c.image ? `<img src="${c.image}" class="w-8 h-8 rounded-lg object-cover">` : ''}
+<div class="text-xs font-bold text-slate-700 truncate">${c.title}</div>
+</div>
+<div class="flex gap-1">
+<button onclick="editCourse('${c.id}')" class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-lg">تعديل</button>
+<button onclick="deleteCourse('${c.id}')" class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded-lg">حذف</button>
+</div>
+</div>`).join('');
+}
+
+async function editCourse(id) {
+const c = pCourses.find(x => x.id === id);
+if (!c) return;
+editingCourseId = id;
+document.getElementById('cTitle').value = c.title || '';
+document.getElementById('cDesc').value = c.description || '';
+document.getElementById('cPrice').value = c.price || 0;
+document.getElementById('cInstructor').value = c.instructor || '';
+document.getElementById('cLevel').value = c.level || 'مبتدئ';
+document.getElementById('cEditId').value = id;
+document.getElementById('courseFormTitle').textContent = 'تعديل كورس';
+if (c.videoType === 'url') {
+setVideoMode('url');
+document.getElementById('cVideoUrl').value = c.videoUrl || '';
+} else {
+setVideoMode('file');
+document.getElementById('cVideoUrl').value = '';
+}
+pToast('تم تحميل بيانات الكورس', 'info');
+}
+
+function resetCourseForm() {
+editingCourseId = null;
+document.getElementById('cTitle').value = '';
+document.getElementById('cDesc').value = '';
+document.getElementById('cPrice').value = '';
+document.getElementById('cInstructor').value = '';
+document.getElementById('cLevel').value = 'مبتدئ';
+document.getElementById('cEditId').value = '';
+document.getElementById('cImage').value = '';
+document.getElementById('cVideoFile').value = '';
+document.getElementById('cVideoUrl').value = '';
+document.getElementById('courseFormTitle').textContent = 'إضافة كورس';
+setVideoMode('file');
+}
+
+function setVideoMode(mode) {
+pVideoMode = mode;
+document.getElementById('vmFile').classList.toggle('active', mode === 'file');
+document.getElementById('vmUrl').classList.toggle('active', mode === 'url');
+document.getElementById('cVideoFileBox').classList.toggle('hidden', mode !== 'file');
+document.getElementById('cVideoUrlBox').classList.toggle('hidden', mode !== 'url');
+}
+
+async function saveCourse() {
+const title = document.getElementById('cTitle').value.trim();
+const description = document.getElementById('cDesc').value.trim();
+const price = Number(document.getElementById('cPrice').value) || 0;
+const instructor = document.getElementById('cInstructor').value.trim();
+const level = document.getElementById('cLevel').value;
+const imageFile = document.getElementById('cImage').files[0];
+if (!title) { pToast('أدخل عنوان الكورس', 'error'); return; }
+let image = '';
+if (imageFile) image = await compressImage(imageFile);
+let videoType = pVideoMode;
+let videoData = '';
+let videoUrl = '';
+if (pVideoMode === 'file') {
+const vFile = document.getElementById('cVideoFile').files[0];
+if (vFile) {
+if (vFile.size > MAX_VIDEO_SIZE) { pToast('حجم الفيديو أكبر من 5MB، استخدم رابط خارجي', 'error'); return; }
+videoData = await fileToBase64(vFile);
+}
+} else {
+videoUrl = document.getElementById('cVideoUrl').value.trim();
+}
+if (!videoData && !videoUrl && !editingCourseId) { pToast('أضف فيديو (ملف أو رابط)', 'error'); return; }
+const data = { title, description, price, instructor, level, videoType };
+if (image) data.image = image;
+if (pVideoMode === 'file' && videoData) { data.videoData = videoData; data.videoUrl = ''; }
+if (pVideoMode === 'url' && videoUrl) { data.videoUrl = videoUrl; data.videoData = ''; }
+if (editingCourseId) {
+await update(ref(db2, 'courses/' + editingCourseId), data);
+pToast('تم تعديل الكورس', 'success');
+} else {
+data.createdAt = Date.now();
+await push(ref(db2, 'courses'), data);
+pToast('تم إضافة الكورس', 'success');
+}
+resetCourseForm();
+await pLoadAll();
+pLoadAdminData();
+}
+
+async function deleteCourse(id) {
+if (!confirm('تأكيد حذف الكورس؟')) return;
+await remove(ref(db2, 'courses/' + id));
+pToast('تم الحذف', 'info');
+await pLoadAll();
+pLoadAdminData();
+}
+
+function renderAdminPurchases() {
+const container = document.getElementById('pAdminPurchases');
+if (pPurchases.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد طلبات</div>'; return; }
+const sorted = [...pPurchases].sort((a, b) => (b.date || 0) - (a.date || 0));
+container.innerHTML = sorted.map(p => {
+const badge = p.status === 'approved' ? '<span class="status-badge status-approved">مقبول</span>' : p.status === 'rejected' ? '<span class="status-badge status-rejected">مرفوض</span>' : '<span class="status-badge status-pending">قيد المراجعة</span>';
+return `
+<div class="complaint-card" style="border-right-color:#ec4899">
+<div class="flex items-center justify-between">
+<div class="name">${p.userName || ''}</div>
+${badge}
+</div>
+<div class="phone">${p.userEmail || ''}</div>
+<div class="text">كورس: <b>${p.courseTitle || ''}</b> - ${p.price} ج.م</div>
+<div class="text">طريقة الدفع: ${p.paymentMethod === 'vodafone' ? '📱 فودافون كاش' : '🏪 فوري'} - رقم العملية: ${p.transactionId || ''}</div>
+${p.receiptImage ? `<img src="${p.receiptImage}" class="mt-2 w-20 h-20 object-cover rounded-lg cursor-pointer" onclick="openImageViewer('${p.receiptImage}','إيصال')">` : ''}
+${p.status === 'pending' ? `<div class="flex gap-1 mt-2">
+<button onclick="approvePurchase('${p.id}')" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-1.5 rounded-lg">✅ موافقة</button>
+<button onclick="rejectPurchase('${p.id}')" class="flex-1 bg-red-600 text-white text-[10px] font-bold py-1.5 rounded-lg">❌ رفض</button>
+</div>` : ''}
+<div class="date">${p.date ? new Date(p.date).toLocaleString('ar-EG') : ''}</div>
+</div>`;
+}).join('');
+}
+
+async function approvePurchase(id) {
+await update(ref(db2, 'purchases/' + id), { status: 'approved' });
+pToast('تمت الموافقة على الشراء', 'success');
+await pLoadAll();
+pLoadAdminData();
+}
+async function rejectPurchase(id) {
+await update(ref(db2, 'purchases/' + id), { status: 'rejected' });
+pToast('تم رفض الشراء', 'info');
+await pLoadAll();
+pLoadAdminData();
+}
+
+async function savePaySettings() {
+const vodafoneNumber = document.getElementById('sVodafone').value.trim();
+const fawryCode = document.getElementById('sFawryCode').value.trim();
+const fawryNumber = document.getElementById('sFawryNumber').value.trim();
+await set(ref(db2, 'platform_settings'), { vodafoneNumber, fawryCode, fawryNumber });
+pSettings = { vodafoneNumber, fawryCode, fawryNumber };
+pToast('تم حفظ بيانات الدفع', 'success');
+}
+
+function openPlayer(courseId) {
+const c = pCourses.find(x => x.id === courseId);
+if (!c) return;
+const purchase = pPurchases.find(p => p.courseId === courseId && p.userId === (pCurrentUser?.uid || '') && p.status === 'approved');
+if (!purchase) { pToast('الكورس غير مفتوح', 'error'); return; }
+document.getElementById('playerTitle').textContent = c.title || '';
+const wrap = document.getElementById('playerWrap');
+const wm = document.getElementById('playerWatermark');
+wm.textContent = pCurrentUserData?.name || pCurrentUser?.email || 'Sigma';
+let html = '';
+if (c.videoType === 'url' && c.videoUrl) {
+const url = c.videoUrl;
+if (url.includes('youtube.com') || url.includes('youtu.be')) {
+const id = url.includes('youtu.be') ? url.split('/').pop().split('?')[0] : (url.match(/v=([^&]+)/) || [])[1] || '';
+html = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+} else if (url.includes('vimeo.com')) {
+const id = url.split('/').pop();
+html = `<iframe src="https://player.vimeo.com/video/${id}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+} else {
+html = `<video src="${url}" controls autoplay controlsList="nodownload" oncontextmenu="return false"></video>`;
+}
+} else if (c.videoData) {
+html = `<video src="${c.videoData}" controls autoplay controlsList="nodownload" oncontextmenu="return false"></video>`;
+} else {
+pToast('لا يوجد فيديو', 'error'); return;
+}
+wrap.innerHTML = html + '<div id="playerWatermark" class="watermark"></div>';
+const newWm = document.getElementById('playerWatermark');
+newWm.textContent = wm.textContent;
+document.getElementById('playerModal').classList.add('show');
+let x = 10, y = 10;
+newWm.style.left = '10%'; newWm.style.top = '10%';
+setInterval(() => {
+x = Math.random() * 70 + 5;
+y = Math.random() * 80 + 5;
+newWm.style.left = x + '%';
+newWm.style.top = y + '%';
+}, 3000);
+}
+
+function closePlayer() {
+document.getElementById('playerModal').classList.remove('show');
+document.getElementById('playerWrap').innerHTML = '';
+}
+
+async function pInitAuth() {
+onAuthStateChanged(auth2, async (user) => {
+if (user) {
+pCurrentUser = user;
+const uSnap = await get(ref(db2, 'users/' + user.uid));
+pCurrentUserData = uSnap.exists() ? uSnap.val() : { name: user.email, email: user.email };
+const fSnap = await get(ref(db2, 'favorites/' + user.uid));
+pFavorites = fSnap.exists() ? fSnap.val() : {};
+} else {
+pCurrentUser = null;
+pCurrentUserData = null;
+pFavorites = {};
+}
+});
+}
+
+pInitAuth();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
+authDomain: "sigma-6f162.firebaseapp.com",
+databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
+projectId: "sigma-6f162",
+storageBucket: "sigma-6f162.firebasestorage.app",
+messagingSenderId: "420365348074",
+appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+};
+const app3 = initializeApp(firebaseConfig, 'main3');
+const auth3 = getAuth(app3);
+const db3 = getDatabase(app3);
+const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2'];
+
+if (localStorage.getItem('darkMode') === '1') {
+document.body.classList.add('dark-mode');
+document.getElementById('darkIcon').className = 'fa-solid fa-sun text-lg';
+}
+
+function setupAuthListener() {
+onAuthStateChanged(auth3, async (user) => {
+if (user) {
+currentUser = user;
+const snap = await get(ref(db3, 'users/' + user.uid));
+if (snap.exists()) {
+currentUserData = snap.val();
+} else {
+currentUserData = { name: user.email, email: user.email, profileStatus: 'pending' };
+}
+isAdmin = ADMIN_UIDS.includes(user.uid) || (currentUserData && currentUserData.isAdmin === true);
+if (isAdmin) {
+document.getElementById('nav-admin').classList.remove('hidden');
+} else {
+document.getElementById('nav-admin').classList.add('hidden');
+}
+try {
+await update(ref(db3, 'users/' + user.uid), { online: true, lastSeen: Date.now() });
+} catch (e) {}
+switchTab('home');
+} else {
+currentUser = null;
+currentUserData = null;
+isAdmin = false;
+document.getElementById('nav-admin').classList.add('hidden');
+switchTab('login');
+}
+});
+}
+
+window.currentUser = null;
+window.currentUserData = null;
+window.isAdmin = false;
+
+setTimeout(() => {
+setupAuthListener();
+}, 500);
+
+window.addEventListener('beforeunload', async () => {
+if (currentUser) {
+try { await update(ref(db3, 'users/' + currentUser.uid), { online: false, lastSeen: Date.now() }); } catch (e) {}
+}
+});
+</script>
+</body>
+  </html>
