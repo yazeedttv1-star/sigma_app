@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تسجيل الدخول - سنتر سيجما</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 50%,#ec4899 100%);padding:20px}
+.card{background:#fff;border-radius:28px;padding:36px 28px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.logo{width:80px;height:80px;border-radius:24px;margin:0 auto 20px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:38px;color:#fff}
+h2{font-size:22px;font-weight:800;margin-bottom:8px;color:#1e293b}
+p{color:#64748b;font-size:14px;margin-bottom:24px}
+.btn{width:100%;padding:14px;border-radius:14px;background:#fff;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:15px;cursor:pointer;transition:.2s;font-family:inherit;color:#1e293b}
+.btn:active{transform:scale(.97)}
+.success{color:#10b981;font-size:16px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="logo">🎓</div>
+  <h2>سنتر سيجما</h2>
+  <p>اختر حساب جوجل للمتابعة</p>
+  <button class="btn" id="login">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+    الدخول بحساب جوجل
+  </button>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
+  authDomain: "sigma-6f162.firebaseapp.com",
+  databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
+  projectId: "sigma-6f162",
+  storageBucket: "sigma-6f162.firebasestorage.app",
+  messagingSenderId: "420365348074",
+  appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.getElementById("login").onclick = async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  try {
+    const { user } = await signInWithPopup(auth, provider);
+    localStorage.setItem("sigma_auth_signal", JSON.stringify({ uid: user.uid, email: user.email, at: Date.now() }));
+    document.getElementById("card").innerHTML = `
+      <div class="logo">✅</div>
+      <h2 class="success">تم تسجيل الدخول</h2>
+      <p>يمكنك الآن العودة للتطبيق</p>
+      <button class="btn" onclick="window.close();history.back()">رجوع للتطبيق</button>
+    `;
+    setTimeout(() => { try { window.close(); } catch(e){} }, 1500);
+  } catch (e) { alert("خطأ: " + e.message); }
+};
+
+onAuthStateChanged(auth, (user) => {
+  if (user) localStorage.setItem("sigma_auth_signal", JSON.stringify({ uid: user.uid, email: user.email, at: Date.now() }));
+});
+</script>
+</body>
+</html>
