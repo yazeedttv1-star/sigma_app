@@ -2,2240 +2,363 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>سنتر سيجما التعليمي</title>
-<meta name="theme-color" content="#2563eb">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;سنتر سيجما التعليمي&quot;,&quot;short_name&quot;:&quot;سيجما&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#f8fafc&quot;,&quot;theme_color&quot;:&quot;#2563eb&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%232563eb'/%3E%3Ctext x='256' y='350' font-size='300' text-anchor='middle' fill='white' font-family='serif' font-weight='bold'%3E%CE%A3%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Cairo',sans-serif;background:#f1f5f9}
-.app-container{max-width:480px;margin:0 auto;background:#f8fafc;min-height:100vh;position:relative}
-.slide-up{animation:slideUp .3s ease-out}
-@keyframes slideUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
-.stat-card{background:#fff;border-radius:12px;padding:10px 8px;text-align:center;border:1px solid #e2e8f0;cursor:pointer;transition:all .2s}
-.stat-card:active{transform:scale(.96)}
-.stat-number{font-size:18px;font-weight:800}
-.stat-label{font-size:9px;color:#64748b;margin-top:2px}
-.profile-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #fff;cursor:pointer}
-.subject-chip{display:inline-block;padding:2px 8px;border-radius:12px;font-size:9px;font-weight:600;margin:2px;background:rgba(255,255,255,.2);color:#fff}
-.option-btn{padding:6px 12px;border-radius:10px;border:2px solid #e2e8f0;background:#fff;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
-.option-btn.active{border-color:#2563eb;background:#eff6ff;color:#2563eb}
-.p-theme .option-btn.active{border-color:#ec4899;background:#fdf2f8;color:#ec4899}
-.admin-panel-section{background:#fff;border-radius:16px;padding:12px;border:1px solid #e2e8f0;margin-bottom:8px}
-.admin-panel-section .header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:4px 0}
-.admin-panel-section .header h4{font-size:13px;font-weight:700;color:#1e293b}
-.admin-panel-section .content{margin-top:10px;display:none}
-.admin-panel-section .content.open{display:block}
-.complaint-card{background:#f8fafc;border-radius:10px;padding:10px;border-right:3px solid #f59e0b;margin-bottom:6px}
-.complaint-card .name{font-weight:700;font-size:13px;color:#1e293b}
-.complaint-card .phone{color:#2563eb;font-size:11px}
-.complaint-card .text{color:#475569;font-size:12px;margin-top:3px}
-.complaint-card .date{color:#94a3b8;font-size:9px}
-.toast{position:fixed;top:15px;left:50%;transform:translateX(-50%);z-index:999999;padding:10px 20px;border-radius:10px;color:#fff;font-weight:600;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.15);animation:slideDown .4s ease;max-width:90%;text-align:center}
-.toast-success{background:#22c55e}.toast-error{background:#ef4444}.toast-warning{background:#f59e0b}.toast-info{background:#3b82f6}
-@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.settings-card{background:#fff;border-radius:16px;padding:14px;border:1px solid #e2e8f0;margin-bottom:8px}
-.settings-card .title{font-size:13px;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.settings-card .title i{width:20px;text-align:center}
-.image-viewer{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}
-.image-viewer.show{display:flex}
-.image-viewer img{max-width:100%;max-height:85vh;object-fit:contain;border-radius:12px}
-.image-viewer .close-btn{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:28px;width:50px;height:50px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.image-viewer .download-btn{position:absolute;bottom:30px;background:rgba(255,255,255,.2);border:none;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:10px}
-.image-viewer .info{position:absolute;bottom:90px;color:rgba(255,255,255,.6);font-size:12px;text-align:center}
-.schedule-item{background:#fff;border-radius:12px;padding:10px;border:1px solid #e2e8f0;margin-bottom:6px}
-.schedule-item .subject{font-weight:700;font-size:13px}
-.schedule-item .time{font-weight:700;color:#d97706}
-.schedule-item .teacher{font-size:11px;color:#64748b}
-.exam-card{background:#fff;border-radius:12px;padding:12px;border:1px solid #e2e8f0;margin-bottom:8px}
-.exam-card .exam-title{font-weight:700;font-size:14px;color:#1e293b}
-.exam-card .exam-info{font-size:11px;color:#64748b}
-.result-card{background:#f0fdf4;border-radius:12px;padding:12px;border:1px solid #bbf7d0;margin-bottom:8px}
-.result-card .result-subject{font-weight:700;font-size:13px}
-.result-card .result-score{font-size:16px;font-weight:800;color:#16a34a}
-.login-section{background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0;text-align:center}
-.login-section .logo{font-size:48px;color:#2563eb;margin-bottom:10px}
-.login-section h2{font-size:18px;font-weight:700;color:#1e293b;margin-bottom:5px}
-.login-section p{font-size:12px;color:#64748b;margin-bottom:15px}
-.login-section .input-group{margin-bottom:12px;text-align:right}
-.login-section .input-group label{font-size:11px;font-weight:600;color:#475569;display:block;margin-bottom:3px}
-.login-section .input-group input{width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none}
-.login-section .input-group input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-.login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
-.publish-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;color:#fff}
-.publish-btn:active{transform:scale(.97)}
-.publish-btn:disabled{opacity:.6}
-.publish-btn.blue{background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 15px rgba(37,99,235,.3)}
-.publish-btn.green{background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 4px 15px rgba(34,197,94,.3)}
-.publish-btn.purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed);box-shadow:0 4px 15px rgba(139,92,246,.3)}
-.publish-btn.orange{background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 15px rgba(245,158,11,.3)}
-.publish-btn.red{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 15px rgba(239,68,68,.3)}
-.publish-btn.teal{background:linear-gradient(135deg,#14b8a6,#0d9488);box-shadow:0 4px 15px rgba(20,184,166,.3)}
-.publish-btn.pink{background:linear-gradient(135deg,#ec4899,#8b5cf6);box-shadow:0 4px 15px rgba(236,72,153,.3)}
-.spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
-.spinner.dark{border-color:#e2e8f0;border-top-color:#ec4899}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-box{display:flex;justify-content:center;padding:20px}
-.course-card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #fce7f3;box-shadow:0 4px 15px rgba(236,72,153,.08)}
-.course-card .cover{width:100%;height:130px;object-fit:cover;background:linear-gradient(135deg,#ec4899,#8b5cf6)}
-.course-card .price{font-weight:800;color:#ec4899;font-size:15px}
-.fav-btn{position:absolute;top:8px;left:8px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;color:#94a3b8;border:none;cursor:pointer}
-.fav-btn.on{color:#ef4444}
-.pay-method{flex:1;padding:10px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;text-align:center;font-size:12px;font-weight:700;cursor:pointer}
-.pay-method.active{border-color:#ec4899;background:#fdf2f8;color:#ec4899}
-.status-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
-.status-pending{background:#fef3c7;color:#d97706}
-.status-approved{background:#dcfce7;color:#16a34a}
-.status-rejected{background:#fee2e2;color:#dc2626}
-.player-modal{position:fixed;inset:0;background:#000;z-index:99998;display:none;flex-direction:column}
-.player-modal.show{display:flex}
-.player-top{display:flex;justify-content:space-between;align-items:center;padding:12px;color:#fff;font-weight:700;font-size:13px}
-.player-wrap{position:relative;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.player-wrap video,.player-wrap iframe{width:100%;max-height:100%;aspect-ratio:16/9;border:none;background:#000}
-.watermark{position:absolute;pointer-events:none;color:rgba(255,255,255,.45);font-size:13px;font-weight:700;text-shadow:0 0 4px rgba(0,0,0,.6);white-space:nowrap;transition:top 3s linear,left 3s linear;z-index:5}
-.dark-mode .app-container{background:#0f172a}
-.dark-mode .bg-white{background:#1e293b!important}
-.dark-mode .text-slate-800{color:#e2e8f0!important}
-.dark-mode .text-slate-600{color:#94a3b8!important}
-.dark-mode .border-slate-100,.dark-mode .border-slate-200{border-color:#334155!important}
-.dark-mode .bg-slate-50{background:#0f172a!important;color:#e2e8f0!important}
-.dark-mode .stat-card,.dark-mode .course-card,.dark-mode .exam-card{background:#1e293b!important;border-color:#334155!important}
-.dark-mode .stat-label{color:#94a3b8!important}
-.dark-mode .admin-panel-section,.dark-mode .settings-card{background:#1e293b!important;border-color:#334155!important}
-.dark-mode .admin-panel-section .header h4,.dark-mode .settings-card .title,.dark-mode .exam-card .exam-title{color:#e2e8f0!important}
-.dark-mode .complaint-card{background:#0f172a!important}
-.dark-mode .option-btn,.dark-mode .pay-method{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important}
-.dark-mode .option-btn.active{background:#1e3a5f!important;border-color:#2563eb!important;color:#60a5fa!important}
-.dark-mode .p-theme .option-btn.active,.dark-mode .pay-method.active{background:#4a1d3a!important;border-color:#ec4899!important;color:#f9a8d4!important}
-.dark-mode .schedule-item{background:#1e293b!important;border-color:#334155!important}
-.dark-mode .schedule-item .teacher{color:#94a3b8!important}
-.dark-mode .login-section{background:#1e293b!important;border-color:#334155!important}
-.dark-mode .login-section h2{color:#e2e8f0!important}
-.dark-mode .login-section p,.dark-mode .login-section .input-group label{color:#94a3b8!important}
-.dark-mode .login-section .input-group input,.dark-mode input,.dark-mode textarea,.dark-mode select{background:#0f172a!important;border-color:#334155!important;color:#e2e8f0!important}
-.dark-mode nav{background:rgba(15,23,42,.95)!important;border-color:#334155!important}
-@media (max-width:400px){.stat-number{font-size:15px}.stat-label{font-size:8px}.subject-chip{font-size:8px;padding:1px 6px}.profile-avatar{width:36px;height:36px}}
+  * { font-family: 'Cairo', sans-serif; }
+  body { background: #f0f4f8; min-height: 100vh; }
+  .navbar-brand { font-weight: 700; }
+  .card { border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+  .btn-google { background: #fff; border: 1px solid #dadce0; color: #3c4043; font-weight: 600; }
+  .btn-google:hover { background: #f8f9fa; }
+  .badge-admin { background: #dc3545; }
+  .schedule-item { border-right: 4px solid #0d6efd; padding: 12px 16px; margin-bottom: 10px; background: #fff; border-radius: 10px; }
+  .news-item { border-right: 4px solid #198754; padding: 12px 16px; margin-bottom: 10px; background: #fff; border-radius: 10px; }
+  .hidden { display: none !important; }
+  .loading { text-align: center; padding: 40px; color: #888; }
+  #authSection { max-width: 420px; margin: 80px auto; }
+  .file-preview { max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 8px; }
+  .tab-btn.active { background: #0d6efd !important; color: #fff !important; }
+  footer { text-align: center; padding: 20px; color: #888; font-size: 14px; }
 </style>
 </head>
 <body>
-<div id="app" class="app-container flex flex-col pb-16">
-<header id="mainHeader" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 shadow-lg sticky top-0 z-30 flex items-center justify-between">
-<div class="flex items-center gap-2">
-<div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center font-extrabold text-xl border border-white/30 shadow-lg">Σ</div>
-<div>
-<h1 class="font-extrabold text-sm leading-tight">سنتر سيجما</h1>
-<p class="text-[8px] text-blue-100">منصة الطالب الذكية</p>
-</div>
-</div>
-<div class="flex items-center gap-1">
-<button onclick="switchTab('notifications')" class="relative p-2 rounded-full hover:bg-white/10">
-<i class="fa-solid fa-bell text-lg"></i>
-<span id="notifBadge" class="hidden absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
-</button>
-<button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-white/10">
-<i id="darkIcon" class="fa-solid fa-moon text-lg"></i>
-</button>
-</div>
-</header>
-<div id="imageViewer" class="image-viewer" onclick="closeImageViewer()">
-<button class="close-btn" onclick="closeImageViewer()">✕</button>
-<img id="viewerImage" src="" alt="">
-<button class="download-btn" onclick="event.stopPropagation();downloadImage()"><i class="fa-solid fa-download"></i> تحميل الصورة</button>
-<div class="info" id="imageInfo"></div>
-</div>
-<main id="mainContent" class="flex-1 p-3 space-y-3 overflow-y-auto" style="padding-bottom:70px">
-<section id="tab-login" class="slide-up">
-<div class="login-section">
-<div class="logo">Σ</div>
-<h2>مرحباً بك في سنتر سيجما</h2>
-<p>سجل دخولك باستخدام البريد الإلكتروني</p>
-<div class="input-group"><label>📧 البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="example@email.com"></div>
-<div class="input-group"><label>🔒 كلمة المرور</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
-<button class="login-btn" onclick="loginUser()">🚀 تسجيل الدخول</button>
-<div style="margin-top:12px;font-size:12px;color:#64748b">ليس لديك حساب؟ <span onclick="switchTab('register')" style="color:#2563eb;cursor:pointer;font-weight:600">إنشاء حساب جديد</span></div>
-</div>
-</section>
-<section id="tab-register" class="hidden slide-up">
-<div class="login-section">
-<div class="logo">Σ</div>
-<h2>إنشاء حساب جديد</h2>
-<p>أدخل بياناتك للتسجيل في منصة سيجما</p>
-<div class="input-group"><label>👤 الاسم الكامل</label><input type="text" id="regName" placeholder="أحمد محمد"></div>
-<div class="input-group"><label>📧 البريد الإلكتروني</label><input type="email" id="regEmail" placeholder="example@email.com"></div>
-<div class="input-group"><label>📱 رقم الهاتف</label><input type="tel" id="regPhone" placeholder="01012345678"></div>
-<div class="input-group"><label>🔒 كلمة المرور</label><input type="password" id="regPassword" placeholder="•••••••• (6 أحرف على الأقل)"></div>
-<div class="input-group"><label>📄 صورة البطاقة الشخصية أو شهادة الميلاد</label><input type="file" id="regIdImage" accept="image/*" style="padding:8px"></div>
-<button class="login-btn" onclick="registerUser()">📝 إنشاء حساب</button>
-<div style="margin-top:12px;font-size:12px;color:#64748b">لديك حساب بالفعل؟ <span onclick="switchTab('login')" style="color:#2563eb;cursor:pointer;font-weight:600">تسجيل الدخول</span></div>
-</div>
-</section>
-<section id="tab-home" class="hidden space-y-3 slide-up">
-<div id="userCard" class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-4 text-white shadow-lg">
-<div class="flex items-center gap-3">
-<img id="userAvatar" src="" class="profile-avatar" onclick="openProfile()" style="display:none">
-<div class="flex-1">
-<div class="flex items-center justify-between">
-<h2 id="userName" class="font-bold text-sm">مرحباً بك</h2>
-<button id="loginBtn" onclick="logoutUser()" class="bg-red-500/80 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl"><i class="fa-solid fa-sign-out-alt"></i> خروج</button>
-</div>
-<p id="userSubtitle" class="text-xs text-blue-100">أكمل بياناتك</p>
-<div id="userSubjects" class="mt-1"></div>
-</div>
-</div>
-</div>
-<div class="grid grid-cols-3 gap-2">
-<div class="stat-card" onclick="switchTab('schedule')"><div class="text-blue-600 text-lg"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-number text-blue-600" id="todayCount">0</div><div class="stat-label">حصص اليوم</div></div>
-<div class="stat-card" onclick="switchTab('library')"><div class="text-purple-600 text-lg"><i class="fa-solid fa-book"></i></div><div class="stat-number text-purple-600" id="materialCount">0</div><div class="stat-label">الملفات</div></div>
-<div class="stat-card" onclick="switchTab('notifications')"><div class="text-amber-500 text-lg"><i class="fa-solid fa-bell"></i></div><div class="stat-number text-amber-500" id="notifCount">0</div><div class="stat-label">تنبيهات</div></div>
-</div>
-<div class="grid grid-cols-4 gap-2">
-<div class="stat-card" onclick="switchTab('news')"><div class="text-blue-600 text-base"><i class="fa-solid fa-newspaper"></i></div><div class="stat-label">الأخبار</div></div>
-<div class="stat-card" onclick="switchTab('exams')"><div class="text-red-600 text-base"><i class="fa-solid fa-pen-to-square"></i></div><div class="stat-label">امتحانات</div></div>
-<div class="stat-card" onclick="switchTab('results')"><div class="text-green-600 text-base"><i class="fa-solid fa-chart-simple"></i></div><div class="stat-label">النتائج</div></div>
-<div class="stat-card" onclick="switchTab('teachers')"><div class="text-indigo-600 text-base"><i class="fa-solid fa-chalkboard-user"></i></div><div class="stat-label">المدرسين</div></div>
-</div>
-<div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
-<div class="flex items-center justify-between mb-2">
-<h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-clock text-blue-600 ml-1"></i> حصصي اليوم</h3>
-<button onclick="switchTab('schedule')" class="text-[10px] text-blue-600 font-bold">عرض الكل</button>
-</div>
-<div id="myScheduleToday" class="space-y-1.5"><div class="text-center py-3 text-slate-400 text-xs">لا توجد حصص اليوم</div></div>
-</div>
-<div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
-<div class="flex items-center justify-between mb-2">
-<h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-newspaper text-blue-600 ml-1"></i> آخر الأخبار</h3>
-<button onclick="switchTab('news')" class="text-[10px] text-blue-600 font-bold">عرض الكل</button>
-</div>
-<div id="homeNewsContainer" class="space-y-2"><div class="text-center py-3 text-slate-400 text-xs">لا توجد أخبار</div></div>
-</div>
-</section>
-<section id="tab-schedule" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-calendar-days text-blue-600 ml-1"></i> جدول السنتر</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div class="flex bg-slate-200/80 p-1 rounded-xl text-[10px] font-bold text-slate-600">
-<button onclick="filterSchedule('today')" id="btnToday" class="flex-1 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm">اليوم</button>
-<button onclick="filterSchedule('tomorrow')" id="btnTomorrow" class="flex-1 py-1.5 rounded-lg">غداً</button>
-<button onclick="filterSchedule('all')" id="btnAll" class="flex-1 py-1.5 rounded-lg">الأسبوع</button>
-</div>
-<div id="scheduleContainer" class="space-y-2"><div class="text-center py-4 text-slate-400 text-xs">لا توجد حصص</div></div>
-</section>
-<section id="tab-library" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-book-open text-purple-600 ml-1"></i> المكتبة الرقمية</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div id="libraryContainer" class="space-y-2"><div class="text-center py-4 text-slate-400 text-xs">لا توجد ملفات</div></div>
-</section>
-<section id="tab-news" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-newspaper text-blue-600 ml-1"></i> الأخبار</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div id="allNewsContainer" class="space-y-3"><div class="text-center py-4 text-slate-400 text-xs">لا توجد أخبار</div></div>
-</section>
-<section id="tab-notifications" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-bell text-amber-500 ml-1"></i> الإشعارات</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div id="notificationsContainer" class="space-y-2"><div class="text-center py-6 text-slate-400 text-xs"><i class="fa-regular fa-bell-slash text-2xl block mb-1"></i> لا توجد إشعارات</div></div>
-</section>
-<section id="tab-exams" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-pen-to-square text-red-600 ml-1"></i> الامتحانات</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div id="examsContainer" class="space-y-2"><div class="text-center py-4 text-slate-400 text-xs">لا توجد امتحانات</div></div>
-</section>
-<section id="tab-results" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-chart-simple text-green-600 ml-1"></i> لوحة النتائج</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div id="resultsContainer" class="space-y-2"><div class="text-center py-4 text-slate-400 text-xs">لا توجد نتائج</div></div>
-<div class="flex items-center justify-between pt-2">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-calendar-week text-cyan-600 ml-1"></i> المتابعة الأسبوعية</h2>
-</div>
-<div id="weeklyContainer" class="space-y-2"><div class="text-center py-4 text-slate-400 text-xs">لا توجد متابعات</div></div>
-</section>
-<section id="tab-teachers" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-chalkboard-user text-indigo-600 ml-1"></i> المدرسين</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div id="teachersContainer" class="space-y-2"><div class="text-center py-4 text-slate-400 text-xs">لا يوجد مدرسين</div></div>
-</section>
-<section id="tab-settings" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-gear text-slate-600 ml-1"></i> الإعدادات</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div class="settings-card">
-<div class="title"><i class="fa-solid fa-user text-blue-600"></i> معلوماتي</div>
-<div class="space-y-1 text-xs">
-<p><span class="text-slate-500">الاسم:</span> <span id="infoName" class="font-bold text-slate-800">-</span></p>
-<p><span class="text-slate-500">البريد:</span> <span id="infoEmail" class="font-bold text-slate-800">-</span></p>
-<p><span class="text-slate-500">الهاتف:</span> <span id="infoPhone" class="font-bold text-slate-800">-</span></p>
-<p><span class="text-slate-500">ولي الأمر:</span> <span id="infoParentPhone" class="font-bold text-slate-800">-</span></p>
-<p><span class="text-slate-500">المدرسة:</span> <span id="infoSchool" class="font-bold text-slate-800">-</span></p>
-<p><span class="text-slate-500">المرحلة:</span> <span id="infoStage" class="font-bold text-slate-800">-</span></p>
-<p><span class="text-slate-500">الصف:</span> <span id="infoGrade" class="font-bold text-slate-800">-</span></p>
-<p><span class="text-slate-500">المواد:</span> <span id="infoSubjects" class="font-bold text-slate-800">-</span></p>
-<p><span class="text-slate-500">حالة البيانات:</span> <span id="infoStatus" class="font-bold text-amber-600">قيد المراجعة</span></p>
-</div>
-</div>
-<div class="settings-card">
-<div class="title"><i class="fa-solid fa-pen text-emerald-600"></i> تعديل البيانات</div>
-<div class="space-y-2">
-<div><label class="text-[10px] font-bold text-slate-500">المدرسة:</label><input type="text" id="profSchool" placeholder="اسم المدرسة" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none"></div>
-<div><label class="text-[10px] font-bold text-slate-500">رقم ولي الأمر:</label><input type="tel" id="profParentPhone" placeholder="رقم ولي الأمر" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none"></div>
-<div><label class="text-[10px] font-bold text-slate-500">المرحلة:</label><select id="profStage" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none"><option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option></select></div>
-<div><label class="text-[10px] font-bold text-slate-500">الصف:</label><select id="profGrade" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none"><option value="1">الصف الأول</option><option value="2">الصف الثاني</option><option value="3">الصف الثالث</option></select></div>
-<div><label class="text-[10px] font-bold text-slate-500">رقم الهاتف:</label><input type="tel" id="profPhone" placeholder="01012345678" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none"></div>
-<div><label class="text-[10px] font-bold text-slate-500">المواد:</label><div id="subjectsCheckbox" class="mt-1 grid grid-cols-2 gap-1"></div></div>
-<button onclick="saveProfile()" class="publish-btn blue"><i class="fa-solid fa-save"></i> حفظ التغييرات</button>
-</div>
-</div>
-<div class="settings-card"><div class="title"><i class="fa-solid fa-phone text-green-600"></i> أرقام السنتر</div><div id="centerContacts" class="space-y-1.5"></div></div>
-<div class="settings-card"><div class="title"><i class="fa-solid fa-headset text-cyan-600"></i> الدعم الفني</div><div id="supportContacts" class="space-y-1.5"></div></div>
-<div class="settings-card">
-<div class="title"><i class="fa-solid fa-comment text-amber-500"></i> تقديم شكوى</div>
-<textarea id="complaintText" placeholder="اكتب شكواك هنا..." class="w-full p-2 bg-slate-50 border rounded-xl text-sm h-16 outline-none mb-2"></textarea>
-<button onclick="sendComplaint()" class="publish-btn orange"><i class="fa-solid fa-paper-plane"></i> إرسال الشكوى</button>
-</div>
-<div class="settings-card">
-<div class="title"><i class="fa-solid fa-trash text-red-500"></i> حذف الحساب</div>
-<button onclick="deleteAccount()" class="publish-btn red"><i class="fa-solid fa-trash-can"></i> حذف حسابي نهائياً</button>
-<p class="text-[9px] text-red-400 text-center mt-1">⚠️ هذا الإجراء لا يمكن التراجع عنه</p>
-</div>
-</section>
-<section id="tab-admin" class="hidden space-y-3 slide-up">
-<div class="flex items-center justify-between">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-user-shield text-blue-600 ml-1"></i> لوحة الإدارة</h2>
-<button onclick="switchTab('home')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-</div>
-<div id="adminDenied" class="hidden bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-<i class="fa-solid fa-ban text-red-500 text-4xl mb-2"></i>
-<h3 class="font-bold text-red-700 text-sm">⛔ غير مصرح بالدخول</h3>
-<p class="text-xs text-red-600 mt-1">هذه الصفحة للإداريين فقط</p>
-<button onclick="switchTab('home')" class="mt-3 bg-red-600 text-white px-4 py-1.5 rounded-xl text-xs">الرجوع</button>
-</div>
-<div id="adminLogin" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-2">
-<div class="flex items-center gap-2 text-sm font-bold text-slate-700"><i class="fa-solid fa-lock text-amber-500"></i> دخول الإدارة</div>
-<div class="relative"><input type="password" id="adminPass" placeholder="كلمة السر" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm pr-10 outline-none"><i class="fa-solid fa-key absolute left-3 top-3 text-slate-400"></i></div>
-<button onclick="adminLogin()" class="publish-btn blue">دخول</button>
-</div>
-<div id="adminPanel" class="hidden space-y-2">
-<div class="admin-panel-section">
-<div class="header" onclick="toggleStats()"><h4><i class="fa-solid fa-chart-line text-blue-400"></i> الإحصائيات اللحظية</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down" id="statsArrow"></i></span></div>
-<div class="content" id="statsContent">
-<div class="grid grid-cols-2 gap-2 text-white bg-slate-800 rounded-xl p-3">
-<div><div class="text-xl font-bold" id="statUsers">0</div><div class="text-[10px] opacity-70">👥 الطلاب</div></div>
-<div><div class="text-xl font-bold" id="statActive">0</div><div class="text-[10px] opacity-70">🟢 نشطاء</div></div>
-<div><div class="text-xl font-bold" id="statSchedules">0</div><div class="text-[10px] opacity-70">📚 حصص</div></div>
-<div><div class="text-xl font-bold" id="statMaterials">0</div><div class="text-[10px] opacity-70">📄 ملفات</div></div>
-<div><div class="text-xl font-bold" id="statTeachers">0</div><div class="text-[10px] opacity-70">👨‍🏫 مدرسين</div></div>
-<div><div class="text-xl font-bold" id="statExams">0</div><div class="text-[10px] opacity-70">📝 امتحانات</div></div>
-<div><div class="text-xl font-bold" id="statResults">0</div><div class="text-[10px] opacity-70">📊 نتائج</div></div>
-<div><div class="text-xl font-bold" id="statNotifs">0</div><div class="text-[10px] opacity-70">🔔 إشعارات</div></div>
-</div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-user-check text-amber-500"></i> طلبات تعديل البيانات</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content"><div id="profileRequestsList" class="max-h-40 overflow-y-auto space-y-1.5"><div class="text-center py-3 text-slate-400 text-xs">لا توجد طلبات</div></div></div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-chalkboard-user text-indigo-600"></i> إدارة المدرسين</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<div class="grid grid-cols-2 gap-1"><input type="text" id="teacherName" placeholder="اسم المدرس" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><input type="text" id="teacherSubject" placeholder="المادة" class="p-1.5 bg-slate-50 border rounded-lg text-xs"></div>
-<button onclick="addTeacher()" class="publish-btn purple mt-1">➕ إضافة مدرس</button>
-<div id="teachersList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-pen-to-square text-red-600"></i> إدارة الامتحانات</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<input type="text" id="examTitle" placeholder="عنوان الامتحان" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-<div class="grid grid-cols-2 gap-1 mt-1"><input type="text" id="examSubject" placeholder="المادة" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><input type="date" id="examDate" class="p-1.5 bg-slate-50 border rounded-lg text-xs"></div>
-<button onclick="addExam()" class="publish-btn red mt-2">➕ إضافة امتحان</button>
-<div id="examsList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-chart-simple text-green-600"></i> إدارة النتائج</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<select id="resultStudent" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs"><option value="">اختر الطالب</option></select>
-<div class="grid grid-cols-2 gap-1 mt-1"><input type="text" id="resultSubject" placeholder="المادة" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><input type="number" id="resultScore" placeholder="الدرجة" class="p-1.5 bg-slate-50 border rounded-lg text-xs"></div>
-<button onclick="addResult()" class="publish-btn green mt-2">➕ إضافة نتيجة</button>
-<div id="resultsList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-calendar-week text-cyan-600"></i> المتابعة الأسبوعية</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<select id="weeklyStudent" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs"><option value="">اختر الطالب</option></select>
-<div class="grid grid-cols-2 gap-1 mt-1"><input type="text" id="weeklySubject" placeholder="المادة" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><input type="text" id="weeklyNote" placeholder="الملاحظة" class="p-1.5 bg-slate-50 border rounded-lg text-xs"></div>
-<button onclick="addWeeklyFollow()" class="publish-btn teal mt-2">➕ إضافة متابعة</button>
-<div id="weeklyList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-plus-circle text-blue-600"></i> إضافة حصة</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<div class="flex gap-1 mb-2"><button onclick="setOption('full')" id="optFull" class="option-btn active flex-1 text-center">📝 كامل</button><button onclick="setOption('text')" id="optText" class="option-btn flex-1 text-center">📝 نص</button><button onclick="setOption('image')" id="optImage" class="option-btn flex-1 text-center">🖼️ صورة</button></div>
-<div class="flex gap-1 mb-2"><button onclick="setScheduleDay('today')" id="dayToday" class="option-btn active flex-1 text-center">اليوم</button><button onclick="setScheduleDay('tomorrow')" id="dayTomorrow" class="option-btn flex-1 text-center">غداً</button><button onclick="setScheduleDay('week')" id="dayWeek" class="option-btn flex-1 text-center">الأسبوع</button></div>
-<div id="scheduleFields">
-<div class="grid grid-cols-2 gap-1.5">
-<select id="schDay" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><option value="الأحد">الأحد</option><option value="الإثنين">الإثنين</option><option value="الثلاثاء">الثلاثاء</option><option value="الأربعاء">الأربعاء</option><option value="الخميس">الخميس</option><option value="الجمعة">الجمعة</option><option value="السبت">السبت</option></select>
-<input type="text" id="schSubject" placeholder="المادة" class="p-1.5 bg-slate-50 border rounded-lg text-xs">
-</div>
-<div class="grid grid-cols-2 gap-1.5 mt-1.5"><input type="text" id="schTeacher" placeholder="المدرس" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><input type="time" id="schTime" class="p-1.5 bg-slate-50 border rounded-lg text-xs"></div>
-<div class="grid grid-cols-2 gap-1.5 mt-1.5"><input type="text" id="schRoom" placeholder="القاعة" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><select id="schStage" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option></select></div>
-</div>
-<div id="scheduleImageField" class="mt-1.5"><label class="text-[10px] text-slate-500">صورة (حتى 20MB):</label><input type="file" id="schImage" accept="image/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border"></div>
-<button onclick="addSchedule()" class="publish-btn blue mt-2">💾 حفظ الحصة</button>
-<div id="scheduleList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-paper-plane text-amber-500"></i> إرسال إشعار</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<div class="flex gap-1 mb-2"><button onclick="setNotifOption('full')" id="notifOptFull" class="option-btn active flex-1 text-center">📝 كامل</button><button onclick="setNotifOption('text')" id="notifOptText" class="option-btn flex-1 text-center">📝 نص</button><button onclick="setNotifOption('image')" id="notifOptImage" class="option-btn flex-1 text-center">🖼️ صورة</button></div>
-<input type="text" id="notifTitle" placeholder="العنوان" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-<div id="notifTextField"><textarea id="notifBody" placeholder="النص..." class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs h-12 mt-1"></textarea></div>
-<div id="notifImageField"><input type="file" id="notifImage" accept="image/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border mt-1"></div>
-<div class="grid grid-cols-3 gap-1 mt-1">
-<select id="notifStage" class="p-1.5 bg-slate-50 border rounded-lg text-[10px]"><option value="الكل">الكل</option><option value="ثانوي">ثانوي</option><option value="إعدادي">إعدادي</option></select>
-<select id="notifGrade" class="p-1.5 bg-slate-50 border rounded-lg text-[10px]"><option value="الكل">الكل</option><option value="1">الأول</option><option value="2">الثاني</option><option value="3">الثالث</option></select>
-<input type="text" id="notifSubject" placeholder="المادة" class="p-1.5 bg-slate-50 border rounded-lg text-[10px]">
-</div>
-<button onclick="sendNotif()" class="publish-btn orange mt-2">📨 إرسال</button>
-<div id="notifList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-image text-emerald-600"></i> نشر خبر</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<input type="text" id="newsTitle" placeholder="عنوان الخبر" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-<textarea id="newsContent" placeholder="التفاصيل..." class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs h-12 mt-1"></textarea>
-<input type="file" id="newsImage" accept="image/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border mt-1">
-<button onclick="addNews()" class="publish-btn green mt-2">📢 نشر</button>
-<div id="newsList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-file-arrow-up text-purple-600"></i> رفع مذكرة</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<input type="text" id="matTitle" placeholder="اسم الملف" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-<div class="grid grid-cols-2 gap-1 mt-1"><input type="text" id="matSubject" placeholder="المادة" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><select id="matType" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><option value="pdf">PDF</option><option value="image">صورة</option></select></div>
-<input type="file" id="matFile" class="w-full text-xs p-1 bg-slate-50 rounded-lg border mt-1">
-<button onclick="uploadMat()" class="publish-btn purple mt-2">📤 رفع</button>
-<div id="matList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-address-book text-green-600"></i> أرقام السنتر والدعم</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<div class="flex gap-1">
-<input type="text" id="newContact" placeholder="رقم الهاتف" class="flex-1 p-1.5 bg-slate-50 border rounded-lg text-xs">
-<select id="contactType" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><option value="phone">📞 سنتر</option><option value="whatsapp">💬 سنتر</option><option value="support">🛠️ دعم</option></select>
-<button onclick="addContact()" class="bg-green-600 text-white px-3 rounded-lg text-xs">+</button>
-</div>
-<div id="contactsList" class="mt-2 space-y-1"></div>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-message text-amber-500"></i> رسائل الشكاوى</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content"><div id="complaintsList" class="max-h-40 overflow-y-auto space-y-1.5"><div class="text-center py-3 text-slate-400 text-xs">لا توجد شكاوى</div></div></div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-trash-can text-red-500"></i> حذف الكل</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content">
-<div class="grid grid-cols-2 gap-1">
-<button onclick="deleteAll('notifications')" class="publish-btn red">🗑️ الإشعارات</button>
-<button onclick="deleteAll('news')" class="publish-btn red">🗑️ الأخبار</button>
-<button onclick="deleteAll('schedules')" class="publish-btn red">🗑️ الحصص</button>
-<button onclick="deleteAll('materials')" class="publish-btn red">🗑️ الملفات</button>
-<button onclick="deleteAll('exams')" class="publish-btn red">🗑️ الامتحانات</button>
-<button onclick="deleteAll('results')" class="publish-btn red">🗑️ النتائج</button>
-</div>
-</div>
-</div>
-</div>
-</section>
-</main>
-<nav id="mainNav" class="fixed bottom-0 w-full max-w-[480px] bg-white/95 backdrop-blur-sm border-t border-slate-200 py-1 px-2 flex justify-around items-center z-30 shadow-lg" style="left:50%;transform:translateX(-50%)">
-<button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-house text-lg"></i><span>الرئيسية</span></button>
-<button onclick="switchTab('schedule')" id="nav-schedule" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-calendar-days text-lg"></i><span>الجدول</span></button>
-<button onclick="switchTab('library')" id="nav-library" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-book-open text-lg"></i><span>المكتبة</span></button>
-<button onclick="openPlatform()" id="nav-platform" class="flex flex-col items-center text-[9px] font-bold text-pink-500"><i class="fa-solid fa-circle-play text-lg"></i><span>منصة</span></button>
-<button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-gear text-lg"></i><span>الإعدادات</span></button>
-<button onclick="switchTab('admin')" id="nav-admin" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-user-shield text-lg"></i><span>الإدارة</span></button>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <span class="navbar-brand">🎓 سنتر سيجما التعليمي</span>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <span id="userInfo" class="text-white small"></span>
+      <button id="logoutBtn" class="btn btn-sm btn-light hidden">خروج</button>
+    </div>
+  </div>
 </nav>
+
+<!-- Auth Section -->
+<div id="authSection" class="card p-4">
+  <h4 class="text-center mb-4">تسجيل الدخول</h4>
+  <p class="text-center text-muted small">سجّل بجوجل لعرض المواعيد والأخبار</p>
+  <button id="googleLogin" class="btn btn-google w-100 d-flex align-items-center justify-content-center gap-2">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+    الدخول بحساب جوجل
+  </button>
 </div>
-<div id="platform" class="hidden p-theme">
-<div id="platformApp" class="app-container flex flex-col pb-16" style="background:#fdf7fb">
-<header class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-3 shadow-lg sticky top-0 z-30 flex items-center justify-between">
-<div class="flex items-center gap-2">
-<button onclick="closePlatform()" class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center border border-white/30"><i class="fa-solid fa-arrow-right"></i></button>
-<div><h1 class="font-extrabold text-sm leading-tight">منصة سيجما للفيديو</h1><p class="text-[8px] text-pink-100">كورسات مسجلة بجودة عالية</p></div>
+
+<!-- Main App -->
+<div id="appSection" class="container my-4 hidden">
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="card p-3 mb-4 hidden">
+    <div class="d-flex gap-2 mb-3">
+      <button class="btn btn-outline-primary tab-btn active" data-tab="sched">📅 إدارة المواعيد</button>
+      <button class="btn btn-outline-primary tab-btn" data-tab="news">📰 إدارة الأخبار</button>
+      <span class="badge badge-admin ms-auto align-self-center">أدمن</span>
+    </div>
+
+    <!-- Schedule Admin -->
+    <div id="tab-sched">
+      <div class="row g-2 mb-3">
+        <div class="col-md-3">
+          <select id="schedDay" class="form-select">
+            <option value="today">اليوم</option>
+            <option value="tomorrow">بكرة</option>
+            <option value="week">هذا الأسبوع</option>
+          </select>
+        </div>
+        <div class="col-md-4"><input id="schedTitle" class="form-control" placeholder="عنوان الدرس"></div>
+        <div class="col-md-3"><input id="schedTime" class="form-control" placeholder="الوقت (مثال: 5 مساءً)"></div>
+        <div class="col-md-2"><button id="addSched" class="btn btn-primary w-100">إضافة</button></div>
+      </div>
+      <input id="schedNote" class="form-control mb-2" placeholder="ملاحظة (اختياري)">
+      <input id="schedFile" type="file" accept="image/*,application/pdf" class="form-control mb-2">
+      <div id="schedFilePreview"></div>
+    </div>
+
+    <!-- News Admin -->
+    <div id="tab-news" class="hidden">
+      <input id="newsTitle" class="form-control mb-2" placeholder="عنوان الخبر">
+      <textarea id="newsBody" class="form-control mb-2" rows="3" placeholder="نص الخبر"></textarea>
+      <input id="newsFile" type="file" accept="image/*,application/pdf" class="form-control mb-2">
+      <button id="addNews" class="btn btn-success">نشر الخبر</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-pills mb-3">
+    <li class="nav-item"><button class="nav-link active" data-view="schedules">📅 المواعيد</button></li>
+    <li class="nav-item"><button class="nav-link" data-view="news">📰 الأخبار</button></li>
+  </ul>
+
+  <!-- Schedules View -->
+  <div id="view-schedules">
+    <div class="d-flex gap-2 mb-3">
+      <button class="btn btn-sm btn-outline-primary day-filter active" data-day="today">اليوم</button>
+      <button class="btn btn-sm btn-outline-primary day-filter" data-day="tomorrow">بكرة</button>
+      <button class="btn btn-sm btn-outline-primary day-filter" data-day="week">الأسبوع</button>
+    </div>
+    <div id="schedulesList" class="loading">جاري التحميل...</div>
+  </div>
+
+  <!-- News View -->
+  <div id="view-news" class="hidden">
+    <div id="newsList" class="loading">جاري التحميل...</div>
+  </div>
 </div>
-<button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-white/10"><i id="pDarkIcon" class="fa-solid fa-moon text-lg"></i></button>
-</header>
-<main class="flex-1 p-3 space-y-3 overflow-y-auto" style="padding-bottom:70px">
-<section id="p-home" class="space-y-3 slide-up">
-<div class="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl p-4 text-white shadow-lg">
-<h2 class="font-bold text-sm">🎬 تعلّم في أي وقت ومن أي مكان</h2>
-<p class="text-xs text-pink-100 mt-1">اشترِ الكورس وابدأ المشاهدة فور موافقة الإدارة</p>
-</div>
-<div class="grid grid-cols-3 gap-2">
-<div class="stat-card"><div class="text-pink-500 text-lg"><i class="fa-solid fa-film"></i></div><div class="stat-number text-pink-500" id="pStatCourses">0</div><div class="stat-label">كورسات</div></div>
-<div class="stat-card"><div class="text-purple-600 text-lg"><i class="fa-solid fa-users"></i></div><div class="stat-number text-purple-600" id="pStatStudents">0</div><div class="stat-label">طلاب</div></div>
-<div class="stat-card"><div class="text-green-600 text-lg"><i class="fa-solid fa-cart-shopping"></i></div><div class="stat-number text-green-600" id="pStatSales">0</div><div class="stat-label">مبيعات</div></div>
-</div>
-<div class="flex items-center justify-between"><h3 class="font-bold text-xs text-slate-800"><i class="fa-solid fa-star text-pink-500 ml-1"></i> كورسات مميزة</h3><button onclick="pSwitch('courses')" class="text-[10px] text-pink-500 font-bold">عرض الكل</button></div>
-<div id="pFeatured" class="space-y-3"><div class="loading-box"><span class="spinner dark"></span></div></div>
-</section>
-<section id="p-courses" class="hidden space-y-3 slide-up">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-film text-pink-500 ml-1"></i> الكورسات</h2>
-<div class="relative"><input type="text" id="pSearch" oninput="renderCourses()" placeholder="ابحث عن كورس..." class="w-full p-2.5 bg-white border rounded-xl text-sm pr-10 outline-none"><i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400 text-xs"></i></div>
-<div class="grid grid-cols-2 gap-2">
-<select id="pLevel" onchange="renderCourses()" class="p-2 bg-white border rounded-xl text-xs outline-none"><option value="">كل المستويات</option><option value="مبتدئ">مبتدئ</option><option value="متوسط">متوسط</option><option value="متقدم">متقدم</option></select>
-<select id="pPrice" onchange="renderCourses()" class="p-2 bg-white border rounded-xl text-xs outline-none"><option value="">كل الأسعار</option><option value="free">مجاني</option><option value="low">أقل من 100</option><option value="mid">100 - 300</option><option value="high">أكثر من 300</option></select>
-</div>
-<div id="pCoursesList" class="space-y-3"><div class="loading-box"><span class="spinner dark"></span></div></div>
-</section>
-<section id="p-course" class="hidden space-y-3 slide-up">
-<button onclick="pSwitch('courses')" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-<div id="pCourseDetail"></div>
-</section>
-<section id="p-checkout" class="hidden space-y-3 slide-up">
-<button onclick="pBackFromCheckout()" class="text-[10px] text-slate-400"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-credit-card text-pink-500 ml-1"></i> إتمام الدفع</h2>
-<div id="pCheckoutCourse" class="bg-white rounded-2xl p-3 border border-pink-100"></div>
-<div class="bg-white rounded-2xl p-3 border border-pink-100 space-y-2">
-<div class="text-xs font-bold text-slate-800">اختر طريقة الدفع</div>
-<div class="flex gap-2"><div class="pay-method active" id="payVodafone" onclick="selectPay('vodafone')">📱 فودافون كاش</div><div class="pay-method" id="payFawry" onclick="selectPay('fawry')">🏪 فوري</div></div>
-<div id="payInfo" class="bg-pink-50 border border-pink-100 rounded-xl p-3 text-center text-xs text-slate-700"></div>
-<div><label class="text-[10px] font-bold text-slate-500">رقم العملية:</label><input type="text" id="payTxn" placeholder="رقم العملية أو المرجع" class="w-full p-2 bg-slate-50 border rounded-xl text-sm mt-0.5 outline-none"></div>
-<div><label class="text-[10px] font-bold text-slate-500">صورة الإيصال:</label><input type="file" id="payReceipt" accept="image/*" class="w-full text-xs p-1.5 bg-slate-50 rounded-xl border mt-0.5"></div>
-<button onclick="confirmOrder()" id="confirmOrderBtn" class="publish-btn pink"><i class="fa-solid fa-check"></i> تأكيد الطلب</button>
-</div>
-</section>
-<section id="p-purchases" class="hidden space-y-3 slide-up">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-bag-shopping text-pink-500 ml-1"></i> مشترياتي</h2>
-<div id="pPurchasesList" class="space-y-2"><div class="text-center py-4 text-slate-400 text-xs">لا توجد مشتريات</div></div>
-</section>
-<section id="p-favs" class="hidden space-y-3 slide-up">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-heart text-pink-500 ml-1"></i> المفضلة</h2>
-<div id="pFavsList" class="space-y-3"><div class="text-center py-4 text-slate-400 text-xs">لا توجد كورسات مفضلة</div></div>
-</section>
-<section id="p-admin" class="hidden space-y-3 slide-up">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-user-shield text-pink-500 ml-1"></i> إدارة المنصة</h2>
-<div id="pAdminDenied" class="hidden bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-<i class="fa-solid fa-ban text-red-500 text-4xl mb-2"></i>
-<h3 class="font-bold text-red-700 text-sm">⛔ غير مصرح بالدخول</h3>
-<p class="text-xs text-red-600 mt-1">هذه الصفحة للإداريين فقط</p>
-</div>
-<div id="pAdminLogin" class="bg-white p-4 rounded-2xl shadow-sm border border-pink-100 space-y-2">
-<div class="flex items-center gap-2 text-sm font-bold text-slate-700"><i class="fa-solid fa-lock text-amber-500"></i> دخول الأدمن</div>
-<div class="relative"><input type="password" id="pAdminPass" placeholder="كلمة السر" class="w-full p-2.5 bg-slate-50 border rounded-xl text-sm pr-10 outline-none"><i class="fa-solid fa-key absolute left-3 top-3 text-slate-400"></i></div>
-<button onclick="pAdminLogin()" class="publish-btn pink">دخول</button>
-</div>
-<div id="pAdminPanel" class="hidden space-y-2">
-<div class="grid grid-cols-3 gap-2 text-white">
-<div class="bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl p-3 text-center"><div class="text-lg font-bold" id="aStatCourses">0</div><div class="text-[10px] opacity-80">كورسات</div></div>
-<div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-3 text-center"><div class="text-lg font-bold" id="aStatSales">0</div><div class="text-[10px] opacity-80">مبيعات</div></div>
-<div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-3 text-center"><div class="text-lg font-bold" id="aStatRevenue">0</div><div class="text-[10px] opacity-80">إيرادات ج.م</div></div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-plus text-pink-500"></i> <span id="courseFormTitle">إضافة كورس</span></h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content space-y-1">
-<input type="text" id="cTitle" placeholder="عنوان الكورس" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-<textarea id="cDesc" placeholder="وصف الكورس" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs h-14"></textarea>
-<div class="grid grid-cols-2 gap-1"><input type="number" id="cPrice" placeholder="السعر (ج.م)" class="p-1.5 bg-slate-50 border rounded-lg text-xs"><input type="text" id="cInstructor" placeholder="المحاضر" class="p-1.5 bg-slate-50 border rounded-lg text-xs"></div>
-<select id="cLevel" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs"><option value="مبتدئ">مبتدئ</option><option value="متوسط">متوسط</option><option value="متقدم">متقدم</option></select>
-<label class="text-[10px] text-slate-500">صورة الغلاف:</label>
-<input type="file" id="cImage" accept="image/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border">
-<div class="flex gap-1 pt-1"><button onclick="setVideoMode('file')" id="vmFile" class="option-btn active flex-1 text-center">📁 رفع ملف</button><button onclick="setVideoMode('url')" id="vmUrl" class="option-btn flex-1 text-center">🔗 رابط خارجي</button></div>
-<div id="cVideoFileBox"><input type="file" id="cVideoFile" accept="video/*" class="w-full text-xs p-1 bg-slate-50 rounded-lg border"><p class="text-[9px] text-slate-400 mt-0.5">أقل من 5MB</p></div>
-<div id="cVideoUrlBox" class="hidden"><input type="url" id="cVideoUrl" placeholder="YouTube / Vimeo / رابط مباشر" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs"></div>
-<input type="hidden" id="cEditId">
-<button onclick="saveCourse()" id="saveCourseBtn" class="publish-btn pink mt-1">💾 حفظ الكورس</button>
-<button onclick="resetCourseForm()" class="publish-btn orange mt-1">↺ إلغاء التعديل</button>
-</div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-film text-purple-600"></i> إدارة الكورسات</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content"><div id="pAdminCourses" class="space-y-1"></div></div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-receipt text-green-600"></i> طلبات الشراء</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content"><div id="pAdminPurchases" class="max-h-72 overflow-y-auto space-y-1.5"></div></div>
-</div>
-<div class="admin-panel-section">
-<div class="header" onclick="toggleSection(this)"><h4><i class="fa-solid fa-wallet text-amber-500"></i> بيانات الدفع</h4><span class="text-xs text-slate-400"><i class="fa-solid fa-chevron-down"></i></span></div>
-<div class="content space-y-1">
-<input type="text" id="sVodafone" placeholder="رقم فودافون كاش" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-<input type="text" id="sFawryCode" placeholder="كود فوري" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-<input type="text" id="sFawryNumber" placeholder="رقم فوري" class="w-full p-1.5 bg-slate-50 border rounded-lg text-xs">
-<button onclick="savePaySettings()" class="publish-btn orange mt-1">💾 حفظ بيانات الدفع</button>
-</div>
-</div>
-</div>
-</section>
-<section id="p-account" class="hidden space-y-3 slide-up">
-<h2 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-user text-pink-500 ml-1"></i> حسابي</h2>
-<div class="bg-white rounded-2xl p-4 border border-pink-100 text-center space-y-2">
-<img id="pAccAvatar" src="" class="w-20 h-20 rounded-full object-cover mx-auto border-4 border-pink-200">
-<h3 id="pAccName" class="font-bold text-sm text-slate-800">-</h3>
-<div class="text-xs text-slate-500 space-y-1"><p id="pAccEmail">-</p><p id="pAccPhone">-</p></div>
-<button onclick="logoutUser();closePlatform()" class="publish-btn red"><i class="fa-solid fa-sign-out-alt"></i> تسجيل الخروج</button>
-</div>
-</section>
-</main>
-<nav class="fixed bottom-0 w-full max-w-[480px] bg-white/95 backdrop-blur-sm border-t border-pink-100 py-1 px-2 flex justify-around items-center z-30 shadow-lg" style="left:50%;transform:translateX(-50%)">
-<button onclick="pSwitch('home')" id="pnav-home" class="flex flex-col items-center text-[9px] font-bold text-pink-500"><i class="fa-solid fa-house text-lg"></i><span>الرئيسية</span></button>
-<button onclick="pSwitch('courses')" id="pnav-courses" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-film text-lg"></i><span>الكورسات</span></button>
-<button onclick="pSwitch('favs')" id="pnav-favs" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-heart text-lg"></i><span>المفضلة</span></button>
-<button onclick="pSwitch('purchases')" id="pnav-purchases" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-bag-shopping text-lg"></i><span>مشترياتي</span></button>
-<button onclick="pSwitch('admin')" id="pnav-admin" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-user-shield text-lg"></i><span>الأدمن</span></button>
-<button onclick="pSwitch('account')" id="pnav-account" class="flex flex-col items-center text-[9px] font-bold text-slate-400"><i class="fa-solid fa-user text-lg"></i><span>حسابي</span></button>
-</nav>
-</div>
-</div>
-<div id="playerModal" class="player-modal">
-<div class="player-top"><span id="playerTitle">-</span><button onclick="closePlayer()" class="w-9 h-9 rounded-full bg-white/20 text-white text-lg">✕</button></div>
-<div class="player-wrap" id="playerWrap"><div id="playerWatermark" class="watermark"></div></div>
-</div>
+
+<footer>© 2026 سنتر سيجما التعليمي</footer>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, set, get, push, update, remove, onValue, query, orderByChild, equalTo, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, push, set, onValue, remove, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
-authDomain: "sigma-6f162.firebaseapp.com",
-databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
-projectId: "sigma-6f162",
-storageBucket: "sigma-6f162.firebasestorage.app",
-messagingSenderId: "420365348074",
-appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+  apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
+  authDomain: "sigma-6f162.firebaseapp.com",
+  databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
+  projectId: "sigma-6f162",
+  storageBucket: "sigma-6f162.firebasestorage.app",
+  messagingSenderId: "420365348074",
+  appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
 };
+
+const ADMIN_EMAIL = "yazeedttv1@gmail.com";
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
-const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2'];
-const ADMIN_PASSWORD = 'Sigma@2024';
-const MAX_FILE_SIZE = 20 * 1024 * 1024;
-const SUBJECTS = ['رياضيات','فيزياء','كيمياء','أحياء','لغة عربية','لغة إنجليزية','لغة فرنسية','تاريخ','جغرافيا','فلسفة','علم نفس','إحصاء'];
+const storage = getStorage(app);
+
 let currentUser = null;
-let currentUserData = null;
 let isAdmin = false;
-let isPlatformAdmin = false;
-let currentScheduleFilter = 'today';
-let currentCourse = null;
-let currentPayMethod = 'vodafone';
-let currentVideoMode = 'file';
-let currentNotifOption = 'full';
-let currentOption = 'full';
-let currentScheduleDay = 'today';
-let activeListeners = [];
-let editingCourseId = null;
-let viewerCurrentImage = null;
-let viewerCurrentName = '';
 
-window.switchTab = switchTab;
-window.toggleDarkMode = toggleDarkMode;
-window.loginUser = loginUser;
-window.registerUser = registerUser;
-window.logoutUser = logoutUser;
-window.openProfile = openProfile;
-window.filterSchedule = filterSchedule;
-window.openImageViewer = openImageViewer;
-window.closeImageViewer = closeImageViewer;
-window.downloadImage = downloadImage;
-window.toggleSection = toggleSection;
-window.toggleStats = toggleStats;
-window.adminLogin = adminLogin;
-window.addTeacher = addTeacher;
-window.addExam = addExam;
-window.addResult = addResult;
-window.addWeeklyFollow = addWeeklyFollow;
-window.setOption = setOption;
-window.setScheduleDay = setScheduleDay;
-window.addSchedule = addSchedule;
-window.setNotifOption = setNotifOption;
-window.sendNotif = sendNotif;
-window.addNews = addNews;
-window.uploadMat = uploadMat;
-window.addContact = addContact;
-window.deleteAll = deleteAll;
-window.saveProfile = saveProfile;
-window.sendComplaint = sendComplaint;
-window.deleteAccount = deleteAccount;
-window.openPlatform = openPlatform;
-window.closePlatform = closePlatform;
-window.pSwitch = pSwitch;
-window.renderCourses = renderCourses;
-window.selectPay = selectPay;
-window.confirmOrder = confirmOrder;
-window.pBackFromCheckout = pBackFromCheckout;
-window.pAdminLogin = pAdminLogin;
-window.saveCourse = saveCourse;
-window.resetCourseForm = resetCourseForm;
-window.setVideoMode = setVideoMode;
-window.savePaySettings = savePaySettings;
-window.openPlayer = openPlayer;
-window.closePlayer = closePlayer;
-window.approvePurchase = approvePurchase;
-window.rejectPurchase = rejectPurchase;
-window.toggleFav = toggleFav;
-window.approveProfileRequest = approveProfileRequest;
-window.rejectProfileRequest = rejectProfileRequest;
-window.deleteCourse = deleteCourse;
-window.editCourse = editCourse;
-window.deleteItem = deleteItem;
-window.buyNow = buyNow;
-
-function toast(msg, type = 'info') {
-const t = document.createElement('div');
-t.className = `toast toast-${type}`;
-t.textContent = msg;
-document.body.appendChild(t);
-setTimeout(() => t.remove(), 3500);
-}
-
-function toggleDarkMode() {
-document.body.classList.toggle('dark-mode');
-const isDark = document.body.classList.contains('dark-mode');
-document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
-const pDark = document.getElementById('pDarkIcon');
-if (pDark) pDark.className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
-localStorage.setItem('darkMode', isDark ? '1' : '0');
-}
-
-function compressImage(file, maxWidth = 1200, quality = 0.7) {
-return new Promise((resolve, reject) => {
-const reader = new FileReader();
-reader.onload = e => {
-const img = new Image();
-img.onload = () => {
-const canvas = document.createElement('canvas');
-let w = img.width, h = img.height;
-if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
-canvas.width = w; canvas.height = h;
-const ctx = canvas.getContext('2d');
-ctx.drawImage(img, 0, 0, w, h);
-resolve(canvas.toDataURL('image/jpeg', quality));
+/* ========== AUTH ========== */
+document.getElementById("googleLogin").onclick = () => {
+  signInWithPopup(auth, new GoogleAuthProvider()).catch(e => alert("خطأ: " + e.message));
 };
-img.onerror = reject;
-img.src = e.target.result;
-};
-reader.onerror = reject;
-reader.readAsDataURL(file);
+document.getElementById("logoutBtn").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  if (user) {
+    isAdmin = user.email === ADMIN_EMAIL;
+    document.getElementById("authSection").classList.add("hidden");
+    document.getElementById("appSection").classList.remove("hidden");
+    document.getElementById("logoutBtn").classList.remove("hidden");
+    document.getElementById("userInfo").textContent = user.displayName || user.email;
+    if (isAdmin) document.getElementById("adminPanel").classList.remove("hidden");
+    else document.getElementById("adminPanel").classList.add("hidden");
+    loadSchedules();
+    loadNews();
+  } else {
+    document.getElementById("authSection").classList.remove("hidden");
+    document.getElementById("appSection").classList.add("hidden");
+    document.getElementById("logoutBtn").classList.add("hidden");
+    document.getElementById("userInfo").textContent = "";
+  }
 });
-}
 
-function fileToBase64(file) {
-return new Promise((resolve, reject) => {
-const reader = new FileReader();
-reader.onload = e => resolve(e.target.result);
-reader.onerror = reject;
-reader.readAsDataURL(file);
+/* ========== TABS (Admin) ========== */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const tab = btn.dataset.tab;
+    document.getElementById("tab-sched").classList.toggle("hidden", tab !== "sched");
+    document.getElementById("tab-news").classList.toggle("hidden", tab !== "news");
+  };
 });
-}
 
-function switchTab(tab) {
-document.querySelectorAll('#mainContent > section').forEach(s => s.classList.add('hidden'));
-const el = document.getElementById('tab-' + tab);
-if (el) { el.classList.remove('hidden'); el.classList.add('slide-up'); }
-document.querySelectorAll('#mainNav button').forEach(b => b.classList.remove('text-blue-600'));
-const nav = document.getElementById('nav-' + tab);
-if (nav) nav.classList.add('text-blue-600');
-if (tab === 'home') loadHome();
-if (tab === 'schedule') renderSchedule();
-if (tab === 'library') loadLibrary();
-if (tab === 'news') loadAllNews();
-if (tab === 'notifications') loadNotifications();
-if (tab === 'exams') loadExams();
-if (tab === 'results') loadResults();
-if (tab === 'teachers') loadTeachers();
-if (tab === 'settings') loadSettings();
-if (tab === 'admin') checkAdminAccess();
-}
-
-function requireLogin() {
-if (!currentUser) { switchTab('login'); toast('يجب تسجيل الدخول أولاً', 'warning'); return false; }
-return true;
-}
-
-async function loginUser() {
-const email = document.getElementById('loginEmail').value.trim();
-const pass = document.getElementById('loginPassword').value;
-if (!email || !pass) { toast('أدخل البريد وكلمة المرور', 'error'); return; }
-try {
-await signInWithEmailAndPassword(auth, email, pass);
-toast('تم تسجيل الدخول بنجاح', 'success');
-} catch (e) { toast('فشل تسجيل الدخول: ' + e.message, 'error'); }
-}
-
-async function registerUser() {
-const name = document.getElementById('regName').value.trim();
-const email = document.getElementById('regEmail').value.trim();
-const phone = document.getElementById('regPhone').value.trim();
-const pass = document.getElementById('regPassword').value;
-const idFile = document.getElementById('regIdImage').files[0];
-if (!name || !email || !phone || !pass) { toast('أكمل جميع البيانات', 'error'); return; }
-if (pass.length < 6) { toast('كلمة المرور 6 أحرف على الأقل', 'error'); return; }
-if (!idFile) { toast('ارفع صورة البطاقة', 'error'); return; }
-if (idFile.size > MAX_FILE_SIZE) { toast('حجم الصورة كبير جداً', 'error'); return; }
-try {
-const idImage = await compressImage(idFile);
-const cred = await createUserWithEmailAndPassword(auth, email, pass);
-await set(ref(db, 'users/' + cred.user.uid), {
-name, email, phone, idImage, stage: '', grade: '', subjects: [], school: '', parentPhone: '', profileStatus: 'pending', online: true, lastSeen: Date.now(), createdAt: Date.now()
+/* ========== TABS (Views) ========== */
+document.querySelectorAll("[data-view]").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("[data-view]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const v = btn.dataset.view;
+    document.getElementById("view-schedules").classList.toggle("hidden", v !== "schedules");
+    document.getElementById("view-news").classList.toggle("hidden", v !== "news");
+  };
 });
-toast('تم إنشاء الحساب بنجاح', 'success');
-} catch (e) { toast('فشل التسجيل: ' + e.message, 'error'); }
-}
 
-async function logoutUser() {
-if (currentUser) {
-try { await update(ref(db, 'users/' + currentUser.uid), { online: false, lastSeen: Date.now() }); } catch (e) {}
-}
-await signOut(auth);
-toast('تم تسجيل الخروج', 'info');
-}
-
-function openProfile() { switchTab('settings'); }
-
-async function loadHome() {
-if (!currentUser || !currentUserData) return;
-const d = currentUserData;
-document.getElementById('userAvatar').src = d.idImage || '';
-document.getElementById('userAvatar').style.display = d.idImage ? 'block' : 'none';
-document.getElementById('userName').textContent = d.name || 'مستخدم';
-const stageMap = { 'ثانوي': 'ثانوي', 'إعدادي': 'إعدادي' };
-const gradeMap = { '1': 'الأول', '2': 'الثاني', '3': 'الثالث' };
-document.getElementById('userSubtitle').textContent = `${stageMap[d.stage] || 'لم تحدد المرحلة'} - الصف ${gradeMap[d.grade] || '؟'}`;
-const subsEl = document.getElementById('userSubjects');
-subsEl.innerHTML = (d.subjects || []).map(s => `<span class="subject-chip">${s}</span>`).join('');
-if (isAdmin) document.getElementById('nav-admin').classList.remove('hidden'); else document.getElementById('nav-admin').classList.add('hidden');
-loadScheduleToday();
-loadHomeNews();
-loadStatsCounts();
-}
-
-async function loadStatsCounts() {
-if (!currentUser) return;
-const todayName = getArabicDayName(new Date());
-const schSnap = await get(ref(db, 'schedules'));
-let todayCount = 0;
-if (schSnap.exists()) {
-const uStage = currentUserData?.stage || '';
-const uSubjects = currentUserData?.subjects || [];
-schSnap.forEach(c => {
-const s = c.val();
-if (s.day === todayName && s.stage === uStage && (!s.subject || uSubjects.includes(s.subject) || uSubjects.length === 0)) todayCount++;
+/* ========== Day Filter ========== */
+let currentDayFilter = "today";
+document.querySelectorAll(".day-filter").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".day-filter").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentDayFilter = btn.dataset.day;
+    renderSchedules();
+  };
 });
-}
-document.getElementById('todayCount').textContent = todayCount;
-const matSnap = await get(ref(db, 'materials'));
-let matCount = 0;
-if (matSnap.exists()) {
-const uSubjects = currentUserData?.subjects || [];
-matSnap.forEach(c => { const m = c.val(); if (!m.subject || uSubjects.includes(m.subject)) matCount++; });
-}
-document.getElementById('materialCount').textContent = matCount;
-const notifSnap = await get(ref(db, 'notifications'));
-let notifCount = 0;
-if (notifSnap.exists()) {
-const uStage = currentUserData?.stage || '';
-const uGrade = currentUserData?.grade || '';
-notifSnap.forEach(c => {
-const n = c.val();
-if ((n.stage === 'الكل' || n.stage === uStage) && (n.grade === 'الكل' || n.grade === uGrade)) notifCount++;
-});
-}
-document.getElementById('notifCount').textContent = notifCount;
-document.getElementById('notifBadge').classList.toggle('hidden', notifCount === 0);
-}
 
-function getArabicDayName(date) {
-const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-return days[date.getDay()];
-}
-
-async function loadScheduleToday() {
-if (!currentUser || !currentUserData) return;
-const todayName = getArabicDayName(new Date());
-const snap = await get(ref(db, 'schedules'));
-const container = document.getElementById('myScheduleToday');
-let items = [];
-if (snap.exists()) {
-const uStage = currentUserData.stage || '';
-const uSubjects = currentUserData.subjects || [];
-snap.forEach(c => {
-const s = c.val();
-if (s.day === todayName && s.stage === uStage && (uSubjects.length === 0 || !s.subject || uSubjects.includes(s.subject))) {
-items.push({ id: c.key, ...s });
-}
-});
-}
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد حصص اليوم</div>'; return; }
-container.innerHTML = items.map(s => `
-<div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
-<div><div class="text-xs font-bold text-slate-800">${s.subject || ''}</div><div class="text-[10px] text-slate-500">${s.teacher || ''} - ${s.room || ''}</div></div>
-<div class="text-[10px] font-bold text-amber-600">${s.time || ''}</div>
-</div>`).join('');
-}
-
-async function loadHomeNews() {
-const snap = await get(ref(db, 'news'));
-const container = document.getElementById('homeNewsContainer');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-items = items.slice(0, 3);
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد أخبار</div>'; return; }
-container.innerHTML = items.map(n => `
-<div class="flex gap-2 items-start">
-${n.imageData ? `<img src="${n.imageData}" class="w-14 h-14 rounded-xl object-cover cursor-pointer" onclick="openImageViewer('${n.imageData}','${(n.title||'').replace(/'/g,'')}')">` : `<div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white"><i class="fa-solid fa-newspaper"></i></div>`}
-<div class="flex-1 min-w-0">
-<div class="text-xs font-bold text-slate-800 truncate">${n.title || ''}</div>
-<div class="text-[10px] text-slate-500 line-clamp-2">${n.content || ''}</div>
-</div>
-</div>`).join('');
-}
-
-async function renderSchedule() {
-if (!currentUser || !currentUserData) return;
-const snap = await get(ref(db, 'schedules'));
-const container = document.getElementById('scheduleContainer');
-let items = [];
-const todayName = getArabicDayName(new Date());
-const tomorrowName = getArabicDayName(new Date(Date.now() + 86400000));
-if (snap.exists()) {
-const uStage = currentUserData.stage || '';
-const uSubjects = currentUserData.subjects || [];
-snap.forEach(c => {
-const s = c.val();
-if (s.stage && s.stage !== uStage) return;
-if (uSubjects.length > 0 && s.subject && !uSubjects.includes(s.subject)) return;
-if (currentScheduleFilter === 'today' && s.day !== todayName) return;
-if (currentScheduleFilter === 'tomorrow' && s.day !== tomorrowName) return;
-items.push({ id: c.key, ...s });
-});
-}
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد حصص</div>'; return; }
-container.innerHTML = items.map(s => `
-<div class="schedule-item">
-<div class="flex items-center justify-between">
-<div class="subject text-slate-800">${s.subject || ''}</div>
-<div class="time">${s.time || ''}</div>
-</div>
-<div class="teacher">${s.teacher || ''} ${s.room ? '- قاعة ' + s.room : ''} - ${s.day || ''} - ${s.stage || ''}</div>
-${s.imageData ? `<img src="${s.imageData}" class="mt-2 w-full h-24 object-cover rounded-xl cursor-pointer" onclick="openImageViewer('${s.imageData}','${(s.subject||'').replace(/'/g,'')}')">` : ''}
-</div>`).join('');
-}
-
-function filterSchedule(f) {
-currentScheduleFilter = f;
-['btnToday','btnTomorrow','btnAll'].forEach(id => document.getElementById(id).className = 'flex-1 py-1.5 rounded-lg');
-const map = { today: 'btnToday', tomorrow: 'btnTomorrow', all: 'btnAll' };
-document.getElementById(map[f]).className = 'flex-1 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm';
-renderSchedule();
-}
-
-async function loadLibrary() {
-if (!currentUser || !currentUserData) return;
-const snap = await get(ref(db, 'materials'));
-const container = document.getElementById('libraryContainer');
-let items = [];
-if (snap.exists()) {
-const uSubjects = currentUserData.subjects || [];
-snap.forEach(c => {
-const m = c.val();
-if (uSubjects.length > 0 && m.subject && !uSubjects.includes(m.subject)) return;
-items.push({ id: c.key, ...m });
-});
-}
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد ملفات</div>'; return; }
-container.innerHTML = items.map(m => `
-<div class="bg-white rounded-2xl p-3 border border-slate-100 flex items-center gap-3">
-<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white"><i class="fa-solid ${m.type === 'pdf' ? 'fa-file-pdf' : 'fa-image'}"></i></div>
-<div class="flex-1 min-w-0">
-<div class="text-xs font-bold text-slate-800 truncate">${m.title || ''}</div>
-<div class="text-[10px] text-slate-500">${m.subject || ''} - ${m.type ? m.type.toUpperCase() : ''}</div>
-</div>
-<button onclick="${m.type === 'image' ? `openImageViewer('${m.fileData}','${(m.title||'').replace(/'/g,'')}')` : `downloadData('${m.fileData}','${(m.fileName||m.title||'file')}')`}" class="bg-purple-100 text-purple-600 text-[10px] font-bold px-3 py-1.5 rounded-xl">${m.type === 'image' ? 'عرض' : 'تحميل'}</button>
-</div>`).join('');
-}
-
-window.downloadData = function(data, name) {
-const a = document.createElement('a');
-a.href = data;
-a.download = name || 'file';
-a.click();
+/* ========== FILE PREVIEW ========== */
+document.getElementById("schedFile").onchange = (e) => {
+  const f = e.target.files[0];
+  const prev = document.getElementById("schedFilePreview");
+  prev.innerHTML = "";
+  if (!f) return;
+  if (f.type.startsWith("image/")) {
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(f);
+    img.className = "file-preview";
+    prev.appendChild(img);
+  } else {
+    prev.innerHTML = `<div class="alert alert-info py-2 mt-2">📄 ${f.name}</div>`;
+  }
 };
 
-async function loadAllNews() {
-const snap = await get(ref(db, 'news'));
-const container = document.getElementById('allNewsContainer');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد أخبار</div>'; return; }
-container.innerHTML = items.map(n => `
-<div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
-${n.imageData ? `<img src="${n.imageData}" class="w-full h-40 object-cover cursor-pointer" onclick="openImageViewer('${n.imageData}','${(n.title||'').replace(/'/g,'')}')">` : ''}
-<div class="p-3">
-<div class="text-sm font-bold text-slate-800">${n.title || ''}</div>
-<div class="text-xs text-slate-600 mt-1">${n.content || ''}</div>
-<div class="text-[9px] text-slate-400 mt-2">${n.date ? new Date(n.date).toLocaleString('ar-EG') : ''}</div>
-</div>
-</div>`).join('');
+/* ========== UPLOAD HELPER ========== */
+async function uploadFile(file, folder) {
+  if (!file) return null;
+  const path = `${folder}/${Date.now()}_${file.name}`;
+  const r = sRef(storage, path);
+  await uploadBytes(r, file);
+  const url = await getDownloadURL(r);
+  return { url, path, type: file.type, name: file.name };
 }
 
-async function loadNotifications() {
-if (!currentUser || !currentUserData) return;
-const snap = await get(ref(db, 'notifications'));
-const container = document.getElementById('notificationsContainer');
-let items = [];
-if (snap.exists()) {
-const uStage = currentUserData.stage || '';
-const uGrade = currentUserData.grade || '';
-const uSubjects = currentUserData.subjects || [];
-snap.forEach(c => {
-const n = c.val();
-if (n.stage && n.stage !== 'الكل' && n.stage !== uStage) return;
-if (n.grade && n.grade !== 'الكل' && n.grade !== uGrade) return;
-if (n.subject && uSubjects.length > 0 && !uSubjects.includes(n.subject)) return;
-items.push({ id: c.key, ...n });
-});
-}
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-6 text-slate-400 text-xs"><i class="fa-regular fa-bell-slash text-2xl block mb-1"></i> لا توجد إشعارات</div>'; return; }
-container.innerHTML = items.map(n => `
-<div class="bg-white rounded-2xl p-3 border border-amber-100 shadow-sm">
-${n.imageData ? `<img src="${n.imageData}" class="w-full h-32 object-cover rounded-xl mb-2 cursor-pointer" onclick="openImageViewer('${n.imageData}','${(n.title||'').replace(/'/g,'')}')">` : ''}
-<div class="text-sm font-bold text-slate-800">${n.title || ''}</div>
-${n.body ? `<div class="text-xs text-slate-600 mt-1">${n.body}</div>` : ''}
-<div class="text-[9px] text-slate-400 mt-2">${n.date ? new Date(n.date).toLocaleString('ar-EG') : ''}</div>
-</div>`).join('');
-}
+/* ========== SCHEDULES ========== */
+document.getElementById("addSched").onclick = async () => {
+  const day = document.getElementById("schedDay").value;
+  const title = document.getElementById("schedTitle").value.trim();
+  const time = document.getElementById("schedTime").value.trim();
+  const note = document.getElementById("schedNote").value.trim();
+  const file = document.getElementById("schedFile").files[0];
+  if (!title) return alert("اكتب عنوان الدرس");
 
-async function loadExams() {
-const snap = await get(ref(db, 'exams'));
-const container = document.getElementById('examsContainer');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-items.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد امتحانات</div>'; return; }
-container.innerHTML = items.map(e => `
-<div class="exam-card">
-<div class="exam-title">${e.title || ''}</div>
-<div class="exam-info">${e.subject || ''} - ${e.date || ''}</div>
-</div>`).join('');
-}
-
-async function loadResults() {
-if (!currentUser) return;
-const snap = await get(ref(db, 'results'));
-const container = document.getElementById('resultsContainer');
-let items = [];
-if (snap.exists()) snap.forEach(c => {
-const r = c.val();
-if (r.userId === currentUser.uid) items.push({ id: c.key, ...r });
-});
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد نتائج</div>'; }
-else container.innerHTML = items.map(r => `
-<div class="result-card">
-<div class="flex items-center justify-between">
-<div class="result-subject">${r.subject || ''}</div>
-<div class="result-score">${r.score || 0}</div>
-</div>
-<div class="text-[10px] text-slate-500">${r.date ? new Date(r.date).toLocaleDateString('ar-EG') : ''}</div>
-</div>`).join('');
-const wSnap = await get(ref(db, 'weekly_follow'));
-const wContainer = document.getElementById('weeklyContainer');
-let wItems = [];
-if (wSnap.exists()) wSnap.forEach(c => {
-const w = c.val();
-if (w.userId === currentUser.uid) wItems.push({ id: c.key, ...w });
-});
-wItems.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (wItems.length === 0) { wContainer.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد متابعات</div>'; }
-else wContainer.innerHTML = wItems.map(w => `
-<div class="bg-white rounded-xl p-3 border border-cyan-100">
-<div class="text-xs font-bold text-slate-800">${w.subject || ''}</div>
-<div class="text-[11px] text-slate-600 mt-1">${w.note || ''}</div>
-<div class="text-[9px] text-slate-400 mt-1">${w.date ? new Date(w.date).toLocaleDateString('ar-EG') : ''}</div>
-</div>`).join('');
-}
-
-async function loadTeachers() {
-const snap = await get(ref(db, 'teachers'));
-const container = document.getElementById('teachersContainer');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا يوجد مدرسين</div>'; return; }
-container.innerHTML = items.map(t => `
-<div class="bg-white rounded-xl p-3 border border-indigo-100 flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold"><i class="fa-solid fa-user-tie"></i></div>
-<div><div class="text-xs font-bold text-slate-800">${t.name || ''}</div><div class="text-[10px] text-slate-500">${t.subject || ''}</div></div>
-</div>`).join('');
-}
-
-async function loadSettings() {
-if (!currentUser || !currentUserData) return;
-const d = currentUserData;
-document.getElementById('infoName').textContent = d.name || '-';
-document.getElementById('infoEmail').textContent = d.email || '-';
-document.getElementById('infoPhone').textContent = d.phone || '-';
-document.getElementById('infoParentPhone').textContent = d.parentPhone || '-';
-document.getElementById('infoSchool').textContent = d.school || '-';
-document.getElementById('infoStage').textContent = d.stage || '-';
-document.getElementById('infoGrade').textContent = d.grade || '-';
-document.getElementById('infoSubjects').textContent = (d.subjects || []).join(', ') || '-';
-const statusMap = { pending: 'قيد المراجعة', approved: 'مقبول', rejected: 'مرفوض' };
-const statusEl = document.getElementById('infoStatus');
-statusEl.textContent = statusMap[d.profileStatus] || 'قيد المراجعة';
-statusEl.className = 'font-bold ' + (d.profileStatus === 'approved' ? 'text-green-600' : d.profileStatus === 'rejected' ? 'text-red-600' : 'text-amber-600');
-document.getElementById('profSchool').value = d.school || '';
-document.getElementById('profParentPhone').value = d.parentPhone || '';
-document.getElementById('profStage').value = d.stage || 'ثانوي';
-document.getElementById('profGrade').value = d.grade || '1';
-document.getElementById('profPhone').value = d.phone || '';
-const cbContainer = document.getElementById('subjectsCheckbox');
-cbContainer.innerHTML = SUBJECTS.map(s => `
-<label class="flex items-center gap-1 text-[10px] text-slate-700 bg-slate-50 p-1.5 rounded-lg cursor-pointer">
-<input type="checkbox" value="${s}" ${(d.subjects||[]).includes(s) ? 'checked' : ''} class="subject-check">
-<span>${s}</span>
-</label>`).join('');
-loadContacts();
-}
-
-async function loadContacts() {
-const snap = await get(ref(db, 'contacts'));
-const centerEl = document.getElementById('centerContacts');
-const supportEl = document.getElementById('supportContacts');
-let center = [], support = [];
-if (snap.exists()) snap.forEach(c => {
-const v = c.val();
-if (v.type === 'support') support.push(v);
-else center.push(v);
-});
-const renderC = (arr, el) => {
-if (arr.length === 0) { el.innerHTML = '<div class="text-[10px] text-slate-400">لا توجد أرقام</div>'; return; }
-el.innerHTML = arr.map(c => `
-<div class="flex items-center justify-between bg-slate-50 rounded-xl p-2">
-<div class="flex items-center gap-2 text-xs font-bold text-slate-700">
-<i class="fa-solid ${c.type === 'whatsapp' ? 'fa-whatsapp text-green-500' : c.type === 'support' ? 'fa-headset text-cyan-500' : 'fa-phone text-blue-500'}"></i>
-<span>${c.number}</span>
-</div>
-<a href="${c.type === 'whatsapp' ? 'https://wa.me/' + c.number.replace(/\D/g,'') : 'tel:' + c.number}" class="text-[10px] bg-blue-600 text-white px-3 py-1 rounded-lg font-bold">${c.type === 'whatsapp' ? 'واتساب' : 'اتصال'}</a>
-</div>`).join('');
+  try {
+    const fileData = await uploadFile(file, "schedules");
+    await set(push(ref(db, "schedules")), {
+      day, title, time, note,
+      file: fileData,
+      createdBy: currentUser.email,
+      createdAt: serverTimestamp()
+    });
+    document.getElementById("schedTitle").value = "";
+    document.getElementById("schedTime").value = "";
+    document.getElementById("schedNote").value = "";
+    document.getElementById("schedFile").value = "";
+    document.getElementById("schedFilePreview").innerHTML = "";
+    alert("✅ تمت الإضافة");
+  } catch (e) { alert("خطأ: " + e.message); }
 };
-renderC(center, centerEl);
-renderC(support, supportEl);
+
+let schedulesCache = [];
+function loadSchedules() {
+  onValue(ref(db, "schedules"), (snap) => {
+    schedulesCache = [];
+    snap.forEach(c => schedulesCache.push({ id: c.key, ...c.val() }));
+    schedulesCache.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    renderSchedules();
+  });
 }
 
-async function saveProfile() {
-if (!currentUser) return;
-const school = document.getElementById('profSchool').value.trim();
-const parentPhone = document.getElementById('profParentPhone').value.trim();
-const stage = document.getElementById('profStage').value;
-const grade = document.getElementById('profGrade').value;
-const phone = document.getElementById('profPhone').value.trim();
-const subjects = Array.from(document.querySelectorAll('.subject-check:checked')).map(c => c.value);
-try {
-await update(ref(db, 'users/' + currentUser.uid), { school, parentPhone, stage, grade, phone, subjects, profileStatus: 'pending' });
-await push(ref(db, 'profile_requests'), {
-userId: currentUser.uid, userName: currentUserData.name, userEmail: currentUserData.email,
-school, parentPhone, stage, grade, phone, subjects, idImage: currentUserData.idImage || '', status: 'pending', date: Date.now()
-});
-toast('تم حفظ البيانات وإرسالها للمراجعة', 'success');
-} catch (e) { toast('فشل الحفظ: ' + e.message, 'error'); }
+function renderSchedules() {
+  const list = document.getElementById("schedulesList");
+  const filtered = schedulesCache.filter(s => s.day === currentDayFilter);
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="alert alert-light text-center">لا توجد مواعيد</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(s => `
+    <div class="schedule-item">
+      <div class="d-flex justify-content-between">
+        <h6 class="mb-1">${escapeHtml(s.title)}</h6>
+        ${isAdmin ? `<button class="btn btn-sm btn-outline-danger" onclick="delSched('${s.id}')">🗑️</button>` : ""}
+      </div>
+      ${s.time ? `<div class="text-muted small">🕐 ${escapeHtml(s.time)}</div>` : ""}
+      ${s.note ? `<div class="small mt-1">${escapeHtml(s.note)}</div>` : ""}
+      ${renderFile(s.file)}
+    </div>
+  `).join("");
 }
 
-async function sendComplaint() {
-if (!currentUser || !currentUserData) return;
-const text = document.getElementById('complaintText').value.trim();
-if (!text) { toast('اكتب شكواك أولاً', 'error'); return; }
-try {
-await push(ref(db, 'complaints'), {
-text, userId: currentUser.uid, userName: currentUserData.name,
-userEmail: currentUserData.email, userPhone: currentUserData.phone, date: Date.now()
-});
-document.getElementById('complaintText').value = '';
-toast('تم إرسال الشكوى', 'success');
-} catch (e) { toast('فشل الإرسال', 'error'); }
-}
-
-async function deleteAccount() {
-if (!currentUser) return;
-if (!confirm('هل أنت متأكد من حذف الحساب نهائياً؟')) return;
-try {
-await remove(ref(db, 'users/' + currentUser.uid));
-await deleteUser(currentUser);
-toast('تم حذف الحساب', 'success');
-switchTab('login');
-} catch (e) { toast('فشل الحذف: ' + e.message, 'error'); }
-}
-
-function openImageViewer(src, name) {
-viewerCurrentImage = src; viewerCurrentName = name || 'image';
-document.getElementById('viewerImage').src = src;
-document.getElementById('imageInfo').textContent = name || '';
-document.getElementById('imageViewer').classList.add('show');
-}
-function closeImageViewer() { document.getElementById('imageViewer').classList.remove('show'); }
-function downloadImage() {
-if (!viewerCurrentImage) return;
-const a = document.createElement('a');
-a.href = viewerCurrentImage;
-a.download = viewerCurrentName + '.jpg';
-a.click();
-}
-
-function toggleSection(header) {
-const content = header.nextElementSibling;
-content.classList.toggle('open');
-const icon = header.querySelector('i:last-child');
-if (icon) icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : '';
-}
-
-async function checkAdminAccess() {
-if (!isAdmin) {
-document.getElementById('adminLogin').classList.remove('hidden');
-document.getElementById('adminPanel').classList.add('hidden');
-document.getElementById('adminDenied').classList.add('hidden');
-} else {
-document.getElementById('adminLogin').classList.add('hidden');
-document.getElementById('adminPanel').classList.remove('hidden');
-document.getElementById('adminDenied').classList.add('hidden');
-loadAdminData();
-}
-}
-
-async function adminLogin() {
-const pass = document.getElementById('adminPass').value;
-if (pass !== ADMIN_PASSWORD) { toast('كلمة السر غير صحيحة', 'error'); return; }
-isAdmin = true;
-toast('مرحباً بك في لوحة الإدارة', 'success');
-checkAdminAccess();
-loadAdminData();
-}
-
-async function loadAdminData() {
-loadAdminStats();
-loadProfileRequests();
-loadAdminTeachers();
-loadAdminExams();
-loadAdminResults();
-loadAdminWeekly();
-loadAdminSchedules();
-loadAdminNotifications();
-loadAdminNews();
-loadAdminMaterials();
-loadAdminContacts();
-loadAdminComplaints();
-loadStudentSelects();
-}
-
-function toggleStats() {
-const c = document.getElementById('statsContent');
-c.classList.toggle('open');
-document.getElementById('statsArrow').style.transform = c.classList.contains('open') ? 'rotate(180deg)' : '';
-}
-
-async function loadAdminStats() {
-const [usersS, schS, matS, tS, eS, rS, nS] = await Promise.all([
-get(ref(db, 'users')), get(ref(db, 'schedules')), get(ref(db, 'materials')),
-get(ref(db, 'teachers')), get(ref(db, 'exams')), get(ref(db, 'results')), get(ref(db, 'notifications'))
-]);
-let totalUsers = 0, active = 0;
-if (usersS.exists()) usersS.forEach(c => { totalUsers++; if (c.val().online) active++; });
-document.getElementById('statUsers').textContent = totalUsers;
-document.getElementById('statActive').textContent = active;
-document.getElementById('statSchedules').textContent = schS.exists() ? Object.keys(schS.val()).length : 0;
-document.getElementById('statMaterials').textContent = matS.exists() ? Object.keys(matS.val()).length : 0;
-document.getElementById('statTeachers').textContent = tS.exists() ? Object.keys(tS.val()).length : 0;
-document.getElementById('statExams').textContent = eS.exists() ? Object.keys(eS.val()).length : 0;
-document.getElementById('statResults').textContent = rS.exists() ? Object.keys(rS.val()).length : 0;
-document.getElementById('statNotifs').textContent = nS.exists() ? Object.keys(nS.val()).length : 0;
-}
-
-async function loadProfileRequests() {
-const snap = await get(ref(db, 'profile_requests'));
-const container = document.getElementById('profileRequestsList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد طلبات</div>'; return; }
-container.innerHTML = items.map(r => `
-<div class="complaint-card">
-<div class="name">${r.userName || ''}</div>
-<div class="phone">${r.userEmail || ''} - ${r.phone || ''}</div>
-<div class="text">مدرسة: ${r.school || ''} - ولي أمر: ${r.parentPhone || ''}</div>
-<div class="text">المرحلة: ${r.stage || ''} - الصف: ${r.grade || ''}</div>
-<div class="text">المواد: ${(r.subjects || []).join(', ')}</div>
-${r.idImage ? `<img src="${r.idImage}" class="mt-2 w-20 h-20 object-cover rounded-lg cursor-pointer" onclick="openImageViewer('${r.idImage}','${(r.userName||'').replace(/'/g,'')}')">` : ''}
-<div class="flex gap-1 mt-2">
-<button onclick="approveProfileRequest('${r.id}','${r.userId}')" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-1.5 rounded-lg">✅ موافقة</button>
-<button onclick="rejectProfileRequest('${r.id}','${r.userId}')" class="flex-1 bg-red-600 text-white text-[10px] font-bold py-1.5 rounded-lg">❌ رفض</button>
-</div>
-<div class="date">${r.date ? new Date(r.date).toLocaleString('ar-EG') : ''}</div>
-</div>`).join('');
-}
-
-async function approveProfileRequest(reqId, userId) {
-await update(ref(db, 'users/' + userId), { profileStatus: 'approved' });
-await update(ref(db, 'profile_requests/' + reqId), { status: 'approved' });
-toast('تمت الموافقة', 'success');
-loadProfileRequests();
-}
-async function rejectProfileRequest(reqId, userId) {
-await update(ref(db, 'users/' + userId), { profileStatus: 'rejected' });
-await update(ref(db, 'profile_requests/' + reqId), { status: 'rejected' });
-toast('تم الرفض', 'info');
-loadProfileRequests();
-}
-
-async function addTeacher() {
-const name = document.getElementById('teacherName').value.trim();
-const subject = document.getElementById('teacherSubject').value.trim();
-if (!name || !subject) { toast('أدخل اسم المدرس والمادة', 'error'); return; }
-await push(ref(db, 'teachers'), { name, subject });
-document.getElementById('teacherName').value = '';
-document.getElementById('teacherSubject').value = '';
-toast('تم إضافة المدرس', 'success');
-loadAdminTeachers();
-loadTeachers();
-}
-async function loadAdminTeachers() {
-const snap = await get(ref(db, 'teachers'));
-const container = document.getElementById('teachersList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(t => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700">${t.name} - ${t.subject}</div>
-<button onclick="deleteItem('teachers','${t.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-async function addExam() {
-const title = document.getElementById('examTitle').value.trim();
-const subject = document.getElementById('examSubject').value.trim();
-const date = document.getElementById('examDate').value;
-if (!title || !subject || !date) { toast('أكمل بيانات الامتحان', 'error'); return; }
-await push(ref(db, 'exams'), { title, subject, date });
-document.getElementById('examTitle').value = '';
-document.getElementById('examSubject').value = '';
-document.getElementById('examDate').value = '';
-toast('تم إضافة الامتحان', 'success');
-loadAdminExams();
-loadExams();
-}
-async function loadAdminExams() {
-const snap = await get(ref(db, 'exams'));
-const container = document.getElementById('examsList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(e => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700">${e.title} - ${e.subject} - ${e.date}</div>
-<button onclick="deleteItem('exams','${e.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-async function addResult() {
-const userId = document.getElementById('resultStudent').value;
-const subject = document.getElementById('resultSubject').value.trim();
-const score = document.getElementById('resultScore').value;
-if (!userId || !subject || !score) { toast('أكمل بيانات النتيجة', 'error'); return; }
-await push(ref(db, 'results'), { userId, subject, score: Number(score), date: Date.now() });
-document.getElementById('resultSubject').value = '';
-document.getElementById('resultScore').value = '';
-toast('تم إضافة النتيجة', 'success');
-loadAdminResults();
-}
-async function loadAdminResults() {
-const snap = await get(ref(db, 'results'));
-const container = document.getElementById('resultsList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(r => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700">${r.subject} - ${r.score}</div>
-<button onclick="deleteItem('results','${r.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-async function addWeeklyFollow() {
-const userId = document.getElementById('weeklyStudent').value;
-const subject = document.getElementById('weeklySubject').value.trim();
-const note = document.getElementById('weeklyNote').value.trim();
-if (!userId || !subject || !note) { toast('أكمل بيانات المتابعة', 'error'); return; }
-await push(ref(db, 'weekly_follow'), { userId, subject, note, date: Date.now() });
-document.getElementById('weeklySubject').value = '';
-document.getElementById('weeklyNote').value = '';
-toast('تم إضافة المتابعة', 'success');
-loadAdminWeekly();
-}
-async function loadAdminWeekly() {
-const snap = await get(ref(db, 'weekly_follow'));
-const container = document.getElementById('weeklyList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(w => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700">${w.subject} - ${w.note}</div>
-<button onclick="deleteItem('weekly_follow','${w.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-function setOption(opt) {
-currentOption = opt;
-['optFull','optText','optImage'].forEach(id => document.getElementById(id).classList.remove('active'));
-document.getElementById(opt === 'full' ? 'optFull' : opt === 'text' ? 'optText' : 'optImage').classList.add('active');
-document.getElementById('scheduleImageField').style.display = opt === 'image' ? 'block' : 'none';
-document.getElementById('scheduleFields').style.display = opt === 'image' ? 'none' : 'block';
-}
-
-function setScheduleDay(day) {
-currentScheduleDay = day;
-['dayToday','dayTomorrow','dayWeek'].forEach(id => document.getElementById(id).classList.remove('active'));
-document.getElementById('day' + day.charAt(0).toUpperCase() + day.slice(1)).classList.add('active');
-}
-
-async function addSchedule() {
-if (currentOption === 'image') {
-const file = document.getElementById('schImage').files[0];
-if (!file) { toast('اختر صورة', 'error'); return; }
-if (file.size > MAX_FILE_SIZE) { toast('حجم الصورة كبير', 'error'); return; }
-const imageData = await compressImage(file);
-const dayMap = { today: getArabicDayName(new Date()), tomorrow: getArabicDayName(new Date(Date.now()+86400000)), week: 'الأسبوع' };
-await push(ref(db, 'schedules'), { day: dayMap[currentScheduleDay], imageData, type: 'image', date: Date.now() });
-} else {
-const day = document.getElementById('schDay').value;
-const subject = document.getElementById('schSubject').value.trim();
-const teacher = document.getElementById('schTeacher').value.trim();
-const time = document.getElementById('schTime').value;
-const room = document.getElementById('schRoom').value.trim();
-const stage = document.getElementById('schStage').value;
-if (!subject) { toast('أدخل المادة', 'error'); return; }
-await push(ref(db, 'schedules'), { day, subject, teacher, time, room, stage, date: Date.now() });
-}
-toast('تم إضافة الحصة', 'success');
-loadAdminSchedules();
-}
-async function loadAdminSchedules() {
-const snap = await get(ref(db, 'schedules'));
-const container = document.getElementById('scheduleList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(s => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700">${s.subject || 'صورة'} - ${s.day || ''} - ${s.time || ''}</div>
-<button onclick="deleteItem('schedules','${s.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-function setNotifOption(opt) {
-currentNotifOption = opt;
-['notifOptFull','notifOptText','notifOptImage'].forEach(id => document.getElementById(id).classList.remove('active'));
-document.getElementById(opt === 'full' ? 'notifOptFull' : opt === 'text' ? 'notifOptText' : 'notifOptImage').classList.add('active');
-document.getElementById('notifTextField').style.display = opt === 'image' ? 'none' : 'block';
-document.getElementById('notifImageField').style.display = (opt === 'image' || opt === 'full') ? 'block' : 'none';
-}
-
-async function sendNotif() {
-const title = document.getElementById('notifTitle').value.trim();
-const body = document.getElementById('notifBody').value.trim();
-const stage = document.getElementById('notifStage').value;
-const grade = document.getElementById('notifGrade').value;
-const subject = document.getElementById('notifSubject').value.trim();
-if (!title) { toast('أدخل عنوان الإشعار', 'error'); return; }
-let imageData = '';
-if ((currentNotifOption === 'image' || currentNotifOption === 'full')) {
-const file = document.getElementById('notifImage').files[0];
-if (file) imageData = await compressImage(file);
-}
-await push(ref(db, 'notifications'), { title, body: currentNotifOption === 'image' ? '' : body, imageData, stage, grade, subject, date: Date.now() });
-document.getElementById('notifTitle').value = '';
-document.getElementById('notifBody').value = '';
-document.getElementById('notifSubject').value = '';
-toast('تم إرسال الإشعار', 'success');
-loadAdminNotifications();
-}
-async function loadAdminNotifications() {
-const snap = await get(ref(db, 'notifications'));
-const container = document.getElementById('notifList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(n => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700 truncate">${n.title}</div>
-<button onclick="deleteItem('notifications','${n.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-async function addNews() {
-const title = document.getElementById('newsTitle').value.trim();
-const content = document.getElementById('newsContent').value.trim();
-const file = document.getElementById('newsImage').files[0];
-if (!title) { toast('أدخل عنوان الخبر', 'error'); return; }
-let imageData = '';
-if (file) { if (file.size > MAX_FILE_SIZE) { toast('حجم الصورة كبير', 'error'); return; } imageData = await compressImage(file); }
-await push(ref(db, 'news'), { title, content, imageData, date: Date.now() });
-document.getElementById('newsTitle').value = '';
-document.getElementById('newsContent').value = '';
-document.getElementById('newsImage').value = '';
-toast('تم نشر الخبر', 'success');
-loadAdminNews();
-}
-async function loadAdminNews() {
-const snap = await get(ref(db, 'news'));
-const container = document.getElementById('newsList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(n => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700 truncate">${n.title}</div>
-<button onclick="deleteItem('news','${n.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-async function uploadMat() {
-const title = document.getElementById('matTitle').value.trim();
-const subject = document.getElementById('matSubject').value.trim();
-const type = document.getElementById('matType').value;
-const file = document.getElementById('matFile').files[0];
-if (!title || !file) { toast('أكمل بيانات الملف', 'error'); return; }
-if (file.size > MAX_FILE_SIZE) { toast('حجم الملف كبير جداً (20MB كحد أقصى)', 'error'); return; }
-const fileData = type === 'image' ? await compressImage(file) : await fileToBase64(file);
-await push(ref(db, 'materials'), { title, subject, type, fileData, fileName: file.name, date: Date.now() });
-document.getElementById('matTitle').value = '';
-document.getElementById('matSubject').value = '';
-document.getElementById('matFile').value = '';
-toast('تم رفع الملف', 'success');
-loadAdminMaterials();
-}
-async function loadAdminMaterials() {
-const snap = await get(ref(db, 'materials'));
-const container = document.getElementById('matList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(m => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700 truncate">${m.title} - ${m.subject || ''}</div>
-<button onclick="deleteItem('materials','${m.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-async function addContact() {
-const number = document.getElementById('newContact').value.trim();
-const type = document.getElementById('contactType').value;
-if (!number) { toast('أدخل الرقم', 'error'); return; }
-await push(ref(db, 'contacts'), { number, type });
-document.getElementById('newContact').value = '';
-toast('تم إضافة الرقم', 'success');
-loadAdminContacts();
-loadContacts();
-}
-async function loadAdminContacts() {
-const snap = await get(ref(db, 'contacts'));
-const container = document.getElementById('contactsList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد</div>'; return; }
-container.innerHTML = items.map(c => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-<div class="text-xs font-bold text-slate-700">${c.number} - ${c.type}</div>
-<button onclick="deleteItem('contacts','${c.id}')" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-</div>`).join('');
-}
-
-async function loadAdminComplaints() {
-const snap = await get(ref(db, 'complaints'));
-const container = document.getElementById('complaintsList');
-let items = [];
-if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
-items.sort((a, b) => (b.date || 0) - (a.date || 0));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد شكاوى</div>'; return; }
-container.innerHTML = items.map(c => `
-<div class="complaint-card">
-<div class="name">${c.userName || ''}</div>
-<div class="phone">${c.userPhone || ''} - ${c.userEmail || ''}</div>
-<div class="text">${c.text || ''}</div>
-<div class="date">${c.date ? new Date(c.date).toLocaleString('ar-EG') : ''}</div>
-<button onclick="deleteItem('complaints','${c.id}')" class="text-red-500 text-[10px] mt-1"><i class="fa-solid fa-trash"></i> حذف</button>
-</div>`).join('');
-}
-
-async function loadStudentSelects() {
-const snap = await get(ref(db, 'users'));
-const selects = ['resultStudent','weeklyStudent'];
-const options = ['<option value="">اختر الطالب</option>'];
-if (snap.exists()) snap.forEach(c => {
-const u = c.val();
-options.push(`<option value="${c.key}">${u.name || ''} (${u.email || ''})</option>`);
-});
-selects.forEach(id => document.getElementById(id).innerHTML = options.join(''));
-}
-
-async function deleteItem(path, id) {
-if (!confirm('تأكيد الحذف؟')) return;
-await remove(ref(db, path + '/' + id));
-toast('تم الحذف', 'info');
-if (path === 'teachers') loadAdminTeachers();
-if (path === 'exams') loadAdminExams();
-if (path === 'results') loadAdminResults();
-if (path === 'weekly_follow') loadAdminWeekly();
-if (path === 'schedules') loadAdminSchedules();
-if (path === 'notifications') loadAdminNotifications();
-if (path === 'news') loadAdminNews();
-if (path === 'materials') loadAdminMaterials();
-if (path === 'contacts') { loadAdminContacts(); loadContacts(); }
-if (path === 'complaints') loadAdminComplaints();
-}
-
-async function deleteAll(path) {
-if (!confirm('تأكيد حذف الكل؟')) return;
-await remove(ref(db, path));
-toast('تم حذف الكل', 'info');
-loadAdminData();
-}
-</script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, set, get, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-const firebaseConfig = {
-apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
-authDomain: "sigma-6f162.firebaseapp.com",
-databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
-projectId: "sigma-6f162",
-storageBucket: "sigma-6f162.firebasestorage.app",
-messagingSenderId: "420365348074",
-appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+window.delSched = async (id) => {
+  if (!confirm("حذف الموعد؟")) return;
+  const item = schedulesCache.find(x => x.id === id);
+  try {
+    if (item?.file?.path) { try { await deleteObject(sRef(storage, item.file.path)); } catch(e){} }
+    await remove(ref(db, "schedules/" + id));
+  } catch (e) { alert("خطأ: " + e.message); }
 };
-const app2 = initializeApp(firebaseConfig, 'platform');
-const auth2 = getAuth(app2);
-const db2 = getDatabase(app2);
-const ADMIN_PASSWORD = 'Sigma@2024';
-const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2'];
-const MAX_VIDEO_SIZE = 5 * 1024 * 1024;
-let pCurrentUser = null;
-let pCurrentUserData = null;
-let pIsAdmin = false;
-let pCourses = [];
-let pPurchases = [];
-let pFavorites = {};
-let pSettings = {};
-let pSelectedCourse = null;
-let pPayMethod = 'vodafone';
-let pVideoMode = 'file';
-let pCurrentVideoUrl = '';
 
-window.pSwitch = pSwitch;
-window.openPlatform = openPlatform;
-window.closePlatform = closePlatform;
-window.renderCourses = renderCourses;
-window.buyNow = buyNow;
-window.toggleFav = toggleFav;
-window.selectPay = selectPay;
-window.confirmOrder = confirmOrder;
-window.pBackFromCheckout = pBackFromCheckout;
-window.pAdminLogin = pAdminLogin;
-window.saveCourse = saveCourse;
-window.resetCourseForm = resetCourseForm;
-window.setVideoMode = setVideoMode;
-window.savePaySettings = savePaySettings;
-window.openPlayer = openPlayer;
-window.closePlayer = closePlayer;
-window.approvePurchase = approvePurchase;
-window.rejectPurchase = rejectPurchase;
-window.deleteCourse = deleteCourse;
-window.editCourse = editCourse;
-window.pShowCourse = pShowCourse;
+/* ========== NEWS ========== */
+document.getElementById("addNews").onclick = async () => {
+  const title = document.getElementById("newsTitle").value.trim();
+  const body = document.getElementById("newsBody").value.trim();
+  const file = document.getElementById("newsFile").files[0];
+  if (!title) return alert("اكتب عنوان الخبر");
 
-function pToast(msg, type = 'info') {
-const t = document.createElement('div');
-t.className = `toast toast-${type}`;
-t.textContent = msg;
-document.body.appendChild(t);
-setTimeout(() => t.remove(), 3500);
-}
-
-function pSwitch(tab) {
-document.querySelectorAll('#platformApp > main > section').forEach(s => s.classList.add('hidden'));
-const el = document.getElementById('p-' + tab);
-if (el) { el.classList.remove('hidden'); el.classList.add('slide-up'); }
-document.querySelectorAll('#platformApp > nav button').forEach(b => b.classList.remove('text-pink-500'));
-const nav = document.getElementById('pnav-' + tab);
-if (nav) nav.classList.add('text-pink-500');
-if (tab === 'home') pLoadHome();
-if (tab === 'courses') renderCourses();
-if (tab === 'favs') renderFavs();
-if (tab === 'purchases') renderPurchases();
-if (tab === 'account') renderAccount();
-if (tab === 'admin') pCheckAdmin();
-}
-
-function openPlatform() {
-document.getElementById('platform').classList.remove('hidden');
-document.getElementById('app').style.display = 'none';
-pLoadAll();
-pSwitch('home');
-}
-function closePlatform() {
-document.getElementById('platform').classList.add('hidden');
-document.getElementById('app').style.display = 'block';
-}
-
-async function pLoadAll() {
-const [cSnap, pSnap, sSnap] = await Promise.all([
-get(ref(db2, 'courses')), get(ref(db2, 'purchases')), get(ref(db2, 'platform_settings'))
-]);
-pCourses = [];
-if (cSnap.exists()) cSnap.forEach(c => pCourses.push({ id: c.key, ...c.val() }));
-pCourses.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-pPurchases = [];
-if (pSnap.exists()) pSnap.forEach(c => pPurchases.push({ id: c.key, ...c.val() }));
-pSettings = sSnap.exists() ? sSnap.val() : {};
-if (pCurrentUser) {
-const fSnap = await get(ref(db2, 'favorites/' + pCurrentUser.uid));
-pFavorites = fSnap.exists() ? fSnap.val() : {};
-}
-}
-
-async function pLoadHome() {
-document.getElementById('pStatCourses').textContent = pCourses.length;
-const usersSnap = await get(ref(db2, 'users'));
-document.getElementById('pStatStudents').textContent = usersSnap.exists() ? Object.keys(usersSnap.val()).length : 0;
-document.getElementById('pStatSales').textContent = pPurchases.filter(p => p.status === 'approved').length;
-const featured = pCourses.slice(0, 3);
-const container = document.getElementById('pFeatured');
-if (featured.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد كورسات بعد</div>'; return; }
-container.innerHTML = featured.map(c => courseCardHTML(c, true)).join('');
-}
-
-function courseCardHTML(c, featured = false) {
-const isFav = pFavorites[c.id] ? 'on' : '';
-return `
-<div class="course-card relative" onclick="pShowCourse('${c.id}')">
-${c.image ? `<img src="${c.image}" class="cover">` : `<div class="cover"></div>`}
-<button class="fav-btn ${isFav}" onclick="event.stopPropagation();toggleFav('${c.id}')"><i class="fa-solid fa-heart"></i></button>
-<div class="p-3">
-<div class="text-xs font-bold text-slate-800 line-clamp-1">${c.title || ''}</div>
-<div class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${c.description || ''}</div>
-<div class="flex items-center justify-between mt-2">
-<div class="price">${c.price > 0 ? c.price + ' ج.م' : 'مجاني'}</div>
-<div class="text-[10px] text-slate-400">${c.level || ''}</div>
-</div>
-<div class="text-[9px] text-slate-400 mt-1"><i class="fa-solid fa-user-tie"></i> ${c.instructor || ''}</div>
-</div>
-</div>`;
-}
-
-function renderCourses() {
-const q = (document.getElementById('pSearch').value || '').toLowerCase();
-const level = document.getElementById('pLevel').value;
-const price = document.getElementById('pPrice').value;
-let items = pCourses.filter(c => {
-if (q && !(c.title || '').toLowerCase().includes(q) && !(c.description || '').toLowerCase().includes(q)) return false;
-if (level && c.level !== level) return false;
-if (price === 'free' && Number(c.price) > 0) return false;
-if (price === 'low' && (Number(c.price) <= 0 || Number(c.price) >= 100)) return false;
-if (price === 'mid' && (Number(c.price) < 100 || Number(c.price) > 300)) return false;
-if (price === 'high' && Number(c.price) <= 300) return false;
-return true;
-});
-const container = document.getElementById('pCoursesList');
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد كورسات</div>'; return; }
-container.innerHTML = items.map(c => courseCardHTML(c)).join('');
-}
-
-function pShowCourse(courseId) {
-const c = pCourses.find(x => x.id === courseId);
-if (!c) return;
-pSelectedCourse = c;
-const isFav = pFavorites[c.id] ? 'on' : '';
-const purchased = pPurchases.find(p => p.courseId === c.id && p.userId === (pCurrentUser?.uid || '') && p.status === 'approved');
-document.getElementById('pCourseDetail').innerHTML = `
-<div class="course-card">
-${c.image ? `<img src="${c.image}" class="w-full h-48 object-cover">` : `<div class="w-full h-48 bg-gradient-to-br from-pink-500 to-purple-600"></div>`}
-<button class="fav-btn ${isFav}" style="top:56px" onclick="toggleFav('${c.id}')"><i class="fa-solid fa-heart"></i></button>
-<div class="p-4">
-<h2 class="font-bold text-sm text-slate-800">${c.title || ''}</h2>
-<p class="text-xs text-slate-600 mt-2">${c.description || ''}</p>
-<div class="grid grid-cols-2 gap-2 mt-3 text-[10px]">
-<div class="bg-pink-50 rounded-lg p-2"><i class="fa-solid fa-user-tie text-pink-500"></i> ${c.instructor || 'غير محدد'}</div>
-<div class="bg-purple-50 rounded-lg p-2"><i class="fa-solid fa-signal text-purple-500"></i> ${c.level || 'مبتدئ'}</div>
-</div>
-<div class="flex items-center justify-between mt-3">
-<div class="price text-lg">${c.price > 0 ? c.price + ' ج.م' : 'مجاني'}</div>
-</div>
-${purchased ? `<button onclick="openPlayer('${c.id}')" class="publish-btn green mt-3"><i class="fa-solid fa-play"></i> مشاهدة الكورس</button>` : pCurrentUser ? `<button onclick="buyNow('${c.id}')" class="publish-btn pink mt-3"><i class="fa-solid fa-cart-shopping"></i> اشترِ الآن</button>` : `<button onclick="pToast('سجل الدخول أولاً','warning')" class="publish-btn orange mt-3">سجل الدخول للشراء</button>`}
-</div>
-</div>`;
-pSwitch('course');
-}
-
-function buyNow(courseId) {
-if (!pCurrentUser) { pToast('سجل الدخول أولاً', 'warning'); return; }
-pSelectedCourse = pCourses.find(x => x.id === courseId);
-if (!pSelectedCourse) return;
-document.getElementById('pCheckoutCourse').innerHTML = `
-<div class="flex gap-2 items-center">
-${pSelectedCourse.image ? `<img src="${pSelectedCourse.image}" class="w-16 h-16 rounded-xl object-cover">` : `<div class="w-16 h-16 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600"></div>`}
-<div><div class="text-xs font-bold text-slate-800">${pSelectedCourse.title}</div><div class="text-sm font-bold text-pink-500 mt-1">${pSelectedCourse.price > 0 ? pSelectedCourse.price + ' ج.م' : 'مجاني'}</div></div>
-</div>`;
-updatePayInfo();
-pSwitch('checkout');
-}
-
-function selectPay(m) {
-pPayMethod = m;
-document.getElementById('payVodafone').classList.toggle('active', m === 'vodafone');
-document.getElementById('payFawry').classList.toggle('active', m === 'fawry');
-updatePayInfo();
-}
-
-function updatePayInfo() {
-const info = document.getElementById('payInfo');
-if (pPayMethod === 'vodafone') {
-info.innerHTML = `<div class="font-bold text-pink-600 mb-1">📱 فودافون كاش</div><div>حول المبلغ إلى الرقم:</div><div class="font-bold text-slate-800 text-sm mt-1">${pSettings.vodafoneNumber || 'غير محدد'}</div>`;
-} else {
-info.innerHTML = `<div class="font-bold text-pink-600 mb-1">🏪 فوري</div><div>كود فوري: <span class="font-bold text-slate-800">${pSettings.fawryCode || 'غير محدد'}</span></div><div>رقم فوري: <span class="font-bold text-slate-800">${pSettings.fawryNumber || 'غير محدد'}</span></div>`;
-}
-}
-
-async function confirmOrder() {
-if (!pSelectedCourse || !pCurrentUser) return;
-const txn = document.getElementById('payTxn').value.trim();
-const receiptFile = document.getElementById('payReceipt').files[0];
-if (!txn) { pToast('أدخل رقم العملية', 'error'); return; }
-if (!receiptFile) { pToast('ارفع صورة الإيصال', 'error'); return; }
-const btn = document.getElementById('confirmOrderBtn');
-btn.disabled = true;
-btn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
-try {
-const receiptImage = await compressImage(receiptFile);
-await push(ref(db2, 'purchases'), {
-userId: pCurrentUser.uid, userName: pCurrentUserData.name, userEmail: pCurrentUserData.email,
-courseId: pSelectedCourse.id, courseTitle: pSelectedCourse.title, price: pSelectedCourse.price,
-paymentMethod: pPayMethod, receiptImage, transactionId: txn, status: 'pending', date: Date.now()
-});
-pToast('تم إرسال الطلب، بانتظار الموافقة', 'success');
-document.getElementById('payTxn').value = '';
-document.getElementById('payReceipt').value = '';
-pLoadAll();
-pSwitch('purchases');
-} catch (e) { pToast('فشل الإرسال: ' + e.message, 'error'); }
-btn.disabled = false;
-btn.innerHTML = '<i class="fa-solid fa-check"></i> تأكيد الطلب';
-}
-
-function pBackFromCheckout() {
-if (pSelectedCourse) pShowCourse(pSelectedCourse.id); else pSwitch('courses');
-}
-
-function renderPurchases() {
-const container = document.getElementById('pPurchasesList');
-const my = pPurchases.filter(p => p.userId === (pCurrentUser?.uid || ''));
-if (my.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد مشتريات</div>'; return; }
-container.innerHTML = my.map(p => {
-const badge = p.status === 'approved' ? '<span class="status-badge status-approved">مفتوح</span>' : p.status === 'rejected' ? '<span class="status-badge status-rejected">مرفوض</span>' : '<span class="status-badge status-pending">قيد المراجعة</span>';
-return `
-<div class="bg-white rounded-2xl p-3 border border-pink-100">
-<div class="flex items-center justify-between">
-<div class="text-xs font-bold text-slate-800">${p.courseTitle}</div>
-${badge}
-</div>
-<div class="text-[10px] text-slate-500 mt-1">${p.price} ج.م - ${p.paymentMethod}</div>
-${p.status === 'approved' ? `<button onclick="openPlayer('${p.courseId}')" class="publish-btn green mt-2"><i class="fa-solid fa-play"></i> مشاهدة</button>` : ''}
-</div>`;
-}).join('');
-}
-
-function renderFavs() {
-const container = document.getElementById('pFavsList');
-const favIds = Object.keys(pFavorites);
-const items = pCourses.filter(c => favIds.includes(c.id));
-if (items.length === 0) { container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">لا توجد كورسات مفضلة</div>'; return; }
-container.innerHTML = items.map(c => courseCardHTML(c)).join('');
-}
-
-async function toggleFav(courseId) {
-if (!pCurrentUser) { pToast('سجل الدخول أولاً', 'warning'); return; }
-const favRef = ref(db2, 'favorites/' + pCurrentUser.uid + '/' + courseId);
-if (pFavorites[courseId]) {
-await remove(favRef);
-delete pFavorites[courseId];
-pToast('تم الإزالة من المفضلة', 'info');
-} else {
-await set(favRef, { addedAt: Date.now() });
-pFavorites[courseId] = { addedAt: Date.now() };
-pToast('تم الإضافة للمفضلة', 'success');
-}
-if (!document.getElementById('p-favs').classList.contains('hidden')) renderFavs();
-if (!document.getElementById('p-courses').classList.contains('hidden')) renderCourses();
-if (!document.getElementById('p-course').classList.contains('hidden') && pSelectedCourse) pShowCourse(pSelectedCourse.id);
-}
-
-function renderAccount() {
-if (!pCurrentUserData) return;
-document.getElementById('pAccAvatar').src = pCurrentUserData.idImage || '';
-document.getElementById('pAccName').textContent = pCurrentUserData.name || '';
-document.getElementById('pAccEmail').textContent = pCurrentUserData.email || '';
-document.getElementById('pAccPhone').textContent = pCurrentUserData.phone || '';
-}
-
-function pCheckAdmin() {
-if (pIsAdmin) {
-document.getElementById('pAdminLogin').classList.add('hidden');
-document.getElementById('pAdminPanel').classList.remove('hidden');
-document.getElementById('pAdminDenied').classList.add('hidden');
-pLoadAdminData();
-} else {
-document.getElementById('pAdminLogin').classList.remove('hidden');
-document.getElementById('pAdminPanel').classList.add('hidden');
-document.getElementById('pAdminDenied').classList.add('hidden');
-}
-}
-
-function pAdminLogin() {
-const pass = document.getElementById('pAdminPass').value;
-if (pass !== ADMIN_PASSWORD) { pToast('كلمة السر غير صحيحة', 'error'); return; }
-pIsAdmin = true;
-pToast('مرحباً بك في إدارة المنصة', 'success');
-pCheckAdmin();
-}
-
-async function pLoadAdminData() {
-await pLoadAll();
-document.getElementById('aStatCourses').textContent = pCourses.length;
-document.getElementById('aStatSales').textContent = pPurchases.filter(p => p.status === 'approved').length;
-const revenue = pPurchases.filter(p => p.status === 'approved').reduce((s, p) => s + (Number(p.price) || 0), 0);
-document.getElementById('aStatRevenue').textContent = revenue;
-document.getElementById('sVodafone').value = pSettings.vodafoneNumber || '';
-document.getElementById('sFawryCode').value = pSettings.fawryCode || '';
-document.getElementById('sFawryNumber').value = pSettings.fawryNumber || '';
-renderAdminCourses();
-renderAdminPurchases();
-}
-
-function renderAdminCourses() {
-const container = document.getElementById('pAdminCourses');
-if (pCourses.length === 0) { container.innerHTML = '<div class="text-center py-2 text-slate-400 text-[10px]">لا يوجد كورسات</div>'; return; }
-container.innerHTML = pCourses.map(c => `
-<div class="flex items-center justify-between bg-slate-50 rounded-lg p-2 mb-1">
-<div class="flex items-center gap-2 flex-1 min-w-0">
-${c.image ? `<img src="${c.image}" class="w-8 h-8 rounded-lg object-cover">` : ''}
-<div class="text-xs font-bold text-slate-700 truncate">${c.title}</div>
-</div>
-<div class="flex gap-1">
-<button onclick="editCourse('${c.id}')" class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-lg">تعديل</button>
-<button onclick="deleteCourse('${c.id}')" class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded-lg">حذف</button>
-</div>
-</div>`).join('');
-}
-
-async function editCourse(id) {
-const c = pCourses.find(x => x.id === id);
-if (!c) return;
-editingCourseId = id;
-document.getElementById('cTitle').value = c.title || '';
-document.getElementById('cDesc').value = c.description || '';
-document.getElementById('cPrice').value = c.price || 0;
-document.getElementById('cInstructor').value = c.instructor || '';
-document.getElementById('cLevel').value = c.level || 'مبتدئ';
-document.getElementById('cEditId').value = id;
-document.getElementById('courseFormTitle').textContent = 'تعديل كورس';
-if (c.videoType === 'url') {
-setVideoMode('url');
-document.getElementById('cVideoUrl').value = c.videoUrl || '';
-} else {
-setVideoMode('file');
-document.getElementById('cVideoUrl').value = '';
-}
-pToast('تم تحميل بيانات الكورس', 'info');
-}
-
-function resetCourseForm() {
-editingCourseId = null;
-document.getElementById('cTitle').value = '';
-document.getElementById('cDesc').value = '';
-document.getElementById('cPrice').value = '';
-document.getElementById('cInstructor').value = '';
-document.getElementById('cLevel').value = 'مبتدئ';
-document.getElementById('cEditId').value = '';
-document.getElementById('cImage').value = '';
-document.getElementById('cVideoFile').value = '';
-document.getElementById('cVideoUrl').value = '';
-document.getElementById('courseFormTitle').textContent = 'إضافة كورس';
-setVideoMode('file');
-}
-
-function setVideoMode(mode) {
-pVideoMode = mode;
-document.getElementById('vmFile').classList.toggle('active', mode === 'file');
-document.getElementById('vmUrl').classList.toggle('active', mode === 'url');
-document.getElementById('cVideoFileBox').classList.toggle('hidden', mode !== 'file');
-document.getElementById('cVideoUrlBox').classList.toggle('hidden', mode !== 'url');
-}
-
-async function saveCourse() {
-const title = document.getElementById('cTitle').value.trim();
-const description = document.getElementById('cDesc').value.trim();
-const price = Number(document.getElementById('cPrice').value) || 0;
-const instructor = document.getElementById('cInstructor').value.trim();
-const level = document.getElementById('cLevel').value;
-const imageFile = document.getElementById('cImage').files[0];
-if (!title) { pToast('أدخل عنوان الكورس', 'error'); return; }
-let image = '';
-if (imageFile) image = await compressImage(imageFile);
-let videoType = pVideoMode;
-let videoData = '';
-let videoUrl = '';
-if (pVideoMode === 'file') {
-const vFile = document.getElementById('cVideoFile').files[0];
-if (vFile) {
-if (vFile.size > MAX_VIDEO_SIZE) { pToast('حجم الفيديو أكبر من 5MB، استخدم رابط خارجي', 'error'); return; }
-videoData = await fileToBase64(vFile);
-}
-} else {
-videoUrl = document.getElementById('cVideoUrl').value.trim();
-}
-if (!videoData && !videoUrl && !editingCourseId) { pToast('أضف فيديو (ملف أو رابط)', 'error'); return; }
-const data = { title, description, price, instructor, level, videoType };
-if (image) data.image = image;
-if (pVideoMode === 'file' && videoData) { data.videoData = videoData; data.videoUrl = ''; }
-if (pVideoMode === 'url' && videoUrl) { data.videoUrl = videoUrl; data.videoData = ''; }
-if (editingCourseId) {
-await update(ref(db2, 'courses/' + editingCourseId), data);
-pToast('تم تعديل الكورس', 'success');
-} else {
-data.createdAt = Date.now();
-await push(ref(db2, 'courses'), data);
-pToast('تم إضافة الكورس', 'success');
-}
-resetCourseForm();
-await pLoadAll();
-pLoadAdminData();
-}
-
-async function deleteCourse(id) {
-if (!confirm('تأكيد حذف الكورس؟')) return;
-await remove(ref(db2, 'courses/' + id));
-pToast('تم الحذف', 'info');
-await pLoadAll();
-pLoadAdminData();
-}
-
-function renderAdminPurchases() {
-const container = document.getElementById('pAdminPurchases');
-if (pPurchases.length === 0) { container.innerHTML = '<div class="text-center py-3 text-slate-400 text-xs">لا توجد طلبات</div>'; return; }
-const sorted = [...pPurchases].sort((a, b) => (b.date || 0) - (a.date || 0));
-container.innerHTML = sorted.map(p => {
-const badge = p.status === 'approved' ? '<span class="status-badge status-approved">مقبول</span>' : p.status === 'rejected' ? '<span class="status-badge status-rejected">مرفوض</span>' : '<span class="status-badge status-pending">قيد المراجعة</span>';
-return `
-<div class="complaint-card" style="border-right-color:#ec4899">
-<div class="flex items-center justify-between">
-<div class="name">${p.userName || ''}</div>
-${badge}
-</div>
-<div class="phone">${p.userEmail || ''}</div>
-<div class="text">كورس: <b>${p.courseTitle || ''}</b> - ${p.price} ج.م</div>
-<div class="text">طريقة الدفع: ${p.paymentMethod === 'vodafone' ? '📱 فودافون كاش' : '🏪 فوري'} - رقم العملية: ${p.transactionId || ''}</div>
-${p.receiptImage ? `<img src="${p.receiptImage}" class="mt-2 w-20 h-20 object-cover rounded-lg cursor-pointer" onclick="openImageViewer('${p.receiptImage}','إيصال')">` : ''}
-${p.status === 'pending' ? `<div class="flex gap-1 mt-2">
-<button onclick="approvePurchase('${p.id}')" class="flex-1 bg-green-600 text-white text-[10px] font-bold py-1.5 rounded-lg">✅ موافقة</button>
-<button onclick="rejectPurchase('${p.id}')" class="flex-1 bg-red-600 text-white text-[10px] font-bold py-1.5 rounded-lg">❌ رفض</button>
-</div>` : ''}
-<div class="date">${p.date ? new Date(p.date).toLocaleString('ar-EG') : ''}</div>
-</div>`;
-}).join('');
-}
-
-async function approvePurchase(id) {
-await update(ref(db2, 'purchases/' + id), { status: 'approved' });
-pToast('تمت الموافقة على الشراء', 'success');
-await pLoadAll();
-pLoadAdminData();
-}
-async function rejectPurchase(id) {
-await update(ref(db2, 'purchases/' + id), { status: 'rejected' });
-pToast('تم رفض الشراء', 'info');
-await pLoadAll();
-pLoadAdminData();
-}
-
-async function savePaySettings() {
-const vodafoneNumber = document.getElementById('sVodafone').value.trim();
-const fawryCode = document.getElementById('sFawryCode').value.trim();
-const fawryNumber = document.getElementById('sFawryNumber').value.trim();
-await set(ref(db2, 'platform_settings'), { vodafoneNumber, fawryCode, fawryNumber });
-pSettings = { vodafoneNumber, fawryCode, fawryNumber };
-pToast('تم حفظ بيانات الدفع', 'success');
-}
-
-function openPlayer(courseId) {
-const c = pCourses.find(x => x.id === courseId);
-if (!c) return;
-const purchase = pPurchases.find(p => p.courseId === courseId && p.userId === (pCurrentUser?.uid || '') && p.status === 'approved');
-if (!purchase) { pToast('الكورس غير مفتوح', 'error'); return; }
-document.getElementById('playerTitle').textContent = c.title || '';
-const wrap = document.getElementById('playerWrap');
-const wm = document.getElementById('playerWatermark');
-wm.textContent = pCurrentUserData?.name || pCurrentUser?.email || 'Sigma';
-let html = '';
-if (c.videoType === 'url' && c.videoUrl) {
-const url = c.videoUrl;
-if (url.includes('youtube.com') || url.includes('youtu.be')) {
-const id = url.includes('youtu.be') ? url.split('/').pop().split('?')[0] : (url.match(/v=([^&]+)/) || [])[1] || '';
-html = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-} else if (url.includes('vimeo.com')) {
-const id = url.split('/').pop();
-html = `<iframe src="https://player.vimeo.com/video/${id}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-} else {
-html = `<video src="${url}" controls autoplay controlsList="nodownload" oncontextmenu="return false"></video>`;
-}
-} else if (c.videoData) {
-html = `<video src="${c.videoData}" controls autoplay controlsList="nodownload" oncontextmenu="return false"></video>`;
-} else {
-pToast('لا يوجد فيديو', 'error'); return;
-}
-wrap.innerHTML = html + '<div id="playerWatermark" class="watermark"></div>';
-const newWm = document.getElementById('playerWatermark');
-newWm.textContent = wm.textContent;
-document.getElementById('playerModal').classList.add('show');
-let x = 10, y = 10;
-newWm.style.left = '10%'; newWm.style.top = '10%';
-setInterval(() => {
-x = Math.random() * 70 + 5;
-y = Math.random() * 80 + 5;
-newWm.style.left = x + '%';
-newWm.style.top = y + '%';
-}, 3000);
-}
-
-function closePlayer() {
-document.getElementById('playerModal').classList.remove('show');
-document.getElementById('playerWrap').innerHTML = '';
-}
-
-async function pInitAuth() {
-onAuthStateChanged(auth2, async (user) => {
-if (user) {
-pCurrentUser = user;
-const uSnap = await get(ref(db2, 'users/' + user.uid));
-pCurrentUserData = uSnap.exists() ? uSnap.val() : { name: user.email, email: user.email };
-const fSnap = await get(ref(db2, 'favorites/' + user.uid));
-pFavorites = fSnap.exists() ? fSnap.val() : {};
-} else {
-pCurrentUser = null;
-pCurrentUserData = null;
-pFavorites = {};
-}
-});
-}
-
-pInitAuth();
-</script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-const firebaseConfig = {
-apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
-authDomain: "sigma-6f162.firebaseapp.com",
-databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
-projectId: "sigma-6f162",
-storageBucket: "sigma-6f162.firebasestorage.app",
-messagingSenderId: "420365348074",
-appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+  try {
+    const fileData = await uploadFile(file, "news");
+    await set(push(ref(db, "news")), {
+      title, body,
+      file: fileData,
+      createdBy: currentUser.email,
+      createdAt: serverTimestamp()
+    });
+    document.getElementById("newsTitle").value = "";
+    document.getElementById("newsBody").value = "";
+    document.getElementById("newsFile").value = "";
+    alert("✅ تم النشر");
+  } catch (e) { alert("خطأ: " + e.message); }
 };
-const app3 = initializeApp(firebaseConfig, 'main3');
-const auth3 = getAuth(app3);
-const db3 = getDatabase(app3);
-const ADMIN_UIDS = ['WCyUdR31uZOxJwtYzXx85K7E0Cf2'];
 
-if (localStorage.getItem('darkMode') === '1') {
-document.body.classList.add('dark-mode');
-document.getElementById('darkIcon').className = 'fa-solid fa-sun text-lg';
-}
-
-function setupAuthListener() {
-onAuthStateChanged(auth3, async (user) => {
-if (user) {
-currentUser = user;
-const snap = await get(ref(db3, 'users/' + user.uid));
-if (snap.exists()) {
-currentUserData = snap.val();
-} else {
-currentUserData = { name: user.email, email: user.email, profileStatus: 'pending' };
-}
-isAdmin = ADMIN_UIDS.includes(user.uid) || (currentUserData && currentUserData.isAdmin === true);
-if (isAdmin) {
-document.getElementById('nav-admin').classList.remove('hidden');
-} else {
-document.getElementById('nav-admin').classList.add('hidden');
-}
-try {
-await update(ref(db3, 'users/' + user.uid), { online: true, lastSeen: Date.now() });
-} catch (e) {}
-switchTab('home');
-} else {
-currentUser = null;
-currentUserData = null;
-isAdmin = false;
-document.getElementById('nav-admin').classList.add('hidden');
-switchTab('login');
-}
-});
+let newsCache = [];
+function loadNews() {
+  onValue(ref(db, "news"), (snap) => {
+    newsCache = [];
+    snap.forEach(c => newsCache.push({ id: c.key, ...c.val() }));
+    newsCache.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    renderNews();
+  });
 }
 
-window.currentUser = null;
-window.currentUserData = null;
-window.isAdmin = false;
-
-setTimeout(() => {
-setupAuthListener();
-}, 500);
-
-window.addEventListener('beforeunload', async () => {
-if (currentUser) {
-try { await update(ref(db3, 'users/' + currentUser.uid), { online: false, lastSeen: Date.now() }); } catch (e) {}
+function renderNews() {
+  const list = document.getElementById("newsList");
+  if (newsCache.length === 0) {
+    list.innerHTML = `<div class="alert alert-light text-center">لا توجد أخبار</div>`;
+    return;
+  }
+  list.innerHTML = newsCache.map(n => `
+    <div class="news-item">
+      <div class="d-flex justify-content-between">
+        <h6 class="mb-1">${escapeHtml(n.title)}</h6>
+        ${isAdmin ? `<button class="btn btn-sm btn-outline-danger" onclick="delNews('${n.id}')">🗑️</button>` : ""}
+      </div>
+      ${n.body ? `<div class="small mt-1">${escapeHtml(n.body)}</div>` : ""}
+      ${renderFile(n.file)}
+    </div>
+  `).join("");
 }
-});
+
+window.delNews = async (id) => {
+  if (!confirm("حذف الخبر؟")) return;
+  const item = newsCache.find(x => x.id === id);
+  try {
+    if (item?.file?.path) { try { await deleteObject(sRef(storage, item.file.path)); } catch(e){} }
+    await remove(ref(db, "news/" + id));
+  } catch (e) { alert("خطأ: " + e.message); }
+};
+
+/* ========== HELPERS ========== */
+function renderFile(f) {
+  if (!f || !f.url) return "";
+  if (f.type?.startsWith("image/")) {
+    return `<img src="${f.url}" class="file-preview" onclick="window.open('${f.url}','_blank')">`;
+  }
+  return `<a href="${f.url}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">📄 تحميل ${escapeHtml(f.name || "الملف")}</a>`;
+}
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
 </script>
 </body>
-  </html>
+</html>
