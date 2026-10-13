@@ -12,20 +12,39 @@
 <style>
 :root{
   --primary:#4f46e5;--primary-dark:#4338ca;--bg:#f6f7fb;--card:#fff;
-  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;
-  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;--input:#fff;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;
   --radius:18px;--shadow:0 2px 12px rgba(15,23,42,.06);
   --shadow-lg:0 8px 30px rgba(15,23,42,.10);
 }
+[data-theme="dark"]{
+  --bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--muted:#94a3b8;
+  --border:#334155;--input:#1e293b;
+  --shadow:0 2px 12px rgba(0,0,0,.3);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.5);
+}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);padding-bottom:80px;overscroll-behavior-y:contain}
-button{font-family:inherit;cursor:pointer;border:none;background:none}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);padding-bottom:80px;overscroll-behavior-y:contain;transition:background .3s,color .3s}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,textarea,select{font-family:inherit;font-size:15px}
 
+/* Splash */
+#splash{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#4f46e5,#7c3aed,#ec4899);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;color:#fff;transition:opacity .5s}
+#splash.hide{opacity:0;pointer-events:none}
+#splash .logo{width:100px;height:100px;border-radius:28px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:50px;backdrop-filter:blur(10px);animation:pulse 1.5s infinite}
+#splash h1{font-size:26px;font-weight:800}
+#splash p{font-size:13px;opacity:.9}
+#splash .spin{width:40px;height:40px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* Header */
-.header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(79,70,229,.25)}
-.header h1{font-size:18px;font-weight:800}
+.header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(79,70,229,.25)}
+.header h1{font-size:17px;font-weight:800}
 .header .sub{font-size:11px;opacity:.85;font-weight:400}
+.header-actions{display:flex;gap:8px;align-items:center}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;transition:.2s}
+.icon-btn:active{transform:scale(.9);background:rgba(255,255,255,.3)}
 .avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;border:2px solid rgba(255,255,255,.4);overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
 
@@ -37,25 +56,41 @@ input,textarea,select{font-family:inherit;font-size:15px}
 .login-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 50%,#ec4899 100%)}
 .login-card{background:#fff;border-radius:28px;padding:36px 28px;width:100%;max-width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .login-logo{width:80px;height:80px;border-radius:24px;margin:0 auto 20px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:38px;color:#fff;box-shadow:0 8px 24px rgba(79,70,229,.4)}
-.login-card h2{font-size:24px;font-weight:800;margin-bottom:8px}
-.login-card p{color:var(--muted);font-size:14px;margin-bottom:28px}
-.btn-google{width:100%;padding:14px;border-radius:14px;background:#fff;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:15px;color:var(--text);transition:.2s}
+.login-card h2{font-size:24px;font-weight:800;margin-bottom:8px;color:#1e293b}
+.login-card p{color:#64748b;font-size:14px;margin-bottom:28px}
+.btn-google{width:100%;padding:14px;border-radius:14px;background:#fff;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:15px;color:#1e293b;transition:.2s}
 .btn-google:active{transform:scale(.97);background:#f8fafc}
 
 /* Cards */
-.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);transition:.2s;position:relative}
 .card-title{font-weight:700;font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .card-title i{color:var(--primary)}
-.card-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-top:4px}
-.card-body{font-size:14px;color:#475569;line-height:1.7;margin-top:8px}
+.card-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;align-items:center}
+.card-body{font-size:14px;color:var(--muted);line-height:1.7;margin-top:8px}
+.card-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.action-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;background:var(--bg);color:var(--text);display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border)}
+.action-btn:active{transform:scale(.95)}
+.action-btn.danger{background:var(--danger);color:#fff;border:none}
+.action-btn.success{background:var(--success);color:#fff;border:none}
+.action-btn.warning{background:var(--warning);color:#fff;border:none}
+.star-btn{position:absolute;top:14px;left:14px;font-size:20px;color:#cbd5e1;cursor:pointer;transition:.2s;background:none;border:none}
+.star-btn.active{color:#f59e0b;transform:scale(1.1)}
 
-.section-title{font-size:17px;font-weight:800;margin:20px 4px 12px;display:flex;align-items:center;gap:8px}
+.section-title{font-size:17px;font-weight:800;margin:20px 4px 12px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.section-title>div{display:flex;align-items:center;gap:8px}
 .section-title i{color:var(--primary)}
+.see-all{font-size:12px;color:var(--primary);font-weight:600}
+
+/* Search */
+.search-box{position:relative;margin-bottom:12px}
+.search-box input{width:100%;padding:14px 44px 14px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--input);color:var(--text);font-size:14px}
+.search-box input:focus{outline:none;border-color:var(--primary)}
+.search-box i{position:absolute;top:50%;right:16px;transform:translateY(-50%);color:var(--muted);font-size:18px}
 
 /* Chips */
 .chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{padding:8px 18px;border-radius:999px;background:#fff;border:1.5px solid var(--border);font-weight:600;font-size:13px;white-space:nowrap;color:var(--muted);transition:.2s}
+.chip{padding:8px 18px;border-radius:999px;background:var(--card);border:1.5px solid var(--border);font-weight:600;font-size:13px;white-space:nowrap;color:var(--muted);transition:.2s}
 .chip.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(79,70,229,.3)}
 
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
@@ -63,60 +98,78 @@ input,textarea,select{font-family:inherit;font-size:15px}
 .empty p{font-size:14px}
 
 /* Bottom Nav */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;display:flex;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(15,23,42,.06)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--card);display:flex;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(15,23,42,.06)}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:var(--muted);font-size:10px;font-weight:600;transition:.2s;position:relative}
 .nav-btn i{font-size:22px}
 .nav-btn.active{color:var(--primary)}
 .nav-btn.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;border-radius:0 0 4px 4px;background:var(--primary)}
+.nav-badge{position:absolute;top:2px;right:calc(50% - 20px);background:var(--danger);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:999px;min-width:18px;text-align:center}
 
 .fab{position:fixed;bottom:96px;left:20px;z-index:99;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 8px 24px rgba(79,70,229,.45);transition:.2s}
 .fab:active{transform:scale(.9)}
 
 /* Form */
 .form-group{margin-bottom:12px}
-.form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:#334155}
-.form-control{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:14px;transition:.2s}
+.form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.form-control{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--input);color:var(--text);font-size:14px;transition:.2s}
 .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
 textarea.form-control{resize:vertical;min-height:80px}
 .btn{padding:12px 20px;border-radius:12px;font-weight:700;font-size:14px;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--primary);color:#fff;width:100%}
 .btn-danger{background:var(--danger);color:#fff}
-.btn-ghost{background:#f1f5f9;color:#334155}
+.btn-ghost{background:var(--bg);color:var(--text);border:1px solid var(--border)}
 .btn-sm{padding:8px 12px;font-size:12px;border-radius:10px;width:auto}
 
-.file-preview{max-width:100%;max-height:280px;border-radius:12px;margin-top:10px;box-shadow:var(--shadow)}
-.file-box{display:flex;align-items:center;gap:10px;padding:12px;background:#f1f5f9;border-radius:12px;margin-top:10px;font-size:13px;font-weight:600;color:#334155}
+.file-preview{max-width:100%;max-height:280px;border-radius:12px;margin-top:10px;box-shadow:var(--shadow);cursor:pointer}
+.file-box{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border-radius:12px;margin-top:10px;font-size:13px;font-weight:600;color:var(--text);text-decoration:none;border:1px solid var(--border)}
 .file-box i{font-size:24px;color:var(--danger)}
 
 /* Toast */
-.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:.3s;pointer-events:none;box-shadow:var(--shadow-lg);max-width:90%}
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:.3s;pointer-events:none;box-shadow:var(--shadow-lg);max-width:90%}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.success{background:var(--success)}
 .toast.error{background:var(--danger)}
+.toast.info{background:var(--info)}
 
 /* Notifications */
-.notif-item{display:flex;gap:12px;padding:14px;background:#fff;border-radius:14px;margin-bottom:10px;box-shadow:var(--shadow);position:relative}
+.notif-item{display:flex;gap:12px;padding:14px;background:var(--card);border-radius:14px;margin-bottom:10px;box-shadow:var(--shadow);position:relative}
 .notif-item.unread{border-right:3px solid var(--primary)}
 .notif-icon{width:42px;height:42px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;background:#eef2ff;color:var(--primary)}
+[data-theme="dark"] .notif-icon{background:rgba(79,70,229,.2)}
 .notif-item h4{font-size:14px;font-weight:700;margin-bottom:3px}
 .notif-item p{font-size:12px;color:var(--muted);line-height:1.5}
 .notif-item time{font-size:11px;color:#94a3b8;margin-top:4px;display:block}
 
 /* Library */
-.lib-card{display:flex;gap:12px;padding:14px;background:#fff;border-radius:14px;margin-bottom:10px;box-shadow:var(--shadow);align-items:center}
+.lib-card{display:flex;gap:12px;padding:14px;background:var(--card);border-radius:14px;margin-bottom:10px;box-shadow:var(--shadow);align-items:center}
 .lib-icon{width:52px;height:52px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706}
 .lib-info{flex:1;min-width:0}
 .lib-info h4{font-size:14px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lib-info p{font-size:11px;color:var(--muted)}
-.lib-actions{display:flex;gap:6px}
+.lib-actions{display:flex;gap:6px;flex-direction:column}
+
+/* Timeline */
+.timeline{position:relative;padding-right:24px;margin-top:8px}
+.timeline::before{content:'';position:absolute;right:8px;top:8px;bottom:8px;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-item::before{content:'';position:absolute;right:-20px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--primary);border:3px solid var(--card);box-shadow:0 0 0 2px var(--primary)}
+.tl-time{font-size:12px;color:var(--primary);font-weight:700;margin-bottom:4px}
+.tl-title{font-size:14px;font-weight:700;color:var(--text)}
+.tl-body{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+.stat-card{background:var(--card);border-radius:14px;padding:16px;text-align:center;box-shadow:var(--shadow)}
+.stat-card i{font-size:24px;color:var(--primary);margin-bottom:6px;display:block}
+.stat-card .num{font-size:22px;font-weight:800;color:var(--text)}
+.stat-card .lbl{font-size:11px;color:var(--muted);margin-top:2px}
 
 /* Loading */
-.spinner{width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto}
-@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto}
 
 /* Install banner */
-.install-banner{position:fixed;bottom:90px;left:16px;right:16px;z-index:98;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:14px 16px;border-radius:16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(79,70,229,.4);animation:slideUp .4s;transition:.3s}
+.install-banner{position:fixed;bottom:90px;left:16px;right:16px;z-index:98;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:14px 16px;border-radius:16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(79,70,229,.4);animation:slideUp .4s;transition:.4s}
 @keyframes slideUp{from{transform:translateY(100px);opacity:0}}
 .install-banner.hide{transform:translateY(200px);opacity:0}
 .install-banner i.bi-phone{font-size:28px}
@@ -126,29 +179,53 @@ textarea.form-control{resize:vertical;min-height:80px}
 .install-banner button.inst{background:#fff;color:var(--primary);padding:8px 14px;border-radius:10px;font-weight:700;font-size:12px}
 .install-banner button.close{background:transparent;color:#fff;font-size:18px;padding:4px}
 
-/* Profile setup */
+/* Setup */
 .setup-screen{min-height:100vh;background:linear-gradient(160deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;padding:20px}
-.setup-card{background:#fff;border-radius:24px;padding:32px 24px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.setup-card{background:#fff;border-radius:24px;padding:32px 24px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2);color:#1e293b}
 .setup-card h2{font-size:22px;font-weight:800;text-align:center;margin-bottom:8px}
-.setup-card>p{text-align:center;color:var(--muted);font-size:13px;margin-bottom:24px}
+.setup-card>p{text-align:center;color:#64748b;font-size:13px;margin-bottom:24px}
+.setup-card .form-control{color:#1e293b;background:#fff}
 
 /* Modal */
-.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(4px)}
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(4px)}
 .modal-bg.show{opacity:1;pointer-events:auto}
-.modal{background:#fff;width:100%;max-width:640px;max-height:90vh;border-radius:24px 24px 0 0;padding:20px;transform:translateY(100%);transition:.3s;overflow-y:auto}
+.modal{background:var(--card);width:100%;max-width:640px;max-height:90vh;border-radius:24px 24px 0 0;padding:20px;transform:translateY(100%);transition:.3s;overflow-y:auto}
 .modal-bg.show .modal{transform:translateY(0)}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .modal-header h3{font-size:17px;font-weight:800}
-.modal-close{width:36px;height:36px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;color:#64748b}
+.modal-close{width:36px;height:36px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
 
 .stage-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.stage-opt{padding:10px 16px;border:2px solid var(--border);border-radius:12px;font-weight:600;font-size:14px;transition:.2s;cursor:pointer;background:#fff}
+.stage-opt{padding:10px 16px;border:2px solid var(--border);border-radius:12px;font-weight:600;font-size:14px;transition:.2s;cursor:pointer;background:var(--input);color:var(--text)}
 .stage-opt.selected{border-color:var(--primary);background:#eef2ff;color:var(--primary)}
+
+/* Image Viewer */
+#imgViewer{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+#imgViewer.show{display:flex}
+#imgViewer img{max-width:100%;max-height:90vh;border-radius:12px}
+#imgViewer .close{position:absolute;top:20px;left:20px;width:44px;height:44px;background:rgba(255,255,255,.2);border-radius:50%;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center}
+
+/* External browser notice */
+#externalNotice{position:fixed;inset:0;background:rgba(15,23,42,.8);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
+#externalNotice.show{display:flex}
+.ext-card{background:#fff;border-radius:20px;padding:28px;max-width:400px;text-align:center;color:#1e293b}
+.ext-card i{font-size:48px;color:#4f46e5;margin-bottom:16px;display:block}
+.ext-card h3{font-size:18px;font-weight:800;margin-bottom:8px}
+.ext-card p{font-size:14px;color:#64748b;margin-bottom:20px;line-height:1.6}
+.ext-card button{background:#4f46e5;color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;width:100%}
 </style>
 </head>
 <body>
 
-<!-- ============ LOGIN ============ -->
+<!-- Splash -->
+<div id="splash">
+  <div class="logo">🎓</div>
+  <h1>سنتر سيجما</h1>
+  <p>جاري التحميل...</p>
+  <div class="spin"></div>
+</div>
+
+<!-- Login -->
 <div id="loginScreen" class="login-wrap hidden">
   <div class="login-card">
     <div class="login-logo">🎓</div>
@@ -161,7 +238,7 @@ textarea.form-control{resize:vertical;min-height:80px}
   </div>
 </div>
 
-<!-- ============ SETUP PROFILE ============ -->
+<!-- Setup -->
 <div id="setupScreen" class="setup-screen hidden">
   <div class="setup-card">
     <h2>👋 أهلاً بك!</h2>
@@ -192,26 +269,38 @@ textarea.form-control{resize:vertical;min-height:80px}
   </div>
 </div>
 
-<!-- ============ APP ============ -->
+<!-- App -->
 <div id="app" class="hidden">
   <div class="header">
     <div>
       <h1>سنتر سيجما 🎓</h1>
       <div class="sub" id="userGreeting">أهلاً بك</div>
     </div>
-    <div class="avatar" id="userAvatar">?</div>
+    <div class="header-actions">
+      <button class="icon-btn" id="themeToggle" title="الوضع الليلي"><i class="bi bi-moon-stars"></i></button>
+      <div class="avatar" id="userAvatar">?</div>
+    </div>
   </div>
 
   <div class="container">
+    <!-- HOME -->
     <div id="view-home" class="view">
-      <div class="section-title"><i class="bi bi-calendar-event"></i> مواعيد اليوم</div>
+      <div class="search-box">
+        <input type="search" id="searchHome" placeholder="ابحث في كل المحتوى...">
+        <i class="bi bi-search"></i>
+      </div>
+      <div class="section-title"><div><i class="bi bi-calendar-event"></i> مواعيد اليوم</div></div>
       <div id="homeToday"></div>
-      <div class="section-title"><i class="bi bi-newspaper"></i> آخر الأخبار</div>
+      <div class="section-title"><div><i class="bi bi-newspaper"></i> آخر الأخبار</div></div>
       <div id="homeNews"></div>
     </div>
 
+    <!-- SCHEDULES -->
     <div id="view-schedules" class="view hidden">
-      <div class="section-title"><i class="bi bi-calendar-week"></i> المواعيد</div>
+      <div class="section-title">
+        <div><i class="bi bi-calendar-week"></i> المواعيد</div>
+        <span class="see-all" id="printSchedBtn"><i class="bi bi-printer"></i> طباعة</span>
+      </div>
       <div class="chips">
         <button class="chip active" data-day="today">اليوم</button>
         <button class="chip" data-day="tomorrow">بكرة</button>
@@ -220,49 +309,59 @@ textarea.form-control{resize:vertical;min-height:80px}
       <div id="schedulesList"></div>
     </div>
 
+    <!-- NEWS -->
     <div id="view-news" class="view hidden">
-      <div class="section-title"><i class="bi bi-newspaper"></i> الأخبار</div>
+      <div class="section-title"><div><i class="bi bi-newspaper"></i> الأخبار</div></div>
       <div id="newsList"></div>
     </div>
 
+    <!-- LIBRARY -->
     <div id="view-library" class="view hidden">
-      <div class="section-title"><i class="bi bi-book"></i> المكتبة الإلكترونية</div>
+      <div class="section-title"><div><i class="bi bi-book"></i> المكتبة الإلكترونية</div></div>
+      <div class="search-box">
+        <input type="search" id="searchLib" placeholder="ابحث في المكتبة...">
+        <i class="bi bi-search"></i>
+      </div>
       <div class="chips">
         <button class="chip active" data-cat="all">الكل</button>
         <button class="chip" data-cat="book">كتب</button>
         <button class="chip" data-cat="summary">ملخصات</button>
         <button class="chip" data-cat="exam">امتحانات</button>
+        <button class="chip" data-cat="fav">⭐ المفضلة</button>
       </div>
       <div id="libraryList"></div>
     </div>
 
+    <!-- NOTIFICATIONS -->
     <div id="view-notifs" class="view hidden">
-      <div class="section-title"><i class="bi bi-bell"></i> الإشعارات</div>
+      <div class="section-title">
+        <div><i class="bi bi-bell"></i> الإشعارات</div>
+        <span class="see-all" id="markAllRead">تعليم الكل كمقروء</span>
+      </div>
       <div id="notifsList"></div>
     </div>
 
     <!-- ADMIN -->
     <div id="view-admin" class="view hidden">
-      <div class="section-title"><i class="bi bi-shield-lock"></i> لوحة التحكم</div>
+      <div class="section-title"><div><i class="bi bi-shield-lock"></i> لوحة التحكم</div></div>
 
-      <!-- Stages Manager -->
+      <div class="stats-grid">
+        <div class="stat-card"><i class="bi bi-people"></i><div class="num" id="statStudents">0</div><div class="lbl">طالب</div></div>
+        <div class="stat-card"><i class="bi bi-calendar-check"></i><div class="num" id="statSchedules">0</div><div class="lbl">موعد</div></div>
+        <div class="stat-card"><i class="bi bi-newspaper"></i><div class="num" id="statNews">0</div><div class="lbl">خبر</div></div>
+        <div class="stat-card"><i class="bi bi-book"></i><div class="num" id="statLibrary">0</div><div class="lbl">ملف</div></div>
+      </div>
+
       <div class="card">
-        <div class="section-title" style="margin-top:0"><i class="bi bi-mortarboard"></i> إدارة المراحل والصفوف</div>
-        <div class="form-group">
-          <label>اسم المرحلة</label>
-          <input class="form-control" id="stageName" placeholder="مثال: ابتدائي">
-        </div>
-        <div class="form-group">
-          <label>الصفوف (افصل بينهم بفاصلة)</label>
-          <input class="form-control" id="stageGrades" placeholder="مثال: أولى، ثانية، ثالثة">
-        </div>
+        <div class="section-title" style="margin-top:0"><div><i class="bi bi-mortarboard"></i> إدارة المراحل</div></div>
+        <div class="form-group"><label>اسم المرحلة</label><input class="form-control" id="stageName" placeholder="ابتدائي / إعدادي / ثانوي"></div>
+        <div class="form-group"><label>الصفوف (افصل بينهم بفاصلة)</label><input class="form-control" id="stageGrades" placeholder="أولى، ثانية، ثالثة"></div>
         <button class="btn btn-primary" id="addStage"><i class="bi bi-plus-lg"></i> إضافة مرحلة</button>
         <div id="stagesAdminList" style="margin-top:12px"></div>
       </div>
 
-      <!-- Add Schedule -->
       <div class="card">
-        <div class="section-title" style="margin-top:0"><i class="bi bi-plus-circle"></i> إضافة موعد</div>
+        <div class="section-title" style="margin-top:0"><div><i class="bi bi-plus-circle"></i> إضافة موعد</div></div>
         <div class="form-group">
           <label>اليوم</label>
           <select class="form-control" id="schedDay">
@@ -271,25 +370,27 @@ textarea.form-control{resize:vertical;min-height:80px}
             <option value="week">الأسبوع</option>
           </select>
         </div>
+        <div class="form-group">
+          <label>المرحلة المستهدفة (اختياري)</label>
+          <select class="form-control" id="schedStage"><option value="">الكل</option></select>
+        </div>
         <div class="form-group"><label>عنوان الدرس</label><input class="form-control" id="schedTitle" placeholder="رياضيات - الوحدة 3"></div>
         <div class="form-group"><label>الوقت</label><input class="form-control" id="schedTime" placeholder="5:00 مساءً"></div>
         <div class="form-group"><label>ملاحظة</label><input class="form-control" id="schedNote" placeholder="اختياري"></div>
         <div class="form-group"><label>مرفق</label><input type="file" class="form-control" id="schedFile" accept="image/*,application/pdf"></div>
-        <button class="btn btn-primary" id="addSched"><i class="bi bi-check-lg"></i> إضافة الموعد</button>
+        <button class="btn btn-primary" id="addSched"><i class="bi bi-check-lg"></i> إضافة</button>
       </div>
 
-      <!-- Add News -->
       <div class="card">
-        <div class="section-title" style="margin-top:0"><i class="bi bi-megaphone"></i> نشر خبر</div>
+        <div class="section-title" style="margin-top:0"><div><i class="bi bi-megaphone"></i> نشر خبر</div></div>
         <div class="form-group"><label>العنوان</label><input class="form-control" id="newsTitle"></div>
         <div class="form-group"><label>النص</label><textarea class="form-control" id="newsBody"></textarea></div>
         <div class="form-group"><label>مرفق</label><input type="file" class="form-control" id="newsFile" accept="image/*,application/pdf"></div>
         <button class="btn btn-primary" id="addNews"><i class="bi bi-send"></i> نشر</button>
       </div>
 
-      <!-- Library -->
       <div class="card">
-        <div class="section-title" style="margin-top:0"><i class="bi bi-book"></i> إضافة للمكتبة</div>
+        <div class="section-title" style="margin-top:0"><div><i class="bi bi-book"></i> إضافة للمكتبة</div></div>
         <div class="form-group">
           <label>التصنيف</label>
           <select class="form-control" id="libCat">
@@ -303,22 +404,23 @@ textarea.form-control{resize:vertical;min-height:80px}
         <button class="btn btn-primary" id="addLib"><i class="bi bi-upload"></i> رفع</button>
       </div>
 
-      <!-- Notif -->
       <div class="card">
-        <div class="section-title" style="margin-top:0"><i class="bi bi-bell"></i> إرسال إشعار</div>
+        <div class="section-title" style="margin-top:0"><div><i class="bi bi-bell"></i> إرسال إشعار</div></div>
         <div class="form-group"><label>عنوان الإشعار</label><input class="form-control" id="notifTitle"></div>
         <div class="form-group"><label>الرسالة</label><textarea class="form-control" id="notifBody"></textarea></div>
         <button class="btn btn-primary" id="addNotif"><i class="bi bi-send"></i> إرسال للجميع</button>
       </div>
 
-      <!-- Students -->
       <div class="card">
-        <div class="section-title" style="margin-top:0"><i class="bi bi-people"></i> الطلاب المسجلون</div>
+        <div class="section-title" style="margin-top:0">
+          <div><i class="bi bi-people"></i> الطلاب المسجلون</div>
+          <span class="see-all" id="exportStudents"><i class="bi bi-download"></i> CSV</span>
+        </div>
         <div id="studentsList"></div>
       </div>
 
       <div class="card">
-        <div class="section-title" style="margin-top:0"><i class="bi bi-gear"></i> الحساب</div>
+        <div class="section-title" style="margin-top:0"><div><i class="bi bi-gear"></i> الحساب</div></div>
         <button class="btn btn-ghost" id="logoutBtn" style="width:100%"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
       </div>
     </div>
@@ -329,12 +431,18 @@ textarea.form-control{resize:vertical;min-height:80px}
         <div class="avatar" id="profileAvatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 12px;background:linear-gradient(135deg,#4f46e5,#7c3aed)">?</div>
         <h3 id="profileName" style="font-size:18px;font-weight:800"></h3>
         <p id="profileEmail" style="color:var(--muted);font-size:13px;margin-top:4px"></p>
-        <div id="profileExtra" style="margin-top:12px;font-size:13px;color:var(--muted)"></div>
+        <div id="profileExtra" style="margin-top:12px;font-size:13px;color:var(--muted);line-height:1.8"></div>
         <span id="profileBadge" class="chip active" style="display:inline-block;margin-top:12px;font-size:11px;padding:4px 12px"></span>
       </div>
       <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer" id="editProfileCard">
         <i class="bi bi-pencil-square" style="font-size:22px;color:var(--primary)"></i>
         <div style="flex:1"><div style="font-weight:700;font-size:14px">تعديل بياناتي</div></div>
+        <i class="bi bi-chevron-left" style="color:#cbd5e1"></i>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer" id="favCard">
+        <i class="bi bi-star-fill" style="font-size:22px;color:#f59e0b"></i>
+        <div style="flex:1"><div style="font-weight:700;font-size:14px">المفضلة</div></div>
+        <span class="chip active" id="favCount" style="font-size:11px;padding:2px 10px">0</span>
         <i class="bi bi-chevron-left" style="color:#cbd5e1"></i>
       </div>
       <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer" id="installBtnCard">
@@ -344,8 +452,13 @@ textarea.form-control{resize:vertical;min-height:80px}
       </div>
       <div class="card" style="display:flex;align-items:center;gap:12px">
         <i class="bi bi-bell-fill" style="font-size:22px;color:var(--primary)"></i>
-        <div style="flex:1"><div style="font-weight:700;font-size:14px">تفعيل الإشعارات</div></div>
+        <div style="flex:1"><div style="font-weight:700;font-size:14px">تفعيل الإشعارات</div><div style="font-size:11px;color:var(--muted)" id="notifStatus">غير مفعلة</div></div>
         <button class="btn btn-primary btn-sm" id="enableNotifBtn" style="width:auto">تفعيل</button>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:12px">
+        <i class="bi bi-browser-chrome" style="font-size:22px;color:var(--primary)"></i>
+        <div style="flex:1"><div style="font-weight:700;font-size:14px">فتح في متصفح خارجي</div><div style="font-size:11px;color:var(--muted)">للاستخدام في الوضع العادي</div></div>
+        <button class="btn btn-primary btn-sm" id="openExtBtn" style="width:auto">فتح</button>
       </div>
       <button class="btn btn-ghost" id="logoutBtn2" style="width:100%;margin-top:8px"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
     </div>
@@ -357,7 +470,7 @@ textarea.form-control{resize:vertical;min-height:80px}
     <button class="nav-btn active" data-nav="home"><i class="bi bi-house-door"></i><span>الرئيسية</span></button>
     <button class="nav-btn" data-nav="schedules"><i class="bi bi-calendar-week"></i><span>المواعيد</span></button>
     <button class="nav-btn" data-nav="library"><i class="bi bi-book"></i><span>المكتبة</span></button>
-    <button class="nav-btn" data-nav="notifs"><i class="bi bi-bell"></i><span>إشعارات</span></button>
+    <button class="nav-btn" data-nav="notifs"><i class="bi bi-bell"></i><span>إشعارات</span><span class="nav-badge hidden" id="notifBadge">0</span></button>
     <button class="nav-btn" data-nav="profile"><i class="bi bi-person"></i><span>حسابي</span></button>
   </div>
 </div>
@@ -370,7 +483,7 @@ textarea.form-control{resize:vertical;min-height:80px}
   <button class="close" id="closeBanner">×</button>
 </div>
 
-<!-- Edit Profile Modal -->
+<!-- Edit Modal -->
 <div class="modal-bg" id="editModal">
   <div class="modal">
     <div class="modal-header">
@@ -379,16 +492,26 @@ textarea.form-control{resize:vertical;min-height:80px}
     </div>
     <div class="form-group"><label>الاسم</label><input class="form-control" id="editName"></div>
     <div class="form-group"><label>رقم الهاتف</label><input class="form-control" id="editPhone" inputmode="tel"></div>
-    <div class="form-group">
-      <label>المرحلة</label>
-      <div class="stage-list" id="editStageList"></div>
-    </div>
-    <div class="form-group" id="editGradeGroup" style="display:none">
-      <label>الصف</label>
-      <select class="form-control" id="editGrade"></select>
-    </div>
+    <div class="form-group"><label>المرحلة</label><div class="stage-list" id="editStageList"></div></div>
+    <div class="form-group" id="editGradeGroup" style="display:none"><label>الصف</label><select class="form-control" id="editGrade"></select></div>
     <div class="form-group"><label>رقم ولي الأمر</label><input class="form-control" id="editParent" inputmode="tel"></div>
     <button class="btn btn-primary" id="saveEdit"><i class="bi bi-check-lg"></i> حفظ</button>
+  </div>
+</div>
+
+<!-- Image Viewer -->
+<div id="imgViewer">
+  <button class="close" onclick="document.getElementById('imgViewer').classList.remove('show')">×</button>
+  <img id="viewerImg" src="">
+</div>
+
+<!-- External Notice -->
+<div id="externalNotice">
+  <div class="ext-card">
+    <i class="bi bi-browser-chrome"></i>
+    <h3>فتح في المتصفح</h3>
+    <p>سيتم فتح التطبيق في متصفح خارجي لتسجيل الدخول بشكل أسهل. اضغط للمتابعة.</p>
+    <button id="openExtNow">فتح الآن</button>
   </div>
 </div>
 
@@ -398,7 +521,7 @@ textarea.form-control{resize:vertical;min-height:80px}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, push, set, onValue, remove, get, update }
+import { getDatabase, ref, push, set, onValue, remove, get }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
@@ -431,8 +554,11 @@ let currentDay = "today", currentCat = "all";
 let selectedStage = null, selectedGrade = null;
 let editSelectedStage = null, editSelectedGrade = null;
 let messaging = null;
+let favorites = JSON.parse(localStorage.getItem("sigma_favs") || "[]");
+let readNotifs = JSON.parse(localStorage.getItem("sigma_read_notifs") || "[]");
 
-/* ===== Toast ===== */
+const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
 function toast(msg, type = "") {
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -441,72 +567,73 @@ function toast(msg, type = "") {
   t._to = setTimeout(() => t.className = "toast " + type, 2500);
 }
 
-/* ===== Navigation ===== */
 window.goTo = (view) => {
   document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
   const target = document.getElementById("view-" + view);
   if (target) target.classList.remove("hidden");
-  document.querySelectorAll(".nav-btn[data-nav]").forEach(b =>
-    b.classList.toggle("active", b.dataset.nav === view));
+  document.querySelectorAll(".nav-btn[data-nav]").forEach(b => b.classList.toggle("active", b.dataset.nav === view));
   window.scrollTo({ top: 0, behavior: "smooth" });
+  if (view === "notifs") markAllRead();
 };
-document.querySelectorAll(".nav-btn[data-nav]").forEach(btn => {
-  btn.onclick = () => goTo(btn.dataset.nav);
-});
 
-/* ===== Detecting PWA ===== */
-const isStandalone = window.matchMedia("(display-mode: standalone)").matches
-  || window.navigator.standalone === true;
+document.querySelectorAll(".nav-btn[data-nav]").forEach(btn => btn.onclick = () => goTo(btn.dataset.nav));
 
-/* ===== Login ===== */
+function openExternal() {
+  const url = new URL("login.html", window.location.href);
+  url.searchParams.set("return", window.location.href);
+  const w = window.open(url.toString(), "_blank", "noopener,noreferrer");
+  if (!w || w.closed) {
+    document.getElementById("externalNotice").classList.add("show");
+  }
+}
+
+document.getElementById("openExtNow").onclick = () => {
+  const url = new URL("login.html", window.location.href);
+  url.searchParams.set("return", window.location.href);
+  window.location.href = url.toString();
+};
+
+document.getElementById("openExtBtn").onclick = () => {
+  document.getElementById("externalNotice").classList.add("show");
+};
+
 document.getElementById("googleLogin").onclick = async () => {
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
 
   if (isStandalone) {
-    // PWA: افتح صفحة login خارجية
-    const url = new URL("login.html", window.location.href);
-    url.searchParams.set("return", window.location.href);
-    window.open(url.toString(), "_blank", "noopener");
-  } else {
-    // متصفح عادي
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (e) {
-      if (e.code === "auth/popup-blocked" || e.code === "auth/popup-closed-by-user") {
-        await signInWithRedirect(auth, provider);
-      } else {
-        toast(e.message, "error");
-      }
-    }
+    document.getElementById("externalNotice").classList.add("show");
+    return;
+  }
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    if (e.code === "auth/popup-blocked" || e.code === "auth/popup-closed-by-user") {
+      try { await signInWithRedirect(auth, provider); } catch (err) { toast(err.message, "error"); }
+    } else toast(e.message, "error");
   }
 };
 
-// بعد الرجوع من الـredirect (في حالة signInWithRedirect)
 getRedirectResult(auth).catch(() => {});
 
-/* ===== Auth State ===== */
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   if (!user) {
     document.getElementById("loginScreen").classList.remove("hidden");
     document.getElementById("setupScreen").classList.add("hidden");
     document.getElementById("app").classList.add("hidden");
+    hideSplash();
     return;
   }
-
   isAdmin = user.email === ADMIN_EMAIL;
   document.getElementById("loginScreen").classList.add("hidden");
-
-  // تحقق من البيانات
   const snap = await get(ref(db, "users/" + user.uid));
-  if (snap.exists()) {
-    userData = snap.val();
-    showApp();
-  } else {
-    showSetup();
-  }
+  if (snap.exists()) { userData = snap.val(); showApp(); }
+  else showSetup();
+  hideSplash();
 });
+
+function hideSplash() { setTimeout(() => document.getElementById("splash").classList.add("hide"), 500); }
 
 function showApp() {
   document.getElementById("setupScreen").classList.add("hidden");
@@ -519,7 +646,7 @@ function showApp() {
 
   document.getElementById("profileAvatar").innerHTML = currentUser.photoURL
     ? `<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover">` : initial;
-  document.getElementById("profileName").textContent = userData?.name || currentUser.displayName || "مستخدم";
+  document.getElementById("profileName").textContent = userData?.name || "مستخدم";
   document.getElementById("profileEmail").textContent = currentUser.email;
   document.getElementById("profileExtra").innerHTML =
     `${userData?.stage ? "🎓 " + esc(userData.stage) : ""}${userData?.grade ? " - " + esc(userData.grade) : ""}<br>${userData?.phone ? "📱 " + esc(userData.phone) : ""}`;
@@ -531,39 +658,33 @@ function showApp() {
 
   document.getElementById("fab").classList.toggle("hidden", !isAdmin);
 
+  if (Notification.permission === "granted") {
+    document.getElementById("notifStatus").textContent = "مفعلة ✅";
+  }
+
   loadAll();
   initMessaging();
+  updateFavCount();
+  updateNotifBadge();
 }
 
-/* ===== Setup Screen (استكمال البيانات) ===== */
 function showSetup() {
   document.getElementById("setupScreen").classList.remove("hidden");
   document.getElementById("app").classList.add("hidden");
   document.getElementById("setupName").value = currentUser.displayName || "";
-  loadStagesForSetup();
-}
-
-function loadStagesForSetup() {
   onValue(ref(db, "stages"), (snap) => {
     caches.stages = [];
     snap.forEach(c => caches.stages.push({ id: c.key, ...c.val() }));
     renderStagePicker("stageList", "gradeGroup", "setupGrade", false);
   }, { onlyOnce: true });
-  // لو مفيش مراحل
-  setTimeout(() => {
-    if (caches.stages.length === 0) {
-      document.getElementById("stageList").innerHTML =
-        `<div style="color:#94a3b8;font-size:13px">لم تُضف مراحل بعد — تواصل مع الإدارة</div>`;
-    }
-  }, 1500);
 }
 
 function renderStagePicker(listId, gradeGroupId, gradeSelectId, isEdit) {
   const list = document.getElementById(listId);
-  list.innerHTML = caches.stages.map(s =>
-    `<div class="stage-opt" data-id="${s.id}">${esc(s.name)}</div>`
-  ).join("");
-
+  list.innerHTML = caches.stages.map(s => `<div class="stage-opt" data-id="${s.id}">${esc(s.name)}</div>`).join("");
+  if (!caches.stages.length) {
+    list.innerHTML = `<div style="color:#94a3b8;font-size:13px">لم تُضف مراحل بعد — تواصل مع الإدارة</div>`;
+  }
   list.querySelectorAll(".stage-opt").forEach(el => {
     el.onclick = () => {
       list.querySelectorAll(".stage-opt").forEach(x => x.classList.remove("selected"));
@@ -574,10 +695,8 @@ function renderStagePicker(listId, gradeGroupId, gradeSelectId, isEdit) {
       const gradeSelect = document.getElementById(gradeSelectId);
       gradeGroup.style.display = "block";
       gradeSelect.innerHTML = (stage.grades || []).map(g => `<option>${esc(g)}</option>`).join("");
-      gradeSelect.onchange = () => {
-        if (isEdit) editSelectedGrade = gradeSelect.value; else selectedGrade = gradeSelect.value;
-      };
       if (isEdit) editSelectedGrade = gradeSelect.value; else selectedGrade = gradeSelect.value;
+      gradeSelect.onchange = () => { if (isEdit) editSelectedGrade = gradeSelect.value; else selectedGrade = gradeSelect.value; };
     };
   });
 }
@@ -603,34 +722,26 @@ document.getElementById("saveProfile").onclick = async () => {
   } catch (e) { toast(e.message, "error"); }
 };
 
-/* ===== Edit Profile ===== */
 document.getElementById("editProfileCard").onclick = () => {
   document.getElementById("editName").value = userData?.name || "";
   document.getElementById("editPhone").value = userData?.phone || "";
   document.getElementById("editParent").value = userData?.parent || "";
-  loadStagesForEdit();
-  document.getElementById("editModal").classList.add("show");
-};
-window.closeEdit = () => document.getElementById("editModal").classList.remove("show");
-
-function loadStagesForEdit() {
   onValue(ref(db, "stages"), (snap) => {
     caches.stages = [];
     snap.forEach(c => caches.stages.push({ id: c.key, ...c.val() }));
     renderStagePicker("editStageList", "editGradeGroup", "editGrade", true);
   }, { onlyOnce: true });
-}
+  document.getElementById("editModal").classList.add("show");
+};
+
+window.closeEdit = () => document.getElementById("editModal").classList.remove("show");
 
 document.getElementById("saveEdit").onclick = async () => {
   const name = document.getElementById("editName").value.trim();
   const phone = document.getElementById("editPhone").value.trim();
   const parent = document.getElementById("editParent").value.trim();
   if (!name) return toast("اكتب اسمك", "error");
-  const data = {
-    ...userData, name, phone, parent,
-    stage: editSelectedStage?.name || userData.stage,
-    grade: editSelectedGrade || userData.grade
-  };
+  const data = { ...userData, name, phone, parent, stage: editSelectedStage?.name || userData.stage, grade: editSelectedGrade || userData.grade };
   try {
     await set(ref(db, "users/" + currentUser.uid), data);
     userData = data;
@@ -640,7 +751,6 @@ document.getElementById("saveEdit").onclick = async () => {
   } catch (e) { toast(e.message, "error"); }
 };
 
-/* ===== Load Data ===== */
 function loadAll() {
   ["schedules", "news", "library", "notifs", "stages"].forEach(k => {
     onValue(ref(db, k), (snap) => {
@@ -648,39 +758,67 @@ function loadAll() {
       snap.forEach(c => caches[k].push({ id: c.key, ...c.val() }));
       caches[k].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       render();
-      if (k === "stages") renderStagesAdmin();
+      if (k === "stages") { renderStagesAdmin(); updateStageSelect(); }
+      if (k === "notifs") updateNotifBadge();
     });
   });
-
   if (isAdmin) {
     onValue(ref(db, "users"), (snap) => {
       caches.students = [];
       snap.forEach(c => caches.students.push({ id: c.key, ...c.val() }));
-      renderStudents();
+      renderStudents(); updateStats();
     });
   }
+}
+
+function updateStats() {
+  document.getElementById("statStudents").textContent = caches.students.length;
+  document.getElementById("statSchedules").textContent = caches.schedules.length;
+  document.getElementById("statNews").textContent = caches.news.length;
+  document.getElementById("statLibrary").textContent = caches.library.length;
 }
 
 function render() {
   renderHome(); renderSchedules(); renderNews(); renderLibrary(); renderNotifs();
 }
 
+function matchesSearch(text, q) { return !q || String(text || "").toLowerCase().includes(q.toLowerCase()); }
+
 function renderHome() {
-  const today = caches.schedules.filter(s => s.day === "today").slice(0, 3);
+  const q = document.getElementById("searchHome")?.value || "";
+  let today = caches.schedules.filter(s => s.day === "today");
+  let news = caches.news.slice(0, 3);
+  if (q) {
+    today = caches.schedules.filter(s => matchesSearch(s.title, q) || matchesSearch(s.note, q));
+    news = caches.news.filter(n => matchesSearch(n.title, q) || matchesSearch(n.body, q));
+  }
   document.getElementById("homeToday").innerHTML = today.length
-    ? today.map(scheduleCard).join("")
-    : `<div class="empty"><i class="bi bi-calendar-x"></i><p>لا توجد مواعيد اليوم</p></div>`;
-  const news = caches.news.slice(0, 2);
+    ? today.slice(0, 3).map(scheduleCard).join("")
+    : `<div class="empty"><i class="bi bi-calendar-x"></i><p>لا توجد مواعيد</p></div>`;
   document.getElementById("homeNews").innerHTML = news.length
-    ? news.map(newsCard).join("")
+    ? news.slice(0, 2).map(newsCard).join("")
     : `<div class="empty"><i class="bi bi-newspaper"></i><p>لا توجد أخبار</p></div>`;
 }
 
 function renderSchedules() {
   const filtered = caches.schedules.filter(s => s.day === currentDay);
-  document.getElementById("schedulesList").innerHTML = filtered.length
-    ? filtered.map(scheduleCard).join("")
-    : `<div class="empty"><i class="bi bi-calendar-x"></i><p>لا توجد مواعيد</p></div>`;
+  const el = document.getElementById("schedulesList");
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty"><i class="bi bi-calendar-x"></i><p>لا توجد مواعيد</p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="timeline">` + filtered.map(s => `
+    <div class="tl-item">
+      <div class="tl-time"><i class="bi bi-clock"></i> ${esc(s.time || "غير محدد")}</div>
+      <div class="tl-title">${esc(s.title)}</div>
+      ${s.note ? `<div class="tl-body">${esc(s.note)}</div>` : ""}
+      ${s.file ? fileRender(s.file) : ""}
+      <div class="card-actions">
+        <button class="action-btn" onclick="shareItem('${esc(s.title)}','${esc(s.note || "")}')"><i class="bi bi-share"></i> مشاركة</button>
+        ${isAdmin ? `<button class="action-btn danger" onclick="delItem('schedules','${s.id}')"><i class="bi bi-trash"></i> حذف</button>` : ""}
+      </div>
+    </div>
+  `).join("") + `</div>`;
 }
 
 function renderNews() {
@@ -690,26 +828,33 @@ function renderNews() {
 }
 
 function renderLibrary() {
-  const filtered = currentCat === "all" ? caches.library : caches.library.filter(l => l.cat === currentCat);
+  const q = document.getElementById("searchLib")?.value || "";
+  let filtered = caches.library;
+  if (currentCat === "fav") filtered = filtered.filter(l => favorites.includes(l.id));
+  else if (currentCat !== "all") filtered = filtered.filter(l => l.cat === currentCat);
+  if (q) filtered = filtered.filter(l => matchesSearch(l.title, q));
   document.getElementById("libraryList").innerHTML = filtered.length
     ? filtered.map(libCard).join("")
-    : `<div class="empty"><i class="bi bi-book"></i><p>المكتبة فارغة</p></div>`;
+    : `<div class="empty"><i class="bi bi-book"></i><p>لا توجد ملفات</p></div>`;
 }
 
 function renderNotifs() {
   document.getElementById("notifsList").innerHTML = caches.notifs.length
     ? caches.notifs.map(notifCard).join("")
     : `<div class="empty"><i class="bi bi-bell-slash"></i><p>لا توجد إشعارات</p></div>`;
+  updateNotifBadge();
 }
 
-/* ===== Templates ===== */
 function scheduleCard(s) {
   return `<div class="card">
     <div class="card-title"><i class="bi bi-bookmark-check"></i>${esc(s.title)}</div>
     ${s.time ? `<div class="card-meta"><span><i class="bi bi-clock"></i> ${esc(s.time)}</span></div>` : ""}
     ${s.note ? `<div class="card-body">${esc(s.note)}</div>` : ""}
     ${fileRender(s.file)}
-    ${isAdmin ? `<div style="margin-top:10px"><button class="btn btn-danger btn-sm" onclick="delItem('schedules','${s.id}')"><i class="bi bi-trash"></i> حذف</button></div>` : ""}
+    <div class="card-actions">
+      <button class="action-btn" onclick="shareItem('${esc(s.title)}','${esc(s.note || "")}')"><i class="bi bi-share"></i> مشاركة</button>
+      ${isAdmin ? `<button class="action-btn danger" onclick="delItem('schedules','${s.id}')"><i class="bi bi-trash"></i> حذف</button>` : ""}
+    </div>
   </div>`;
 }
 
@@ -718,43 +863,75 @@ function newsCard(n) {
     <div class="card-title"><i class="bi bi-megaphone"></i>${esc(n.title)}</div>
     ${n.body ? `<div class="card-body">${esc(n.body)}</div>` : ""}
     ${fileRender(n.file)}
-    ${isAdmin ? `<div style="margin-top:10px"><button class="btn btn-danger btn-sm" onclick="delItem('news','${n.id}')"><i class="bi bi-trash"></i> حذف</button></div>` : ""}
+    <div class="card-actions">
+      <button class="action-btn" onclick="shareItem('${esc(n.title)}','${esc(n.body || "")}')"><i class="bi bi-share"></i> مشاركة</button>
+      ${isAdmin ? `<button class="action-btn danger" onclick="delItem('news','${n.id}')"><i class="bi bi-trash"></i> حذف</button>` : ""}
+    </div>
   </div>`;
 }
 
 function libCard(l) {
   const icons = { book: "bi-book", summary: "bi-file-text", exam: "bi-clipboard-check" };
   const labels = { book: "كتاب", summary: "ملخص", exam: "امتحان" };
+  const isFav = favorites.includes(l.id);
   return `<div class="lib-card">
+    <button class="star-btn ${isFav ? "active" : ""}" style="position:static;flex-shrink:0" onclick="toggleFav('${l.id}')"><i class="bi ${isFav ? "bi-star-fill" : "bi-star"}"></i></button>
     <div class="lib-icon"><i class="bi ${icons[l.cat] || "bi-file-earmark"}"></i></div>
     <div class="lib-info"><h4>${esc(l.title)}</h4><p>${labels[l.cat] || "ملف"}</p></div>
     <div class="lib-actions">
-      ${l.file?.url ? `<a href="${l.file.url}" target="_blank" class="btn btn-ghost btn-sm"><i class="bi bi-download"></i></a>` : ""}
-      ${isAdmin ? `<button class="btn btn-danger btn-sm" onclick="delItem('library','${l.id}')"><i class="bi bi-trash"></i></button>` : ""}
+      ${l.file?.url ? `<a href="${l.file.url}" target="_blank" class="action-btn"><i class="bi bi-download"></i></a>` : ""}
+      ${isAdmin ? `<button class="action-btn danger" onclick="delItem('library','${l.id}')"><i class="bi bi-trash"></i></button>` : ""}
     </div>
   </div>`;
 }
 
 function notifCard(n) {
   const d = n.createdAt ? new Date(n.createdAt).toLocaleDateString("ar-EG", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : "";
-  return `<div class="notif-item">
+  const unread = !readNotifs.includes(n.id);
+  return `<div class="notif-item ${unread ? "unread" : ""}">
     <div class="notif-icon"><i class="bi bi-bell-fill"></i></div>
     <div style="flex:1">
       <h4>${esc(n.title)}</h4>
       ${n.body ? `<p>${esc(n.body)}</p>` : ""}
       <time>${d}</time>
     </div>
-    ${isAdmin ? `<button class="btn btn-danger btn-sm" style="align-self:flex-start" onclick="delItem('notifs','${n.id}')"><i class="bi bi-trash"></i></button>` : ""}
+    ${isAdmin ? `<button class="action-btn danger" style="align-self:flex-start" onclick="delItem('notifs','${n.id}')"><i class="bi bi-trash"></i></button>` : ""}
   </div>`;
 }
 
 function fileRender(f) {
   if (!f?.url) return "";
-  if (f.type?.startsWith("image/")) return `<img src="${f.url}" class="file-preview" onclick="window.open('${f.url}','_blank')">`;
+  if (f.type?.startsWith("image/")) return `<img src="${f.url}" class="file-preview" onclick="viewImage('${f.url}')">`;
   return `<a href="${f.url}" target="_blank" class="file-box"><i class="bi bi-file-earmark-pdf-fill"></i><span>${esc(f.name || "ملف")}</span></a>`;
 }
 
-/* ===== Delete ===== */
+window.viewImage = (url) => {
+  document.getElementById("viewerImg").src = url;
+  document.getElementById("imgViewer").classList.add("show");
+};
+
+window.shareItem = async (title, body) => {
+  const text = `${title}\n${body}`;
+  if (navigator.share) {
+    try { await navigator.share({ title, text }); } catch (e) {}
+  } else {
+    try { await navigator.clipboard.writeText(text); toast("تم نسخ النص", "success"); }
+    catch (e) { toast("لم يتم النسخ", "error"); }
+  }
+};
+
+window.toggleFav = (id) => {
+  if (favorites.includes(id)) favorites = favorites.filter(x => x !== id);
+  else favorites.push(id);
+  localStorage.setItem("sigma_favs", JSON.stringify(favorites));
+  renderLibrary(); updateFavCount();
+  toast(favorites.includes(id) ? "⭐ أضيف للمفضلة" : "تم الإزالة", "info");
+};
+
+function updateFavCount() { document.getElementById("favCount").textContent = favorites.length; }
+
+document.getElementById("favCard").onclick = () => { goTo("library"); currentCat = "fav"; document.querySelectorAll(".chip[data-cat]").forEach(x => x.classList.toggle("active", x.dataset.cat === "fav")); renderLibrary(); };
+
 window.delItem = async (col, id) => {
   if (!confirm("تأكيد الحذف؟")) return;
   const item = caches[col].find(x => x.id === id);
@@ -765,7 +942,6 @@ window.delItem = async (col, id) => {
   } catch (e) { toast(e.message, "error"); }
 };
 
-/* ===== Upload ===== */
 async function upload(file, folder) {
   if (!file) return null;
   const p = `${folder}/${Date.now()}_${file.name}`;
@@ -774,7 +950,6 @@ async function upload(file, folder) {
   return { url: await getDownloadURL(r), path: p, type: file.type, name: file.name };
 }
 
-/* ===== Admin Actions ===== */
 document.getElementById("addStage").onclick = async () => {
   const name = document.getElementById("stageName").value.trim();
   const gradesRaw = document.getElementById("stageGrades").value.trim();
@@ -788,32 +963,32 @@ document.getElementById("addStage").onclick = async () => {
   } catch (e) { toast(e.message, "error"); }
 };
 
+function updateStageSelect() {
+  const sel = document.getElementById("schedStage");
+  if (!sel) return;
+  sel.innerHTML = `<option value="">الكل</option>` + caches.stages.map(s => `<option value="${esc(s.name)}">${esc(s.name)}</option>`).join("");
+}
+
 function renderStagesAdmin() {
   const el = document.getElementById("stagesAdminList");
   if (!el) return;
-  if (!caches.stages.length) {
-    el.innerHTML = `<div style="color:#94a3b8;font-size:13px;text-align:center">لا توجد مراحل</div>`;
-    return;
-  }
+  if (!caches.stages.length) { el.innerHTML = `<div style="color:#94a3b8;font-size:13px;text-align:center">لا توجد مراحل</div>`; return; }
   el.innerHTML = caches.stages.map(s => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#f8fafc;border-radius:10px;margin-bottom:6px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:6px">
       <div>
         <div style="font-weight:700;font-size:14px">${esc(s.name)}</div>
         <div style="font-size:11px;color:var(--muted)">${(s.grades || []).map(esc).join(" • ")}</div>
       </div>
-      <button class="btn btn-danger btn-sm" onclick="delStage('${s.id}')"><i class="bi bi-trash"></i></button>
+      <button class="action-btn danger" onclick="delStage('${s.id}')"><i class="bi bi-trash"></i></button>
     </div>
   `).join("");
 }
 
-window.delStage = async (id) => {
-  if (!confirm("حذف المرحلة؟")) return;
-  await remove(ref(db, "stages/" + id));
-  toast("تم الحذف", "success");
-};
+window.delStage = async (id) => { if (!confirm("حذف المرحلة؟")) return; await remove(ref(db, "stages/" + id)); toast("تم الحذف", "success"); };
 
 document.getElementById("addSched").onclick = async () => {
   const day = document.getElementById("schedDay").value;
+  const stage = document.getElementById("schedStage").value;
   const title = document.getElementById("schedTitle").value.trim();
   const time = document.getElementById("schedTime").value.trim();
   const note = document.getElementById("schedNote").value.trim();
@@ -821,7 +996,7 @@ document.getElementById("addSched").onclick = async () => {
   if (!title) return toast("اكتب عنوان الدرس", "error");
   try {
     const f = await upload(file, "schedules");
-    await set(push(ref(db, "schedules")), { day, title, time, note, file: f, createdAt: Date.now() });
+    await set(push(ref(db, "schedules")), { day, title, time, note, stage, file: f, createdAt: Date.now() });
     ["schedTitle", "schedTime", "schedNote", "schedFile"].forEach(i => document.getElementById(i).value = "");
     toast("✅ تمت الإضافة", "success");
   } catch (e) { toast(e.message, "error"); }
@@ -858,74 +1033,107 @@ document.getElementById("addNotif").onclick = async () => {
   const body = document.getElementById("notifBody").value.trim();
   if (!title) return toast("اكتب عنوان الإشعار", "error");
   try {
-    const nRef = push(ref(db, "notifs"));
-    await set(nRef, { title, body, createdAt: Date.now(), by: currentUser.email });
+    await set(push(ref(db, "notifs")), { title, body, createdAt: Date.now(), by: currentUser.email });
     ["notifTitle", "notifBody"].forEach(i => document.getElementById(i).value = "");
     toast("✅ تم الإرسال", "success");
-    // إظهار إشعار محلي للأدمن
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification(title, { body, icon: "icon-192.png", tag: "sigma-notif" });
-    }
+    if (Notification.permission === "granted") new Notification(title, { body, icon: "icon-192.png" });
   } catch (e) { toast(e.message, "error"); }
 };
 
-/* ===== Students List (Admin) ===== */
 function renderStudents() {
   const el = document.getElementById("studentsList");
   if (!el) return;
-  if (!caches.students.length) {
-    el.innerHTML = `<div style="color:#94a3b8;font-size:13px;text-align:center">لا يوجد طلاب</div>`;
-    return;
-  }
+  if (!caches.students.length) { el.innerHTML = `<div style="color:#94a3b8;font-size:13px;text-align:center">لا يوجد طلاب</div>`; return; }
   el.innerHTML = caches.students.map(s => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#f8fafc;border-radius:10px;margin-bottom:6px">
-      <div>
-        <div style="font-weight:700;font-size:13px">${esc(s.name || "—")}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:6px">
+      <div style="min-width:0;flex:1">
+        <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.name || "—")}</div>
         <div style="font-size:11px;color:var(--muted)">${esc(s.stage || "")} ${s.grade ? "- " + esc(s.grade) : ""} • ${esc(s.phone || s.email || "")}</div>
       </div>
-      <button class="btn btn-danger btn-sm" onclick="delUser('${s.id}')"><i class="bi bi-trash"></i></button>
+      <button class="action-btn danger" onclick="delUser('${s.id}')"><i class="bi bi-trash"></i></button>
     </div>
   `).join("");
 }
 
-window.delUser = async (uid) => {
-  if (!confirm("حذف الطالب من القائمة؟ (لن يُحذف حسابه من Firebase)")) return;
-  await remove(ref(db, "users/" + uid));
-  toast("تم الحذف", "success");
+window.delUser = async (uid) => { if (!confirm("حذف الطالب؟")) return; await remove(ref(db, "users/" + uid)); toast("تم الحذف", "success"); };
+
+document.getElementById("exportStudents").onclick = () => {
+  if (!caches.students.length) return toast("لا يوجد طلاب", "error");
+  const headers = ["الاسم", "الإيميل", "الهاتف", "المرحلة", "الصف", "ولي الأمر"];
+  const rows = caches.students.map(s => [s.name || "", s.email || "", s.phone || "", s.stage || "", s.grade || "", s.parent || ""]);
+  const csv = "\uFEFF" + [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `students_${Date.now()}.csv`;
+  a.click();
+  toast("✅ تم التصدير", "success");
 };
 
-/* ===== Chips ===== */
-document.querySelectorAll(".chip[data-day]").forEach(c => {
-  c.onclick = () => {
-    document.querySelectorAll(".chip[data-day]").forEach(x => x.classList.remove("active"));
-    c.classList.add("active"); currentDay = c.dataset.day; renderSchedules();
-  };
+document.getElementById("printSchedBtn").onclick = () => {
+  const filtered = caches.schedules.filter(s => s.day === currentDay);
+  if (!filtered.length) return toast("لا توجد مواعيد للطباعة", "error");
+  const win = window.open("", "_blank");
+  win.document.write(`<html dir="rtl"><head><title>مواعيد</title><style>body{font-family:Cairo,sans-serif;padding:20px}h1{color:#4f46e5}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:10px;text-align:right}th{background:#4f46e5;color:#fff}</style></head><body>
+    <h1>مواعيد ${currentDay === "today" ? "اليوم" : currentDay === "tomorrow" ? "بكرة" : "الأسبوع"}</h1>
+    <table><tr><th>العنوان</th><th>الوقت</th><th>ملاحظة</th></tr>
+    ${filtered.map(s => `<tr><td>${esc(s.title)}</td><td>${esc(s.time || "-")}</td><td>${esc(s.note || "-")}</td></tr>`).join("")}
+    </table></body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 500);
+};
+
+document.querySelectorAll(".chip[data-day]").forEach(c => c.onclick = () => {
+  document.querySelectorAll(".chip[data-day]").forEach(x => x.classList.remove("active"));
+  c.classList.add("active"); currentDay = c.dataset.day; renderSchedules();
 });
-document.querySelectorAll(".chip[data-cat]").forEach(c => {
-  c.onclick = () => {
-    document.querySelectorAll(".chip[data-cat]").forEach(x => x.classList.remove("active"));
-    c.classList.add("active"); currentCat = c.dataset.cat; renderLibrary();
-  };
+document.querySelectorAll(".chip[data-cat]").forEach(c => c.onclick = () => {
+  document.querySelectorAll(".chip[data-cat]").forEach(x => x.classList.remove("active"));
+  c.classList.add("active"); currentCat = c.dataset.cat; renderLibrary();
 });
 
-/* ===== Logout ===== */
+document.getElementById("searchHome").oninput = renderHome;
+document.getElementById("searchLib").oninput = renderLibrary;
+
 document.getElementById("logoutBtn").onclick = () => signOut(auth);
 document.getElementById("logoutBtn2").onclick = () => signOut(auth);
 
-/* ===== Escape ===== */
-function esc(s) {
-  return String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+/* Theme */
+function applyTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  localStorage.setItem("sigma_theme", t);
+  document.getElementById("themeToggle").innerHTML = t === "dark" ? `<i class="bi bi-sun"></i>` : `<i class="bi bi-moon-stars"></i>`;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = t === "dark" ? "#0f172a" : "#4f46e5";
+}
+const savedTheme = localStorage.getItem("sigma_theme") || "light";
+applyTheme(savedTheme);
+document.getElementById("themeToggle").onclick = () => applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+
+/* Read tracking */
+function markAllRead() {
+  caches.notifs.forEach(n => { if (!readNotifs.includes(n.id)) readNotifs.push(n.id); });
+  localStorage.setItem("sigma_read_notifs", JSON.stringify(readNotifs));
+  updateNotifBadge(); renderNotifs();
+}
+document.getElementById("markAllRead").onclick = markAllRead;
+
+function updateNotifBadge() {
+  const unread = caches.notifs.filter(n => !readNotifs.includes(n.id)).length;
+  const b = document.getElementById("notifBadge");
+  if (unread > 0) { b.textContent = unread > 9 ? "9+" : unread; b.classList.remove("hidden"); }
+  else b.classList.add("hidden");
 }
 
-/* ===== PWA Install (auto-hide in 5s) ===== */
+function esc(s) { return String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+/* PWA Install */
 let deferredPrompt = null;
 window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
+  e.preventDefault(); deferredPrompt = e;
   if (localStorage.getItem("installDismissed")) return;
   const banner = document.getElementById("installBanner");
   banner.classList.remove("hidden");
-  // يختفي تلقائياً بعد 5 ثواني
   setTimeout(() => {
     banner.classList.add("hide");
     setTimeout(() => banner.classList.add("hidden"), 400);
@@ -933,47 +1141,36 @@ window.addEventListener("beforeinstallprompt", (e) => {
 });
 document.getElementById("installBtn").onclick = async () => {
   if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
+  deferredPrompt.prompt(); await deferredPrompt.userChoice;
   deferredPrompt = null;
   const b = document.getElementById("installBanner");
-  b.classList.add("hide");
-  setTimeout(() => b.classList.add("hidden"), 400);
+  b.classList.add("hide"); setTimeout(() => b.classList.add("hidden"), 400);
 };
 document.getElementById("closeBanner").onclick = () => {
   localStorage.setItem("installDismissed", "1");
   const b = document.getElementById("installBanner");
-  b.classList.add("hide");
-  setTimeout(() => b.classList.add("hidden"), 400);
+  b.classList.add("hide"); setTimeout(() => b.classList.add("hidden"), 400);
 };
 document.getElementById("installBtnCard").onclick = async () => {
   if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
   else toast("من قائمة المتصفح اختر 'إضافة للشاشة'", "");
 };
 
-/* ===== FCM Notifications ===== */
+/* FCM */
 async function initMessaging() {
   try {
     if (!("Notification" in window)) return;
     const supported = await isSupported().catch(() => false);
     if (!supported) return;
     messaging = getMessaging(app);
-
-    // استقبال الرسائل والتطبيق مفتوح
     onMessage(messaging, (payload) => {
       const t = payload.notification?.title || "إشعار جديد";
       const b = payload.notification?.body || "";
       toast(t, "success");
-      if (Notification.permission === "granted") {
-        new Notification(t, { body: b, icon: "icon-192.png" });
-      }
+      if (Notification.permission === "granted") new Notification(t, { body: b, icon: "icon-192.png" });
     });
-
-    // لو عنده صلاحية، احفظ التوكن
-    if (Notification.permission === "granted") {
-      await saveFcmToken();
-    }
-  } catch (e) { /* تجاهل */ }
+    if (Notification.permission === "granted") await saveFcmToken();
+  } catch (e) {}
 }
 
 async function saveFcmToken() {
@@ -981,29 +1178,24 @@ async function saveFcmToken() {
     const reg = await navigator.serviceWorker.register("firebase-messaging-sw.js");
     const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
     if (token && currentUser) {
-      await set(ref(db, "fcmTokens/" + currentUser.uid), {
-        token, email: currentUser.email, updatedAt: Date.now()
-      });
-      console.log("FCM Token saved");
+      await set(ref(db, "fcmTokens/" + currentUser.uid), { token, email: currentUser.email, updatedAt: Date.now() });
     }
-  } catch (e) { console.warn("FCM token error:", e.message); }
+  } catch (e) {}
 }
 
 document.getElementById("enableNotifBtn").onclick = async () => {
   if (!("Notification" in window)) return toast("المتصفح لا يدعم الإشعارات", "error");
   const perm = await Notification.requestPermission();
   if (perm === "granted") {
+    document.getElementById("notifStatus").textContent = "مفعلة ✅";
     toast("✅ تم تفعيل الإشعارات", "success");
     await saveFcmToken();
-  } else {
-    toast("تم رفض الإشعارات", "error");
-  }
+  } else toast("تم رفض الإشعارات", "error");
 };
 
-/* ===== Register SW ===== */
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js").catch(() => {});
-}
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
+window.addEventListener("load", () => setTimeout(hideSplash, 2000));
 </script>
 </body>
-</html>
+                                                              </html>
