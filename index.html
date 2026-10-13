@@ -2,113 +2,446 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>سنتر سيجما التعليمي</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<title>سنتر سيجما</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
-  * { font-family: 'Cairo', sans-serif; }
-  body { background: #f0f4f8; min-height: 100vh; }
-  .navbar-brand { font-weight: 700; }
-  .card { border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-  .btn-google { background: #fff; border: 1px solid #dadce0; color: #3c4043; font-weight: 600; }
-  .btn-google:hover { background: #f8f9fa; }
-  .badge-admin { background: #dc3545; }
-  .schedule-item { border-right: 4px solid #0d6efd; padding: 12px 16px; margin-bottom: 10px; background: #fff; border-radius: 10px; }
-  .news-item { border-right: 4px solid #198754; padding: 12px 16px; margin-bottom: 10px; background: #fff; border-radius: 10px; }
-  .hidden { display: none !important; }
-  .loading { text-align: center; padding: 40px; color: #888; }
-  #authSection { max-width: 420px; margin: 80px auto; }
-  .file-preview { max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 8px; }
-  .tab-btn.active { background: #0d6efd !important; color: #fff !important; }
-  footer { text-align: center; padding: 20px; color: #888; font-size: 14px; }
+:root{
+  --primary:#4f46e5;
+  --primary-dark:#4338ca;
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --text:#1e293b;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --success:#10b981;
+  --danger:#ef4444;
+  --warning:#f59e0b;
+  --radius:18px;
+  --shadow:0 2px 12px rgba(15,23,42,.06);
+  --shadow-lg:0 8px 30px rgba(15,23,42,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Cairo',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overscroll-behavior-y:contain;
+  padding-bottom:80px;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,textarea,select{font-family:inherit;font-size:15px}
+
+/* ===== Header ===== */
+.header{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  color:#fff;padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 20px rgba(79,70,229,.25);
+}
+.header h1{font-size:18px;font-weight:800}
+.header .sub{font-size:11px;opacity:.85;font-weight:400}
+.avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:15px;color:#fff;
+  border:2px solid rgba(255,255,255,.4);overflow:hidden;
+}
+.avatar img{width:100%;height:100%;object-fit:cover}
+
+/* ===== Container ===== */
+.container{padding:16px;max-width:640px;margin:0 auto}
+.hidden{display:none!important}
+
+/* ===== Login ===== */
+.login-wrap{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:24px;
+  background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 50%,#ec4899 100%);
+}
+.login-card{
+  background:#fff;border-radius:28px;padding:36px 28px;
+  width:100%;max-width:400px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+}
+.login-logo{
+  width:80px;height:80px;border-radius:24px;margin:0 auto 20px;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;color:#fff;box-shadow:0 8px 24px rgba(79,70,229,.4);
+}
+.login-card h2{font-size:24px;font-weight:800;margin-bottom:8px}
+.login-card p{color:var(--muted);font-size:14px;margin-bottom:28px}
+.btn-google{
+  width:100%;padding:14px;border-radius:14px;
+  background:#fff;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-weight:700;font-size:15px;color:var(--text);
+  transition:.2s;
+}
+.btn-google:active{transform:scale(.97);background:#f8fafc}
+
+/* ===== Cards ===== */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  padding:16px;margin-bottom:12px;box-shadow:var(--shadow);
+  transition:.2s;
+}
+.card.clickable:active{transform:scale(.98)}
+.card-title{font-weight:700;font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.card-title i{color:var(--primary)}
+.card-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-top:4px}
+.card-body{font-size:14px;color:#475569;line-height:1.7;margin-top:8px}
+
+/* ===== Section title ===== */
+.section-title{
+  font-size:17px;font-weight:800;margin:20px 4px 12px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-title i{color:var(--primary)}
+
+/* ===== Chips (day filter) ===== */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  padding:8px 18px;border-radius:999px;background:#fff;
+  border:1.5px solid var(--border);font-weight:600;font-size:13px;
+  white-space:nowrap;color:var(--muted);transition:.2s;
+}
+.chip.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(79,70,229,.3)}
+
+/* ===== Empty ===== */
+.empty{
+  text-align:center;padding:50px 20px;color:var(--muted);
+}
+.empty i{font-size:56px;opacity:.3;display:block;margin-bottom:12px}
+.empty p{font-size:14px}
+
+/* ===== Bottom Nav ===== */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:#fff;display:flex;justify-content:space-around;
+  padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--border);
+  box-shadow:0 -4px 20px rgba(15,23,42,.06);
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 2px;color:var(--muted);font-size:10px;font-weight:600;
+  transition:.2s;position:relative;
+}
+.nav-btn i{font-size:22px}
+.nav-btn.active{color:var(--primary)}
+.nav-btn.active::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:28px;height:3px;border-radius:0 0 4px 4px;background:var(--primary);
+}
+
+/* ===== FAB ===== */
+.fab{
+  position:fixed;bottom:96px;left:20px;z-index:99;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  box-shadow:0 8px 24px rgba(79,70,229,.45);transition:.2s;
+}
+.fab:active{transform:scale(.9)}
+
+/* ===== Admin Form ===== */
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:#334155}
+.form-control{
+  width:100%;padding:12px 14px;border-radius:12px;
+  border:1.5px solid var(--border);background:#fff;font-size:14px;
+  transition:.2s;
+}
+.form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+textarea.form-control{resize:vertical;min-height:80px}
+.btn{
+  padding:12px 20px;border-radius:12px;font-weight:700;font-size:14px;
+  transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--primary);color:#fff;width:100%}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-ghost{background:#f1f5f9;color:#334155}
+.btn-sm{padding:8px 12px;font-size:12px;border-radius:10px;width:auto}
+
+/* ===== File preview ===== */
+.file-preview{max-width:100%;max-height:280px;border-radius:12px;margin-top:10px;box-shadow:var(--shadow)}
+.file-box{
+  display:flex;align-items:center;gap:10px;padding:12px;
+  background:#f1f5f9;border-radius:12px;margin-top:10px;
+  font-size:13px;font-weight:600;color:#334155;
+}
+.file-box i{font-size:24px;color:var(--danger)}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;
+  font-size:13px;font-weight:600;z-index:999;opacity:0;
+  transition:.3s;pointer-events:none;box-shadow:var(--shadow-lg);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+
+/* ===== Modal ===== */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:.3s;
+  backdrop-filter:blur(4px);
+}
+.modal-bg.show{opacity:1;pointer-events:auto}
+.modal{
+  background:#fff;width:100%;max-width:640px;max-height:90vh;
+  border-radius:24px 24px 0 0;padding:20px;
+  transform:translateY(100%);transition:.3s;overflow-y:auto;
+}
+.modal-bg.show .modal{transform:translateY(0)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-header h3{font-size:17px;font-weight:800}
+.modal-close{width:36px;height:36px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;color:#64748b}
+
+/* ===== Notifications ===== */
+.notif-item{
+  display:flex;gap:12px;padding:14px;background:#fff;border-radius:14px;
+  margin-bottom:10px;box-shadow:var(--shadow);
+}
+.notif-icon{
+  width:42px;height:42px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  background:#eef2ff;color:var(--primary);
+}
+.notif-item h4{font-size:14px;font-weight:700;margin-bottom:3px}
+.notif-item p{font-size:12px;color:var(--muted);line-height:1.5}
+.notif-item time{font-size:11px;color:#94a3b8;margin-top:4px;display:block}
+
+/* ===== Library ===== */
+.lib-card{
+  display:flex;gap:12px;padding:14px;background:#fff;border-radius:14px;
+  margin-bottom:10px;box-shadow:var(--shadow);align-items:center;
+}
+.lib-icon{
+  width:52px;height:52px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706;
+}
+.lib-info{flex:1;min-width:0}
+.lib-info h4{font-size:14px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-info p{font-size:11px;color:var(--muted)}
+.lib-actions{display:flex;gap:6px}
+
+/* ===== Loading ===== */
+.spinner{
+  width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:var(--primary);
+  border-radius:50%;animation:spin .8s linear infinite;margin:40px auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== Install banner ===== */
+.install-banner{
+  position:fixed;bottom:90px;left:16px;right:16px;z-index:98;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
+  padding:14px 16px;border-radius:16px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 30px rgba(79,70,229,.4);
+  animation:slideUp .4s;
+}
+@keyframes slideUp{from{transform:translateY(100px);opacity:0}}
+.install-banner i{font-size:28px}
+.install-banner .txt{flex:1}
+.install-banner h4{font-size:14px;font-weight:700}
+.install-banner p{font-size:11px;opacity:.9}
+.install-banner button{
+  background:#fff;color:var(--primary);padding:8px 14px;border-radius:10px;
+  font-weight:700;font-size:12px;
+}
+.install-banner .close{background:transparent;color:#fff;font-size:18px;padding:4px}
 </style>
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container">
-    <span class="navbar-brand">🎓 سنتر سيجما التعليمي</span>
-    <div class="ms-auto d-flex align-items-center gap-2">
-      <span id="userInfo" class="text-white small"></span>
-      <button id="logoutBtn" class="btn btn-sm btn-light hidden">خروج</button>
-    </div>
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">🎓</div>
+    <h2>سنتر سيجما</h2>
+    <p>سجّل دخولك لعرض المواعيد والأخبار والمكتبة</p>
+    <button class="btn-google" id="googleLogin">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+      الدخول بحساب جوجل
+    </button>
   </div>
-</nav>
-
-<!-- Auth Section -->
-<div id="authSection" class="card p-4">
-  <h4 class="text-center mb-4">تسجيل الدخول</h4>
-  <p class="text-center text-muted small">سجّل بجوجل لعرض المواعيد والأخبار</p>
-  <button id="googleLogin" class="btn btn-google w-100 d-flex align-items-center justify-content-center gap-2">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-    الدخول بحساب جوجل
-  </button>
 </div>
 
-<!-- Main App -->
-<div id="appSection" class="container my-4 hidden">
+<!-- ============ APP ============ -->
+<div id="app" class="hidden">
 
-  <!-- Admin Panel -->
-  <div id="adminPanel" class="card p-3 mb-4 hidden">
-    <div class="d-flex gap-2 mb-3">
-      <button class="btn btn-outline-primary tab-btn active" data-tab="sched">📅 إدارة المواعيد</button>
-      <button class="btn btn-outline-primary tab-btn" data-tab="news">📰 إدارة الأخبار</button>
-      <span class="badge badge-admin ms-auto align-self-center">أدمن</span>
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>سنتر سيجما 🎓</h1>
+      <div class="sub" id="userGreeting">أهلاً بك</div>
+    </div>
+    <div class="avatar" id="userAvatar">?</div>
+  </div>
+
+  <div class="container">
+
+    <!-- ===== Home ===== -->
+    <div id="view-home" class="view">
+      <div class="section-title"><i class="bi bi-calendar-event"></i> مواعيد اليوم</div>
+      <div id="homeToday"></div>
+
+      <div class="section-title"><i class="bi bi-newspaper"></i> آخر الأخبار</div>
+      <div id="homeNews"></div>
     </div>
 
-    <!-- Schedule Admin -->
-    <div id="tab-sched">
-      <div class="row g-2 mb-3">
-        <div class="col-md-3">
-          <select id="schedDay" class="form-select">
+    <!-- ===== Schedules ===== -->
+    <div id="view-schedules" class="view hidden">
+      <div class="section-title"><i class="bi bi-calendar-week"></i> المواعيد</div>
+      <div class="chips">
+        <button class="chip active" data-day="today">اليوم</button>
+        <button class="chip" data-day="tomorrow">بكرة</button>
+        <button class="chip" data-day="week">الأسبوع</button>
+      </div>
+      <div id="schedulesList"></div>
+    </div>
+
+    <!-- ===== News ===== -->
+    <div id="view-news" class="view hidden">
+      <div class="section-title"><i class="bi bi-newspaper"></i> الأخبار</div>
+      <div id="newsList"></div>
+    </div>
+
+    <!-- ===== Library ===== -->
+    <div id="view-library" class="view hidden">
+      <div class="section-title"><i class="bi bi-book"></i> المكتبة الإلكترونية</div>
+      <div class="chips">
+        <button class="chip active" data-cat="all">الكل</button>
+        <button class="chip" data-cat="book">كتب</button>
+        <button class="chip" data-cat="summary">ملخصات</button>
+        <button class="chip" data-cat="exam">امتحانات</button>
+      </div>
+      <div id="libraryList"></div>
+    </div>
+
+    <!-- ===== Notifications ===== -->
+    <div id="view-notifs" class="view hidden">
+      <div class="section-title"><i class="bi bi-bell"></i> الإشعارات</div>
+      <div id="notifsList"></div>
+    </div>
+
+    <!-- ===== Admin ===== -->
+    <div id="view-admin" class="view hidden">
+      <div class="section-title"><i class="bi bi-shield-lock"></i> لوحة التحكم</div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0"><i class="bi bi-plus-circle"></i> إضافة موعد</div>
+        <div class="form-group">
+          <label>اليوم</label>
+          <select class="form-control" id="schedDay">
             <option value="today">اليوم</option>
             <option value="tomorrow">بكرة</option>
-            <option value="week">هذا الأسبوع</option>
+            <option value="week">الأسبوع</option>
           </select>
         </div>
-        <div class="col-md-4"><input id="schedTitle" class="form-control" placeholder="عنوان الدرس"></div>
-        <div class="col-md-3"><input id="schedTime" class="form-control" placeholder="الوقت (مثال: 5 مساءً)"></div>
-        <div class="col-md-2"><button id="addSched" class="btn btn-primary w-100">إضافة</button></div>
+        <div class="form-group"><label>عنوان الدرس</label><input class="form-control" id="schedTitle" placeholder="مثال: رياضيات - الوحدة 3"></div>
+        <div class="form-group"><label>الوقت</label><input class="form-control" id="schedTime" placeholder="مثال: 5:00 مساءً"></div>
+        <div class="form-group"><label>ملاحظة</label><input class="form-control" id="schedNote" placeholder="اختياري"></div>
+        <div class="form-group"><label>مرفق (صورة / PDF)</label><input type="file" class="form-control" id="schedFile" accept="image/*,application/pdf"></div>
+        <button class="btn btn-primary" id="addSched"><i class="bi bi-check-lg"></i> إضافة الموعد</button>
       </div>
-      <input id="schedNote" class="form-control mb-2" placeholder="ملاحظة (اختياري)">
-      <input id="schedFile" type="file" accept="image/*,application/pdf" class="form-control mb-2">
-      <div id="schedFilePreview"></div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0"><i class="bi bi-megaphone"></i> نشر خبر</div>
+        <div class="form-group"><label>العنوان</label><input class="form-control" id="newsTitle" placeholder="عنوان الخبر"></div>
+        <div class="form-group"><label>النص</label><textarea class="form-control" id="newsBody" placeholder="تفاصيل الخبر"></textarea></div>
+        <div class="form-group"><label>مرفق (اختياري)</label><input type="file" class="form-control" id="newsFile" accept="image/*,application/pdf"></div>
+        <button class="btn btn-primary" id="addNews"><i class="bi bi-send"></i> نشر</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0"><i class="bi bi-book"></i> إضافة للمكتبة</div>
+        <div class="form-group">
+          <label>التصنيف</label>
+          <select class="form-control" id="libCat">
+            <option value="book">كتاب</option>
+            <option value="summary">ملخص</option>
+            <option value="exam">امتحان</option>
+          </select>
+        </div>
+        <div class="form-group"><label>العنوان</label><input class="form-control" id="libTitle" placeholder="اسم الملف"></div>
+        <div class="form-group"><label>الملف</label><input type="file" class="form-control" id="libFile" accept="image/*,application/pdf"></div>
+        <button class="btn btn-primary" id="addLib"><i class="bi bi-upload"></i> رفع للمكتبة</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0"><i class="bi bi-bell"></i> إرسال إشعار</div>
+        <div class="form-group"><label>عنوان الإشعار</label><input class="form-control" id="notifTitle" placeholder="مثال: تم إضافة موعد جديد"></div>
+        <div class="form-group"><label>الرسالة</label><textarea class="form-control" id="notifBody" placeholder="تفاصيل الإشعار"></textarea></div>
+        <button class="btn btn-primary" id="addNotif"><i class="bi bi-send"></i> إرسال للجميع</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0"><i class="bi bi-gear"></i> إعدادات الحساب</div>
+        <button class="btn btn-ghost" id="logoutBtn" style="width:100%"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
+      </div>
     </div>
 
-    <!-- News Admin -->
-    <div id="tab-news" class="hidden">
-      <input id="newsTitle" class="form-control mb-2" placeholder="عنوان الخبر">
-      <textarea id="newsBody" class="form-control mb-2" rows="3" placeholder="نص الخبر"></textarea>
-      <input id="newsFile" type="file" accept="image/*,application/pdf" class="form-control mb-2">
-      <button id="addNews" class="btn btn-success">نشر الخبر</button>
+    <!-- ===== Profile ===== -->
+    <div id="view-profile" class="view hidden">
+      <div class="card" style="text-align:center;padding:28px">
+        <div class="avatar" id="profileAvatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 12px;background:linear-gradient(135deg,#4f46e5,#7c3aed)">?</div>
+        <h3 id="profileName" style="font-size:18px;font-weight:800"></h3>
+        <p id="profileEmail" style="color:var(--muted);font-size:13px;margin-top:4px"></p>
+        <span id="profileBadge" class="chip active" style="display:inline-block;margin-top:12px;font-size:11px;padding:4px 12px"></span>
+      </div>
+      <div class="card clickable" id="installBtnCard" style="display:flex;align-items:center;gap:12px">
+        <i class="bi bi-download" style="font-size:22px;color:var(--primary)"></i>
+        <div style="flex:1"><div style="font-weight:700;font-size:14px">تثبيت التطبيق</div><div style="font-size:11px;color:var(--muted)">أضف التطبيق لشاشتك الرئيسية</div></div>
+        <i class="bi bi-chevron-left" style="color:#cbd5e1"></i>
+      </div>
+      <button class="btn btn-ghost" id="logoutBtn2" style="width:100%;margin-top:8px"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
     </div>
+
   </div>
 
-  <!-- Tabs -->
-  <ul class="nav nav-pills mb-3">
-    <li class="nav-item"><button class="nav-link active" data-view="schedules">📅 المواعيد</button></li>
-    <li class="nav-item"><button class="nav-link" data-view="news">📰 الأخبار</button></li>
-  </ul>
+  <!-- FAB for Admin -->
+  <button class="fab hidden" id="fab" onclick="goTo('admin')"><i class="bi bi-plus-lg"></i></button>
 
-  <!-- Schedules View -->
-  <div id="view-schedules">
-    <div class="d-flex gap-2 mb-3">
-      <button class="btn btn-sm btn-outline-primary day-filter active" data-day="today">اليوم</button>
-      <button class="btn btn-sm btn-outline-primary day-filter" data-day="tomorrow">بكرة</button>
-      <button class="btn btn-sm btn-outline-primary day-filter" data-day="week">الأسبوع</button>
-    </div>
-    <div id="schedulesList" class="loading">جاري التحميل...</div>
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" data-nav="home"><i class="bi bi-house-door"></i><span>الرئيسية</span></button>
+    <button class="nav-btn" data-nav="schedules"><i class="bi bi-calendar-week"></i><span>المواعيد</span></button>
+    <button class="nav-btn" data-nav="library"><i class="bi bi-book"></i><span>المكتبة</span></button>
+    <button class="nav-btn" data-nav="notifs"><i class="bi bi-bell"></i><span>إشعارات</span></button>
+    <button class="nav-btn" data-nav="profile"><i class="bi bi-person"></i><span>حسابي</span></button>
   </div>
 
-  <!-- News View -->
-  <div id="view-news" class="hidden">
-    <div id="newsList" class="loading">جاري التحميل...</div>
-  </div>
+  <button class="nav-btn hidden" id="adminNav" data-nav="admin"></button>
 </div>
 
-<footer>© 2026 سنتر سيجما التعليمي</footer>
+<!-- Install Banner -->
+<div class="install-banner hidden" id="installBanner">
+  <i class="bi bi-phone"></i>
+  <div class="txt"><h4>ثبّت التطبيق</h4><p>تجربة أفضل وأسرع</p></div>
+  <button id="installBtn">تثبيت</button>
+  <button class="close" id="closeBanner">×</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -130,7 +463,6 @@ const firebaseConfig = {
 };
 
 const ADMIN_EMAIL = "yazeedttv1@gmail.com";
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
@@ -138,226 +470,327 @@ const storage = getStorage(app);
 
 let currentUser = null;
 let isAdmin = false;
+let caches = { schedules: [], news: [], library: [], notifs: [] };
+let currentDay = "today";
+let currentCat = "all";
 
-/* ========== AUTH ========== */
+/* ===== Toast ===== */
+function toast(msg, type = "") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  setTimeout(() => t.className = "toast " + type, 2500);
+}
+
+/* ===== Navigation ===== */
+window.goTo = (view) => {
+  document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+  document.getElementById("view-" + view).classList.remove("hidden");
+  document.querySelectorAll(".nav-btn[data-nav]").forEach(b => {
+    b.classList.toggle("active", b.dataset.nav === view);
+  });
+  if (view === "admin") document.getElementById("adminNav").classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+document.querySelectorAll(".nav-btn[data-nav]").forEach(btn => {
+  btn.onclick = () => { if (btn.dataset.nav) goTo(btn.dataset.nav); };
+});
+
+/* ===== Auth ===== */
 document.getElementById("googleLogin").onclick = () => {
-  signInWithPopup(auth, new GoogleAuthProvider()).catch(e => alert("خطأ: " + e.message));
+  signInWithPopup(auth, new GoogleAuthProvider()).catch(e => toast(e.message, "error"));
 };
 document.getElementById("logoutBtn").onclick = () => signOut(auth);
+document.getElementById("logoutBtn2").onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
   if (user) {
     isAdmin = user.email === ADMIN_EMAIL;
-    document.getElementById("authSection").classList.add("hidden");
-    document.getElementById("appSection").classList.remove("hidden");
-    document.getElementById("logoutBtn").classList.remove("hidden");
-    document.getElementById("userInfo").textContent = user.displayName || user.email;
-    if (isAdmin) document.getElementById("adminPanel").classList.remove("hidden");
-    else document.getElementById("adminPanel").classList.add("hidden");
-    loadSchedules();
-    loadNews();
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    document.getElementById("userGreeting").textContent = "أهلاً " + (user.displayName || "بك");
+    const initial = (user.displayName || user.email || "?")[0].toUpperCase();
+    const avatarEl = document.getElementById("userAvatar");
+    avatarEl.innerHTML = user.photoURL
+      ? `<img src="${user.photoURL}" alt="">`
+      : initial;
+    document.getElementById("profileAvatar").innerHTML = user.photoURL
+      ? `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover">`
+      : initial;
+    document.getElementById("profileName").textContent = user.displayName || "مستخدم";
+    document.getElementById("profileEmail").textContent = user.email;
+    const badge = document.getElementById("profileBadge");
+    badge.textContent = isAdmin ? "👑 أدمن" : "🎓 طالب";
+    badge.style.background = isAdmin ? "#4f46e5" : "#10b981";
+    badge.style.color = "#fff";
+    if (isAdmin) {
+      document.getElementById("fab").classList.remove("hidden");
+      document.getElementById("adminNav").classList.remove("hidden");
+    } else {
+      document.getElementById("fab").classList.add("hidden");
+      document.getElementById("adminNav").classList.add("hidden");
+    }
+    loadAll();
   } else {
-    document.getElementById("authSection").classList.remove("hidden");
-    document.getElementById("appSection").classList.add("hidden");
-    document.getElementById("logoutBtn").classList.add("hidden");
-    document.getElementById("userInfo").textContent = "";
+    document.getElementById("loginScreen").classList.remove("hidden");
+    document.getElementById("app").classList.add("hidden");
   }
 });
 
-/* ========== TABS (Admin) ========== */
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    const tab = btn.dataset.tab;
-    document.getElementById("tab-sched").classList.toggle("hidden", tab !== "sched");
-    document.getElementById("tab-news").classList.toggle("hidden", tab !== "news");
-  };
-});
-
-/* ========== TABS (Views) ========== */
-document.querySelectorAll("[data-view]").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll("[data-view]").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    const v = btn.dataset.view;
-    document.getElementById("view-schedules").classList.toggle("hidden", v !== "schedules");
-    document.getElementById("view-news").classList.toggle("hidden", v !== "news");
-  };
-});
-
-/* ========== Day Filter ========== */
-let currentDayFilter = "today";
-document.querySelectorAll(".day-filter").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll(".day-filter").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentDayFilter = btn.dataset.day;
-    renderSchedules();
-  };
-});
-
-/* ========== FILE PREVIEW ========== */
-document.getElementById("schedFile").onchange = (e) => {
-  const f = e.target.files[0];
-  const prev = document.getElementById("schedFilePreview");
-  prev.innerHTML = "";
-  if (!f) return;
-  if (f.type.startsWith("image/")) {
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(f);
-    img.className = "file-preview";
-    prev.appendChild(img);
-  } else {
-    prev.innerHTML = `<div class="alert alert-info py-2 mt-2">📄 ${f.name}</div>`;
-  }
-};
-
-/* ========== UPLOAD HELPER ========== */
-async function uploadFile(file, folder) {
-  if (!file) return null;
-  const path = `${folder}/${Date.now()}_${file.name}`;
-  const r = sRef(storage, path);
-  await uploadBytes(r, file);
-  const url = await getDownloadURL(r);
-  return { url, path, type: file.type, name: file.name };
+/* ===== Load Data ===== */
+function loadAll() {
+  ["schedules", "news", "library", "notifs"].forEach(k => {
+    onValue(ref(db, k), (snap) => {
+      caches[k] = [];
+      snap.forEach(c => caches[k].push({ id: c.key, ...c.val() }));
+      caches[k].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      render();
+    });
+  });
 }
 
-/* ========== SCHEDULES ========== */
+/* ===== Render ===== */
+function render() {
+  renderHome();
+  renderSchedules();
+  renderNews();
+  renderLibrary();
+  renderNotifs();
+}
+
+function renderHome() {
+  const today = caches.schedules.filter(s => s.day === "today").slice(0, 3);
+  document.getElementById("homeToday").innerHTML = today.length
+    ? today.map(scheduleCard).join("")
+    : `<div class="empty"><i class="bi bi-calendar-x"></i><p>لا توجد مواعيد اليوم</p></div>`;
+  const news = caches.news.slice(0, 2);
+  document.getElementById("homeNews").innerHTML = news.length
+    ? news.map(newsCard).join("")
+    : `<div class="empty"><i class="bi bi-newspaper"></i><p>لا توجد أخبار</p></div>`;
+}
+
+function renderSchedules() {
+  const list = document.getElementById("schedulesList");
+  const filtered = caches.schedules.filter(s => s.day === currentDay);
+  list.innerHTML = filtered.length
+    ? filtered.map(scheduleCard).join("")
+    : `<div class="empty"><i class="bi bi-calendar-x"></i><p>لا توجد مواعيد</p></div>`;
+}
+
+function renderNews() {
+  const list = document.getElementById("newsList");
+  list.innerHTML = caches.news.length
+    ? caches.news.map(newsCard).join("")
+    : `<div class="empty"><i class="bi bi-newspaper"></i><p>لا توجد أخبار</p></div>`;
+}
+
+function renderLibrary() {
+  const list = document.getElementById("libraryList");
+  const filtered = currentCat === "all"
+    ? caches.library
+    : caches.library.filter(l => l.cat === currentCat);
+  list.innerHTML = filtered.length
+    ? filtered.map(libCard).join("")
+    : `<div class="empty"><i class="bi bi-book"></i><p>المكتبة فارغة</p></div>`;
+}
+
+function renderNotifs() {
+  const list = document.getElementById("notifsList");
+  list.innerHTML = caches.notifs.length
+    ? caches.notifs.map(notifCard).join("")
+    : `<div class="empty"><i class="bi bi-bell-slash"></i><p>لا توجد إشعارات</p></div>`;
+}
+
+/* ===== Card Templates ===== */
+function scheduleCard(s) {
+  return `<div class="card">
+    <div class="card-title"><i class="bi bi-bookmark-check"></i>${esc(s.title)}</div>
+    ${s.time ? `<div class="card-meta"><span><i class="bi bi-clock"></i> ${esc(s.time)}</span></div>` : ""}
+    ${s.note ? `<div class="card-body">${esc(s.note)}</div>` : ""}
+    ${fileRender(s.file)}
+    ${isAdmin ? `<div style="margin-top:10px"><button class="btn btn-danger btn-sm" onclick="delItem('schedules','${s.id}')"><i class="bi bi-trash"></i> حذف</button></div>` : ""}
+  </div>`;
+}
+
+function newsCard(n) {
+  return `<div class="card">
+    <div class="card-title"><i class="bi bi-megaphone"></i>${esc(n.title)}</div>
+    ${n.body ? `<div class="card-body">${esc(n.body)}</div>` : ""}
+    ${fileRender(n.file)}
+    ${isAdmin ? `<div style="margin-top:10px"><button class="btn btn-danger btn-sm" onclick="delItem('news','${n.id}')"><i class="bi bi-trash"></i> حذف</button></div>` : ""}
+  </div>`;
+}
+
+function libCard(l) {
+  const icons = { book: "bi-book", summary: "bi-file-text", exam: "bi-clipboard-check" };
+  const labels = { book: "كتاب", summary: "ملخص", exam: "امتحان" };
+  return `<div class="lib-card">
+    <div class="lib-icon"><i class="bi ${icons[l.cat] || "bi-file-earmark"}"></i></div>
+    <div class="lib-info">
+      <h4>${esc(l.title)}</h4>
+      <p>${labels[l.cat] || "ملف"}</p>
+    </div>
+    <div class="lib-actions">
+      ${l.file?.url ? `<a href="${l.file.url}" target="_blank" class="btn btn-ghost btn-sm"><i class="bi bi-download"></i></a>` : ""}
+      ${isAdmin ? `<button class="btn btn-danger btn-sm" onclick="delItem('library','${l.id}')"><i class="bi bi-trash"></i></button>` : ""}
+    </div>
+  </div>`;
+}
+
+function notifCard(n) {
+  const d = n.createdAt ? new Date(n.createdAt).toLocaleDateString("ar-EG", { day: "numeric", month: "long" }) : "";
+  return `<div class="notif-item">
+    <div class="notif-icon"><i class="bi bi-bell-fill"></i></div>
+    <div style="flex:1">
+      <h4>${esc(n.title)}</h4>
+      ${n.body ? `<p>${esc(n.body)}</p>` : ""}
+      <time>${d}</time>
+    </div>
+    ${isAdmin ? `<button class="btn btn-danger btn-sm" style="align-self:flex-start" onclick="delItem('notifs','${n.id}')"><i class="bi bi-trash"></i></button>` : ""}
+  </div>`;
+}
+
+function fileRender(f) {
+  if (!f?.url) return "";
+  if (f.type?.startsWith("image/")) {
+    return `<img src="${f.url}" class="file-preview" onclick="window.open('${f.url}','_blank')">`;
+  }
+  return `<a href="${f.url}" target="_blank" class="file-box"><i class="bi bi-file-earmark-pdf-fill"></i><span>${esc(f.name || "ملف PDF")}</span></a>`;
+}
+
+/* ===== Delete ===== */
+window.delItem = async (col, id) => {
+  if (!confirm("تأكيد الحذف؟")) return;
+  const item = caches[col].find(x => x.id === id);
+  try {
+    if (item?.file?.path) { try { await deleteObject(sRef(storage, item.file.path)); } catch (e) {} }
+    await remove(ref(db, col + "/" + id));
+    toast("تم الحذف", "success");
+  } catch (e) { toast(e.message, "error"); }
+};
+
+/* ===== Upload ===== */
+async function upload(file, folder) {
+  if (!file) return null;
+  const p = `${folder}/${Date.now()}_${file.name}`;
+  const r = sRef(storage, p);
+  await uploadBytes(r, file);
+  return { url: await getDownloadURL(r), path: p, type: file.type, name: file.name };
+}
+
+/* ===== Admin Actions ===== */
 document.getElementById("addSched").onclick = async () => {
   const day = document.getElementById("schedDay").value;
   const title = document.getElementById("schedTitle").value.trim();
   const time = document.getElementById("schedTime").value.trim();
   const note = document.getElementById("schedNote").value.trim();
   const file = document.getElementById("schedFile").files[0];
-  if (!title) return alert("اكتب عنوان الدرس");
-
+  if (!title) return toast("اكتب عنوان الدرس", "error");
   try {
-    const fileData = await uploadFile(file, "schedules");
-    await set(push(ref(db, "schedules")), {
-      day, title, time, note,
-      file: fileData,
-      createdBy: currentUser.email,
-      createdAt: serverTimestamp()
-    });
-    document.getElementById("schedTitle").value = "";
-    document.getElementById("schedTime").value = "";
-    document.getElementById("schedNote").value = "";
-    document.getElementById("schedFile").value = "";
-    document.getElementById("schedFilePreview").innerHTML = "";
-    alert("✅ تمت الإضافة");
-  } catch (e) { alert("خطأ: " + e.message); }
+    const f = await upload(file, "schedules");
+    await set(push(ref(db, "schedules")), { day, title, time, note, file: f, createdAt: Date.now() });
+    ["schedTitle", "schedTime", "schedNote", "schedFile"].forEach(i => document.getElementById(i).value = "");
+    toast("✅ تمت الإضافة", "success");
+  } catch (e) { toast(e.message, "error"); }
 };
 
-let schedulesCache = [];
-function loadSchedules() {
-  onValue(ref(db, "schedules"), (snap) => {
-    schedulesCache = [];
-    snap.forEach(c => schedulesCache.push({ id: c.key, ...c.val() }));
-    schedulesCache.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    renderSchedules();
-  });
-}
-
-function renderSchedules() {
-  const list = document.getElementById("schedulesList");
-  const filtered = schedulesCache.filter(s => s.day === currentDayFilter);
-  if (filtered.length === 0) {
-    list.innerHTML = `<div class="alert alert-light text-center">لا توجد مواعيد</div>`;
-    return;
-  }
-  list.innerHTML = filtered.map(s => `
-    <div class="schedule-item">
-      <div class="d-flex justify-content-between">
-        <h6 class="mb-1">${escapeHtml(s.title)}</h6>
-        ${isAdmin ? `<button class="btn btn-sm btn-outline-danger" onclick="delSched('${s.id}')">🗑️</button>` : ""}
-      </div>
-      ${s.time ? `<div class="text-muted small">🕐 ${escapeHtml(s.time)}</div>` : ""}
-      ${s.note ? `<div class="small mt-1">${escapeHtml(s.note)}</div>` : ""}
-      ${renderFile(s.file)}
-    </div>
-  `).join("");
-}
-
-window.delSched = async (id) => {
-  if (!confirm("حذف الموعد؟")) return;
-  const item = schedulesCache.find(x => x.id === id);
-  try {
-    if (item?.file?.path) { try { await deleteObject(sRef(storage, item.file.path)); } catch(e){} }
-    await remove(ref(db, "schedules/" + id));
-  } catch (e) { alert("خطأ: " + e.message); }
-};
-
-/* ========== NEWS ========== */
 document.getElementById("addNews").onclick = async () => {
   const title = document.getElementById("newsTitle").value.trim();
   const body = document.getElementById("newsBody").value.trim();
   const file = document.getElementById("newsFile").files[0];
-  if (!title) return alert("اكتب عنوان الخبر");
-
+  if (!title) return toast("اكتب عنوان الخبر", "error");
   try {
-    const fileData = await uploadFile(file, "news");
-    await set(push(ref(db, "news")), {
-      title, body,
-      file: fileData,
-      createdBy: currentUser.email,
-      createdAt: serverTimestamp()
-    });
-    document.getElementById("newsTitle").value = "";
-    document.getElementById("newsBody").value = "";
-    document.getElementById("newsFile").value = "";
-    alert("✅ تم النشر");
-  } catch (e) { alert("خطأ: " + e.message); }
+    const f = await upload(file, "news");
+    await set(push(ref(db, "news")), { title, body, file: f, createdAt: Date.now() });
+    ["newsTitle", "newsBody", "newsFile"].forEach(i => document.getElementById(i).value = "");
+    toast("✅ تم النشر", "success");
+  } catch (e) { toast(e.message, "error"); }
 };
 
-let newsCache = [];
-function loadNews() {
-  onValue(ref(db, "news"), (snap) => {
-    newsCache = [];
-    snap.forEach(c => newsCache.push({ id: c.key, ...c.val() }));
-    newsCache.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    renderNews();
-  });
-}
-
-function renderNews() {
-  const list = document.getElementById("newsList");
-  if (newsCache.length === 0) {
-    list.innerHTML = `<div class="alert alert-light text-center">لا توجد أخبار</div>`;
-    return;
-  }
-  list.innerHTML = newsCache.map(n => `
-    <div class="news-item">
-      <div class="d-flex justify-content-between">
-        <h6 class="mb-1">${escapeHtml(n.title)}</h6>
-        ${isAdmin ? `<button class="btn btn-sm btn-outline-danger" onclick="delNews('${n.id}')">🗑️</button>` : ""}
-      </div>
-      ${n.body ? `<div class="small mt-1">${escapeHtml(n.body)}</div>` : ""}
-      ${renderFile(n.file)}
-    </div>
-  `).join("");
-}
-
-window.delNews = async (id) => {
-  if (!confirm("حذف الخبر؟")) return;
-  const item = newsCache.find(x => x.id === id);
+document.getElementById("addLib").onclick = async () => {
+  const cat = document.getElementById("libCat").value;
+  const title = document.getElementById("libTitle").value.trim();
+  const file = document.getElementById("libFile").files[0];
+  if (!title || !file) return toast("اكتب العنوان واختر ملف", "error");
   try {
-    if (item?.file?.path) { try { await deleteObject(sRef(storage, item.file.path)); } catch(e){} }
-    await remove(ref(db, "news/" + id));
-  } catch (e) { alert("خطأ: " + e.message); }
+    const f = await upload(file, "library");
+    await set(push(ref(db, "library")), { cat, title, file: f, createdAt: Date.now() });
+    ["libTitle", "libFile"].forEach(i => document.getElementById(i).value = "");
+    toast("✅ تم الرفع", "success");
+  } catch (e) { toast(e.message, "error"); }
 };
 
-/* ========== HELPERS ========== */
-function renderFile(f) {
-  if (!f || !f.url) return "";
-  if (f.type?.startsWith("image/")) {
-    return `<img src="${f.url}" class="file-preview" onclick="window.open('${f.url}','_blank')">`;
-  }
-  return `<a href="${f.url}" target="_blank" class="btn btn-sm btn-outline-secondary mt-2">📄 تحميل ${escapeHtml(f.name || "الملف")}</a>`;
+document.getElementById("addNotif").onclick = async () => {
+  const title = document.getElementById("notifTitle").value.trim();
+  const body = document.getElementById("notifBody").value.trim();
+  if (!title) return toast("اكتب عنوان الإشعار", "error");
+  try {
+    await set(push(ref(db, "notifs")), { title, body, createdAt: Date.now() });
+    ["notifTitle", "notifBody"].forEach(i => document.getElementById(i).value = "");
+    toast("✅ تم الإرسال", "success");
+    if (Notification.permission === "granted") {
+      new Notification(title, { body, icon: "icon-192.png" });
+    }
+  } catch (e) { toast(e.message, "error"); }
+};
+
+/* ===== Chips ===== */
+document.querySelectorAll(".chip[data-day]").forEach(c => {
+  c.onclick = () => {
+    document.querySelectorAll(".chip[data-day]").forEach(x => x.classList.remove("active"));
+    c.classList.add("active");
+    currentDay = c.dataset.day;
+    renderSchedules();
+  };
+});
+document.querySelectorAll(".chip[data-cat]").forEach(c => {
+  c.onclick = () => {
+    document.querySelectorAll(".chip[data-cat]").forEach(x => x.classList.remove("active"));
+    c.classList.add("active");
+    currentCat = c.dataset.cat;
+    renderLibrary();
+  };
+});
+
+/* ===== Escape ===== */
+function esc(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-function escapeHtml(s) {
-  return String(s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ===== PWA Install ===== */
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem("installDismissed")) {
+    document.getElementById("installBanner").classList.remove("hidden");
+  }
+});
+document.getElementById("installBtn").onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById("installBanner").classList.add("hidden");
+};
+document.getElementById("closeBanner").onclick = () => {
+  localStorage.setItem("installDismissed", "1");
+  document.getElementById("installBanner").classList.add("hidden");
+};
+document.getElementById("installBtnCard").onclick = async () => {
+  if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
+  else toast("من قائمة المتصفح اختر 'إضافة للشاشة'", "");
+};
+
+/* ===== Register SW ===== */
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
+/* ===== Request Notification Permission ===== */
+if ("Notification" in window && Notification.permission === "default") {
+  setTimeout(() => Notification.requestPermission(), 3000);
 }
 </script>
 </body>
