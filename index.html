@@ -11,269 +11,145 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
 :root{
-  --primary:#4f46e5;
-  --primary-dark:#4338ca;
-  --bg:#f6f7fb;
-  --card:#ffffff;
-  --text:#1e293b;
-  --muted:#64748b;
-  --border:#e2e8f0;
-  --success:#10b981;
-  --danger:#ef4444;
-  --warning:#f59e0b;
-  --radius:18px;
-  --shadow:0 2px 12px rgba(15,23,42,.06);
+  --primary:#4f46e5;--primary-dark:#4338ca;--bg:#f6f7fb;--card:#fff;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+  --radius:18px;--shadow:0 2px 12px rgba(15,23,42,.06);
   --shadow-lg:0 8px 30px rgba(15,23,42,.10);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  font-family:'Cairo',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  overscroll-behavior-y:contain;
-  padding-bottom:80px;
-}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);padding-bottom:80px;overscroll-behavior-y:contain}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,textarea,select{font-family:inherit;font-size:15px}
 
-/* ===== Header ===== */
-.header{
-  position:sticky;top:0;z-index:50;
-  background:linear-gradient(135deg,#4f46e5,#7c3aed);
-  color:#fff;padding:16px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 4px 20px rgba(79,70,229,.25);
-}
+/* Header */
+.header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(79,70,229,.25)}
 .header h1{font-size:18px;font-weight:800}
 .header .sub{font-size:11px;opacity:.85;font-weight:400}
-.avatar{
-  width:38px;height:38px;border-radius:50%;
-  background:rgba(255,255,255,.2);
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:15px;color:#fff;
-  border:2px solid rgba(255,255,255,.4);overflow:hidden;
-}
+.avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;border:2px solid rgba(255,255,255,.4);overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
 
-/* ===== Container ===== */
+/* Container */
 .container{padding:16px;max-width:640px;margin:0 auto}
 .hidden{display:none!important}
 
-/* ===== Login ===== */
-.login-wrap{
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;padding:24px;
-  background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 50%,#ec4899 100%);
-}
-.login-card{
-  background:#fff;border-radius:28px;padding:36px 28px;
-  width:100%;max-width:400px;text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,.2);
-}
-.login-logo{
-  width:80px;height:80px;border-radius:24px;margin:0 auto 20px;
-  background:linear-gradient(135deg,#4f46e5,#7c3aed);
-  display:flex;align-items:center;justify-content:center;
-  font-size:38px;color:#fff;box-shadow:0 8px 24px rgba(79,70,229,.4);
-}
+/* Login */
+.login-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 50%,#ec4899 100%)}
+.login-card{background:#fff;border-radius:28px;padding:36px 28px;width:100%;max-width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.login-logo{width:80px;height:80px;border-radius:24px;margin:0 auto 20px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:38px;color:#fff;box-shadow:0 8px 24px rgba(79,70,229,.4)}
 .login-card h2{font-size:24px;font-weight:800;margin-bottom:8px}
 .login-card p{color:var(--muted);font-size:14px;margin-bottom:28px}
-.btn-google{
-  width:100%;padding:14px;border-radius:14px;
-  background:#fff;border:2px solid var(--border);
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  font-weight:700;font-size:15px;color:var(--text);
-  transition:.2s;
-}
+.btn-google{width:100%;padding:14px;border-radius:14px;background:#fff;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:15px;color:var(--text);transition:.2s}
 .btn-google:active{transform:scale(.97);background:#f8fafc}
 
-/* ===== Cards ===== */
-.card{
-  background:var(--card);border-radius:var(--radius);
-  padding:16px;margin-bottom:12px;box-shadow:var(--shadow);
-  transition:.2s;
-}
-.card.clickable:active{transform:scale(.98)}
+/* Cards */
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .card-title{font-weight:700;font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .card-title i{color:var(--primary)}
 .card-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-top:4px}
 .card-body{font-size:14px;color:#475569;line-height:1.7;margin-top:8px}
 
-/* ===== Section title ===== */
-.section-title{
-  font-size:17px;font-weight:800;margin:20px 4px 12px;
-  display:flex;align-items:center;gap:8px;
-}
+.section-title{font-size:17px;font-weight:800;margin:20px 4px 12px;display:flex;align-items:center;gap:8px}
 .section-title i{color:var(--primary)}
 
-/* ===== Chips (day filter) ===== */
+/* Chips */
 .chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{
-  padding:8px 18px;border-radius:999px;background:#fff;
-  border:1.5px solid var(--border);font-weight:600;font-size:13px;
-  white-space:nowrap;color:var(--muted);transition:.2s;
-}
+.chip{padding:8px 18px;border-radius:999px;background:#fff;border:1.5px solid var(--border);font-weight:600;font-size:13px;white-space:nowrap;color:var(--muted);transition:.2s}
 .chip.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(79,70,229,.3)}
 
-/* ===== Empty ===== */
-.empty{
-  text-align:center;padding:50px 20px;color:var(--muted);
-}
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .empty i{font-size:56px;opacity:.3;display:block;margin-bottom:12px}
 .empty p{font-size:14px}
 
-/* ===== Bottom Nav ===== */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;z-index:100;
-  background:#fff;display:flex;justify-content:space-around;
-  padding:8px 4px calc(8px + env(safe-area-inset-bottom));
-  border-top:1px solid var(--border);
-  box-shadow:0 -4px 20px rgba(15,23,42,.06);
-}
-.nav-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:6px 2px;color:var(--muted);font-size:10px;font-weight:600;
-  transition:.2s;position:relative;
-}
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;display:flex;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(15,23,42,.06)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:var(--muted);font-size:10px;font-weight:600;transition:.2s;position:relative}
 .nav-btn i{font-size:22px}
 .nav-btn.active{color:var(--primary)}
-.nav-btn.active::before{
-  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:28px;height:3px;border-radius:0 0 4px 4px;background:var(--primary);
-}
+.nav-btn.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;border-radius:0 0 4px 4px;background:var(--primary)}
 
-/* ===== FAB ===== */
-.fab{
-  position:fixed;bottom:96px;left:20px;z-index:99;
-  width:56px;height:56px;border-radius:50%;
-  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-size:24px;
-  box-shadow:0 8px 24px rgba(79,70,229,.45);transition:.2s;
-}
+.fab{position:fixed;bottom:96px;left:20px;z-index:99;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 8px 24px rgba(79,70,229,.45);transition:.2s}
 .fab:active{transform:scale(.9)}
 
-/* ===== Admin Form ===== */
+/* Form */
 .form-group{margin-bottom:12px}
 .form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:#334155}
-.form-control{
-  width:100%;padding:12px 14px;border-radius:12px;
-  border:1.5px solid var(--border);background:#fff;font-size:14px;
-  transition:.2s;
-}
+.form-control{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:14px;transition:.2s}
 .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
 textarea.form-control{resize:vertical;min-height:80px}
-.btn{
-  padding:12px 20px;border-radius:12px;font-weight:700;font-size:14px;
-  transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;
-}
+.btn{padding:12px 20px;border-radius:12px;font-weight:700;font-size:14px;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--primary);color:#fff;width:100%}
-.btn-primary:hover{background:var(--primary-dark)}
 .btn-danger{background:var(--danger);color:#fff}
 .btn-ghost{background:#f1f5f9;color:#334155}
 .btn-sm{padding:8px 12px;font-size:12px;border-radius:10px;width:auto}
 
-/* ===== File preview ===== */
 .file-preview{max-width:100%;max-height:280px;border-radius:12px;margin-top:10px;box-shadow:var(--shadow)}
-.file-box{
-  display:flex;align-items:center;gap:10px;padding:12px;
-  background:#f1f5f9;border-radius:12px;margin-top:10px;
-  font-size:13px;font-weight:600;color:#334155;
-}
+.file-box{display:flex;align-items:center;gap:10px;padding:12px;background:#f1f5f9;border-radius:12px;margin-top:10px;font-size:13px;font-weight:600;color:#334155}
 .file-box i{font-size:24px;color:var(--danger)}
 
-/* ===== Toast ===== */
-.toast{
-  position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
-  background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;
-  font-size:13px;font-weight:600;z-index:999;opacity:0;
-  transition:.3s;pointer-events:none;box-shadow:var(--shadow-lg);
-}
+/* Toast */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:.3s;pointer-events:none;box-shadow:var(--shadow-lg);max-width:90%}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.success{background:var(--success)}
 .toast.error{background:var(--danger)}
 
-/* ===== Modal ===== */
-.modal-bg{
-  position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;
-  display:flex;align-items:flex-end;justify-content:center;
-  opacity:0;pointer-events:none;transition:.3s;
-  backdrop-filter:blur(4px);
-}
-.modal-bg.show{opacity:1;pointer-events:auto}
-.modal{
-  background:#fff;width:100%;max-width:640px;max-height:90vh;
-  border-radius:24px 24px 0 0;padding:20px;
-  transform:translateY(100%);transition:.3s;overflow-y:auto;
-}
-.modal-bg.show .modal{transform:translateY(0)}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.modal-header h3{font-size:17px;font-weight:800}
-.modal-close{width:36px;height:36px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;color:#64748b}
-
-/* ===== Notifications ===== */
-.notif-item{
-  display:flex;gap:12px;padding:14px;background:#fff;border-radius:14px;
-  margin-bottom:10px;box-shadow:var(--shadow);
-}
-.notif-icon{
-  width:42px;height:42px;border-radius:12px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-  background:#eef2ff;color:var(--primary);
-}
+/* Notifications */
+.notif-item{display:flex;gap:12px;padding:14px;background:#fff;border-radius:14px;margin-bottom:10px;box-shadow:var(--shadow);position:relative}
+.notif-item.unread{border-right:3px solid var(--primary)}
+.notif-icon{width:42px;height:42px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;background:#eef2ff;color:var(--primary)}
 .notif-item h4{font-size:14px;font-weight:700;margin-bottom:3px}
 .notif-item p{font-size:12px;color:var(--muted);line-height:1.5}
 .notif-item time{font-size:11px;color:#94a3b8;margin-top:4px;display:block}
 
-/* ===== Library ===== */
-.lib-card{
-  display:flex;gap:12px;padding:14px;background:#fff;border-radius:14px;
-  margin-bottom:10px;box-shadow:var(--shadow);align-items:center;
-}
-.lib-icon{
-  width:52px;height:52px;border-radius:14px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:24px;
-  background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706;
-}
+/* Library */
+.lib-card{display:flex;gap:12px;padding:14px;background:#fff;border-radius:14px;margin-bottom:10px;box-shadow:var(--shadow);align-items:center}
+.lib-icon{width:52px;height:52px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706}
 .lib-info{flex:1;min-width:0}
 .lib-info h4{font-size:14px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lib-info p{font-size:11px;color:var(--muted)}
 .lib-actions{display:flex;gap:6px}
 
-/* ===== Loading ===== */
-.spinner{
-  width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:var(--primary);
-  border-radius:50%;animation:spin .8s linear infinite;margin:40px auto;
-}
+/* Loading */
+.spinner{width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ===== Install banner ===== */
-.install-banner{
-  position:fixed;bottom:90px;left:16px;right:16px;z-index:98;
-  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
-  padding:14px 16px;border-radius:16px;
-  display:flex;align-items:center;gap:12px;
-  box-shadow:0 8px 30px rgba(79,70,229,.4);
-  animation:slideUp .4s;
-}
+/* Install banner */
+.install-banner{position:fixed;bottom:90px;left:16px;right:16px;z-index:98;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:14px 16px;border-radius:16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(79,70,229,.4);animation:slideUp .4s;transition:.3s}
 @keyframes slideUp{from{transform:translateY(100px);opacity:0}}
-.install-banner i{font-size:28px}
+.install-banner.hide{transform:translateY(200px);opacity:0}
+.install-banner i.bi-phone{font-size:28px}
 .install-banner .txt{flex:1}
 .install-banner h4{font-size:14px;font-weight:700}
 .install-banner p{font-size:11px;opacity:.9}
-.install-banner button{
-  background:#fff;color:var(--primary);padding:8px 14px;border-radius:10px;
-  font-weight:700;font-size:12px;
-}
-.install-banner .close{background:transparent;color:#fff;font-size:18px;padding:4px}
+.install-banner button.inst{background:#fff;color:var(--primary);padding:8px 14px;border-radius:10px;font-weight:700;font-size:12px}
+.install-banner button.close{background:transparent;color:#fff;font-size:18px;padding:4px}
+
+/* Profile setup */
+.setup-screen{min-height:100vh;background:linear-gradient(160deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;padding:20px}
+.setup-card{background:#fff;border-radius:24px;padding:32px 24px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.setup-card h2{font-size:22px;font-weight:800;text-align:center;margin-bottom:8px}
+.setup-card>p{text-align:center;color:var(--muted);font-size:13px;margin-bottom:24px}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(4px)}
+.modal-bg.show{opacity:1;pointer-events:auto}
+.modal{background:#fff;width:100%;max-width:640px;max-height:90vh;border-radius:24px 24px 0 0;padding:20px;transform:translateY(100%);transition:.3s;overflow-y:auto}
+.modal-bg.show .modal{transform:translateY(0)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-header h3{font-size:17px;font-weight:800}
+.modal-close{width:36px;height:36px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;color:#64748b}
+
+.stage-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.stage-opt{padding:10px 16px;border:2px solid var(--border);border-radius:12px;font-weight:600;font-size:14px;transition:.2s;cursor:pointer;background:#fff}
+.stage-opt.selected{border-color:var(--primary);background:#eef2ff;color:var(--primary)}
 </style>
 </head>
 <body>
 
 <!-- ============ LOGIN ============ -->
-<div id="loginScreen" class="login-wrap">
+<div id="loginScreen" class="login-wrap hidden">
   <div class="login-card">
     <div class="login-logo">🎓</div>
     <h2>سنتر سيجما</h2>
@@ -285,10 +161,39 @@ textarea.form-control{resize:vertical;min-height:80px}
   </div>
 </div>
 
+<!-- ============ SETUP PROFILE ============ -->
+<div id="setupScreen" class="setup-screen hidden">
+  <div class="setup-card">
+    <h2>👋 أهلاً بك!</h2>
+    <p>عشان نجهزلك تجربة أفضل، اكمل بياناتك</p>
+    <div class="form-group">
+      <label>الاسم بالكامل</label>
+      <input class="form-control" id="setupName" placeholder="اسمك">
+    </div>
+    <div class="form-group">
+      <label>رقم الهاتف</label>
+      <input class="form-control" id="setupPhone" placeholder="01xxxxxxxxx" inputmode="tel">
+    </div>
+    <div class="form-group">
+      <label>المرحلة الدراسية</label>
+      <div class="stage-list" id="stageList"></div>
+    </div>
+    <div class="form-group" id="gradeGroup" style="display:none">
+      <label>الصف</label>
+      <select class="form-control" id="setupGrade"></select>
+    </div>
+    <div class="form-group">
+      <label>رقم ولي الأمر (اختياري)</label>
+      <input class="form-control" id="setupParent" placeholder="01xxxxxxxxx" inputmode="tel">
+    </div>
+    <button class="btn btn-primary" id="saveProfile" style="margin-top:8px">
+      <i class="bi bi-check-lg"></i> حفظ ومتابعة
+    </button>
+  </div>
+</div>
+
 <!-- ============ APP ============ -->
 <div id="app" class="hidden">
-
-  <!-- Header -->
   <div class="header">
     <div>
       <h1>سنتر سيجما 🎓</h1>
@@ -298,17 +203,13 @@ textarea.form-control{resize:vertical;min-height:80px}
   </div>
 
   <div class="container">
-
-    <!-- ===== Home ===== -->
     <div id="view-home" class="view">
       <div class="section-title"><i class="bi bi-calendar-event"></i> مواعيد اليوم</div>
       <div id="homeToday"></div>
-
       <div class="section-title"><i class="bi bi-newspaper"></i> آخر الأخبار</div>
       <div id="homeNews"></div>
     </div>
 
-    <!-- ===== Schedules ===== -->
     <div id="view-schedules" class="view hidden">
       <div class="section-title"><i class="bi bi-calendar-week"></i> المواعيد</div>
       <div class="chips">
@@ -319,13 +220,11 @@ textarea.form-control{resize:vertical;min-height:80px}
       <div id="schedulesList"></div>
     </div>
 
-    <!-- ===== News ===== -->
     <div id="view-news" class="view hidden">
       <div class="section-title"><i class="bi bi-newspaper"></i> الأخبار</div>
       <div id="newsList"></div>
     </div>
 
-    <!-- ===== Library ===== -->
     <div id="view-library" class="view hidden">
       <div class="section-title"><i class="bi bi-book"></i> المكتبة الإلكترونية</div>
       <div class="chips">
@@ -337,15 +236,31 @@ textarea.form-control{resize:vertical;min-height:80px}
       <div id="libraryList"></div>
     </div>
 
-    <!-- ===== Notifications ===== -->
     <div id="view-notifs" class="view hidden">
       <div class="section-title"><i class="bi bi-bell"></i> الإشعارات</div>
       <div id="notifsList"></div>
     </div>
 
-    <!-- ===== Admin ===== -->
+    <!-- ADMIN -->
     <div id="view-admin" class="view hidden">
       <div class="section-title"><i class="bi bi-shield-lock"></i> لوحة التحكم</div>
+
+      <!-- Stages Manager -->
+      <div class="card">
+        <div class="section-title" style="margin-top:0"><i class="bi bi-mortarboard"></i> إدارة المراحل والصفوف</div>
+        <div class="form-group">
+          <label>اسم المرحلة</label>
+          <input class="form-control" id="stageName" placeholder="مثال: ابتدائي">
+        </div>
+        <div class="form-group">
+          <label>الصفوف (افصل بينهم بفاصلة)</label>
+          <input class="form-control" id="stageGrades" placeholder="مثال: أولى، ثانية، ثالثة">
+        </div>
+        <button class="btn btn-primary" id="addStage"><i class="bi bi-plus-lg"></i> إضافة مرحلة</button>
+        <div id="stagesAdminList" style="margin-top:12px"></div>
+      </div>
+
+      <!-- Add Schedule -->
       <div class="card">
         <div class="section-title" style="margin-top:0"><i class="bi bi-plus-circle"></i> إضافة موعد</div>
         <div class="form-group">
@@ -356,21 +271,23 @@ textarea.form-control{resize:vertical;min-height:80px}
             <option value="week">الأسبوع</option>
           </select>
         </div>
-        <div class="form-group"><label>عنوان الدرس</label><input class="form-control" id="schedTitle" placeholder="مثال: رياضيات - الوحدة 3"></div>
-        <div class="form-group"><label>الوقت</label><input class="form-control" id="schedTime" placeholder="مثال: 5:00 مساءً"></div>
+        <div class="form-group"><label>عنوان الدرس</label><input class="form-control" id="schedTitle" placeholder="رياضيات - الوحدة 3"></div>
+        <div class="form-group"><label>الوقت</label><input class="form-control" id="schedTime" placeholder="5:00 مساءً"></div>
         <div class="form-group"><label>ملاحظة</label><input class="form-control" id="schedNote" placeholder="اختياري"></div>
-        <div class="form-group"><label>مرفق (صورة / PDF)</label><input type="file" class="form-control" id="schedFile" accept="image/*,application/pdf"></div>
+        <div class="form-group"><label>مرفق</label><input type="file" class="form-control" id="schedFile" accept="image/*,application/pdf"></div>
         <button class="btn btn-primary" id="addSched"><i class="bi bi-check-lg"></i> إضافة الموعد</button>
       </div>
 
+      <!-- Add News -->
       <div class="card">
         <div class="section-title" style="margin-top:0"><i class="bi bi-megaphone"></i> نشر خبر</div>
-        <div class="form-group"><label>العنوان</label><input class="form-control" id="newsTitle" placeholder="عنوان الخبر"></div>
-        <div class="form-group"><label>النص</label><textarea class="form-control" id="newsBody" placeholder="تفاصيل الخبر"></textarea></div>
-        <div class="form-group"><label>مرفق (اختياري)</label><input type="file" class="form-control" id="newsFile" accept="image/*,application/pdf"></div>
+        <div class="form-group"><label>العنوان</label><input class="form-control" id="newsTitle"></div>
+        <div class="form-group"><label>النص</label><textarea class="form-control" id="newsBody"></textarea></div>
+        <div class="form-group"><label>مرفق</label><input type="file" class="form-control" id="newsFile" accept="image/*,application/pdf"></div>
         <button class="btn btn-primary" id="addNews"><i class="bi bi-send"></i> نشر</button>
       </div>
 
+      <!-- Library -->
       <div class="card">
         <div class="section-title" style="margin-top:0"><i class="bi bi-book"></i> إضافة للمكتبة</div>
         <div class="form-group">
@@ -381,46 +298,61 @@ textarea.form-control{resize:vertical;min-height:80px}
             <option value="exam">امتحان</option>
           </select>
         </div>
-        <div class="form-group"><label>العنوان</label><input class="form-control" id="libTitle" placeholder="اسم الملف"></div>
+        <div class="form-group"><label>العنوان</label><input class="form-control" id="libTitle"></div>
         <div class="form-group"><label>الملف</label><input type="file" class="form-control" id="libFile" accept="image/*,application/pdf"></div>
-        <button class="btn btn-primary" id="addLib"><i class="bi bi-upload"></i> رفع للمكتبة</button>
+        <button class="btn btn-primary" id="addLib"><i class="bi bi-upload"></i> رفع</button>
       </div>
 
+      <!-- Notif -->
       <div class="card">
         <div class="section-title" style="margin-top:0"><i class="bi bi-bell"></i> إرسال إشعار</div>
-        <div class="form-group"><label>عنوان الإشعار</label><input class="form-control" id="notifTitle" placeholder="مثال: تم إضافة موعد جديد"></div>
-        <div class="form-group"><label>الرسالة</label><textarea class="form-control" id="notifBody" placeholder="تفاصيل الإشعار"></textarea></div>
+        <div class="form-group"><label>عنوان الإشعار</label><input class="form-control" id="notifTitle"></div>
+        <div class="form-group"><label>الرسالة</label><textarea class="form-control" id="notifBody"></textarea></div>
         <button class="btn btn-primary" id="addNotif"><i class="bi bi-send"></i> إرسال للجميع</button>
       </div>
 
+      <!-- Students -->
       <div class="card">
-        <div class="section-title" style="margin-top:0"><i class="bi bi-gear"></i> إعدادات الحساب</div>
+        <div class="section-title" style="margin-top:0"><i class="bi bi-people"></i> الطلاب المسجلون</div>
+        <div id="studentsList"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0"><i class="bi bi-gear"></i> الحساب</div>
         <button class="btn btn-ghost" id="logoutBtn" style="width:100%"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
       </div>
     </div>
 
-    <!-- ===== Profile ===== -->
+    <!-- PROFILE -->
     <div id="view-profile" class="view hidden">
       <div class="card" style="text-align:center;padding:28px">
         <div class="avatar" id="profileAvatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 12px;background:linear-gradient(135deg,#4f46e5,#7c3aed)">?</div>
         <h3 id="profileName" style="font-size:18px;font-weight:800"></h3>
         <p id="profileEmail" style="color:var(--muted);font-size:13px;margin-top:4px"></p>
+        <div id="profileExtra" style="margin-top:12px;font-size:13px;color:var(--muted)"></div>
         <span id="profileBadge" class="chip active" style="display:inline-block;margin-top:12px;font-size:11px;padding:4px 12px"></span>
       </div>
-      <div class="card clickable" id="installBtnCard" style="display:flex;align-items:center;gap:12px">
-        <i class="bi bi-download" style="font-size:22px;color:var(--primary)"></i>
-        <div style="flex:1"><div style="font-weight:700;font-size:14px">تثبيت التطبيق</div><div style="font-size:11px;color:var(--muted)">أضف التطبيق لشاشتك الرئيسية</div></div>
+      <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer" id="editProfileCard">
+        <i class="bi bi-pencil-square" style="font-size:22px;color:var(--primary)"></i>
+        <div style="flex:1"><div style="font-weight:700;font-size:14px">تعديل بياناتي</div></div>
         <i class="bi bi-chevron-left" style="color:#cbd5e1"></i>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer" id="installBtnCard">
+        <i class="bi bi-download" style="font-size:22px;color:var(--primary)"></i>
+        <div style="flex:1"><div style="font-weight:700;font-size:14px">تثبيت التطبيق</div><div style="font-size:11px;color:var(--muted)">أضف لشاشتك الرئيسية</div></div>
+        <i class="bi bi-chevron-left" style="color:#cbd5e1"></i>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:12px">
+        <i class="bi bi-bell-fill" style="font-size:22px;color:var(--primary)"></i>
+        <div style="flex:1"><div style="font-weight:700;font-size:14px">تفعيل الإشعارات</div></div>
+        <button class="btn btn-primary btn-sm" id="enableNotifBtn" style="width:auto">تفعيل</button>
       </div>
       <button class="btn btn-ghost" id="logoutBtn2" style="width:100%;margin-top:8px"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
     </div>
-
   </div>
 
-  <!-- FAB for Admin -->
   <button class="fab hidden" id="fab" onclick="goTo('admin')"><i class="bi bi-plus-lg"></i></button>
 
-  <!-- Bottom Nav -->
   <div class="bottom-nav">
     <button class="nav-btn active" data-nav="home"><i class="bi bi-house-door"></i><span>الرئيسية</span></button>
     <button class="nav-btn" data-nav="schedules"><i class="bi bi-calendar-week"></i><span>المواعيد</span></button>
@@ -428,29 +360,50 @@ textarea.form-control{resize:vertical;min-height:80px}
     <button class="nav-btn" data-nav="notifs"><i class="bi bi-bell"></i><span>إشعارات</span></button>
     <button class="nav-btn" data-nav="profile"><i class="bi bi-person"></i><span>حسابي</span></button>
   </div>
-
-  <button class="nav-btn hidden" id="adminNav" data-nav="admin"></button>
 </div>
 
 <!-- Install Banner -->
 <div class="install-banner hidden" id="installBanner">
   <i class="bi bi-phone"></i>
   <div class="txt"><h4>ثبّت التطبيق</h4><p>تجربة أفضل وأسرع</p></div>
-  <button id="installBtn">تثبيت</button>
+  <button class="inst" id="installBtn">تثبيت</button>
   <button class="close" id="closeBanner">×</button>
 </div>
 
-<!-- Toast -->
+<!-- Edit Profile Modal -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>تعديل البيانات</h3>
+      <button class="modal-close" onclick="closeEdit()">×</button>
+    </div>
+    <div class="form-group"><label>الاسم</label><input class="form-control" id="editName"></div>
+    <div class="form-group"><label>رقم الهاتف</label><input class="form-control" id="editPhone" inputmode="tel"></div>
+    <div class="form-group">
+      <label>المرحلة</label>
+      <div class="stage-list" id="editStageList"></div>
+    </div>
+    <div class="form-group" id="editGradeGroup" style="display:none">
+      <label>الصف</label>
+      <select class="form-control" id="editGrade"></select>
+    </div>
+    <div class="form-group"><label>رقم ولي الأمر</label><input class="form-control" id="editParent" inputmode="tel"></div>
+    <button class="btn btn-primary" id="saveEdit"><i class="bi bi-check-lg"></i> حفظ</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, push, set, onValue, remove, serverTimestamp }
+import { getDatabase, ref, push, set, onValue, remove, get, update }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getMessaging, getToken, onMessage, isSupported }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
@@ -462,7 +415,9 @@ const firebaseConfig = {
   appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
 };
 
+const VAPID_KEY = "BBWs1jEbnAoWrdarIhaCGDfhiJ4ToWja8TPWSP9-xo_uA-Jalk_1khj__8zN0GldCwPK02hjfvBVDCRK71oOJWw";
 const ADMIN_EMAIL = "yazeedttv1@gmail.com";
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
@@ -470,93 +425,244 @@ const storage = getStorage(app);
 
 let currentUser = null;
 let isAdmin = false;
-let caches = { schedules: [], news: [], library: [], notifs: [] };
-let currentDay = "today";
-let currentCat = "all";
+let userData = null;
+let caches = { schedules: [], news: [], library: [], notifs: [], stages: [], students: [] };
+let currentDay = "today", currentCat = "all";
+let selectedStage = null, selectedGrade = null;
+let editSelectedStage = null, editSelectedGrade = null;
+let messaging = null;
 
 /* ===== Toast ===== */
 function toast(msg, type = "") {
   const t = document.getElementById("toast");
   t.textContent = msg;
   t.className = "toast show " + type;
-  setTimeout(() => t.className = "toast " + type, 2500);
+  clearTimeout(t._to);
+  t._to = setTimeout(() => t.className = "toast " + type, 2500);
 }
 
 /* ===== Navigation ===== */
 window.goTo = (view) => {
   document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
-  document.getElementById("view-" + view).classList.remove("hidden");
-  document.querySelectorAll(".nav-btn[data-nav]").forEach(b => {
-    b.classList.toggle("active", b.dataset.nav === view);
-  });
-  if (view === "admin") document.getElementById("adminNav").classList.add("active");
+  const target = document.getElementById("view-" + view);
+  if (target) target.classList.remove("hidden");
+  document.querySelectorAll(".nav-btn[data-nav]").forEach(b =>
+    b.classList.toggle("active", b.dataset.nav === view));
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 document.querySelectorAll(".nav-btn[data-nav]").forEach(btn => {
-  btn.onclick = () => { if (btn.dataset.nav) goTo(btn.dataset.nav); };
+  btn.onclick = () => goTo(btn.dataset.nav);
 });
 
-/* ===== Auth ===== */
-document.getElementById("googleLogin").onclick = () => {
-  signInWithPopup(auth, new GoogleAuthProvider()).catch(e => toast(e.message, "error"));
-};
-document.getElementById("logoutBtn").onclick = () => signOut(auth);
-document.getElementById("logoutBtn2").onclick = () => signOut(auth);
+/* ===== Detecting PWA ===== */
+const isStandalone = window.matchMedia("(display-mode: standalone)").matches
+  || window.navigator.standalone === true;
 
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  if (user) {
-    isAdmin = user.email === ADMIN_EMAIL;
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-    document.getElementById("userGreeting").textContent = "أهلاً " + (user.displayName || "بك");
-    const initial = (user.displayName || user.email || "?")[0].toUpperCase();
-    const avatarEl = document.getElementById("userAvatar");
-    avatarEl.innerHTML = user.photoURL
-      ? `<img src="${user.photoURL}" alt="">`
-      : initial;
-    document.getElementById("profileAvatar").innerHTML = user.photoURL
-      ? `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover">`
-      : initial;
-    document.getElementById("profileName").textContent = user.displayName || "مستخدم";
-    document.getElementById("profileEmail").textContent = user.email;
-    const badge = document.getElementById("profileBadge");
-    badge.textContent = isAdmin ? "👑 أدمن" : "🎓 طالب";
-    badge.style.background = isAdmin ? "#4f46e5" : "#10b981";
-    badge.style.color = "#fff";
-    if (isAdmin) {
-      document.getElementById("fab").classList.remove("hidden");
-      document.getElementById("adminNav").classList.remove("hidden");
-    } else {
-      document.getElementById("fab").classList.add("hidden");
-      document.getElementById("adminNav").classList.add("hidden");
-    }
-    loadAll();
+/* ===== Login ===== */
+document.getElementById("googleLogin").onclick = async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+
+  if (isStandalone) {
+    // PWA: افتح صفحة login خارجية
+    const url = new URL("login.html", window.location.href);
+    url.searchParams.set("return", window.location.href);
+    window.open(url.toString(), "_blank", "noopener");
   } else {
+    // متصفح عادي
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (e) {
+      if (e.code === "auth/popup-blocked" || e.code === "auth/popup-closed-by-user") {
+        await signInWithRedirect(auth, provider);
+      } else {
+        toast(e.message, "error");
+      }
+    }
+  }
+};
+
+// بعد الرجوع من الـredirect (في حالة signInWithRedirect)
+getRedirectResult(auth).catch(() => {});
+
+/* ===== Auth State ===== */
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (!user) {
     document.getElementById("loginScreen").classList.remove("hidden");
+    document.getElementById("setupScreen").classList.add("hidden");
     document.getElementById("app").classList.add("hidden");
+    return;
+  }
+
+  isAdmin = user.email === ADMIN_EMAIL;
+  document.getElementById("loginScreen").classList.add("hidden");
+
+  // تحقق من البيانات
+  const snap = await get(ref(db, "users/" + user.uid));
+  if (snap.exists()) {
+    userData = snap.val();
+    showApp();
+  } else {
+    showSetup();
   }
 });
 
+function showApp() {
+  document.getElementById("setupScreen").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+
+  document.getElementById("userGreeting").textContent = "أهلاً " + (userData?.name || currentUser.displayName || "بك");
+  const initial = ((userData?.name || currentUser.displayName || currentUser.email) || "?")[0].toUpperCase();
+  const av = document.getElementById("userAvatar");
+  av.innerHTML = currentUser.photoURL ? `<img src="${currentUser.photoURL}">` : initial;
+
+  document.getElementById("profileAvatar").innerHTML = currentUser.photoURL
+    ? `<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover">` : initial;
+  document.getElementById("profileName").textContent = userData?.name || currentUser.displayName || "مستخدم";
+  document.getElementById("profileEmail").textContent = currentUser.email;
+  document.getElementById("profileExtra").innerHTML =
+    `${userData?.stage ? "🎓 " + esc(userData.stage) : ""}${userData?.grade ? " - " + esc(userData.grade) : ""}<br>${userData?.phone ? "📱 " + esc(userData.phone) : ""}`;
+
+  const badge = document.getElementById("profileBadge");
+  badge.textContent = isAdmin ? "👑 أدمن" : "🎓 طالب";
+  badge.style.background = isAdmin ? "#4f46e5" : "#10b981";
+  badge.style.color = "#fff";
+
+  document.getElementById("fab").classList.toggle("hidden", !isAdmin);
+
+  loadAll();
+  initMessaging();
+}
+
+/* ===== Setup Screen (استكمال البيانات) ===== */
+function showSetup() {
+  document.getElementById("setupScreen").classList.remove("hidden");
+  document.getElementById("app").classList.add("hidden");
+  document.getElementById("setupName").value = currentUser.displayName || "";
+  loadStagesForSetup();
+}
+
+function loadStagesForSetup() {
+  onValue(ref(db, "stages"), (snap) => {
+    caches.stages = [];
+    snap.forEach(c => caches.stages.push({ id: c.key, ...c.val() }));
+    renderStagePicker("stageList", "gradeGroup", "setupGrade", false);
+  }, { onlyOnce: true });
+  // لو مفيش مراحل
+  setTimeout(() => {
+    if (caches.stages.length === 0) {
+      document.getElementById("stageList").innerHTML =
+        `<div style="color:#94a3b8;font-size:13px">لم تُضف مراحل بعد — تواصل مع الإدارة</div>`;
+    }
+  }, 1500);
+}
+
+function renderStagePicker(listId, gradeGroupId, gradeSelectId, isEdit) {
+  const list = document.getElementById(listId);
+  list.innerHTML = caches.stages.map(s =>
+    `<div class="stage-opt" data-id="${s.id}">${esc(s.name)}</div>`
+  ).join("");
+
+  list.querySelectorAll(".stage-opt").forEach(el => {
+    el.onclick = () => {
+      list.querySelectorAll(".stage-opt").forEach(x => x.classList.remove("selected"));
+      el.classList.add("selected");
+      const stage = caches.stages.find(s => s.id === el.dataset.id);
+      if (isEdit) editSelectedStage = stage; else selectedStage = stage;
+      const gradeGroup = document.getElementById(gradeGroupId);
+      const gradeSelect = document.getElementById(gradeSelectId);
+      gradeGroup.style.display = "block";
+      gradeSelect.innerHTML = (stage.grades || []).map(g => `<option>${esc(g)}</option>`).join("");
+      gradeSelect.onchange = () => {
+        if (isEdit) editSelectedGrade = gradeSelect.value; else selectedGrade = gradeSelect.value;
+      };
+      if (isEdit) editSelectedGrade = gradeSelect.value; else selectedGrade = gradeSelect.value;
+    };
+  });
+}
+
+document.getElementById("saveProfile").onclick = async () => {
+  const name = document.getElementById("setupName").value.trim();
+  const phone = document.getElementById("setupPhone").value.trim();
+  const parent = document.getElementById("setupParent").value.trim();
+  if (!name) return toast("اكتب اسمك", "error");
+  if (!selectedStage) return toast("اختر المرحلة", "error");
+  try {
+    const data = {
+      name, phone, parent,
+      stage: selectedStage.name,
+      grade: selectedGrade || (selectedStage.grades?.[0] || ""),
+      email: currentUser.email,
+      createdAt: Date.now()
+    };
+    await set(ref(db, "users/" + currentUser.uid), data);
+    userData = data;
+    toast("✅ تم حفظ بياناتك", "success");
+    showApp();
+  } catch (e) { toast(e.message, "error"); }
+};
+
+/* ===== Edit Profile ===== */
+document.getElementById("editProfileCard").onclick = () => {
+  document.getElementById("editName").value = userData?.name || "";
+  document.getElementById("editPhone").value = userData?.phone || "";
+  document.getElementById("editParent").value = userData?.parent || "";
+  loadStagesForEdit();
+  document.getElementById("editModal").classList.add("show");
+};
+window.closeEdit = () => document.getElementById("editModal").classList.remove("show");
+
+function loadStagesForEdit() {
+  onValue(ref(db, "stages"), (snap) => {
+    caches.stages = [];
+    snap.forEach(c => caches.stages.push({ id: c.key, ...c.val() }));
+    renderStagePicker("editStageList", "editGradeGroup", "editGrade", true);
+  }, { onlyOnce: true });
+}
+
+document.getElementById("saveEdit").onclick = async () => {
+  const name = document.getElementById("editName").value.trim();
+  const phone = document.getElementById("editPhone").value.trim();
+  const parent = document.getElementById("editParent").value.trim();
+  if (!name) return toast("اكتب اسمك", "error");
+  const data = {
+    ...userData, name, phone, parent,
+    stage: editSelectedStage?.name || userData.stage,
+    grade: editSelectedGrade || userData.grade
+  };
+  try {
+    await set(ref(db, "users/" + currentUser.uid), data);
+    userData = data;
+    closeEdit();
+    toast("✅ تم التحديث", "success");
+    showApp();
+  } catch (e) { toast(e.message, "error"); }
+};
+
 /* ===== Load Data ===== */
 function loadAll() {
-  ["schedules", "news", "library", "notifs"].forEach(k => {
+  ["schedules", "news", "library", "notifs", "stages"].forEach(k => {
     onValue(ref(db, k), (snap) => {
       caches[k] = [];
       snap.forEach(c => caches[k].push({ id: c.key, ...c.val() }));
       caches[k].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       render();
+      if (k === "stages") renderStagesAdmin();
     });
   });
+
+  if (isAdmin) {
+    onValue(ref(db, "users"), (snap) => {
+      caches.students = [];
+      snap.forEach(c => caches.students.push({ id: c.key, ...c.val() }));
+      renderStudents();
+    });
+  }
 }
 
-/* ===== Render ===== */
 function render() {
-  renderHome();
-  renderSchedules();
-  renderNews();
-  renderLibrary();
-  renderNotifs();
+  renderHome(); renderSchedules(); renderNews(); renderLibrary(); renderNotifs();
 }
 
 function renderHome() {
@@ -571,38 +677,32 @@ function renderHome() {
 }
 
 function renderSchedules() {
-  const list = document.getElementById("schedulesList");
   const filtered = caches.schedules.filter(s => s.day === currentDay);
-  list.innerHTML = filtered.length
+  document.getElementById("schedulesList").innerHTML = filtered.length
     ? filtered.map(scheduleCard).join("")
     : `<div class="empty"><i class="bi bi-calendar-x"></i><p>لا توجد مواعيد</p></div>`;
 }
 
 function renderNews() {
-  const list = document.getElementById("newsList");
-  list.innerHTML = caches.news.length
+  document.getElementById("newsList").innerHTML = caches.news.length
     ? caches.news.map(newsCard).join("")
     : `<div class="empty"><i class="bi bi-newspaper"></i><p>لا توجد أخبار</p></div>`;
 }
 
 function renderLibrary() {
-  const list = document.getElementById("libraryList");
-  const filtered = currentCat === "all"
-    ? caches.library
-    : caches.library.filter(l => l.cat === currentCat);
-  list.innerHTML = filtered.length
+  const filtered = currentCat === "all" ? caches.library : caches.library.filter(l => l.cat === currentCat);
+  document.getElementById("libraryList").innerHTML = filtered.length
     ? filtered.map(libCard).join("")
     : `<div class="empty"><i class="bi bi-book"></i><p>المكتبة فارغة</p></div>`;
 }
 
 function renderNotifs() {
-  const list = document.getElementById("notifsList");
-  list.innerHTML = caches.notifs.length
+  document.getElementById("notifsList").innerHTML = caches.notifs.length
     ? caches.notifs.map(notifCard).join("")
     : `<div class="empty"><i class="bi bi-bell-slash"></i><p>لا توجد إشعارات</p></div>`;
 }
 
-/* ===== Card Templates ===== */
+/* ===== Templates ===== */
 function scheduleCard(s) {
   return `<div class="card">
     <div class="card-title"><i class="bi bi-bookmark-check"></i>${esc(s.title)}</div>
@@ -627,10 +727,7 @@ function libCard(l) {
   const labels = { book: "كتاب", summary: "ملخص", exam: "امتحان" };
   return `<div class="lib-card">
     <div class="lib-icon"><i class="bi ${icons[l.cat] || "bi-file-earmark"}"></i></div>
-    <div class="lib-info">
-      <h4>${esc(l.title)}</h4>
-      <p>${labels[l.cat] || "ملف"}</p>
-    </div>
+    <div class="lib-info"><h4>${esc(l.title)}</h4><p>${labels[l.cat] || "ملف"}</p></div>
     <div class="lib-actions">
       ${l.file?.url ? `<a href="${l.file.url}" target="_blank" class="btn btn-ghost btn-sm"><i class="bi bi-download"></i></a>` : ""}
       ${isAdmin ? `<button class="btn btn-danger btn-sm" onclick="delItem('library','${l.id}')"><i class="bi bi-trash"></i></button>` : ""}
@@ -639,7 +736,7 @@ function libCard(l) {
 }
 
 function notifCard(n) {
-  const d = n.createdAt ? new Date(n.createdAt).toLocaleDateString("ar-EG", { day: "numeric", month: "long" }) : "";
+  const d = n.createdAt ? new Date(n.createdAt).toLocaleDateString("ar-EG", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : "";
   return `<div class="notif-item">
     <div class="notif-icon"><i class="bi bi-bell-fill"></i></div>
     <div style="flex:1">
@@ -653,10 +750,8 @@ function notifCard(n) {
 
 function fileRender(f) {
   if (!f?.url) return "";
-  if (f.type?.startsWith("image/")) {
-    return `<img src="${f.url}" class="file-preview" onclick="window.open('${f.url}','_blank')">`;
-  }
-  return `<a href="${f.url}" target="_blank" class="file-box"><i class="bi bi-file-earmark-pdf-fill"></i><span>${esc(f.name || "ملف PDF")}</span></a>`;
+  if (f.type?.startsWith("image/")) return `<img src="${f.url}" class="file-preview" onclick="window.open('${f.url}','_blank')">`;
+  return `<a href="${f.url}" target="_blank" class="file-box"><i class="bi bi-file-earmark-pdf-fill"></i><span>${esc(f.name || "ملف")}</span></a>`;
 }
 
 /* ===== Delete ===== */
@@ -680,6 +775,43 @@ async function upload(file, folder) {
 }
 
 /* ===== Admin Actions ===== */
+document.getElementById("addStage").onclick = async () => {
+  const name = document.getElementById("stageName").value.trim();
+  const gradesRaw = document.getElementById("stageGrades").value.trim();
+  if (!name || !gradesRaw) return toast("اكتب اسم المرحلة والصفوف", "error");
+  const grades = gradesRaw.split(/[,،]/).map(x => x.trim()).filter(Boolean);
+  try {
+    await set(push(ref(db, "stages")), { name, grades, createdAt: Date.now() });
+    document.getElementById("stageName").value = "";
+    document.getElementById("stageGrades").value = "";
+    toast("✅ تمت الإضافة", "success");
+  } catch (e) { toast(e.message, "error"); }
+};
+
+function renderStagesAdmin() {
+  const el = document.getElementById("stagesAdminList");
+  if (!el) return;
+  if (!caches.stages.length) {
+    el.innerHTML = `<div style="color:#94a3b8;font-size:13px;text-align:center">لا توجد مراحل</div>`;
+    return;
+  }
+  el.innerHTML = caches.stages.map(s => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#f8fafc;border-radius:10px;margin-bottom:6px">
+      <div>
+        <div style="font-weight:700;font-size:14px">${esc(s.name)}</div>
+        <div style="font-size:11px;color:var(--muted)">${(s.grades || []).map(esc).join(" • ")}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="delStage('${s.id}')"><i class="bi bi-trash"></i></button>
+    </div>
+  `).join("");
+}
+
+window.delStage = async (id) => {
+  if (!confirm("حذف المرحلة؟")) return;
+  await remove(ref(db, "stages/" + id));
+  toast("تم الحذف", "success");
+};
+
 document.getElementById("addSched").onclick = async () => {
   const day = document.getElementById("schedDay").value;
   const title = document.getElementById("schedTitle").value.trim();
@@ -726,72 +858,236 @@ document.getElementById("addNotif").onclick = async () => {
   const body = document.getElementById("notifBody").value.trim();
   if (!title) return toast("اكتب عنوان الإشعار", "error");
   try {
-    await set(push(ref(db, "notifs")), { title, body, createdAt: Date.now() });
+    const nRef = push(ref(db, "notifs"));
+    await set(nRef, { title, body, createdAt: Date.now(), by: currentUser.email });
     ["notifTitle", "notifBody"].forEach(i => document.getElementById(i).value = "");
     toast("✅ تم الإرسال", "success");
-    if (Notification.permission === "granted") {
-      new Notification(title, { body, icon: "icon-192.png" });
+    // إظهار إشعار محلي للأدمن
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, { body, icon: "icon-192.png", tag: "sigma-notif" });
     }
   } catch (e) { toast(e.message, "error"); }
+};
+
+/* ===== Students List (Admin) ===== */
+function renderStudents() {
+  const el = document.getElementById("studentsList");
+  if (!el) return;
+  if (!caches.students.length) {
+    el.innerHTML = `<div style="color:#94a3b8;font-size:13px;text-align:center">لا يوجد طلاب</div>`;
+    return;
+  }
+  el.innerHTML = caches.students.map(s => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#f8fafc;border-radius:10px;margin-bottom:6px">
+      <div>
+        <div style="font-weight:700;font-size:13px">${esc(s.name || "—")}</div>
+        <div style="font-size:11px;color:var(--muted)">${esc(s.stage || "")} ${s.grade ? "- " + esc(s.grade) : ""} • ${esc(s.phone || s.email || "")}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="delUser('${s.id}')"><i class="bi bi-trash"></i></button>
+    </div>
+  `).join("");
+}
+
+window.delUser = async (uid) => {
+  if (!confirm("حذف الطالب من القائمة؟ (لن يُحذف حسابه من Firebase)")) return;
+  await remove(ref(db, "users/" + uid));
+  toast("تم الحذف", "success");
 };
 
 /* ===== Chips ===== */
 document.querySelectorAll(".chip[data-day]").forEach(c => {
   c.onclick = () => {
     document.querySelectorAll(".chip[data-day]").forEach(x => x.classList.remove("active"));
-    c.classList.add("active");
-    currentDay = c.dataset.day;
-    renderSchedules();
+    c.classList.add("active"); currentDay = c.dataset.day; renderSchedules();
   };
 });
 document.querySelectorAll(".chip[data-cat]").forEach(c => {
   c.onclick = () => {
     document.querySelectorAll(".chip[data-cat]").forEach(x => x.classList.remove("active"));
-    c.classList.add("active");
-    currentCat = c.dataset.cat;
-    renderLibrary();
+    c.classList.add("active"); currentCat = c.dataset.cat; renderLibrary();
   };
 });
+
+/* ===== Logout ===== */
+document.getElementById("logoutBtn").onclick = () => signOut(auth);
+document.getElementById("logoutBtn2").onclick = () => signOut(auth);
 
 /* ===== Escape ===== */
 function esc(s) {
   return String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-/* ===== PWA Install ===== */
+/* ===== PWA Install (auto-hide in 5s) ===== */
 let deferredPrompt = null;
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  if (!localStorage.getItem("installDismissed")) {
-    document.getElementById("installBanner").classList.remove("hidden");
-  }
+  if (localStorage.getItem("installDismissed")) return;
+  const banner = document.getElementById("installBanner");
+  banner.classList.remove("hidden");
+  // يختفي تلقائياً بعد 5 ثواني
+  setTimeout(() => {
+    banner.classList.add("hide");
+    setTimeout(() => banner.classList.add("hidden"), 400);
+  }, 5000);
 });
 document.getElementById("installBtn").onclick = async () => {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
   await deferredPrompt.userChoice;
   deferredPrompt = null;
-  document.getElementById("installBanner").classList.add("hidden");
+  const b = document.getElementById("installBanner");
+  b.classList.add("hide");
+  setTimeout(() => b.classList.add("hidden"), 400);
 };
 document.getElementById("closeBanner").onclick = () => {
   localStorage.setItem("installDismissed", "1");
-  document.getElementById("installBanner").classList.add("hidden");
+  const b = document.getElementById("installBanner");
+  b.classList.add("hide");
+  setTimeout(() => b.classList.add("hidden"), 400);
 };
 document.getElementById("installBtnCard").onclick = async () => {
   if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
   else toast("من قائمة المتصفح اختر 'إضافة للشاشة'", "");
 };
 
+/* ===== FCM Notifications ===== */
+async function initMessaging() {
+  try {
+    if (!("Notification" in window)) return;
+    const supported = await isSupported().catch(() => false);
+    if (!supported) return;
+    messaging = getMessaging(app);
+
+    // استقبال الرسائل والتطبيق مفتوح
+    onMessage(messaging, (payload) => {
+      const t = payload.notification?.title || "إشعار جديد";
+      const b = payload.notification?.body || "";
+      toast(t, "success");
+      if (Notification.permission === "granted") {
+        new Notification(t, { body: b, icon: "icon-192.png" });
+      }
+    });
+
+    // لو عنده صلاحية، احفظ التوكن
+    if (Notification.permission === "granted") {
+      await saveFcmToken();
+    }
+  } catch (e) { /* تجاهل */ }
+}
+
+async function saveFcmToken() {
+  try {
+    const reg = await navigator.serviceWorker.register("firebase-messaging-sw.js");
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+    if (token && currentUser) {
+      await set(ref(db, "fcmTokens/" + currentUser.uid), {
+        token, email: currentUser.email, updatedAt: Date.now()
+      });
+      console.log("FCM Token saved");
+    }
+  } catch (e) { console.warn("FCM token error:", e.message); }
+}
+
+document.getElementById("enableNotifBtn").onclick = async () => {
+  if (!("Notification" in window)) return toast("المتصفح لا يدعم الإشعارات", "error");
+  const perm = await Notification.requestPermission();
+  if (perm === "granted") {
+    toast("✅ تم تفعيل الإشعارات", "success");
+    await saveFcmToken();
+  } else {
+    toast("تم رفض الإشعارات", "error");
+  }
+};
+
 /* ===== Register SW ===== */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تسجيل الدخول - سنتر سيجما</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 50%,#ec4899 100%);padding:20px}
+.card{background:#fff;border-radius:28px;padding:36px 28px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.logo{width:80px;height:80px;border-radius:24px;margin:0 auto 20px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:38px;color:#fff}
+h2{font-size:22px;font-weight:800;margin-bottom:8px;color:#1e293b}
+p{color:#64748b;font-size:14px;margin-bottom:24px}
+.btn{width:100%;padding:14px;border-radius:14px;background:#fff;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:15px;cursor:pointer;transition:.2s;font-family:inherit}
+.btn:active{transform:scale(.97)}
+.success{color:#10b981;font-size:16px;font-weight:700}
+.spin{width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#4f46e5;border-radius:50%;animation:s .8s linear infinite;margin:20px auto}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="logo">🎓</div>
+  <h2>سنتر سيجما</h2>
+  <p>اختر حساب جوجل للمتابعة</p>
+  <button class="btn" id="login">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+    الدخول بحساب جوجل
+  </button>
+</div>
 
-/* ===== Request Notification Permission ===== */
-if ("Notification" in window && Notification.permission === "default") {
-  setTimeout(() => Notification.requestPermission(), 3000);
-}
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",
+  authDomain: "sigma-6f162.firebaseapp.com",
+  databaseURL: "https://sigma-6f162-default-rtdb.firebaseio.com",
+  projectId: "sigma-6f162",
+  storageBucket: "sigma-6f162.firebasestorage.app",
+  messagingSenderId: "420365348074",
+  appId: "1:420365348074:web:0aaecb71ec613bb32abb93"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+document.getElementById("login").onclick = async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  try {
+    const { user } = await signInWithPopup(auth, provider);
+    // حفظ إشارة للتبويب الأصلي
+    localStorage.setItem("sigma_auth_signal", JSON.stringify({
+      uid: user.uid, email: user.email, at: Date.now()
+    }));
+    document.getElementById("card").innerHTML = `
+      <div class="logo">✅</div>
+      <h2 class="success">تم تسجيل الدخول</h2>
+      <p>يمكنك الآن العودة للتطبيق</p>
+      <button class="btn" onclick="window.close();history.back()">رجوع للتطبيق</button>
+    `;
+    setTimeout(() => { try { window.close(); } catch(e){} }, 1500);
+  } catch (e) {
+    alert("خطأ: " + e.message);
+  }
+};
+
+// لو مسجل دخول من قبل، اعرض نجاح مباشرة
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    localStorage.setItem("sigma_auth_signal", JSON.stringify({
+      uid: user.uid, email: user.email, at: Date.now()
+    }));
+  }
+});
 </script>
 </body>
 </html>
