@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" id="mf">
-<link rel="apple-touch-icon" id="ai" href="icon.png">
+<link rel="apple-touch-icon" id="ai">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -139,7 +139,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .tools-row button:hover{background:var(--ac);color:#fff}
 .custom-player-ctrl .tools-row select{width:auto;padding:6px 10px;margin:0;font-size:13px;border-radius:8px}
 
-/* شريط التنقل البيضاوي/المثني */
 .bottombar{position:fixed;bottom:0;left:0;right:0;z-index:40;background:transparent;display:flex;justify-content:center;padding:0 16px calc(16px + env(safe-area-inset-bottom));pointer-events:none}
 .bottombar-inner{background:var(--surface);border:1px solid var(--bd);border-radius:30px;display:flex;justify-content:space-around;gap:4px;padding:8px 12px;box-shadow:0 8px 24px rgba(0,0,0,.08);pointer-events:auto;width:100%;max-width:500px}
 html.dark .bottombar-inner{box-shadow:0 8px 24px rgba(0,0,0,.4)}
@@ -220,9 +219,14 @@ function toast(m){const t=$('#t');t.textContent=m;t.classList.add('show');clearT
 const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=s;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,s,s);r(c.toDataURL('image/jpeg',.8))};i.src=URL.createObjectURL(f)});
 
 (()=>{
-  const iconUrl='icon.png';
-  $('#ai').href=iconUrl;
-  const m={name:'سيجما',short_name:'سيجما',start_url:location.pathname,display:'standalone',background_color:'#6a1b9a',theme_color:'#6a1b9a',dir:'rtl',lang:'ar',icons:[{src:iconUrl,sizes:'192x192',type:'image/png'},{src:iconUrl,sizes:'512x512',type:'image/png'}]};
+  const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#6a1b9a');g.addColorStop(1,'#4a148c');
+  x.fillStyle=g;x.fillRect(0,0,192,192);x.fillStyle='#fff';x.font='bold 120px sans-serif';
+  x.textAlign='center';x.textBaseline='middle';x.fillText('Σ',96,104);
+  const u=c.toDataURL();$('#ai').href=u;
+  const m={name:'سيجما',short_name:'سيجما',start_url:location.pathname,display:'standalone',
+    background_color:'#6a1b9a',theme_color:'#6a1b9a',dir:'rtl',lang:'ar',
+    icons:[{src:u,sizes:'192x192',type:'image/png'}]};
   $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
 })();
 
