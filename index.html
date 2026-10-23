@@ -38,7 +38,6 @@ h1,h2,h3{font-weight:800;line-height:1.3}
 h2{font-size:20px;margin-bottom:16px;color:var(--tx)}
 h3{font-size:16px;margin-bottom:10px}
 
-/* ===== Header ===== */
 header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);
   padding:calc(12px + env(safe-area-inset-top)) 20px 12px;display:flex;align-items:center;gap:12px}
@@ -52,10 +51,8 @@ html.dark header{background:rgba(17,26,46,.85)}
   padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
 .header-btn:hover{background:var(--ac);color:#fff}
 
-/* ===== Main ===== */
 main{max-width:1000px;margin:0 auto;padding:24px 20px 40px}
 
-/* ===== Cards & Rows ===== */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
 .card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
   padding:20px 16px;cursor:pointer;text-align:center;transition:.2s var(--shadow)}
@@ -74,7 +71,6 @@ main{max-width:1000px;margin:0 auto;padding:24px 20px 40px}
 .row b{font-size:15px;display:block;color:var(--tx)}
 .row small{color:var(--mu);font-size:13px;display:block;margin-top:2px}
 
-/* ===== Buttons ===== */
 button,.btn{font-family:inherit;font-weight:600;border:0;border-radius:var(--r-sm);
   padding:10px 18px;background:var(--ac);color:#fff;cursor:pointer;transition:.15s;font-size:14px}
 button:hover{background:var(--ac2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,130,246,.3)}
@@ -85,28 +81,24 @@ button.d{background:var(--er)}button.d:hover{background:#dc2626;box-shadow:0 4px
 button.g{background:var(--ok)}button.g:hover{background:#059669;box-shadow:0 4px 12px rgba(16,185,129,.3)}
 button.w{background:var(--warn);color:#fff}button.w:hover{background:#d97706}
 
-/* ===== Forms ===== */
 label{font-size:13px;color:var(--tx2);font-weight:600;display:block;margin-bottom:6px}
 input,select,textarea{font-family:inherit;font-size:14px;width:100%;padding:11px 14px;
   border-radius:var(--r-sm);border:1px solid var(--bd);background:var(--surface);color:var(--tx);
   margin-bottom:14px;transition:.15s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
 
-/* ===== Box / Tabs ===== */
 .box{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
   padding:22px;margin-bottom:20px;box-shadow:var(--shadow)}
 .tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .tabs button{background:var(--surface2);color:var(--tx2);padding:9px 18px;font-size:14px}
 .tabs button.on{background:var(--ac);color:#fff}
 
-/* ===== Table ===== */
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:10px;text-align:right;border-bottom:1px solid var(--bd)}
 th{background:var(--surface2);font-weight:700;color:var(--tx2);font-size:12px;text-transform:uppercase;letter-spacing:.3px}
 tr:hover td{background:var(--surface2)}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r)}
 
-/* ===== Badges ===== */
 .b{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--tx2)}
 .b.g{background:#d1fae5;color:#065f46}
 .b.r{background:#fee2e2;color:#991b1b}
@@ -116,18 +108,15 @@ html.dark .b.r{background:#7f1d1d;color:#fca5a5}
 html.dark .b.y{background:#78350f;color:#fcd34d}
 .g{color:var(--ok)}.r{color:var(--er)}.y{color:var(--warn)}
 
-/* ===== Code ===== */
 .code{font-family:'Courier New',monospace;font-size:15px;letter-spacing:2px;direction:ltr;
   display:inline-block;background:var(--surface2);padding:3px 10px;border-radius:6px;color:var(--ac2);font-weight:700}
 
-/* ===== Center ===== */
 .center{text-align:center;padding:15vh 20px 0}
 .center h1{font-size:clamp(40px,10vw,64px);color:var(--ac);margin-bottom:12px;letter-spacing:-2px}
 .center p{color:var(--mu);margin-bottom:32px;font-size:15px}
 .center button{padding:14px 32px;font-size:16px;border-radius:var(--r)}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
-/* ===== Player ===== */
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;
   width:100%;aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
@@ -144,7 +133,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 @keyframes mv{0%{top:6%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:12%;left:60%}}
 .blk{position:absolute;top:0;right:0;width:64px;height:64px;z-index:4}
 
-/* ===== Video Toolbar ===== */
+/* Video toolbar */
 .vtoolbar{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);
   padding:12px;margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;box-shadow:var(--shadow)}
 .vtoolbar .grp{display:flex;align-items:center;gap:6px;background:var(--surface2);
@@ -156,8 +145,8 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   border-radius:8px;padding:6px 10px;color:var(--tx);direction:ltr;min-width:66px;text-align:center;font-weight:700}
 .vtoolbar select{padding:7px 10px;margin:0;width:auto;font-size:13px}
 .vtoolbar .spacer{flex:1}
+.vtoolbar .note{width:100%;font-size:12px;color:var(--mu);text-align:center;margin-top:4px;line-height:1.6}
 
-/* ===== Bottom Bar ===== */
 .bottombar{position:fixed;bottom:0;left:0;right:0;z-index:40;background:var(--surface);
   border-top:1px solid var(--bd);display:flex;justify-content:center;gap:6px;
   padding:8px 10px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.06)}
@@ -168,14 +157,12 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .bottombar button.on{background:var(--ac-soft);color:var(--ac2);transform:none;box-shadow:none}
 html.dark .bottombar button.on{background:var(--ac);color:#fff}
 
-/* ===== Toast ===== */
 #t{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
   background:var(--tx);color:var(--bg);padding:12px 22px;border-radius:var(--r);
   font-weight:700;display:none;z-index:100;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center;font-size:14px}
 #t.show{display:block;animation:pop .25s}
 @keyframes pop{0%{transform:translateX(-50%) scale(.8);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 
-/* ===== Responsive ===== */
 @media(max-width:720px){
   header{padding:10px 14px calc(10px + env(safe-area-inset-top)) 14px}
   header .logo{font-size:19px}
@@ -198,7 +185,6 @@ html.dark .bottombar button.on{background:var(--ac);color:#fff}
 }
 @media print{body{display:none}}
 
-/* Banned screen */
 .ban-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;
   justify-content:center;padding:20px;text-align:center}
 .ban-screen .box-max{max-width:420px}
@@ -225,6 +211,7 @@ const fd=t=>t?new Date(t).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'s
 
 let U=null,A=false,S={v:'home'},teachers={},videos={},badge='',hb=null,ip=null;
 let banned=null,unsubBan=null;
+let drivePlayer=null; // كائن مشغل درايف
 const DEVICE_KEY='sigma-device-id';
 function getDeviceId(){
   let id=localStorage.getItem(DEVICE_KEY);
@@ -241,7 +228,6 @@ function deviceLabel(){
   return'جهاز';
 }
 
-/* ===== Theme ===== */
 const THEME_KEY='sigma-theme';
 function initTheme(){
   const saved=localStorage.getItem(THEME_KEY);
@@ -258,7 +244,6 @@ initTheme();
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('show');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('show'),2400)}
 const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=s;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,s,s);r(c.toDataURL('image/jpeg',.8))};i.src=URL.createObjectURL(f)});
 
-/* ===== PWA ===== */
 (()=>{const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
 const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#3b82f6');g.addColorStop(1,'#2563eb');
 x.fillStyle=g;x.fillRect(0,0,192,192);x.fillStyle='#fff';x.font='bold 120px sans-serif';
@@ -270,7 +255,6 @@ const m={name:'سيجما',short_name:'سيجما',start_url:location.pathname,d
 $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}))})();
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;render()});
 
-/* ===== Protection ===== */
 addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();
  if(e.key==='PrintScreen'){navigator.clipboard?.writeText('');toast('التصوير ممنوع');e.preventDefault()}
@@ -281,13 +265,13 @@ addEventListener('dragstart',e=>e.preventDefault());
 /* ===== embed ===== */
 function embed(u){u=u.trim();let m;
  if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/))return{t:'f',s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1`,yt:m[1]};
- if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))return{t:'f',s:`https://drive.google.com/file/d/${m[1]}/preview`,drive:1};
+ if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))return{t:'drive',s:`https://drive.google.com/file/d/${m[1]}/preview`,id:m[1]};
  if(/facebook\.com|fb\.watch/.test(u))return{t:'f',s:`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(u)}&show_text=false`};
  if(m=u.match(/tiktok\.com\/.*video\/(\d+)/))return{t:'f',s:`https://www.tiktok.com/embed/v2/${m[1]}`};
  if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return{t:'v',s:u};
  return{t:'f',s:u}}
 
-/* ===== Single-Device Enforcement ===== */
+/* ===== Single-Device (المدير مستثنى) ===== */
 async function enforceSingleDevice(){
   const devId=getDeviceId();
   const sessionsRef=R('sessions/'+U.uid);
@@ -295,9 +279,7 @@ async function enforceSingleDevice(){
   const now=Date.now();
   const existingDevice=cur.deviceId;
   const existingTs=cur.updatedAt||0;
-  // إذا كان هناك جهاز مختلف مسجّل خلال آخر 10 دقائق، اعتبره جهازاً آخر
   if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
-    // إنشاء حظر
     await set(R('bans/'+U.uid),{
       uid:U.uid,name:U.displayName||'',email:U.email||'',
       photo:U.photoURL||'',
@@ -307,19 +289,13 @@ async function enforceSingleDevice(){
     });
     return false;
   }
-  // تسجيل الجهاز الحالي
   await set(sessionsRef,{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,
     name:U.displayName||'',email:U.email||''});
-  // إزالة الحظر إن وُجد لنفس الجهاز (المدير فكّه)
   const ban=(await G('bans/'+U.uid));
   if(ban&&ban.newDevice===devId){await remove(R('bans/'+U.uid))}
   return true;
 }
-
-async function checkBan(){
-  return await G('bans/'+U.uid);
-}
-
+async function checkBan(){return await G('bans/'+U.uid)}
 function renderBanned(ban){
   document.body.innerHTML=`<div class="ban-screen"><div class="box-max">
     <h1>⛔ تم حظر حسابك</h1>
@@ -338,19 +314,20 @@ onAuthStateChanged(auth,async u=>{
   U=u;A=!!u&&ADMIN_EMAILS.includes((u.email||'').toLowerCase());
   if(u){
     try{
-      const ban=await checkBan();
-      if(ban&&!A){
-        banned=ban;renderBanned(ban);
-        // استماع مباشر لفك الحظر
-        unsubBan=onValue(R('bans/'+U.uid),snap=>{
-          if(!snap.val()){banned=null;location.reload()}
-        });
-        return;
-      }
-      const ok=await enforceSingleDevice();
-      if(!ok){
-        const b=await checkBan();
-        if(b){banned=b;renderBanned(b);return}
+      if(!A){
+        const ban=await checkBan();
+        if(ban){
+          banned=ban;renderBanned(ban);
+          unsubBan=onValue(R('bans/'+U.uid),snap=>{
+            if(!snap.val()){banned=null;location.reload()}
+          });
+          return;
+        }
+        const ok=await enforceSingleDevice();
+        if(!ok){
+          const b=await checkBan();
+          if(b){banned=b;renderBanned(b);return}
+        }
       }
       teachers=await G('teachers')||{};
       videos=await G('videos')||{};
@@ -370,9 +347,9 @@ const login=async()=>{try{
   else if(e.code==='auth/operation-not-allowed')toast('فعّل تسجيل الدخول بجوجل');
   else toast('تعذر تسجيل الدخول: '+e.code)}};
 
-const go=(v,id,tab)=>{stopHB();S={v,id,tab:tab!==undefined?tab:S.tab};window.scrollTo({top:0,behavior:'auto'});render()};
+const go=(v,id,tab)=>{stopHB();destroyDrivePlayer();S={v,id,tab:tab!==undefined?tab:S.tab};window.scrollTo({top:0,behavior:'auto'});render()};
 const inst=async()=>{ip.prompt();await ip.userChoice;ip=null;render()};
-const out=()=>{stopHB();if(unsubBan)unsubBan();signOut(auth)};
+const out=()=>{stopHB();destroyDrivePlayer();if(unsubBan)unsubBan();signOut(auth)};
 
 function render(){
   const a=$('#app');
@@ -387,7 +364,9 @@ function render(){
   }
   a.innerHTML=shell(body);afterRender();
 }
-function afterRender(){if(S.v==='watch')initPlayerToolbar()}
+function afterRender(){
+  if(S.v==='watch')setTimeout(initPlayerToolbar,200);
+}
 function shell(body){
   const isDark=document.documentElement.classList.contains('dark');
   const tab=S.v;
@@ -423,12 +402,12 @@ function vHome(){
 
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
-  const mine=(window.__mineVideos||{});
+  const mine=A?Object.fromEntries(Object.keys(videos).map(k=>[k,'admin'])):(window.__mineVideos||{});
   const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id).sort((a,b)=>b[1].created-a[1].created);
   return`<h2>${esc(t.name)}</h2>`+(l.length?l.map(([id,v])=>{
-    if(v.disabled)return`<div class="row" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
+    if(v.disabled&&!A)return`<div class="row" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
     const open=!!mine[id];
-    return`<div class="row" onclick="${open?`go('watch','${id}')`:`go('code','${id}')`}"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b ${open?'g':''}">${open?'مفتوح':'يحتاج كود'}</span></div>`;
+    return`<div class="row" onclick="${open?`go('watch','${id}')`:`go('code','${id}')`}"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b ${open?'g':''}">${open?(A?'مفتوح (مدير)':'مفتوح'):'يحتاج كود'}</span></div>`;
   }).join(''):'<div class="mut">لا توجد فيديوهات.</div>');
 }
 
@@ -459,32 +438,56 @@ async function redeem(vid){
 }
 
 async function vWatch(){
-  const v=videos[S.id],c=(await G(`users/${U.uid}/videos/${S.id}`)),rec=c&&await G('codes/'+c);
-  if(!v||v.disabled)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
-  if(!rec||rec.usedBy!==U.uid)return go('code',S.id);
-  const e=embed(rec.url),lp=`logs/${S.id}/${U.uid}`,old=await G(lp)||{};
+  const v=videos[S.id];
+  if(!v)return vHome();
+  if(v.disabled&&!A)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
+
+  let c,rec;
+  if(A){
+    c='admin';rec={url:v.url,usedBy:U.uid,videoId:S.id};
+  }else{
+    c=(await G(`users/${U.uid}/videos/${S.id}`));
+    rec=c&&await G('codes/'+c);
+    if(!rec||rec.usedBy!==U.uid)return go('code',S.id);
+  }
+
+  const e=embed(rec.url),lp=`logs/${S.id}/${U.uid}`,old=(A?{}:await G(lp)||{});
   let sec=old.seconds||0;const dur=(+v.duration||0)*60;
-  await update(R(lp),{name:U.displayName,email:U.email,photo:U.photoURL||'',code:c,
-    openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
-  const tick=async(add)=>{if(document.hidden)return;sec+=add;const done=dur&&sec>=dur*.9;
-    await update(R(lp),{seconds:sec,lastAt:Date.now(),completed:done||!!old.completed}).catch(()=>{})};
-  hb=setInterval(()=>tick(10),10000);
+  if(!A){
+    await update(R(lp),{name:U.displayName,email:U.email,photo:U.photoURL||'',code:c,
+      openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
+    const tick=async(add)=>{if(document.hidden)return;sec+=add;const done=dur&&sec>=dur*.9;
+      await update(R(lp),{seconds:sec,lastAt:Date.now(),completed:done||!!old.completed}).catch(()=>{})};
+    hb=setInterval(()=>tick(10),10000);
+  }
+
   const isVideo=e.t==='v';
-  const pl=isVideo
-    ?`<video id="vplayer" src="${esc(e.s)}" controls controlsList="nodownload noremoteplayback" disablePictureInPicture playsinline preload="metadata"></video>`
-    :`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`;
-  const wm=`<div class="wm">${badge?`<img src="${badge}" alt="">`:''}${esc(U.displayName||'')} · ${esc(U.email||'')}</div>`;
-  const toolbar=isVideo?videoToolbarHTML():'';
+  const isDrive=e.t==='drive';
+  let pl;
+  if(isVideo){
+    pl=`<video id="vplayer" src="${esc(e.s)}" controls controlsList="nodownload noremoteplayback" disablePictureInPicture playsinline preload="metadata"></video>`;
+  }else if(isDrive){
+    // درايف: نستخدم iframe مع إمكانية التحكم عبر iframe API (محدود) — نضع overlay لأدوات التحكم
+    pl=`<iframe id="vplayer" data-drive="1" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe>`;
+  }else{
+    pl=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`;
+  }
+
+  const wm=A?'':`<div class="wm">${badge?`<img src="${badge}" alt="">`:''}${esc(U.displayName||'')} · ${esc(U.email||'')}</div>`;
+  const toolbar=videoToolbarHTML(isVideo,isDrive);
   return`<button class="s" onclick="go('teacher','${v.teacherId}')">← رجوع</button>
-    <h2 style="margin-top:14px">${esc(v.title)}</h2>
+    <h2 style="margin-top:14px">${esc(v.title)} ${A?'<span class="b g">مدير — بدون كود</span>':''}</h2>
     <div class="player-wrap">
-      <div class="pl" id="plbox">${pl}${wm}${e.drive?'<div class="blk"></div>':''}</div>
+      <div class="pl" id="plbox">${pl}${wm}${isDrive?'<div class="blk"></div>':''}</div>
       ${toolbar}
     </div>
     <p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>`;
 }
 
-function videoToolbarHTML(){
+function videoToolbarHTML(isVideo,isDrive){
+  let note='';
+  if(isDrive)note='<div class="note">فيديو درايف: استخدم أدوات المشغل المدمجة للتحكم في السرعة والتقديم. الأزرار أدناه تعمل على الفيديوهات المباشرة.</div>';
+  else if(!isVideo)note='<div class="note">هذا النوع من المشغلات له أدوات تحكم مدمجة خاصة به.</div>';
   return`<div class="vtoolbar">
     <div class="grp">
       <button class="s ic" onclick="seekRel(-10)" title="تأخير 10 ثوان">⏪</button>
@@ -502,26 +505,55 @@ function videoToolbarHTML(){
     <button class="s ic" onclick="resetOffset()" title="إعادة ضبط">↺</button>
     <div class="spacer"></div>
     <button class="ic" onclick="toggleFullscreen()" title="ملء الشاشة">⛶</button>
+    ${note}
   </div>`;
 }
 
 function initPlayerToolbar(){
   const v=document.getElementById('vplayer');
-  if(!v||v.tagName!=='VIDEO')return;
+  if(!v)return;
   const off=document.getElementById('tOffset');
   if(off)off.textContent='0s';
+  // إن كان درايف، نفعّل أدوات التحكم عبر postMessage (تجريبي)
+  if(v.dataset.drive==='1'){
+    // نرسل أمر جاهزية — درايف لا يدعم API عاماً، لكن بعض المتصفحات تسمح بـ postMessage
+    v.addEventListener('load',()=>{try{v.contentWindow.postMessage('{"event":"listening"}','*')}catch(e){}});
+  }
 }
+
 function getVideo(){return document.getElementById('vplayer')}
+
 function seekRel(delta){
-  const v=getVideo();if(!v||v.tagName!=='VIDEO')return toast('غير متاح لهذا النوع');
-  const t=Math.max(0,Math.min((v.duration||0),v.currentTime+delta));v.currentTime=t;
-  const off=document.getElementById('tOffset');
-  if(off)off.textContent=(delta>0?'+':'-')+Math.abs(delta)+'s';
+  const v=getVideo();if(!v)return;
+  if(v.tagName==='VIDEO'){
+    const t=Math.max(0,Math.min((v.duration||0),v.currentTime+delta));v.currentTime=t;
+    const off=document.getElementById('tOffset');
+    if(off)off.textContent=(delta>0?'+':'-')+Math.abs(delta)+'s';
+  }else if(v.dataset.drive==='1'){
+    // محاولة التحكم عبر postMessage — قد لا تعمل بسبب سياسات درايف
+    try{
+      v.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekTo',args:[delta]}),'*');
+      toast('حاول استخدام شريط التقدم في المشغل');
+    }catch(e){toast('غير متاح لهذا النوع')}
+  }else if(v.tagName==='IFRAME'&&/youtube/.test(v.src)){
+    try{
+      v.contentWindow.postMessage(JSON.stringify({event:'command',func:'seekTo',args:[Math.max(0,delta)]}),'*');
+    }catch(e){toast('غير متاح لهذا النوع')}
+  }else{toast('غير متاح لهذا النوع')}
 }
-function setRate(r){const v=getVideo();if(!v||v.tagName!=='VIDEO')return toast('غير متاح');v.playbackRate=+r}
-function resetOffset(){const v=getVideo();if(v&&v.tagName==='VIDEO')v.playbackRate=1;
+
+function setRate(r){
+  const v=getVideo();if(!v)return;
+  if(v.tagName==='VIDEO'){v.playbackRate=+r}
+  else{toast('غيّر السرعة من أدوات المشغل نفسه (درايف/يوتيوب)')}
+}
+
+function resetOffset(){
+  const v=getVideo();if(v&&v.tagName==='VIDEO')v.playbackRate=1;
   const off=document.getElementById('tOffset');if(off)off.textContent='0s';
-  const sel=document.getElementById('vrate');if(sel)sel.value='1'}
+  const sel=document.getElementById('vrate');if(sel)sel.value='1';
+}
+
 function toggleFullscreen(){
   const box=document.getElementById('plbox');if(!box)return;
   if(!document.fullscreenElement){
@@ -529,6 +561,7 @@ function toggleFullscreen(){
   }else{(document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen).call(document).catch(()=>{})}
 }
 function stopHB(){clearInterval(hb);hb=null}
+function destroyDrivePlayer(){drivePlayer=null}
 
 /* ===== Admin ===== */
 function vAdmin(){
@@ -549,7 +582,6 @@ function vAdmin(){
     <input id="bp" type="file" accept="image/*">
     <button onclick="setB()">حفظ الصورة</button></div>`;
   if(tab==='bans')return tb+renderBans();
-  // videos tab
   const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
   return tb+`<div class="box"><h2>إضافة فيديو</h2>
     <label>المدرس</label><select id="vt">${tOpts}</select>
@@ -569,8 +601,10 @@ function vAdmin(){
 async function renderBans(){
   const bans=await G('bans')||{};
   const entries=Object.values(bans);
-  if(!entries.length)return'<div class="mut">لا يوجد طلاب محظورون.</div>';
-  return`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>
+  const note=`<div class="box" style="background:var(--ac-soft);border-color:var(--ac)">
+    <b>ملاحظة:</b> حساب المدير (yazeedttv1@gmail.com) محمي ولا يُحظر أبداً، ويسجّل من أي جهاز.</div>`;
+  if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;
+  return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>
     `<div class="box"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
       ${b.photo?`<img src="${esc(b.photo)}" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}
       <div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||'')}</small></div>
