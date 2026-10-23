@@ -4,40 +4,67 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>سيجما</title>
-<meta name="theme-color" content="#14172b">
+<meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" id="mf">
 <link rel="apple-touch-icon" id="ai">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#14172b;--p:#1d2140;--p2:#262b52;--tx:#eef0ff;--mu:#9aa0c8;--ac:#f5c542;--ok:#4ade80;--er:#fb7185;--r:14px}
+:root{
+  --bg:#ffffff; --p:#f1f5f9; --p2:#e2e8f0;
+  --tx:#0f172a; --mu:#64748b; --ac:#2563eb; --ac2:#1d4ed8;
+  --ok:#16a34a; --er:#dc2626; --r:14px;
+  --hdr:#2563eb; --hdr-tx:#ffffff; --bar:#ffffff; --bar-bd:#e2e8f0;
+}
+html.dark{
+  --bg:#0f172a; --p:#1e293b; --p2:#334155;
+  --tx:#f1f5f9; --mu:#94a3b8; --ac:#3b82f6; --ac2:#60a5fa;
+  --ok:#4ade80; --er:#fb7185;
+  --hdr:#1e293b; --hdr-tx:#f1f5f9; --bar:#1e293b; --bar-bd:#334155;
+}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
-body{font-family:Cairo,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);-webkit-user-select:none;user-select:none}
+body{font-family:Cairo,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;
+  padding:env(safe-area-inset-top) 0 calc(72px + env(safe-area-inset-bottom));
+  -webkit-user-select:none;user-select:none;transition:background .2s,color .2s}
 input,select,textarea{-webkit-user-select:text;user-select:text}
-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--p);position:sticky;top:0;z-index:5}
-.logo{font-weight:800;font-size:22px;color:var(--ac);cursor:pointer;margin-inline-end:auto}
-.chip{display:flex;align-items:center;gap:8px;font-size:13px}
-.chip img,.av{width:34px;height:34px;border-radius:50%;object-fit:cover;background:var(--p2);border:2px solid var(--ac)}
-main{max-width:980px;margin:0 auto;padding:18px 16px 60px}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--hdr);color:var(--hdr-tx);
+  position:sticky;top:0;z-index:5;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+header .logo{font-weight:800;font-size:22px;color:var(--hdr-tx);cursor:pointer;margin-inline-end:auto}
+header .chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--hdr-tx)}
+header .chip img,.av{width:34px;height:34px;border-radius:50%;object-fit:cover;background:var(--p2);border:2px solid rgba(255,255,255,.7)}
+header button{background:rgba(255,255,255,.15);color:var(--hdr-tx)}
+header button:hover{background:rgba(255,255,255,.25)}
+main{max-width:980px;margin:0 auto;padding:18px 16px 40px}
 h2{font-size:20px;margin:6px 0 14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
-.card{background:var(--p);border-radius:var(--r);padding:14px;cursor:pointer;text-align:center;border:1px solid transparent}
+.card{background:var(--p);border-radius:var(--r);padding:14px;cursor:pointer;text-align:center;border:1px solid var(--bar-bd);transition:transform .15s,border-color .15s}
+.card:active{transform:scale(.97)}
 .card:hover{border-color:var(--ac)}
 .card .ph{width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block;background:var(--p2)}
-.row{background:var(--p);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;cursor:pointer}
+.row{background:var(--p);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;
+  cursor:pointer;border:1px solid var(--bar-bd);transition:background .15s}
+.row:hover{background:var(--p2)}
+.row:active{transform:scale(.99)}
 .row small{color:var(--mu);display:block}
 .row>div{flex:1}
-button,.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:9px 16px;background:var(--ac);color:#241c00;cursor:pointer}
-button.s{background:var(--p2);color:var(--tx)}button.d{background:var(--er);color:#fff}
-input,select,textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--p2);background:var(--bg);color:var(--tx);margin:4px 0 10px}
+button,.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:9px 16px;background:var(--ac);color:#fff;cursor:pointer;transition:background .15s,transform .1s}
+button:hover{background:var(--ac2)}
+button:active{transform:scale(.97)}
+button.s{background:var(--p2);color:var(--tx)} button.s:hover{background:var(--bar-bd)}
+button.d{background:var(--er);color:#fff}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--bar-bd);
+  background:var(--bg);color:var(--tx);margin:4px 0 10px;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac)}
 label{font-size:13px;color:var(--mu)}
-.box{background:var(--p);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.box{background:var(--p);border-radius:var(--r);padding:16px;margin-bottom:16px;border:1px solid var(--bar-bd)}
 .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.tabs button{background:var(--p);color:var(--mu)}.tabs button.on{background:var(--ac);color:#241c00}
+.tabs button{background:var(--p);color:var(--mu);border:1px solid var(--bar-bd)}
+.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:8px;text-align:right;border-bottom:1px solid var(--p2)}
-.tw{overflow-x:auto}
+th,td{padding:8px;text-align:right;border-bottom:1px solid var(--bar-bd)}
+th{background:var(--p2);font-weight:600}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .b{padding:2px 9px;border-radius:99px;font-size:12px;background:var(--p2)}
 .g{color:var(--ok)}.r{color:var(--er)}.y{color:var(--ac)}
 .code{font-family:monospace;font-size:15px;letter-spacing:2px;direction:ltr;display:inline-block}
@@ -46,12 +73,27 @@ th,td{padding:8px;text-align:right;border-bottom:1px solid var(--p2)}
 .pl{position:relative;aspect-ratio:16/9;background:#000;border-radius:var(--r);overflow:hidden}
 .pl iframe,.pl video{position:absolute;inset:0;width:100%;height:100%;border:0}
 .pl.bl iframe,.pl.bl video{filter:blur(30px)}
-.wm{position:absolute;pointer-events:none;z-index:3;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.55;background:rgba(0,0,0,.35);padding:3px 8px;border-radius:99px;animation:mv 24s linear infinite alternate;direction:ltr}
+.wm{position:absolute;pointer-events:none;z-index:3;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.55;
+  background:rgba(0,0,0,.35);padding:3px 8px;border-radius:99px;animation:mv 24s linear infinite alternate;direction:ltr;color:#fff}
 .wm img{width:22px;height:22px;border-radius:50%}
 @keyframes mv{0%{top:6%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:12%;left:60%}}
 .blk{position:absolute;top:0;right:0;width:64px;height:64px;z-index:4}
-#t{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ac);color:#241c00;padding:10px 18px;border-radius:10px;font-weight:600;display:none;z-index:9}
+#t{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  background:var(--ac);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;display:none;z-index:9;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .mut{color:var(--mu);text-align:center;padding:30px}
+
+/* ===== الشريط السفلي ===== */
+.bottombar{position:fixed;bottom:0;left:0;right:0;background:var(--bar);border-top:1px solid var(--bar-bd);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:10;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.bottombar button{background:transparent;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 14px;border-radius:10px;font-size:11px;font-weight:600;flex:1;max-width:110px}
+.bottombar button:hover{background:var(--p)}
+.bottombar button.on{color:var(--ac)}
+.bottombar button.on:hover{background:var(--p)}
+.bottombar .ic{font-size:20px;line-height:1}
+
+@media (max-width:520px){ header .chip span{display:none} header .logo{font-size:19px} }
 @media print{body{display:none}}
 </style>
 </head>
@@ -67,25 +109,39 @@ const ADMIN_EMAILS=["yazeedttv1@gmail.com"];
 
 const app=initializeApp({apiKey:"AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",authDomain:"sigma-6f162.firebaseapp.com",databaseURL:"https://sigma-6f162-default-rtdb.firebaseio.com",projectId:"sigma-6f162",storageBucket:"sigma-6f162.firebasestorage.app",messagingSenderId:"420365348074",appId:"1:420365348074:web:0aaecb71ec613bb32abb93"});
 const auth=getAuth(app),db=getDatabase(app);
-// إصلاح: ضبط persistence قبل أي عملية مصادقة
 setPersistence(auth,browserLocalPersistence).catch(()=>{});
 
 const R=p=>ref(db,p),G=async p=>(await get(R(p))).val();
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fd=t=>t?new Date(t).toLocaleString('ar-EG'):'-';
+
 let U=null,A=false,S={v:'home'},teachers={},videos={},badge='',hb=null,ip=null;
+
+/* ===== الوضع الليلي ===== */
+const THEME_KEY='sigma-theme';
+function initTheme(){
+  const saved=localStorage.getItem(THEME_KEY);
+  const prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if(saved==='dark'||(!saved&&prefersDark))document.documentElement.classList.add('dark');
+}
+function toggleTheme(){
+  document.documentElement.classList.toggle('dark');
+  localStorage.setItem(THEME_KEY,document.documentElement.classList.contains('dark')?'dark':'light');
+  render();
+}
+initTheme();
 
 function toast(m){const t=$('#t');t.textContent=m;t.style.display='block';clearTimeout(t.h);t.h=setTimeout(()=>t.style.display='none',2600)}
 const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=s;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,s,s);r(c.toDataURL('image/jpeg',.8))};i.src=URL.createObjectURL(f)});
 
-/* ===== PWA: manifest + أيقونة مولّدة ===== */
-(()=>{const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');x.fillStyle='#14172b';x.fillRect(0,0,192,192);x.fillStyle='#f5c542';x.font='bold 130px serif';x.textAlign='center';x.textBaseline='middle';x.fillText('Σ',96,104);const u=c.toDataURL();$('#ai').href=u;
-const m={name:'سيجما',short_name:'سيجما',start_url:location.pathname,display:'standalone',background_color:'#14172b',theme_color:'#14172b',dir:'rtl',lang:'ar',icons:[{src:u,sizes:'192x192',type:'image/png'}]};
+/* ===== PWA ===== */
+(()=>{const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');x.fillStyle='#2563eb';x.fillRect(0,0,192,192);x.fillStyle='#fff';x.font='bold 130px serif';x.textAlign='center';x.textBaseline='middle';x.fillText('Σ',96,104);const u=c.toDataURL();$('#ai').href=u;
+const m={name:'سيجما',short_name:'سيجما',start_url:location.pathname,display:'standalone',background_color:'#ffffff',theme_color:'#2563eb',dir:'rtl',lang:'ar',icons:[{src:u,sizes:'192x192',type:'image/png'}]};
 $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}))})();
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;render()});
 
-/* ===== حماية المحتوى ===== */
+/* ===== حماية ===== */
 addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();
  if(e.key==='PrintScreen'){navigator.clipboard?.writeText('');toast('التصوير ممنوع');e.preventDefault()}
@@ -93,7 +149,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();
 document.addEventListener('visibilitychange',()=>$('.pl')?.classList.toggle('bl',document.hidden));
 addEventListener('dragstart',e=>e.preventDefault());
 
-/* ===== تحويل الرابط إلى مشغّل ===== */
+/* ===== embed ===== */
 function embed(u){u=u.trim();let m;
  if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/))return{t:'f',s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1`};
  if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))return{t:'f',s:`https://drive.google.com/file/d/${m[1]}/preview`,drive:1};
@@ -102,18 +158,16 @@ function embed(u){u=u.trim();let m;
  if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return{t:'v',s:u};
  return{t:'f',s:u}}
 
-/* ===== المصادقة (مُصلحة) ===== */
+/* ===== المصادقة ===== */
 onAuthStateChanged(auth,async u=>{
  U=u;
  A=!!u&&ADMIN_EMAILS.includes((u.email||'').toLowerCase());
  if(u){
-   try{
-     teachers=await G('teachers')||{};
-     videos=await G('videos')||{};
-     badge=await G('settings/badge')||'';
-   }catch(e){console.error('load err',e)}
+   try{teachers=await G('teachers')||{};videos=await G('videos')||{};badge=await G('settings/badge')||''}
+   catch(e){console.error(e)}
  }else{teachers={};videos={};badge=''}
- S={v:'home'};render();
+ if(!u&&S.v!=='home')S={v:'home'};
+ render();
 });
 
 const login=async()=>{
@@ -129,37 +183,74 @@ const login=async()=>{
    else toast('تعذر تسجيل الدخول: '+e.code);
  }
 };
-const go=(v,id,tab)=>{stopHB();S={v,id,tab:tab||S.tab};render();scrollTo(0,0)};
+const go=(v,id,tab)=>{stopHB();S={v,id,tab:tab!==undefined?tab:S.tab};window.scrollTo({top:0,behavior:'smooth'});render()};
 
-async function render(){
+function render(){
  const a=$('#app');
- if(!U){a.innerHTML=`<div class="center"><h1>Σ سيجما</h1><p>منصتك التعليمية. سجّل دخولك لتبدأ.</p><button onclick="login()">الدخول بحساب جوجل</button></div>`;return}
+ if(!U){
+   a.innerHTML=`<div class="center"><h1>Σ سيجما</h1><p>منصتك التعليمية. سجّل دخولك لتبدأ.</p>
+   <button onclick="login()">الدخول بحساب جوجل</button></div>`;
+   return;
+ }
  let body='';
- try{body=await({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid}[S.v])()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}
- a.innerHTML=`<header><div class="logo" onclick="go('home')">Σ سيجما</div>
- ${ip?'<button class="s" onclick="inst()">تثبيت التطبيق</button>':''}
- ${A?`<button class="s" onclick="go('${S.v==='admin'||S.v==='vid'?'home':'admin'}','',S.tab||'videos')">${S.v==='admin'||S.v==='vid'?'واجهة الطالب':'لوحة التحكم'}</button>`:''}
- <div class="chip">${badge?`<img src="${badge}">`:`<span class="av"></span>`}<span>${esc(U.displayName)}</span></div>
- <button class="s" onclick="out()">خروج</button></header><main>${body}</main>`;
+ try{
+   body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid}[S.v]||vHome)();
+   if(body&&typeof body.then==='function'){
+     body.then(html=>{a.innerHTML=shell(html)}).catch(e=>{a.innerHTML=shell(`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`)});
+     a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');
+     return;
+   }
+ }catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}
+ a.innerHTML=shell(body);
 }
+
+function shell(body){
+ const isDark=document.documentElement.classList.contains('dark');
+ const tab=S.v;
+ return `<header>
+   <div class="logo" onclick="go('home')">Σ سيجما</div>
+   ${ip?'<button class="s" onclick="inst()">تثبيت</button>':''}
+   ${A?`<button onclick="go('${tab==='admin'||tab==='vid'?'home':'admin'}','',${tab==='admin'||tab==='vid'?"undefined":"'videos'"})">${tab==='admin'||tab==='vid'?'واجهة الطالب':'لوحة التحكم'}</button>`:''}
+   <button onclick="toggleTheme()" title="وضع ليلي">${isDark?'☀️':'🌙'}</button>
+   <div class="chip">${badge?`<img src="${badge}">`:`<span class="av"></span>`}<span>${esc(U.displayName)}</span></div>
+   <button class="s" onclick="out()">خروج</button>
+ </header>
+ <main>${body}</main>
+ ${bottomBar()}`;
+}
+
+function bottomBar(){
+ const on=k=>S.v===k||(k==='home'&&['teacher','code','watch'].includes(S.v));
+ return `<nav class="bottombar">
+  <button class="${on('home')?'on':''}" onclick="go('home')"><span class="ic">🏠</span>الرئيسية</button>
+  ${A?`<button class="${on('admin')||S.v==='vid'?'on':''}" onclick="go('admin','','videos')"><span class="ic">⚙️</span>التحكم</button>`:''}
+  <button onclick="toggleTheme()"><span class="ic">${document.documentElement.classList.contains('dark')?'☀️':'🌙'}</span>الوضع</button>
+  <button onclick="out()"><span class="ic">🚪</span>خروج</button>
+ </nav>`;
+}
+
 const inst=async()=>{ip.prompt();await ip.userChoice;ip=null;render()};
 const out=()=>{stopHB();signOut(auth)};
 
-/* ===== واجهة الطالب ===== */
+/* ===== الطالب ===== */
 async function vHome(){const t=Object.entries(teachers);
  if(!t.length)return'<div class="mut">لا يوجد مدرسون بعد.</div>';
  return`<h2>اختر المدرس</h2><div class="grid">${t.map(([id,x])=>`<div class="card" onclick="go('teacher','${id}')"><img class="ph" src="${x.photo||''}"><b>${esc(x.name)}</b></div>`).join('')}</div>`}
+
 async function vTeacher(){const t=teachers[S.id];if(!t)return vHome();
  const mine=await G('users/'+U.uid+'/videos')||{};
  const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id).sort((a,b)=>b[1].created-a[1].created);
  return`<h2>${esc(t.name)}</h2>`+(l.length?l.map(([id,v])=>{
-   // إضافة: منع الدخول إذا كان الفيديو موقوفاً
    if(v.disabled)return`<div class="row" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
    return`<div class="row" onclick="${mine[id]?`go('watch','${id}')`:`go('code','${id}')`}"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b ${mine[id]?'g':''}">${mine[id]?'مفتوح':'يحتاج كود'}</span></div>`;
  }).join(''):'<div class="mut">لا توجد فيديوهات.</div>')}
+
 async function vCode(){const v=videos[S.id];
  if(!v||v.disabled)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
- return`<div class="box"><h2>${esc(v.title)}</h2><label>أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label><input id="cd" inputmode="numeric" maxlength="6" placeholder="000000" style="font-size:24px;text-align:center;letter-spacing:6px"><button onclick="redeem('${S.id}')">فتح الفيديو</button></div>`}
+ return`<div class="box"><h2>${esc(v.title)}</h2><label>أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label>
+ <input id="cd" inputmode="numeric" maxlength="6" placeholder="000000" style="font-size:24px;text-align:center;letter-spacing:6px">
+ <button onclick="redeem('${S.id}')">فتح الفيديو</button></div>`}
+
 async function redeem(vid){
  const v=videos[vid];if(!v||v.disabled)return toast('الفيديو موقوف');
  const c=$('#cd').value.trim();if(!/^\d{6}$/.test(c))return toast('الكود يجب أن يكون 6 أرقام');
@@ -185,16 +276,20 @@ async function vWatch(){
  const wm=`<div class="wm">${badge?`<img src="${badge}">`:''}${esc(U.displayName)} · ${esc(U.email)}</div>`;
  const pl=e.t==='v'?`<video src="${esc(e.s)}" controls controlsList="nodownload noremoteplayback" disablePictureInPicture playsinline onended="this.dispatchEvent(new Event('fin',{bubbles:true}))"></video>`:`<iframe src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`;
  setTimeout(()=>$('.pl video')?.addEventListener('ended',()=>{sec=Math.max(sec,dur);update(R(lp),{completed:true,seconds:sec})}),0);
- return`<button class="s" onclick="go('teacher','${v.teacherId}')">رجوع</button><h2 style="margin-top:12px">${esc(v.title)}</h2><div class="pl">${pl}${wm}${e.drive?'<div class="blk"></div>':''}</div><p style="color:var(--mu);margin-top:12px">${esc(v.desc||'')}</p>`}
+ return`<button class="s" onclick="go('teacher','${v.teacherId}')">رجوع</button>
+ <h2 style="margin-top:12px">${esc(v.title)}</h2>
+ <div class="pl">${pl}${wm}${e.drive?'<div class="blk"></div>':''}</div>
+ <p style="color:var(--mu);margin-top:12px">${esc(v.desc||'')}</p>`}
 function stopHB(){clearInterval(hb);hb=null}
 
 /* ===== لوحة التحكم ===== */
 async function vAdmin(){
+ if(!A)return'<div class="mut">غير مصرح.</div>';
  const tab=S.tab||'videos',tb=`<div class="tabs">${[['videos','الفيديوهات'],['teachers','المدرسون'],['badge','صورة التعريف']].map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
  if(tab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label>الاسم</label><input id="tn"><label>الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||''}"><b>${esc(x.name)}</b><br><button class="d" style="margin-top:8px;padding:5px 10px" onclick="delT('${id}')">حذف</button></div>`).join('')}</div>`;
  if(tab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--mu);margin-bottom:10px">تظهر بجانب اسم كل طالب في التطبيق المثبّت وعلى علامة الحماية فوق الفيديو.</p>${badge?`<img src="${badge}" class="av" style="width:90px;height:90px;margin-bottom:10px;display:block">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ الصورة</button></div>`;
  const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
- return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>العنوان</label><input id="vn"><label>الوصف / المواصفات</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr"><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد المبدئية</label><input id="vc" type="number" min="0" value="10"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>`+(Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row" onclick="go('vid','${id}')"><div><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')}${v.disabled?' — موقوف':''}</small></div><span class="b ${v.disabled?'r':''}">${v.disabled?'موقوف':'السجل والأكواد'}</span></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>')}
+ return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr"><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد المبدئية</label><input id="vc" type="number" min="0" value="10"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>`+(Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row" onclick="go('vid','${id}')"><div><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')}${v.disabled?' — موقوف':''}</small></div><span class="b ${v.disabled?'r':''}">${v.disabled?'موقوف':'السجل والأكواد'}</span></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>')}
 
 async function addT(){const n=$('#tn').value.trim(),f=$('#tp').files[0];if(!n)return toast('اكتب اسم المدرس');
  const k='t'+Date.now();teachers[k]={name:n,photo:f?await img(f,200):''};await set(R('teachers/'+k),teachers[k]);render()}
@@ -212,33 +307,27 @@ async function gen(vid,n){const v=videos[vid];let ok=0;
 async function moreCodes(vid,one){const n=one?1:Math.min(+$('#gn').value||0,500);if(!n)return toast('اكتب العدد');toast('جارٍ التوليد...');await gen(vid,n);render()}
 async function delV(id){if(!confirm('حذف الفيديو؟'))return;delete videos[id];await remove(R('videos/'+id));go('admin','','videos')}
 
-/* ===== إضافة: إيقاف / تفعيل الأكواد ===== */
 async function toggleVid(id){
  const v=videos[id];if(!v)return;
  const next=!v.disabled;
- if(!confirm(next?'إيقاف كل أكواد هذا الفيديو؟ (لن يستطيع الطلاب فتحه)':'إعادة تفعيل الفيديو؟'))return;
- v.disabled=next;
- await update(R('videos/'+id),{disabled:next});
- videos[id]=v;toast(next?'تم إيقاف الأكواد':'تم التفعيل');render();
+ if(!confirm(next?'إيقاف كل أكواد هذا الفيديو؟':'إعادة تفعيل الفيديو؟'))return;
+ v.disabled=next;await update(R('videos/'+id),{disabled:next});videos[id]=v;
+ toast(next?'تم إيقاف الأكواد':'تم التفعيل');render();
 }
 
 const cp=t=>navigator.clipboard.writeText(t).then(()=>toast('تم النسخ'));
 window.copyFree=async id=>{const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));const a=[];s.forEach(c=>{if(!c.val().used)a.push(c.key)});cp(a.join('\n'))};
 
-/* ===== إضافة: تصدير PDF ===== */
 function exportPDF(vid){
  const v=videos[vid];if(!v)return;
- // جمع بيانات الأكواد والسجل من الجداول الحالية
- const rows=[];
- document.querySelectorAll('#pdf-src tbody tr').forEach(tr=>{
-   const tds=tr.querySelectorAll('td');
-   if(tds.length)rows.push([...tds].map(td=>td.innerText.trim()));
+ const rows=[];document.querySelectorAll('#pdf-src tbody tr').forEach(tr=>{
+   const tds=tr.querySelectorAll('td');if(tds.length)rows.push([...tds].map(td=>td.innerText.trim()));
  });
  const headers=[...document.querySelectorAll('#pdf-src thead th')].map(th=>th.innerText.trim());
  const win=window.open('','_blank');
  win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${v.title}</title>
- <style>body{font-family:Cairo,sans-serif;padding:20px;color:#111}h2{color:#14172b}table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}th,td{border:1px solid #999;padding:6px;text-align:right}th{background:#14172b;color:#fff}@media print{button{display:none}}</style>
- </head><body><h2>${v.title}</h2><p>${v.desc||''}</p><p>عدد الأكواد: ${rows.length}</p>
+ <style>body{font-family:Cairo,sans-serif;padding:20px;color:#111}h2{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}th,td{border:1px solid #999;padding:6px;text-align:right}th{background:#2563eb;color:#fff}@media print{button{display:none}}</style>
+ </head><body><h2>${v.title}</h2><p>${v.desc||''}</p><p>عدد السجلات: ${rows.length}</p>
  <table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
  <br><button onclick="window.print()">طباعة / حفظ PDF</button>
  <script>window.onload=()=>setTimeout(()=>window.print(),400)<\/script></body></html>`);
@@ -249,7 +338,8 @@ async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();
  const cs=[];(await get(query(R('codes'),orderByChild('videoId'),equalTo(id)))).forEach(c=>{cs.push({c:c.key,...c.val()})});
  cs.sort((a,b)=>b.createdAt-a.createdAt);const lg=Object.values(await G('logs/'+id)||{}).sort((a,b)=>b.lastAt-a.lastAt);
  const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';
- return`<button class="s" onclick="go('admin','','videos')">رجوع</button><h2 style="margin-top:12px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2>
+ return`<button class="s" onclick="go('admin','','videos')">رجوع</button>
+ <h2 style="margin-top:12px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2>
  <div class="box"><p style="color:var(--mu)">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p>
  <p style="margin-top:8px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p>
  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:end"><div style="width:110px"><label>العدد</label><input id="gn" type="number" min="1" value="10" style="margin-bottom:0"></div>
@@ -262,7 +352,8 @@ async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();
  <h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الإيميل</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="6" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div>
  <h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${x.c}</span></td><td>${x.used?'<span class="r">مستخدم</span>':'<span class="g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:4px 10px" onclick="cp('${x.c}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`}
 
-Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF});
+/* ===== تصدير النطاق للنقر من HTML ===== */
+Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme});
 render();
 </script>
 </body>
