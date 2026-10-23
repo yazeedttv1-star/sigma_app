@@ -115,16 +115,16 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .center button{padding:14px 32px;font-size:16px;border-radius:var(--r)}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
-/* ===== Player (نظام الاقتصاص لمنع ظهور يوتيوب) ===== */
+/* ===== Player (نظام الاقتصاص الذكي لمنع ظهور يوتيوب) ===== */
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;
   width:100%;aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
 .pl iframe,.pl video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
 
-/* الاقتصاص الذكي: تكبير الفيديو وسحبه للأعلى لإخفاء شريط يوتيوب السفلي */
+/* الاقتصاص النسبي: تكبير الفيديو بنسبة 15% وسحبه للأسفل لإخفاء الشريط السفلي */
 .pl.crop-yt iframe { 
-  top: -60px !important; 
-  height: calc(100% + 120px) !important; 
+  height: 115% !important; 
+  top: -7.5% !important; 
 }
 
 /* درع شفاف يمنع النقر على مشغل يوتيوب لمنع فتح الواجهة */
@@ -133,10 +133,11 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   background: transparent;
 }
 
-.wm{position:absolute;pointer-events:none;z-index:3;display:flex;align-items:center;gap:6px;font-size:12px;
-  opacity:.55;background:rgba(0,0,0,.4);padding:4px 10px;border-radius:99px;
+/* العلامة المائية المتحركة (اسم وصورة الطالب) */
+.wm{position:absolute;pointer-events:none;z-index:20;display:flex;align-items:center;gap:6px;font-size:12px;
+  opacity:.45;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:99px;
   animation:mv 24s linear infinite alternate;direction:ltr;color:#fff}
-.wm img{width:22px;height:22px;border-radius:50%}
+.wm img{width:22px;height:22px;border-radius:50%;object-fit:cover;}
 @keyframes mv{0%{top:6%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:12%;left:60%}}
 
 /* ===== المشغل المخصص ===== */
@@ -200,7 +201,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   h2{font-size:18px}
   .bottombar{gap:4px;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
   .bottombar button{font-size:12px;}
-  .pl.crop-yt iframe { top: -45px !important; height: calc(100% + 90px) !important; }
 }
 @media(max-width:520px){
   header .chip span{display:none}
