@@ -115,33 +115,23 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .center button{padding:14px 32px;font-size:16px;border-radius:var(--r)}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
-/* ===== Player (نظام الحماية الفائق) ===== */
+/* ===== Player (نظام الاقتصاص لمنع ظهور يوتيوب) ===== */
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;
   width:100%;aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
 .pl iframe,.pl video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
 
-/* طبقة الغطاء التي تخفي يوتيوب تماماً */
-.yt-cover {
+/* الاقتصاص الذكي: تكبير الفيديو وسحبه للأعلى لإخفاء شريط يوتيوب السفلي */
+.pl.crop-yt iframe { 
+  top: -60px !important; 
+  height: calc(100% + 120px) !important; 
+}
+
+/* درع شفاف يمنع النقر على مشغل يوتيوب لمنع فتح الواجهة */
+.yt-shield {
   position: absolute; inset: 0; z-index: 10;
-  background-color: #000;
-  background-size: cover; background-position: center;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
+  background: transparent;
 }
-.yt-cover.hidden { display: none; }
-.yt-cover .play-icon {
-  width: 70px; height: 70px; background: rgba(0,0,0,0.6); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: 0.2s;
-}
-.yt-cover .play-icon::after {
-  content: ''; display: block; width: 0; height: 0;
-  border-style: solid; border-width: 12px 0 12px 20px;
-  border-color: transparent transparent transparent #fff;
-  margin-left: 6px;
-}
-.yt-cover:hover .play-icon { background: var(--ac); transform: scale(1.1); }
 
 .wm{position:absolute;pointer-events:none;z-index:3;display:flex;align-items:center;gap:6px;font-size:12px;
   opacity:.55;background:rgba(0,0,0,.4);padding:4px 10px;border-radius:99px;
@@ -210,6 +200,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   h2{font-size:18px}
   .bottombar{gap:4px;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
   .bottombar button{font-size:12px;}
+  .pl.crop-yt iframe { top: -45px !important; height: calc(100% + 90px) !important; }
 }
 @media(max-width:520px){
   header .chip span{display:none}
@@ -515,15 +506,11 @@ async function vWatch(){
   const wm=A?'':`<div class="wm">${badge?`<img src="${badge}" alt="">`:''}${esc(U.displayName||'')} · ${esc(U.email||'')}</div>`;
 
   let playerHTML='';
-  let coverHTML='';
   let isYT = (e.t==='yt');
 
   if(e.t==='v'){
     playerHTML=`<video id="vplayer" src="${esc(e.s)}" playsinline></video>`;
   }else if(isYT){
-    // صورة الغلاف تمنع ظهور يوتيوب تماماً
-    const coverUrl = `https://img.youtube.com/vi/${e.id}/maxresdefault.jpg`;
-    coverHTML = `<div class="yt-cover" id="yt-cover" style="background-image: url('${coverUrl}')" onclick="startYT()"><div class="play-icon"></div></div>`;
     playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   }else if(e.t==='drive'){
     playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
@@ -562,9 +549,9 @@ async function vWatch(){
   return`<button class="s" onclick="go('teacher','${v.teacherId}')">← رجوع</button>
     <h2 style="margin-top:14px">${esc(v.title)} ${A?'<span class="b g">مدير</span>':''}</h2>
     <div class="player-wrap">
-      <div class="pl" id="plbox">
+      <div class="pl ${isYT ? 'crop-yt' : ''}" id="plbox">
         ${playerHTML}
-        ${coverHTML}
+        <div class="yt-shield"></div>
         ${wm}
       </div>
       ${controlsHTML}
@@ -611,12 +598,6 @@ function setupYT(){
       }
     }
   });
-}
-
-function startYT(){
-  // إخفاء الغلاف وتشغيل الفيديو
-  document.getElementById('yt-cover').classList.add('hidden');
-  togglePlay(); 
 }
 
 function startPoll(){
@@ -903,7 +884,7 @@ async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();
 }
 
 Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,
-  toggleTheme,unban,keepBan,saveEdit,togglePlay,onSeek,seekRel,setRate,startYT});
+  toggleTheme,unban,keepBan,saveEdit,togglePlay,onSeek,seekRel,setRate});
 render();
 </script>
 </body>
