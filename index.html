@@ -45,8 +45,8 @@ html.dark header{background:rgba(17,26,46,.85)}
 .logo{font-weight:800;font-size:22px;color:var(--ac);cursor:pointer;margin-inline-end:auto;
   display:flex;align-items:center;gap:8px;letter-spacing:-.5px}
 .logo:before{content:'';width:8px;height:22px;background:var(--ac);border-radius:4px}
-.chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2);font-weight:600}
-.chip img,.avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--surface2);border:2px solid var(--ac-soft)}
+.chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2);font-weight:600;cursor:pointer}
+.chip img,.avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:var(--surface2);border:2px solid var(--ac-soft)}
 .header-btn{background:var(--surface2);color:var(--tx);border:0;border-radius:var(--r-sm);
   padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
 .header-btn:hover{background:var(--ac);color:#fff}
@@ -115,36 +115,43 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .center button{padding:14px 32px;font-size:16px;border-radius:var(--r)}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
-/* ===== Player (نظام القناع الأسود الشامل) ===== */
+/* ===== Player (نظام إخفاء يوتيوب تماماً) ===== */
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;
   width:100%;aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
 .pl iframe,.pl video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
 
-/* إخفاء واجهة يوتيوب تماماً عبر تكبير الفيديو وسحبه لأعلى */
+/* الاقتصاص الذكي: تكبير الفيديو بنسبة 15% وسحبه للأسفل لإخفاء الشريط السفلي */
 .pl.crop-yt iframe { 
-  top: -60px !important; 
-  height: calc(100% + 120px) !important; 
+  height: 115% !important; 
+  top: -7.5% !important; 
 }
 
-/* درع شفاف يمنع النقر على مشغل يوتيوب لمنع فتح الواجهة */
+/* أقنعة سوداء لمنع ظهور أي أزرار في الحواف */
+.yt-bottom-mask {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 50px; z-index: 11; background: #000;
+  pointer-events: none;
+}
+.yt-top-mask {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 50px; z-index: 11; background: #000;
+  pointer-events: none;
+}
+
+/* درع شفاف يمنع النقر على مشغل يوتيوب */
 .yt-shield {
   position: absolute; inset: 0; z-index: 10;
   background: transparent;
-}
-
-/* شريط أسود يغطي أي بقايا من أزرار يوتيوب في الأسفل */
-.yt-bottom-mask {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 60px; z-index: 11; background: #000;
+  cursor: pointer;
 }
 
 /* العلامة المائية المتحركة (اسم وصورة الطالب) */
 .wm{position:absolute;pointer-events:none;z-index:20;display:flex;align-items:center;gap:6px;font-size:12px;
-  opacity:.45;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:99px;
+  opacity:.45;background:rgba(0,0,0,.6);padding:4px 10px;border-radius:99px;
   animation:mv 24s linear infinite alternate;direction:ltr;color:#fff}
 .wm img{width:22px;height:22px;border-radius:50%;object-fit:cover;}
-@keyframes mv{0%{top:6%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:12%;left:60%}}
+@keyframes mv{0%{top:20%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:20%;left:60%}}
 
 /* ===== المشغل المخصص ===== */
 .custom-player-ctrl {
@@ -207,8 +214,11 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   h2{font-size:18px}
   .bottombar{gap:4px;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
   .bottombar button{font-size:12px;}
-  .pl.crop-yt iframe { top: -50px !important; height: calc(100% + 100px) !important; }
-  .yt-bottom-mask { height: 50px; }
+  
+  /* اقتصاص أكبر قليلاً على الجوال لإخفاء أي بقايا */
+  .pl.crop-yt iframe { height: 118% !important; top: -9% !important; }
+  .yt-bottom-mask { height: 55px; }
+  .yt-top-mask { height: 55px; }
 }
 @media(max-width:520px){
   header .chip span{display:none}
@@ -363,6 +373,11 @@ onAuthStateChanged(auth,async u=>{
       teachers=await G('teachers')||{};
       videos=await G('videos')||{};
       badge=await G('settings/badge')||'';
+      
+      // حفظ الأكواد التي استخدمها الطالب مسبقاً في الذاكرة لكي تظل مفتوحة
+      const savedCodes = await G('users/'+U.uid+'/videos')||{};
+      window.__mineVideos = Object.assign({}, savedCodes);
+      
     }catch(e){console.error(e)}
   }else{teachers={};videos={};badge=''}
   if(!u&&S.v!=='home')S={v:'home'};
@@ -404,7 +419,7 @@ function shell(body){
     <div class="logo" onclick="go('home')">سيجما</div>
     ${ip?`<button class="header-btn" onclick="inst()">تثبيت</button>`:''}
     <button class="header-btn" onclick="toggleTheme()">${isDark?'نهاري':'ليلي'}</button>
-    <div class="chip" onclick="go('profile')" style="cursor:pointer">
+    <div class="chip" onclick="go('profile')">
       ${badge?`<img src="${badge}" alt="">`:`<img src="${U.photoURL||''}" class="avatar" alt="">`}
       <span>${esc(U.displayName||'')}</span>
     </div>
@@ -455,11 +470,15 @@ function vHome(){
 }
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
-  const mine=A?Object.fromEntries(Object.keys(videos).map(k=>[k,'admin'])):(window.__mineVideos||{});
+  
+  const mine = window.__mineVideos || {};
   const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id).sort((a,b)=>b[1].created-a[1].created);
+  
   return`<h2>${esc(t.name)}</h2>`+(l.length?l.map(([id,v])=>{
     if(v.disabled&&!A)return`<div class="row" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
-    const open=!!mine[id];
+    
+    const open = A || !!mine[id];
+    
     return`<div class="row" onclick="${open?`go('watch','${id}')`:`go('code','${id}')`}"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b ${open?'g':''}">${open?(A?'مفتوح (مدير)':'مفتوح'):'يحتاج كود'}</span></div>`;
   }).join(''):'<div class="mut">لا توجد فيديوهات.</div>');
 }
@@ -483,8 +502,11 @@ async function redeem(vid){
     return cur}).catch(()=>null);
   const vv=r?.snapshot.val();
   if(!vv||vv.usedBy!==U.uid||vv.videoId!==vid)return toast('الكود غير صحيح أو مستخدم من قبل');
+  
   await set(R(`users/${U.uid}/videos/${vid}`),c);
-  window.__mineVideos=window.__mineVideos||{};window.__mineVideos[vid]=c;
+  window.__mineVideos=window.__mineVideos||{};
+  window.__mineVideos[vid]=c;
+  
   go('watch',vid);
 }
 
@@ -496,13 +518,18 @@ async function vWatch(){
   let c,rec;
   if(A){c='admin';rec={url:v.url,usedBy:U.uid,videoId:S.id};}
   else{
-    c=(await G(`users/${U.uid}/videos/${S.id}`));
-    rec=c&&await G('codes/'+c);
-    if(!rec||rec.usedBy!==U.uid)return go('code',S.id);
+    c = (window.__mineVideos && window.__mineVideos[S.id]) ? window.__mineVideos[S.id] : (await G(`users/${U.uid}/videos/${S.id}`));
+    if(!c) return go('code', S.id);
+    rec = await G('codes/'+c);
+    if(!rec || rec.usedBy !== U.uid) {
+       if(window.__mineVideos) delete window.__mineVideos[S.id];
+       return go('code',S.id);
+    }
   }
 
   const e=embed(rec.url),lp=`logs/${S.id}/${U.uid}`,old=(A?{}:await G(lp)||{});
   let sec=old.seconds||0;const dur=(+v.duration||0)*60;
+  
   if(!A){
     await update(R(lp),{name:U.displayName,email:U.email,photo:U.photoURL||'',code:c,
       openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
@@ -561,7 +588,7 @@ async function vWatch(){
       <div class="pl ${isYT ? 'crop-yt' : ''}" id="plbox">
         ${playerHTML}
         <div class="yt-shield"></div>
-        ${isYT?'<div class="yt-bottom-mask"></div>':''}
+        ${isYT?'<div class="yt-bottom-mask"></div><div class="yt-top-mask"></div>':''}
         ${wm}
       </div>
       ${controlsHTML}
@@ -893,10 +920,10 @@ async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();
     <button class="d" onclick="delV('${id}')">حذف الفيديو</button>
   </div></div>
   <h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr>
-  <th>الطالب</th><th>الإيميل</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>
-  ${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${fd(l.openedAt)}</td>
+  <th>الطالب</th><th>الإيميل</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>
+  ${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td>
   <td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||
-  '<tr><td colspan="6" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div>
+  '<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div>
   <h2>الأكواد</h2><div class="box tw"><table><thead><tr>
   <th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>
   ${cs.map(x=>`<tr><td><span class="code">${x.c}</span></td>
