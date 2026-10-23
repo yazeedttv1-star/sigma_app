@@ -115,22 +115,28 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .center button{padding:14px 32px;font-size:16px;border-radius:var(--r)}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
-/* ===== Player (نظام الاقتصاص الذكي لمنع ظهور يوتيوب) ===== */
+/* ===== Player (نظام القناع الأسود الشامل) ===== */
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;
   width:100%;aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
 .pl iframe,.pl video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
 
-/* الاقتصاص النسبي: تكبير الفيديو بنسبة 15% وسحبه للأسفل لإخفاء الشريط السفلي */
+/* إخفاء واجهة يوتيوب تماماً عبر تكبير الفيديو وسحبه لأعلى */
 .pl.crop-yt iframe { 
-  height: 115% !important; 
-  top: -7.5% !important; 
+  top: -60px !important; 
+  height: calc(100% + 120px) !important; 
 }
 
 /* درع شفاف يمنع النقر على مشغل يوتيوب لمنع فتح الواجهة */
 .yt-shield {
   position: absolute; inset: 0; z-index: 10;
   background: transparent;
+}
+
+/* شريط أسود يغطي أي بقايا من أزرار يوتيوب في الأسفل */
+.yt-bottom-mask {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 60px; z-index: 11; background: #000;
 }
 
 /* العلامة المائية المتحركة (اسم وصورة الطالب) */
@@ -201,6 +207,8 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   h2{font-size:18px}
   .bottombar{gap:4px;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
   .bottombar button{font-size:12px;}
+  .pl.crop-yt iframe { top: -50px !important; height: calc(100% + 100px) !important; }
+  .yt-bottom-mask { height: 50px; }
 }
 @media(max-width:520px){
   header .chip span{display:none}
@@ -542,6 +550,7 @@ async function vWatch(){
           <option value="1.5">1.5x</option>
           <option value="2">2x</option>
         </select>
+        <button onclick="toggleFullscreen()" id="fsBtn">⛶ ملء الشاشة</button>
       </div>
     </div>`;
   }
@@ -552,6 +561,7 @@ async function vWatch(){
       <div class="pl ${isYT ? 'crop-yt' : ''}" id="plbox">
         ${playerHTML}
         <div class="yt-shield"></div>
+        ${isYT?'<div class="yt-bottom-mask"></div>':''}
         ${wm}
       </div>
       ${controlsHTML}
@@ -697,6 +707,19 @@ function setRate(rate) {
     if(vid && vid.tagName==='VIDEO'){
       vid.playbackRate = parseFloat(rate);
     }
+  }
+}
+
+function toggleFullscreen(){
+  const box=document.getElementById('plbox');
+  const btn=document.getElementById('fsBtn');
+  if(!box)return;
+  if(!document.fullscreenElement){
+    (box.requestFullscreen||box.webkitRequestFullscreen||box.msRequestFullscreen).call(box).catch(()=>{});
+    if(btn)btn.innerHTML='⛶ خروج من ملء الشاشة';
+  }else{
+    (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen).call(document).catch(()=>{});
+    if(btn)btn.innerHTML='⛶ ملء الشاشة';
   }
 }
 
@@ -884,7 +907,7 @@ async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();
 }
 
 Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,
-  toggleTheme,unban,keepBan,saveEdit,togglePlay,onSeek,seekRel,setRate});
+  toggleTheme,unban,keepBan,saveEdit,togglePlay,onSeek,seekRel,setRate,toggleFullscreen});
 render();
 </script>
 </body>
