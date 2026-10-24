@@ -157,7 +157,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .bottombar button.danger:hover svg{fill:#fff}
 .bottombar button svg{width:22px;height:22px;fill:var(--tx2);transition:.15s}
 
-/* شريط الواتساب */
+/* زر الواتساب */
 .contact-btn-nav{color:#25D366 !important;}
 .contact-btn-nav svg{fill:#25D366 !important;}
 .contact-btn-nav:hover{background:#e8f5e9 !important;}
@@ -278,9 +278,13 @@ window.addEventListener('error',e=>{console.error('Sigma runtime error:',e.error
 const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=s;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,s,s);r(c.toDataURL('image/jpeg',.8))};i.src=URL.createObjectURL(f)});
 
 (()=>{
-  const iconUrl='https://drive.google.com/uc?export=download&id=1CKwL3gbmyIYtBbfpxEo7ZZOHDLztnDGx';
-  $('#ai').href=iconUrl;
-  const m={name:'منصة سيجما التعليمية',short_name:'سيجما',start_url:location.pathname,display:'standalone',background_color:'#2563eb',theme_color:'#2563eb',dir:'rtl',lang:'ar',icons:[{src:iconUrl,sizes:'192x192',type:'image/png'},{src:iconUrl,sizes:'512x512',type:'image/png'}]};
+  const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#2563eb');g.addColorStop(1,'#1d4ed8');
+  x.fillStyle=g;x.fillRect(0,0,192,192);x.fillStyle='#fff';x.font='bold 120px sans-serif';
+  x.textAlign='center';x.textBaseline='middle';x.fillText('S',96,104);
+  const u=c.toDataURL('image/png');
+  $('#ai').href=u;
+  const m={name:'منصة سيجما التعليمية',short_name:'سيجما',start_url:location.pathname,display:'standalone',background_color:'#2563eb',theme_color:'#2563eb',dir:'rtl',lang:'ar',icons:[{src:u,sizes:'192x192',type:'image/png'}]};
   $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
 })();
 
