@@ -159,7 +159,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .profile-card h2{margin-bottom:8px}
 .profile-card p{color:var(--mu);font-size:15px;margin-bottom:24px}
 
-/* Modal Notifications */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
 .modal.show{display:flex;animation:pop .2s}
 .modal-content{background:var(--surface);border-radius:var(--r-lg);width:100%;max-width:400px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg)}
@@ -373,7 +372,6 @@ async function doStudentSearch(){
   if(!q)return;
   const res=$('#studentResult');res.innerHTML='<div class="mut">جارٍ البحث...</div>';
   
-  // البحث في سجلات جميع الفيديوهات
   const allLogs = await G('logs') || {};
   const studentLogs = {};
   
