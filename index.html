@@ -47,14 +47,12 @@ h2{font-size:20px;margin-bottom:16px;color:var(--tx)}
 .top-bar .welcome p{font-size:14px;opacity:.9;margin-bottom:12px}
 .top-bar .user-area{display:flex;align-items:center;gap:8px}
 .top-bar .avatar-lg{width:56px;height:56px;border-radius:50%;border:3px solid rgba(255,255,255,.4);object-fit:cover}
-.top-bar .actions{display:flex;gap:8px}
+.top-bar .actions{display:flex;gap:8px;align-items:center}
 .top-bar .action-btn{background:rgba(255,255,255,.2);color:#fff;border:0;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
 .top-bar .action-btn:hover{background:rgba(255,255,255,.3)}
 .top-bar .action-btn.icon-only{width:42px;height:42px;padding:0;border-radius:12px;position:relative;flex:0 0 42px}
 .top-bar .action-btn.icon-only svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .top-bar .action-btn.icon-only .badge-dot{position:absolute!important;top:-5px!important;right:-5px!important;min-width:18px;height:18px;padding:0 4px;border-radius:99px;background:#ef4444!important;color:#fff!important;border:2px solid #2563eb!important;align-items:center;justify-content:center;font-size:10px;font-weight:800}
-.top-bar .actions{align-items:center;gap:8px}
-
 
 main{max-width:1000px;margin:0 auto;padding:0 20px 40px}
 
@@ -144,7 +142,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .tools-row button:hover{background:var(--ac);color:#fff}
 .custom-player-ctrl .tools-row select{width:auto;padding:6px 10px;margin:0;font-size:13px;border-radius:8px}
 
-/* شريط التنقل السفلي البيضاوي العائم */
+/* شريط التنقل السفلي */
 .bottombar{position:fixed;bottom:0;left:0;transform:none;z-index:40;
   background:var(--surface);border:1px solid var(--bd);border-bottom:0;border-radius:22px 22px 0 0;
   display:flex;justify-content:space-around;gap:4px;
@@ -177,6 +175,23 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .noti-item{padding:12px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.5}
 .noti-item:last-child{border-bottom:0}
 .noti-item span{display:block;color:var(--mu);font-size:11px;margin-top:4px}
+
+/* Auth Styles */
+.auth-container{max-width:400px;margin:0 auto;padding:40px 20px;text-align:center}
+.auth-container h1{font-size:32px;color:var(--ac);margin-bottom:8px;font-weight:800;letter-spacing:-1px}
+.auth-container p{color:var(--mu);margin-bottom:24px;font-size:15px}
+.auth-btn{width:100%;padding:14px;font-size:16px;border-radius:12px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px}
+.auth-btn.google{background:#fff;color:#333;border:1px solid #ddd}
+.auth-btn.google:hover{background:#f5f5f5}
+.auth-btn.phone{background:var(--ac);color:#fff}
+.auth-btn.phone:hover{background:var(--ac2)}
+.auth-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--surface2);padding:4px;border-radius:12px}
+.auth-tabs button{flex:1;padding:10px;border-radius:8px;background:transparent;color:var(--mu);font-weight:700}
+.auth-tabs button.active{background:var(--surface);color:var(--ac);box-shadow:var(--shadow)}
+.auth-form{text-align:right}
+.auth-form label{display:block;margin-bottom:6px;font-weight:600;font-size:13px;color:var(--tx2)}
+.auth-form input{margin-bottom:12px}
+.auth-form .error{color:var(--er);font-size:13px;margin-bottom:10px;display:none}
 
 @media(max-width:720px){
 main{padding:0 14px 40px}
@@ -314,7 +329,179 @@ function renderNoti(){
   if(U&&!A){const updates={};list.forEach(n=>{if(n._key)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(e=>console.warn('تعذر تحديث حالة الإشعارات',e))}
 }
 
-function render(){const a=$('#app');if(!U){a.innerHTML=`<div class="center"><h1>Σ سيجما</h1><p>منصة سيجما التعليمية</p><button onclick="login()">الدخول بحساب جوجل</button></div>`;return}let body='';try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}if(body&&typeof body.then==='function'){body.then(html=>{a.innerHTML=shell(html);afterRender()}).catch(e=>{a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`)});a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');return}a.innerHTML=shell(body);afterRender()}
+// ===== Auth View with Phone Login =====
+function vAuth() {
+  return `<div class="auth-container">
+    <h1>Σ سيجما</h1>
+    <p>منصة سيجما التعليمية</p>
+    
+    <div class="auth-tabs">
+      <button class="active" onclick="switchAuthTab('google')">حساب جوجل</button>
+      <button onclick="switchAuthTab('phone')">رقم هاتف</button>
+    </div>
+
+    <div id="auth-google" style="display:block">
+      <button class="auth-btn google" onclick="login()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20">
+        تسجيل الدخول بحساب جوجل
+      </button>
+    </div>
+
+    <div id="auth-phone" style="display:none">
+      <div class="auth-form">
+        <label>الاسم الرباعي</label>
+        <input id="reg-name" placeholder="مثال: يزيد أحمد محمد علي">
+        <label>رقم الهاتف</label>
+        <input id="reg-phone" type="tel" placeholder="01xxxxxxxxx" dir="ltr">
+        <label>كلمة المرور</label>
+        <input id="reg-pass" type="password" placeholder="••••••••">
+        <label>تأكيد كلمة المرور</label>
+        <input id="reg-pass2" type="password" placeholder="••••••••">
+        <div class="error" id="reg-error"></div>
+        <button class="auth-btn phone" onclick="registerPhone()">إنشاء حساب</button>
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">لديك حساب بالفعل؟ <a href="#" onclick="switchPhoneMode('login')" style="color:var(--ac);font-weight:700;text-decoration:none">تسجيل الدخول</a></p>
+      </div>
+      
+      <div class="auth-form" id="phone-login" style="display:none">
+        <label>رقم الهاتف</label>
+        <input id="login-phone" type="tel" placeholder="01xxxxxxxxx" dir="ltr">
+        <label>كلمة المرور</label>
+        <input id="login-pass" type="password" placeholder="••••••••">
+        <div class="error" id="login-error"></div>
+        <button class="auth-btn phone" onclick="loginPhone()">دخول</button>
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">ليس لديك حساب؟ <a href="#" onclick="switchPhoneMode('register')" style="color:var(--ac);font-weight:700;text-decoration:none">إنشاء حساب</a></p>
+      </div>
+    </div>
+  </div>`;
+}
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('auth-google').style.display = tab === 'google' ? 'block' : 'none';
+  document.getElementById('auth-phone').style.display = tab === 'phone' ? 'block' : 'none';
+}
+
+function switchPhoneMode(mode) {
+  event.preventDefault();
+  document.querySelectorAll('#auth-phone .auth-form').forEach(f => f.style.display = 'none');
+  if(mode === 'login') {
+    document.getElementById('phone-login').style.display = 'block';
+  } else {
+    document.getElementById('auth-phone').querySelector('.auth-form').style.display = 'block';
+    document.getElementById('phone-login').style.display = 'none';
+  }
+}
+
+async function registerPhone() {
+  const name = $('#reg-name').value.trim();
+  const phone = $('#reg-phone').value.trim();
+  const pass = $('#reg-pass').value;
+  const pass2 = $('#reg-pass2').value;
+  const err = $('#reg-error');
+
+  if (!name || name.split(' ').length < 4) {
+    err.textContent = 'يجب كتابة الاسم الرباعي كاملاً (4 مقاطع)';
+    err.style.display = 'block';
+    return;
+  }
+  if (!/^01[0-9]{9}$/.test(phone)) {
+    err.textContent = 'رقم الهاتف يجب أن يكون 11 رقم ويبدأ بـ 01';
+    err.style.display = 'block';
+    return;
+  }
+  if (pass.length < 6) {
+    err.textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+    err.style.display = 'block';
+    return;
+  }
+  if (pass !== pass2) {
+    err.textContent = 'كلمتا المرور غير متطابقتين';
+    err.style.display = 'block';
+    return;
+  }
+
+  err.style.display = 'none';
+  try {
+    // التحقق من عدم وجود رقم الهاتف مسبقاً
+    const existing = await G('users');
+    if (existing) {
+      for (const uid in existing) {
+        if (existing[uid].phone === phone) {
+          err.textContent = 'رقم الهاتف مسجل بالفعل';
+          err.style.display = 'block';
+          return;
+        }
+      }
+    }
+
+    // إنشاء حساب وهمي في Firebase Auth باستخدام البريد الإلكتروني
+    const fakeEmail = `${phone}@sigma.user`;
+    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
+    const user = userCredential.user;
+
+    // تحديث اسم المستخدم
+    await updateProfile(user, { displayName: name });
+
+    // حفظ بيانات إضافية في قاعدة البيانات
+    await set(R('users/' + user.uid), {
+      name: name,
+      phone: phone,
+      email: fakeEmail,
+      photo: '',
+      createdAt: Date.now()
+    });
+
+    toast('تم إنشاء الحساب بنجاح');
+    location.reload();
+  } catch (e) {
+    console.error(e);
+    if (e.code === 'auth/email-already-in-use') {
+      err.textContent = 'رقم الهاتف مسجل بالفعل';
+    } else {
+      err.textContent = 'حدث خطأ: ' + e.message;
+    }
+    err.style.display = 'block';
+  }
+}
+
+async function loginPhone() {
+  const phone = $('#login-phone').value.trim();
+  const pass = $('#login-pass').value;
+  const err = $('#login-error');
+
+  if (!/^01[0-9]{9}$/.test(phone)) {
+    err.textContent = 'رقم الهاتف غير صحيح';
+    err.style.display = 'block';
+    return;
+  }
+
+  err.style.display = 'none';
+  try {
+    const fakeEmail = `${phone}@sigma.user`;
+    await signInWithEmailAndPassword(auth, fakeEmail, pass);
+    toast('تم تسجيل الدخول بنجاح');
+  } catch (e) {
+    console.error(e);
+    err.textContent = 'رقم الهاتف أو كلمة المرور غير صحيحة';
+    err.style.display = 'block';
+  }
+}
+
+// ===== Render =====
+function render(){
+  const a=$('#app');
+  if(!U){a.innerHTML=vAuth();return;}
+  
+  let body='';
+  try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}
+  
+  if(body&&typeof body.then==='function'){
+    body.then(html=>{a.innerHTML=shell(html);afterRender()}).catch(e=>{a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`)});
+    a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');return;
+  }
+  a.innerHTML=shell(body);afterRender();
+}
 function afterRender(){if(S.v==='watch')setTimeout(initPlayer,300)}
 
 function shell(body){
@@ -367,7 +554,8 @@ function vHome(){const t=Object.entries(teachers);if(!t.length)return'<div class
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
   if(!S.filter){
-    return `<h2>${esc(t.name)}</h2>
+    return `<button class="s" onclick="go('home')" style="margin-bottom:16px">← رجوع</button>
+    <h2>${esc(t.name)}</h2>
     <div class="box" style="display:flex;gap:10px;flex-wrap:wrap">
       <button onclick="go('teacher','${S.id}','','prep')" style="flex:1;padding:20px;font-size:16px">إعدادي</button>
       <button onclick="go('teacher','${S.id}','','sec')" style="flex:1;padding:20px;font-size:16px">ثانوي</button>
@@ -398,9 +586,48 @@ function vTeacher(){
   return html;
 }
 
-function vCode(){const v=videos[S.id];if(!v||v.disabled)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;return`<div class="box"><h2>${esc(v.title)}</h2><label>أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label><input id="cd" inputmode="numeric" maxlength="6" placeholder="000000" style="font-size:26px;text-align:center;letter-spacing:8px;font-family:monospace"><button onclick="redeem('${S.id}')" style="width:100%">فتح الفيديو</button></div>`}
+function vCode(){
+  const v=videos[S.id];
+  if(!v||v.disabled)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
+  return`<button class="s" onclick="go('teacher','${v.teacherId}','','${v.stage}')" style="margin-bottom:16px">← رجوع</button>
+  <div class="box"><h2>${esc(v.title)}</h2><label>أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label><input id="cd" inputmode="numeric" maxlength="6" placeholder="000000" style="font-size:26px;text-align:center;letter-spacing:8px;font-family:monospace"><button onclick="redeem('${S.id}')" style="width:100%">فتح الفيديو</button></div>`;
+}
 async function redeem(vid){const v=videos[vid];if(!v||v.disabled)return toast('الفيديو موقوف');const c=$('#cd').value.trim();if(!/^\d{6}$/.test(c))return toast('الكود يجب أن يكون 6 أرقام');const r=await runTransaction(R('codes/'+c),cur=>{if(cur===null)return cur;if(cur.videoId!==vid)return;if(cur.used&&cur.usedBy!==U.uid)return;if(!cur.used)Object.assign(cur,{used:true,usedBy:U.uid,usedByName:U.displayName,usedByEmail:U.email,usedAt:Date.now()});return cur}).catch(()=>null);const vv=r?.snapshot.val();if(!vv||vv.usedBy!==U.uid||vv.videoId!==vid)return toast('الكود غير صحيح أو مستخدم من قبل');await set(R(`users/${U.uid}/videos/${vid}`),c);window.__mineVideos=window.__mineVideos||{};window.__mineVideos[vid]=c;go('watch',vid)}
-async function vWatch(){const v=videos[S.id];if(!v)return vHome();if(v.disabled&&!A)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;let c,rec;if(A){c='admin';rec={url:v.url,usedBy:U.uid,videoId:S.id}}else{c=(window.__mineVideos&&window.__mineVideos[S.id])?window.__mineVideos[S.id]:(await G(`users/${U.uid}/videos/${S.id}`));if(!c)return go('code',S.id);rec=await G('codes/'+c);if(!rec||rec.usedBy!==U.uid){if(window.__mineVideos)delete window.__mineVideos[S.id];return go('code',S.id)}}const e=embed(rec.url),lp=`logs/${S.id}/${U.uid}`,old=(A?{}:await G(lp)||{});let sec=old.seconds||0;const dur=(+v.duration||0)*60;if(!A){await update(R(lp),{name:U.displayName,email:U.email,photo:U.photoURL||'',code:c,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});const tick=async(add)=>{if(document.hidden)return;sec+=add;const done=dur&&sec>=dur*.9;await update(R(lp),{seconds:sec,lastAt:Date.now(),completed:done||!!old.completed}).catch(()=>{})};hb=setInterval(()=>tick(10),10000)}const wm=A?'':`<div class="wm">${badge?`<img src="${badge}" alt="">`:''}${esc(U.displayName||'')} · ${esc(U.email||'')}</div>`;let playerHTML='';let isYT=(e.t==='yt');if(e.t==='v'){playerHTML=`<video id="vplayer" src="${esc(e.s)}" playsinline></video>`}else if(isYT){playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>`}else if(e.t==='drive'){playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`}else{playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`}let controlsHTML='';if(isYT||e.t==='v'){controlsHTML=`<div class="custom-player-ctrl"><div class="progress-row"><button id="playPauseBtn" class="play-btn" onclick="togglePlay()">▶</button><div class="progress-container"><span class="time" id="cTime">0:00</span><input type="range" id="cSeek" min="0" max="100" value="0" step="0.1" oninput="onSeek(this.value)"><span class="time" id="dTime">0:00</span></div></div><div class="tools-row"><button onclick="seekRel(-5)">⏪ -5 ثوان</button><button onclick="seekRel(5)">+5 ثوان ⏩</button><span style="color:var(--mu);font-size:13px;font-weight:700;margin:0 4px">السرعة:</span><select id="speedSelector" onchange="setRate(this.value)"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x (عادي)</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button onclick="toggleFullscreen()" id="fsBtn">⛶ ملء الشاشة</button></div></div>`}return`<button class="s" onclick="go('teacher','${v.teacherId}','','${v.stage}')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${A?'<span class="b g">إدارة</span>':''}</h2><div class="player-wrap"><div class="pl ${isYT?'crop-yt':''}" id="plbox">${playerHTML}<div class="yt-shield"></div>${isYT?'<div class="yt-bottom-mask"></div><div class="yt-top-mask"></div>':''}${wm}</div>${controlsHTML}</div><p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>`}
+
+async function vWatch(){
+  const v=videos[S.id];if(!v)return vHome();
+  if(v.disabled&&!A)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
+  let c,rec;
+  if(A){c='admin';rec={url:v.url,usedBy:U.uid,videoId:S.id}}
+  else{
+    c=(window.__mineVideos&&window.__mineVideos[S.id])?window.__mineVideos[S.id]:(await G(`users/${U.uid}/videos/${S.id}`));
+    if(!c)return go('code',S.id);
+    rec=await G('codes/'+c);
+    if(!rec||rec.usedBy!==U.uid){if(window.__mineVideos)delete window.__mineVideos[S.id];return go('code',S.id)}
+  }
+  const e=embed(rec.url),lp=`logs/${S.id}/${U.uid}`,old=(A?{}:await G(lp)||{});
+  let sec=old.seconds||0;const dur=(+v.duration||0)*60;
+  if(!A){
+    await update(R(lp),{name:U.displayName,email:U.email,photo:U.photoURL||'',code:c,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
+    const tick=async(add)=>{if(document.hidden)return;sec+=add;const done=dur&&sec>=dur*.9;await update(R(lp),{seconds:sec,lastAt:Date.now(),completed:done||!!old.completed}).catch(()=>{})};
+    hb=setInterval(()=>tick(10),10000);
+  }
+  const wm=A?'':`<div class="wm">${badge?`<img src="${badge}" alt="">`:''}${esc(U.displayName||'')} · ${esc(U.email||'')}</div>`;
+  let playerHTML='';
+  let isYT=(e.t==='yt');
+  if(e.t==='v'){playerHTML=`<video id="vplayer" src="${esc(e.s)}" playsinline></video>`}
+  else if(isYT){playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>`}
+  else if(e.t==='drive'){playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`}
+  else{playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`}
+  let controlsHTML='';
+  if(isYT||e.t==='v'){
+    controlsHTML=`<div class="custom-player-ctrl"><div class="progress-row"><button id="playPauseBtn" class="play-btn" onclick="togglePlay()">▶</button><div class="progress-container"><span class="time" id="cTime">0:00</span><input type="range" id="cSeek" min="0" max="100" value="0" step="0.1" oninput="onSeek(this.value)"><span class="time" id="dTime">0:00</span></div></div><div class="tools-row"><button onclick="seekRel(-5)">⏪ -5 ثوان</button><button onclick="seekRel(5)">+5 ثوان ⏩</button><span style="color:var(--mu);font-size:13px;font-weight:700;margin:0 4px">السرعة:</span><select id="speedSelector" onchange="setRate(this.value)"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x (عادي)</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button onclick="toggleFullscreen()" id="fsBtn">⛶ ملء الشاشة</button></div></div>`;
+  }
+  return`<button class="s" onclick="go('teacher','${v.teacherId}','','${v.stage}')">← رجوع</button>
+  <h2 style="margin-top:14px">${esc(v.title)} ${A?'<span class="b g">إدارة</span>':''}</h2>
+  <div class="player-wrap"><div class="pl ${isYT?'crop-yt':''}" id="plbox">${playerHTML}<div class="yt-shield"></div>${isYT?'<div class="yt-bottom-mask"></div><div class="yt-top-mask"></div>':''}${wm}</div>${controlsHTML}</div>
+  <p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>`;
+}
 
 function openLibraryItem(url){try{const parsed=new URL(url,location.href);if(!['http:','https:'].includes(parsed.protocol))return toast('نوع الرابط غير مسموح');window.open(parsed.href,'_blank','noopener,noreferrer')}catch(e){toast('رابط الملف غير صالح')}}
 function vLibrary(){const lib=Object.entries(library).sort((a,b)=>b[1].created-a[1].created);return`<h2>المكتبة الرقمية</h2>`+(lib.length?`<div class="grid">${lib.map(([id,item])=>`<div class="card" onclick="openLibraryItem('${esc(item.url)}')"><img class="ph" src="${esc(item.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200')}" alt=""><b>${esc(item.title)}</b><small style="color:var(--mu);display:block;margin-top:4px">${esc(item.desc||'')}</small></div>`).join('')}</div>`:'<div class="mut">لا توجد ملفات بعد.</div>')}
@@ -418,10 +645,10 @@ function setRate(rate){if(ytPlayer&&ytPlayer.setPlaybackRate){try{ytPlayer.setPl
 async function toggleFullscreen(){const box=document.getElementById('plbox');const btn=document.getElementById('fsBtn');if(!box)return;try{if(!document.fullscreenElement){const fn=box.requestFullscreen||box.webkitRequestFullscreen||box.msRequestFullscreen;if(!fn)return toast('ملء الشاشة غير مدعوم في هذا المتصفح');await fn.call(box)}else{const fn=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen;if(fn)await fn.call(document)}}catch(e){toast('تعذر تغيير وضع الشاشة')}if(btn)btn.innerHTML=document.fullscreenElement?'⛶ خروج من ملء الشاشة':'⛶ ملء الشاشة'}
 function stopHB(){clearInterval(hb);hb=null}
 
-async function vAdmin(){if(!A)return'<div class="mut">غير مصرح.</div>';const tab=S.tab||'videos';const tb=`<div class="tabs">${[['videos','الفيديوهات'],['teachers','المدرسون'],['library','المكتبة'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']].map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;if(tab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label>الاسم</label><input id="tn"><label>الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||''}" alt=""><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${id}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${id}')">حذف</button></div></div>`).join('')}</div>`;if(tab==='library')return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label>العنوان</label><input id="ltn"><label>الوصف</label><input id="ltd"><label>صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label>رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200'}" alt=""><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${id}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${id}')">حذف</button></div></div>`).join('')}</div>`;if(tab==='send_notification')return tb+vSendNotification();if(tab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;if(tab==='bans')return tb+(await renderBans());if(tab==='studentSearch')return tb+vStudentSearch();const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="0" value="10"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`}
+async function vAdmin(){if(!A)return'<div class="mut">غير مصرح.</div>';const tab=S.tab||'videos';const tb=`<div class="tabs">${[['videos','الفيديوهات'],['teachers','المدرسون'],['library','المكتبة'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']].map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;if(tab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label>الاسم</label><input id="tn"><label>الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||''}" alt=""><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${id}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${id}')">حذف</button></div></div>`).join('')}</div>`;if(tab==='library')return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label>العنوان</label><input id="ltn"><label>الوصف</label><input id="ltd"><label>صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label>رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200'}" alt=""><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${id}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${id}')">حذف</button></div></div>`).join('')}</div>`;if(tab==='send_notification')return tb+vSendNotification();if(tab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;if(tab==='bans')return tb+(await renderBans());if(tab==='studentSearch')return tb+vStudentSearch();const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`}
 
 function vSendNotification(){
-  return `<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label>نص الإشعار</label><textarea id="notiText" rows="3" placeholder="اكتب رسالتك هنا..."></textarea><button onclick="sendAdminNotification()">إرسال الإشعار</button></div>`;
+  return `<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label>نص الإشعار</label><textarea id="notiText" rows="3" placeholder="اكتب رسالتك هنا..."></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات</button></div></div>`;
 }
 async function sendAdminNotification(){
   const text=$('#notiText').value.trim();
@@ -432,9 +659,16 @@ async function sendAdminNotification(){
     toast('تم إرسال الإشعار بنجاح');
   }catch(e){console.error(e);toast('تعذر إرسال الإشعار: '+(e.code||e.message))}
 }
+async function clearAllNotifications(){
+  if(!confirm('هل أنت متأكد من حذف جميع الإشعارات للجميع؟'))return;
+  try{
+    await remove(R('notifications/all'));
+    toast('تم حذف جميع الإشعارات');
+  }catch(e){console.error(e);toast('تعذر حذف الإشعارات: '+(e.code||e.message))}
+}
 
 function vStudentSearch(){
-  return `<div class="box"><h2>بحث عن طالب</h2><label>اسم الطالب أو الإيميل</label><div style="display:flex;gap:8px"><input id="searchStudent" placeholder="اكتب الاسم أو الإيميل..." style="margin-bottom:0"><button onclick="doStudentSearch()">بحث</button></div></div><div id="studentResult"></div>`;
+  return `<div class="box"><h2>بحث عن طالب</h2><label>اسم الطالب أو الإيميل أو رقم الهاتف أو الكود</label><div style="display:flex;gap:8px"><input id="searchStudent" placeholder="اكتب أي شيء للبحث..." style="margin-bottom:0"><button onclick="doStudentSearch()">بحث</button></div></div><div id="studentResult"></div>`;
 }
 async function doStudentSearch(){
   const q=$('#searchStudent').value.trim().toLowerCase();
@@ -447,7 +681,12 @@ async function doStudentSearch(){
   for (const vid in allLogs) {
     for (const uid in allLogs[vid]) {
       const log = allLogs[vid][uid];
-      if ((log.name && log.name.toLowerCase().includes(q)) || (log.email && log.email.toLowerCase().includes(q))) {
+      const match = 
+        (log.name && log.name.toLowerCase().includes(q)) || 
+        (log.email && log.email.toLowerCase().includes(q)) ||
+        (log.code && log.code.includes(q));
+        
+      if (match) {
         if (!studentLogs[uid]) studentLogs[uid] = {name: log.name, email: log.email, videos: []};
         studentLogs[uid].videos.push({vid, title: videos[vid]?.title || 'محذوف', time: log.lastAt, completed: log.completed});
       }
@@ -520,7 +759,7 @@ function exportPDF(vid){const v=videos[vid];if(!v)return;const rows=[];document.
 
 async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();const cs=[];(await get(query(R('codes'),orderByChild('videoId'),equalTo(id)))).forEach(c=>{cs.push({c:c.key,...c.val()})});cs.sort((a,b)=>b.createdAt-a.createdAt);const lg=Object.values(await G('logs/'+id)||{}).sort((a,b)=>b.lastAt-a.lastAt);const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2><div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p><p style="margin-bottom:14px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end"><div style="width:110px"><label>العدد</label><input id="gn" type="number" min="1" value="10" style="margin-bottom:0"></div><button onclick="moreCodes('${id}')">توليد أكواد</button><button class="s" onclick="moreCodes('${id}',1)">كود لطالب</button><button class="s" onclick="copyFree('${id}')">نسخ المتاح</button><button class="s" onclick="go('edit','${id}','video')">تعديل</button><button class="${v.disabled?'g':'d'}" onclick="toggleVid('${id}')">${v.disabled?'تفعيل':'إيقاف'}</button><button class="s" onclick="exportPDF('${id}')">تصدير PDF</button><button class="d" onclick="delV('${id}')">حذف</button></div></div><h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الإيميل</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div><h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${x.c}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${x.c}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`}
 
-Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification});
+Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchAuthTab,switchPhoneMode});
 render();
 </script>
 </body>
