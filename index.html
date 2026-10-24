@@ -38,7 +38,6 @@ input,select,textarea{-webkit-user-select:text;user-select:text}
 h1,h2,h3{font-weight:800;line-height:1.3}
 h2{font-size:20px;margin-bottom:16px;color:var(--tx)}
 
-/* الشريط الترحيبي */
 .top-bar{background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);color:#fff;padding:24px 20px;
   border-bottom-left-radius:24px;border-bottom-right-radius:24px;margin-bottom:20px;
   display:flex;justify-content:space-between;align-items:center;position:relative;box-shadow:var(--shadow)}
@@ -148,7 +147,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .tools-row button:hover{background:var(--ac);color:#fff}
 .custom-player-ctrl .tools-row select{width:auto;padding:6px 10px;margin:0;font-size:13px;border-radius:8px}
 
-/* شريط التنقل البيضاوي العائم */
 .bottombar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:40;
   background:var(--surface);border:1px solid var(--bd);border-radius:35px;
   display:flex;justify-content:space-around;gap:4px;
@@ -314,8 +312,7 @@ function shell(body){
   
   let topBar = '';
   if(S.v==='home' && U) {
-    // إصلاح الخطأ: استخدام U.displayName || '' لتجنب الانهيار إذا كان فارغاً
-    const firstName = (U.displayName || 'الطالب').split(' ')[0];
+    const firstName = U.displayName ? U.displayName.split(' ')[0] : 'الطالب';
     topBar = `
       <div class="top-bar">
         <div class="welcome">
