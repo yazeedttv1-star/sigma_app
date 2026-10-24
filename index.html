@@ -38,35 +38,29 @@ input,select,textarea{-webkit-user-select:text;user-select:text}
 h1,h2,h3{font-weight:800;line-height:1.3}
 h2{font-size:20px;margin-bottom:16px;color:var(--tx)}
 
-.top-bar{background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);color:#fff;padding:24px 20px;
-  border-bottom-left-radius:24px;border-bottom-right-radius:24px;margin-bottom:20px;
+/* الشريط الترحيبي (يحتوي على كل الأزرار) */
+.top-bar{background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);color:#fff;padding:20px;
+  border-bottom-left-radius:24px;border-bottom-right-radius:24px;margin-bottom:24px;
   display:flex;justify-content:space-between;align-items:center;position:relative;box-shadow:var(--shadow)}
 .top-bar .welcome h1{font-size:22px;margin-bottom:4px;font-weight:800}
 .top-bar .welcome p{font-size:14px;opacity:.9}
-.top-bar .avatar-lg{width:56px;height:56px;border-radius:50%;border:3px solid rgba(255,255,255,.4);object-fit:cover}
+.top-bar .user-area{display:flex;align-items:center;gap:12px}
+.top-bar .avatar-lg{width:50px;height:50px;border-radius:50%;border:3px solid rgba(255,255,255,.4);object-fit:cover}
+.top-bar .actions{display:flex;gap:8px;margin-top:10px}
+.top-bar .action-btn{background:rgba(255,255,255,.2);color:#fff;border:0;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:.15s}
+.top-bar .action-btn:hover{background:rgba(255,255,255,.3)}
 
-header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);
-  padding:12px 20px;display:flex;align-items:center;gap:12px}
-html.dark header{background:rgba(17,26,46,.85)}
-.logo{font-weight:800;font-size:22px;color:var(--ac);cursor:pointer;margin-inline-end:auto;
-  display:flex;align-items:center;gap:8px;letter-spacing:-.5px}
-.logo:before{content:'';width:8px;height:22px;background:var(--ac);border-radius:4px}
-.chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2);font-weight:600;cursor:pointer}
-.chip img,.avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:var(--surface2);border:2px solid var(--ac-soft)}
-.header-btn{background:var(--surface2);color:var(--tx);border:0;border-radius:var(--r-sm);
-  padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;position:relative}
-.header-btn:hover{background:var(--ac);color:#fff}
-.badge-dot{position:absolute;top:-4px;right:-4px;background:var(--er);color:#fff;font-size:10px;font-weight:bold;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface);display:none}
+header{display:none;} /* إخفاء الهيدر القديم ونقله للترحيبي */
 
 main{max-width:1000px;margin:0 auto;padding:0 20px 40px}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+/* شبكة المدرسين 2x2 */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 .card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
   padding:20px 16px;cursor:pointer;text-align:center;transition:.2s var(--shadow)}
 .card:hover{border-color:var(--ac);box-shadow:var(--shadow-lg);transform:translateY(-3px)}
 .card:active{transform:scale(.98)}
-.card .ph{width:88px;height:88px;border-radius:50%;object-fit:cover;margin:0 auto 12px;
+.card .ph{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;
   display:block;background:var(--surface2);border:3px solid var(--ac-soft)}
 .card b{font-size:15px;display:block;color:var(--tx)}
 
@@ -147,7 +141,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .tools-row button:hover{background:var(--ac);color:#fff}
 .custom-player-ctrl .tools-row select{width:auto;padding:6px 10px;margin:0;font-size:13px;border-radius:8px}
 
-/* شريط التنقل السفلي الثابت والمنظم */
+/* شريط التنقل السفلي الثابت (القديم) */
 .bottombar{position:fixed;bottom:0;left:0;right:0;z-index:40;
   background:var(--surface);border-top:1px solid var(--bd);
   display:flex;justify-content:space-around;align-items:center;
@@ -184,21 +178,21 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .noti-item span{display:block;color:var(--mu);font-size:11px;margin-top:4px}
 
 @media(max-width:720px){
-header{padding:10px 14px}
-header .logo{font-size:19px}
-.header-btn{padding:7px 11px;font-size:12px}
 main{padding:0 14px 40px}
 h2{font-size:18px}
-.top-bar{padding:20px 14px}
+.top-bar{padding:16px}
 .top-bar .welcome h1{font-size:18px}
 .pl.crop-yt iframe{height:118%!important;top:-9%!important}
 .yt-bottom-mask{height:55px}
 .yt-top-mask{height:55px}
 }
 @media(max-width:520px){
-header .chip span{display:none}
 .pl{max-height:60vh}
 .center h1{font-size:44px}
+.grid{grid-template-columns:repeat(2,1fr);gap:10px} /* الحفاظ على 2x2 في الجوال */
+.card{padding:14px 10px}
+.card .ph{width:60px;height:60px}
+.card b{font-size:13px}
 }
 @media print{body{display:none}}
 .ban-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;text-align:center}
@@ -308,37 +302,36 @@ function renderNoti(){
 
 function render(){const a=$('#app');if(!U){a.innerHTML=`<div class="center"><h1>Σ سيجما</h1><p>منصة سيجما التعليمية</p><button onclick="login()">الدخول بحساب جوجل</button></div>`;return}let body='';try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}if(body&&typeof body.then==='function'){body.then(html=>{a.innerHTML=shell(html);afterRender()}).catch(e=>{a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`)});a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');return}a.innerHTML=shell(body);afterRender()}
 function afterRender(){if(S.v==='watch')setTimeout(initPlayer,300)}
+
 function shell(body){
-  const isDark=document.documentElement.classList.contains('dark');
-  
   let topBar = '';
-  if(S.v==='home' && U) {
-    const firstName = U.displayName ? U.displayName.split(' ')[0] : 'الطالب';
+  if(U) {
+    // إصلاح الخطأ البرمجي: التحقق من وجود displayName قبل استخدام split
+    const displayName = U.displayName || 'الطالب';
+    const firstName = displayName.split(' ')[0];
+    const isDark = document.documentElement.classList.contains('dark');
+    
     topBar = `
       <div class="top-bar">
-        <div class="welcome">
-          <h1>أهلاً، ${esc(firstName)} 👋</h1>
-          <p>مرحباً بك في منصة سيجما التعليمية</p>
+        <div>
+          <div class="welcome">
+            <h1>أهلاً، ${esc(firstName)} 👋</h1>
+            <p>مرحباً بك في منصة سيجما التعليمية</p>
+          </div>
+          <div class="actions">
+            ${ip?`<button class="action-btn" onclick="inst()">تثبيت</button>`:''}
+            <button class="action-btn" onclick="openNoti()">الإشعارات <span id="notiBadge" class="badge-dot" style="position:relative;top:0;right:0;border:0;background:#fff;color:var(--er);display:none"></span></button>
+            <button class="action-btn" onclick="toggleTheme()">${isDark?'نهاري':'ليلي'}</button>
+          </div>
         </div>
-        <img src="${badge||U.photoURL||''}" class="avatar-lg" alt="">
+        <div class="user-area">
+          <img src="${badge||U.photoURL||''}" class="avatar-lg" onclick="go('profile')" style="cursor:pointer">
+        </div>
       </div>
     `;
   }
 
   return `${topBar}
-  <header>
-    <div class="logo" onclick="go('home')">سيجما</div>
-    ${ip?`<button class="header-btn" onclick="inst()">تثبيت</button>`:''}
-    <button class="header-btn" onclick="openNoti()" style="padding:8px 10px">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--tx2)"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
-      <span id="notiBadge" class="badge-dot"></span>
-    </button>
-    <button class="header-btn" onclick="toggleTheme()">${isDark?'نهاري':'ليلي'}</button>
-    <div class="chip" onclick="go('profile')">
-      <img src="${badge||U.photoURL||''}" alt="">
-      <span>${esc(U.displayName||'')}</span>
-    </div>
-  </header>
   <main>${body}</main>
   ${bottomBar()}`;
 }
@@ -350,7 +343,6 @@ function bottomBar(){
   const svgHome=`<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
   const svgLibrary=`<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>`;
   const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
-  const svgTheme=isDark?`<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>`:`<svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.32 0 2.55.37 3.6 1-1.82 1.63-2.6 4.15-1.9 6.45.7 2.31 2.72 3.99 5.17 4.33C17.48 18.17 14.9 19 12 19z"/></svg>`;
   const svgLogout=`<svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>`;
 
   return `<nav class="bottombar">
