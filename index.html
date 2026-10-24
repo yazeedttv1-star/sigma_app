@@ -39,7 +39,7 @@ input,select,textarea{-webkit-user-select:text;user-select:text}
 h1,h2,h3{font-weight:800;line-height:1.3}
 h2{font-size:20px;margin-bottom:16px;color:var(--tx)}
 
-/* شاشة التحميل (Blur Overlay) */
+/* شاشة التحميل */
 #loading-overlay {
   position: fixed; inset: 0; z-index: 9999;
   background: rgba(248, 250, 252, 0.7);
@@ -106,6 +106,13 @@ input,select,textarea{font-family:inherit;font-size:14px;width:100%;padding:11px
   margin-bottom:14px;transition:.15s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
 
+/* كلمة المرور */
+.pwd-wrap { position: relative; }
+.pwd-wrap input { padding-left: 40px; }
+.pwd-toggle { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--mu); padding: 5px; }
+.pwd-toggle svg { width: 20px; height: 20px; fill: currentColor; }
+.pwd-toggle:hover { color: var(--ac); }
+
 .box{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
   padding:22px;margin-bottom:20px;box-shadow:var(--shadow)}
 .tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
@@ -135,6 +142,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .center button{padding:14px 32px;font-size:16px;border-radius:var(--r)}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
+/* Video Player */
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;
   width:100%;aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
@@ -143,21 +151,25 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .yt-bottom-mask{position:absolute;bottom:0;left:0;right:0;height:50px;z-index:11;background:#000;pointer-events:none}
 .yt-top-mask{position:absolute;top:0;left:0;right:0;height:50px;z-index:11;background:#000;pointer-events:none}
 .yt-shield{position:absolute;inset:0;z-index:10;background:transparent;cursor:pointer}
-.wm{position:absolute;pointer-events:none;z-index:20;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.45;background:rgba(0,0,0,.6);padding:4px 10px;border-radius:99px;animation:mv 24s linear infinite alternate;direction:ltr;color:#fff}
+/* العلامة المائية تبقى ثابتة داخل حاوية الفيديو حتى في وضع ملء الشاشة */
+.wm{position:absolute;pointer-events:none;z-index:999;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.7;background:rgba(0,0,0,.6);padding:6px 12px;border-radius:99px;animation:mv 24s linear infinite alternate;direction:ltr;color:#fff}
 .wm img{width:22px;height:22px;border-radius:50%;object-fit:cover}
 @keyframes mv{0%{top:20%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:20%;left:60%}}
 
-.custom-player-ctrl{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--bd);padding:12px 16px;border-radius:var(--r);margin-top:12px;box-shadow:var(--shadow)}
-.custom-player-ctrl .progress-row{display:flex;align-items:center;gap:12px}
-.custom-player-ctrl .play-btn{background:var(--ac);color:#fff;border:0;border-radius:50%;width:48px;height:48px;font-size:20px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;flex-shrink:0}
-.custom-player-ctrl .play-btn:hover{background:var(--ac2);transform:scale(1.05)}
-.custom-player-ctrl .progress-container{flex:1;display:flex;align-items:center;gap:8px}
-.custom-player-ctrl input[type=range]{flex:1;padding:0;margin:0;height:6px;accent-color:var(--ac);cursor:pointer;background:transparent}
-.custom-player-ctrl .time{font-family:monospace;font-size:14px;font-weight:700;color:var(--tx);direction:ltr;min-width:45px;text-align:center}
-.custom-player-ctrl .tools-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;border-top:1px solid var(--bd);padding-top:10px}
-.custom-player-ctrl .tools-row button{padding:6px 12px;font-size:13px;border-radius:8px;background:var(--surface2);color:var(--tx)}
+/* Custom Player Controls */
+.custom-player-ctrl{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--bd);padding:14px 18px;border-radius:var(--r);margin-top:12px;box-shadow:var(--shadow)}
+.custom-player-ctrl .progress-row{display:flex;align-items:center;gap:14px}
+.custom-player-ctrl .play-btn{background:var(--ac);color:#fff;border:0;border-radius:50%;width:50px;height:50px;font-size:22px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.custom-player-ctrl .play-btn:hover{background:var(--ac2);transform:scale(1.08)}
+.custom-player-ctrl .progress-container{flex:1;display:flex;align-items:center;gap:10px}
+.custom-player-ctrl input[type=range]{flex:1;padding:0;margin:0;height:8px;-webkit-appearance:none;background:var(--bd);border-radius:4px;outline:none;cursor:pointer}
+.custom-player-ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ac);box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer;transition:.15s}
+.custom-player-ctrl input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.custom-player-ctrl .time{font-family:monospace;font-size:14px;font-weight:700;color:var(--tx);direction:ltr;min-width:50px;text-align:center}
+.custom-player-ctrl .tools-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;border-top:1px solid var(--bd);padding-top:12px}
+.custom-player-ctrl .tools-row button{padding:8px 14px;font-size:13px;border-radius:8px;background:var(--surface2);color:var(--tx)}
 .custom-player-ctrl .tools-row button:hover{background:var(--ac);color:#fff}
-.custom-player-ctrl .tools-row select{width:auto;padding:6px 10px;margin:0;font-size:13px;border-radius:8px}
+.custom-player-ctrl .tools-row select{width:auto;padding:8px 12px;margin:0;font-size:13px;border-radius:8px;background:var(--surface2);border:0;font-weight:600;color:var(--tx)}
 
 /* شريط التنقل السفلي */
 .bottombar{position:fixed;bottom:0;left:0;transform:none;z-index:40;
@@ -174,7 +186,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .bottombar button.danger:hover svg{fill:#fff}
 .bottombar button svg{width:22px;height:22px;fill:var(--tx2);transition:.15s}
 
-/* زر الواتساب */
 .contact-btn-nav{color:#25D366 !important;}
 .contact-btn-nav svg{fill:#25D366 !important;}
 .contact-btn-nav:hover{background:#e8f5e9 !important;}
@@ -188,27 +199,26 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .profile-card h2{margin-bottom:8px}
 .profile-card p{color:var(--mu);font-size:15px;margin-bottom:24px}
 
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
-.modal.show{display:flex;animation:pop .2s}
-.modal-content{background:var(--surface);border-radius:var(--r-lg);width:100%;max-width:400px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg)}
-.modal-header{padding:16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
-.modal-header h3{font-size:16px;margin:0}
-.modal-body{padding:16px;overflow-y:auto;flex:1}
-.noti-item{padding:12px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.5}
+/* Modern Notifications Modal */
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:20px}
+.modal.show{display:flex;animation:fadeIn .2s}
+.modal-content{background:var(--surface);border-radius:var(--r-lg);width:100%;max-width:420px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg);margin-top:60px}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--surface2)}
+.modal-header h3{font-size:16px;margin:0;font-weight:800}
+.modal-body{padding:0;overflow-y:auto;flex:1}
+.noti-item{padding:16px 20px;border-bottom:1px solid var(--bd);font-size:14px;line-height:1.6;transition:.15s}
+.noti-item:hover{background:var(--surface2)}
 .noti-item:last-child{border-bottom:0}
-.noti-item span{display:block;color:var(--mu);font-size:11px;margin-top:4px}
+.noti-item span{display:block;color:var(--mu);font-size:11px;margin-top:6px;font-weight:600}
 
 /* Auth Styles */
 .auth-container{max-width:400px;margin:0 auto;padding:40px 20px;text-align:center}
 .auth-container h1{font-size:32px;color:var(--ac);margin-bottom:8px;font-weight:800;letter-spacing:-1px}
 .auth-container p{color:var(--mu);margin-bottom:24px;font-size:15px}
-.auth-btn{width:100%;padding:14px;font-size:16px;border-radius:12px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px}
-.auth-btn.google{background:#fff;color:#333;border:1px solid #ddd}
-.auth-btn.google:hover{background:#f5f5f5}
-.auth-btn.phone{background:var(--ac);color:#fff}
-.auth-btn.phone:hover{background:var(--ac2)}
+.auth-btn{width:100%;padding:14px;font-size:16px;border-radius:12px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--ac);color:#fff;font-weight:700;border:0;cursor:pointer;transition:.2s}
+.auth-btn:hover{background:var(--ac2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,.4)}
 .auth-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--surface2);padding:4px;border-radius:12px}
-.auth-tabs button{flex:1;padding:10px;border-radius:8px;background:transparent;color:var(--mu);font-weight:700}
+.auth-tabs button{flex:1;padding:10px;border-radius:8px;background:transparent;color:var(--mu);font-weight:700;border:0;cursor:pointer}
 .auth-tabs button.active{background:var(--surface);color:var(--ac);box-shadow:var(--shadow)}
 .auth-form{text-align:right}
 .auth-form label{display:block;margin-bottom:6px;font-weight:600;font-size:13px;color:var(--tx2)}
@@ -233,7 +243,7 @@ h2{font-size:18px}
 @media(max-width:520px){
 .pl{max-height:60vh}
 .center h1{font-size:44px}
-.grid{grid-template-columns:repeat(2,1fr);gap:10px} /* 2x2 في الجوال */
+.grid{grid-template-columns:repeat(2,1fr);gap:10px}
 .card{padding:14px 10px}
 .card .ph{width:60px;height:60px}
 .card b{font-size:13px}
@@ -254,14 +264,14 @@ h2{font-size:18px}
 
 <div id="app"></div><div id="t"></div>
 
-<div class="modal" id="notiModal">
+<div class="modal" id="notiModal" onclick="if(event.target===this)closeNoti()">
   <div class="modal-content">
     <div class="modal-header">
       <h3>الإشعارات</h3>
-      <button class="s" onclick="closeNoti()" style="padding:4px 8px;font-size:12px">إغلاق</button>
+      <button class="s" onclick="closeNoti()" style="padding:6px 12px;font-size:12px;border-radius:8px">إغلاق</button>
     </div>
     <div class="modal-body" id="notiBody">
-      <div class="mut" style="padding:20px">لا توجد إشعارات حالياً.</div>
+      <div class="mut" style="padding:30px">لا توجد إشعارات حالياً.</div>
     </div>
   </div>
 </div>
@@ -272,9 +282,9 @@ import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,se
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-// إعدادات الأخطاء العالمية
-window.addEventListener('unhandledrejection',e=>{console.error('خطأ:',e.reason);try{toast('حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى')}catch(_){}});
-window.addEventListener('error',e=>{console.error('خطأ:',e.error||e.message)});
+// --- Anti-Crash Safety Net ---
+window.addEventListener('unhandledrejection',e=>{console.warn('Caught promise:',e.reason);try{toast('حدث خطأ غير متوقع، حاول مجدداً')}catch(_){}});
+window.addEventListener('error',e=>{console.warn('Caught error:',e.error||e.message)});
 
 const ADMIN_EMAILS=["yazeedttv1@gmail.com","youssefttv1@gmail.com"];
 const app=initializeApp({apiKey:"AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",authDomain:"sigma-6f162.firebaseapp.com",databaseURL:"https://sigma-6f162-default-rtdb.firebaseio.com",projectId:"sigma-6f162",storageBucket:"sigma-6f162.firebasestorage.app",messagingSenderId:"420365348074",appId:"1:420365348074:web:0aaecb71ec613bb32abb93"});
@@ -305,6 +315,45 @@ initTheme();
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('show');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('show'),2400)}
 const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=s;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,s,s);r(c.toDataURL('image/jpeg',.8))};i.src=URL.createObjectURL(f)});
 
+// --- Auth Rate Limiting (3 Attempts) ---
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_TIME = 30 * 60 * 1000; // 30 mins
+
+function checkRateLimit() {
+  const stored = localStorage.getItem('sigma_lockout');
+  if (stored) {
+    const { attempts, timestamp } = JSON.parse(stored);
+    if (attempts >= MAX_ATTEMPTS) {
+      if (Date.now() - timestamp < LOCKOUT_TIME) {
+        const remaining = Math.ceil((LOCKOUT_TIME - (Date.now() - timestamp)) / 60000);
+        throw new Error(`تم حظر المحاولات. يرجى الانتظار ${remaining} دقيقة.`);
+      } else {
+        localStorage.removeItem('sigma_lockout');
+      }
+    }
+  }
+}
+
+function recordFailedAttempt() {
+  const stored = localStorage.getItem('sigma_lockout');
+  let attempts = 1;
+  if (stored) {
+    const data = JSON.parse(stored);
+    if (Date.now() - data.timestamp < LOCKOUT_TIME) {
+      attempts = data.attempts + 1;
+    }
+  }
+  localStorage.setItem('sigma_lockout', JSON.stringify({ attempts, timestamp: Date.now() }));
+  if (attempts >= MAX_ATTEMPTS) {
+    throw new Error(`تم تجاوز الحد. يرجى الانتظار 30 دقيقة.`);
+  }
+}
+
+function clearRateLimit() {
+  localStorage.removeItem('sigma_lockout');
+}
+
+// --- PWA & Notifications ---
 (()=>{
   const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
   const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#2563eb');g.addColorStop(1,'#1d4ed8');
@@ -343,25 +392,28 @@ if(messaging) {
 function embed(u){u=u.trim();let m;if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/))return{t:'yt',id:m[1],s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&controls=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1`};if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))return{t:'drive',s:`https://drive.google.com/file/d/${m[1]}/preview`,id:m[1]};if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return{t:'v',s:u};return{t:'f',s:u}}
 
 async function enforceSingleDevice(){
-  if (A || IS_SUPERVISOR) return true; // المشرفون والمدير لا يتم حظرهم
+  if (A || IS_SUPERVISOR) return true;
   const devId=getDeviceId();const sessionsRef=R('sessions/'+U.uid);const cur=(await get(sessionsRef)).val()||{};const now=Date.now();const existingDevice=cur.deviceId;const existingTs=cur.updatedAt||0;
   if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
     await set(R('bans/'+U.uid),{uid:U.uid,name:U.displayName||'',email:U.email||'',photo:U.photoURL||'',oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر'});return false;
   }
-  await set(sessionsRef,{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});const ban=(await G('bans/'+U.uid));if(ban&&ban.newDevice===devId){await remove(R('bans/'+U.uid))}return true;
+  await set(sessionsRef,{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});
+  const ban=(await G('bans/'+U.uid));if(ban&&ban.newDevice===devId){await remove(R('bans/'+U.uid))}return true;
 }
 async function checkBan(){return await G('bans/'+U.uid)}
 function renderBanned(ban){document.body.innerHTML=`<div class="ban-screen"><div class="box-max"><h1>⛔ تم حظر حسابك</h1><p>تم اكتشاف تسجيل دخول من جهاز آخر.<br>حسابك مسجّل على: <b>${esc(ban.oldDeviceLabel||'جهاز سابق')}</b><br>حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>تواصل مع المدير لفك الحظر.</p><p style="font-size:12px;color:var(--mu)">الإيميل: ${esc(ban.email||'')}</p><button onclick="out()">خروج</button></div></div>`}
 function clearListeners(){[unsubBan,unsubTeachers,unsubVideos,unsubLibrary,unsubBans,unsubNoti,unsubBroadcastNoti].forEach(fn=>{if(typeof fn==='function')try{fn()}catch(e){}});unsubBan=unsubTeachers=unsubVideos=unsubLibrary=unsubBans=unsubNoti=unsubBroadcastNoti=null;}
 
 function refreshNotifications(){
-  const merged={};
-  Object.entries(broadcastNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}});
-  Object.entries(ownNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...(merged[id]||{}),...n,_key:id}});
-  notifications=merged;
-  const unread=Object.values(notifications).filter(n=>!n.read).length;
-  const dot=$('#notiBadge');
-  if(dot){dot.textContent=unread>99?'99+':String(unread);dot.style.display=unread?'flex':'none'}
+  try {
+    const merged={};
+    Object.entries(broadcastNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}});
+    Object.entries(ownNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...(merged[id]||{}),...n,_key:id}});
+    notifications=merged;
+    const unread=Object.values(notifications).filter(n=>!n.read).length;
+    const dot=$('#notiBadge');
+    if(dot){dot.textContent=unread>99?'99+':String(unread);dot.style.display=unread?'flex':'none'}
+  } catch(e) { console.warn(e); }
 }
 
 onAuthStateChanged(auth,async u=>{
@@ -369,7 +421,6 @@ onAuthStateChanged(auth,async u=>{
   
   if(u){
     try{
-      // التحقق من صلاحية المشرف
       const userData = await G('users/' + u.uid);
       IS_SUPERVISOR = (userData && userData.isSupervisor === true);
       
@@ -404,11 +455,59 @@ onAuthStateChanged(auth,async u=>{
   if(!u&&S.v!=='home')S={v:'home'};
   if(!banned)render();
   
-  // إخفاء شاشة التحميل
   setTimeout(()=>{const ov=$('#loading-overlay');if(ov)ov.classList.add('hide')}, 800);
 });
 
-const login=async()=>{try{const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});await signInWithPopup(auth,provider)}catch(e){if(e.code==='auth/popup-blocked')toast('المتصفح منع النافذة');else if(e.code==='auth/unauthorized-domain')toast('النطاق غير مصرح به');else if(e.code==='auth/operation-not-allowed')toast('فعّل تسجيل الدخول بجوجل');else toast('تعذر تسجيل الدخول: '+e.code)}};
+const loginPhone=async()=>{
+  const phone = $('#login-phone').value.trim();
+  const pass = $('#login-pass').value;
+  const err = $('#login-error');
+  
+  err.style.display = 'none';
+  try {
+    checkRateLimit();
+    if (!/^01[0-9]{9}$/.test(phone)) throw new Error('رقم الهاتف غير صحيح');
+    const fakeEmail = `${phone}@sigma.user`;
+    await signInWithEmailAndPassword(auth, fakeEmail, pass);
+    clearRateLimit();
+    toast('تم تسجيل الدخول بنجاح');
+  } catch (e) {
+    recordFailedAttempt();
+    err.textContent = e.message || 'رقم الهاتف أو كلمة المرور غير صحيحة';
+    err.style.display = 'block';
+  }
+};
+
+const registerPhone=async()=>{
+  const name = $('#reg-name').value.trim();
+  const phone = $('#reg-phone').value.trim();
+  const pass = $('#reg-pass').value;
+  const pass2 = $('#reg-pass2').value;
+  const err = $('#reg-error');
+
+  err.style.display = 'none';
+  try {
+    checkRateLimit();
+    if (!name || name.split(' ').length < 4) throw new Error('يجب كتابة الاسم الرباعي كاملاً (4 مقاطع)');
+    if (!/^01[0-9]{9}$/.test(phone)) throw new Error('رقم الهاتف يجب أن يكون 11 رقم ويبدأ بـ 01');
+    if (pass.length < 6) throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+    if (pass !== pass2) throw new Error('كلمتا المرور غير متطابقتين');
+
+    const fakeEmail = `${phone}@sigma.user`;
+    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
+    const user = userCredential.user;
+    await updateProfile(user, { displayName: name });
+    await set(R('users/' + user.uid), { name: name, phone: phone, email: fakeEmail, photo: '', createdAt: Date.now(), isSupervisor: false });
+    clearRateLimit();
+    toast('تم إنشاء الحساب بنجاح');
+    setTimeout(() => location.reload(), 1000);
+  } catch (e) {
+    recordFailedAttempt();
+    err.textContent = e.message || 'حدث خطأ أثناء التسجيل';
+    err.style.display = 'block';
+  }
+};
+
 const go=(v,id,tab,filter)=>{stopHB();stopPoll();if(ytPlayer&&ytPlayer.destroy)try{ytPlayer.destroy()}catch(e){}S={v,id,tab:tab!==undefined?tab:S.tab,filter:filter!==undefined?filter:S.filter};window.scrollTo({top:0,behavior:'auto'});render()};
 const inst=async()=>{ip.prompt();await ip.userChoice;ip=null;render()};
 const out=()=>{stopHB();stopPoll();if(ytPlayer&&ytPlayer.destroy)try{ytPlayer.destroy()}catch(e){}clearListeners();signOut(auth)};
@@ -418,119 +517,72 @@ function closeNoti(){$('#notiModal').classList.remove('show')}
 function renderNoti(){
   const list=Object.values(notifications).sort((a,b)=>(b.created||0)-(a.created||0));
   const body=$('#notiBody');
-  if(!list.length){body.innerHTML='<div class="mut" style="padding:20px">لا توجد إشعارات حالياً.</div>';return}
+  if(!list.length){body.innerHTML='<div class="mut" style="padding:30px">لا توجد إشعارات حالياً.</div>';return}
   body.innerHTML=list.map(n=>`<div class="noti-item">${esc(n.text||'إشعار جديد')}<span>${fd(n.created)}</span></div>`).join('');
-  if(U&&!A){const updates={};list.forEach(n=>{if(n._key)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(e=>console.warn('تعذر تحديث حالة الإشعارات',e))}
+  if(U&&!A){const updates={};list.forEach(n=>{if(n._key)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(e=>console.warn(e))}
 }
 
-// ===== Auth View =====
 function vAuth() {
-  return `<div class="auth-container">
+  return `<div class="auth-container" style="margin-top:10vh">
     <h1>Σ سيجما</h1>
     <p>منصة سيجما التعليمية</p>
     
-    <div class="auth-tabs">
-      <button class="active" onclick="switchAuthTab('google', event)">حساب جوجل</button>
-      <button onclick="switchAuthTab('phone', event)">رقم هاتف</button>
+    <div class="auth-tabs" style="max-width:200px;margin:0 auto 20px">
+      <button class="active" onclick="switchAuthTab('register', event)">إنشاء حساب</button>
+      <button onclick="switchAuthTab('login', event)">تسجيل الدخول</button>
     </div>
 
-    <div id="auth-google" style="display:block">
-      <button class="auth-btn google" onclick="login()">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20">
-        تسجيل الدخول بحساب جوجل
-      </button>
-    </div>
-
-    <div id="auth-phone" style="display:none">
-      <div class="auth-form" id="phone-register">
+    <div id="auth-register" style="display:block">
+      <div class="auth-form">
         <label>الاسم الرباعي</label>
         <input id="reg-name" placeholder="مثال: يزيد أحمد محمد علي">
         <label>رقم الهاتف</label>
         <input id="reg-phone" type="tel" placeholder="01xxxxxxxxx" dir="ltr">
         <label>كلمة المرور</label>
-        <input id="reg-pass" type="password" placeholder="••••••••">
+        <div class="pwd-wrap">
+          <input id="reg-pass" type="password" placeholder="••••••••">
+          <button type="button" class="pwd-toggle" onclick="togglePwd('reg-pass', this)"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button>
+        </div>
         <label>تأكيد كلمة المرور</label>
-        <input id="reg-pass2" type="password" placeholder="••••••••">
+        <div class="pwd-wrap">
+          <input id="reg-pass2" type="password" placeholder="••••••••">
+          <button type="button" class="pwd-toggle" onclick="togglePwd('reg-pass2', this)"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button>
+        </div>
         <div class="error" id="reg-error"></div>
-        <button class="auth-btn phone" onclick="registerPhone()">إنشاء حساب</button>
-        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">لديك حساب بالفعل؟ <a href="#" onclick="switchPhoneMode('login', event)" style="color:var(--ac);font-weight:700;text-decoration:none">تسجيل الدخول</a></p>
+        <button class="auth-btn" onclick="registerPhone()">إنشاء حساب</button>
       </div>
-      
-      <div class="auth-form" id="phone-login" style="display:none">
+    </div>
+
+    <div id="auth-login" style="display:none">
+      <div class="auth-form">
         <label>رقم الهاتف</label>
         <input id="login-phone" type="tel" placeholder="01xxxxxxxxx" dir="ltr">
         <label>كلمة المرور</label>
-        <input id="login-pass" type="password" placeholder="••••••••">
+        <div class="pwd-wrap">
+          <input id="login-pass" type="password" placeholder="••••••••">
+          <button type="button" class="pwd-toggle" onclick="togglePwd('login-pass', this)"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button>
+        </div>
         <div class="error" id="login-error"></div>
-        <button class="auth-btn phone" onclick="loginPhone()">دخول</button>
-        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">ليس لديك حساب؟ <a href="#" onclick="switchPhoneMode('register', event)" style="color:var(--ac);font-weight:700;text-decoration:none">إنشاء حساب</a></p>
+        <button class="auth-btn" onclick="loginPhone()">دخول</button>
       </div>
     </div>
   </div>`;
+}
+
+function togglePwd(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') { input.type = 'text'; btn.style.color = 'var(--ac)'; } 
+  else { input.type = 'password'; btn.style.color = 'var(--mu)'; }
 }
 
 function switchAuthTab(tab, e) {
   if(e) e.preventDefault();
   document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.remove('active'));
   if(e && e.target) e.target.classList.add('active');
-  document.getElementById('auth-google').style.display = tab === 'google' ? 'block' : 'none';
-  document.getElementById('auth-phone').style.display = tab === 'phone' ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('auth-login').style.display = tab === 'login' ? 'block' : 'none';
 }
 
-function switchPhoneMode(mode, e) {
-  if(e) e.preventDefault();
-  document.getElementById('phone-register').style.display = 'none';
-  document.getElementById('phone-login').style.display = 'none';
-  if(mode === 'login') { document.getElementById('phone-login').style.display = 'block'; } 
-  else { document.getElementById('phone-register').style.display = 'block'; }
-}
-
-async function registerPhone() {
-  const name = $('#reg-name').value.trim();
-  const phone = $('#reg-phone').value.trim();
-  const pass = $('#reg-pass').value;
-  const pass2 = $('#reg-pass2').value;
-  const err = $('#reg-error');
-
-  err.style.display = 'none';
-
-  if (!name || name.split(' ').length < 4) { err.textContent = 'يجب كتابة الاسم الرباعي كاملاً (4 مقاطع)'; err.style.display = 'block'; return; }
-  if (!/^01[0-9]{9}$/.test(phone)) { err.textContent = 'رقم الهاتف يجب أن يكون 11 رقم ويبدأ بـ 01'; err.style.display = 'block'; return; }
-  if (pass.length < 6) { err.textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'; err.style.display = 'block'; return; }
-  if (pass !== pass2) { err.textContent = 'كلمتا المرور غير متطابقتين'; err.style.display = 'block'; return; }
-
-  try {
-    const fakeEmail = `${phone}@sigma.user`;
-    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
-    const user = userCredential.user;
-    await updateProfile(user, { displayName: name });
-    await set(R('users/' + user.uid), { name: name, phone: phone, email: fakeEmail, photo: '', createdAt: Date.now(), isSupervisor: false });
-    toast('تم إنشاء الحساب بنجاح');
-    setTimeout(() => location.reload(), 1000);
-  } catch (e) {
-    if (e.code === 'auth/email-already-in-use') { err.textContent = 'رقم الهاتف مسجل بالفعل، يمكنك تسجيل الدخول.'; } 
-    else { err.textContent = 'حدث خطأ: ' + e.message; }
-    err.style.display = 'block';
-  }
-}
-
-async function loginPhone() {
-  const phone = $('#login-phone').value.trim();
-  const pass = $('#login-pass').value;
-  const err = $('#login-error');
-  err.style.display = 'none';
-  if (!/^01[0-9]{9}$/.test(phone)) { err.textContent = 'رقم الهاتف غير صحيح'; err.style.display = 'block'; return; }
-  try {
-    const fakeEmail = `${phone}@sigma.user`;
-    await signInWithEmailAndPassword(auth, fakeEmail, pass);
-    toast('تم تسجيل الدخول بنجاح');
-  } catch (e) {
-    err.textContent = 'رقم الهاتف أو كلمة المرور غير صحيحة';
-    err.style.display = 'block';
-  }
-}
-
-// ===== Render =====
 function render(){
   const a=$('#app');
   if(!U){a.innerHTML=vAuth();return;}
@@ -692,7 +744,30 @@ async function vWatch(){
   else{playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`}
   let controlsHTML='';
   if(isYT||e.t==='v'){
-    controlsHTML=`<div class="custom-player-ctrl"><div class="progress-row"><button id="playPauseBtn" class="play-btn" onclick="togglePlay()">▶</button><div class="progress-container"><span class="time" id="cTime">0:00</span><input type="range" id="cSeek" min="0" max="100" value="0" step="0.1" oninput="onSeek(this.value)"><span class="time" id="dTime">0:00</span></div></div><div class="tools-row"><button onclick="seekRel(-5)">⏪ -5 ثوان</button><button onclick="seekRel(5)">+5 ثوان ⏩</button><span style="color:var(--mu);font-size:13px;font-weight:700;margin:0 4px">السرعة:</span><select id="speedSelector" onchange="setRate(this.value)"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x (عادي)</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button onclick="toggleFullscreen()" id="fsBtn">⛶ ملء الشاشة</button></div></div>`;
+    controlsHTML=`<div class="custom-player-ctrl">
+      <div class="progress-row">
+        <button id="playPauseBtn" class="play-btn" onclick="togglePlay()">▶</button>
+        <div class="progress-container">
+          <span class="time" id="cTime">0:00</span>
+          <input type="range" id="cSeek" min="0" max="100" value="0" step="0.1" oninput="onSeek(this.value)">
+          <span class="time" id="dTime">0:00</span>
+        </div>
+      </div>
+      <div class="tools-row">
+        <button onclick="seekRel(-5)">⏪ -5 ثوان</button>
+        <button onclick="seekRel(5)">+5 ثوان ⏩</button>
+        <span style="color:var(--mu);font-size:13px;font-weight:700;margin:0 4px">السرعة:</span>
+        <select id="speedSelector" onchange="setRate(this.value)">
+          <option value="0.5">0.5x</option>
+          <option value="0.75">0.75x</option>
+          <option value="1" selected>1x (عادي)</option>
+          <option value="1.25">1.25x</option>
+          <option value="1.5">1.5x</option>
+          <option value="2">2x</option>
+        </select>
+        <button onclick="toggleFullscreen()" id="fsBtn">⛶ ملء الشاشة</button>
+      </div>
+    </div>`;
   }
   return`<button class="s" onclick="go('teacher','${v.teacherId}','','${v.stage}')">← رجوع</button>
   <h2 style="margin-top:14px">${esc(v.title)} ${(A||IS_SUPERVISOR)?'<span class="b g">إدارة</span>':''}</h2>
@@ -720,7 +795,6 @@ async function vAdmin(){
   if(!A && !IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
   
-  // المشرف لا يرى إلا الفيديوهات
   const allowedTabs = A ? [['videos','الفيديوهات'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']] : [['videos','الفيديوهات']];
   
   const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
@@ -889,7 +963,7 @@ function exportPDF(vid){const v=videos[vid];if(!v)return;const rows=[];document.
 
 async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();const cs=[];(await get(query(R('codes'),orderByChild('videoId'),equalTo(id)))).forEach(c=>{cs.push({c:c.key,...c.val()})});cs.sort((a,b)=>b.createdAt-a.createdAt);const lg=Object.values(await G('logs/'+id)||{}).sort((a,b)=>b.lastAt-a.lastAt);const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2><div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p><p style="margin-bottom:14px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end"><div style="width:110px"><label>العدد</label><input id="gn" type="number" min="1" value="10" style="margin-bottom:0"></div><button onclick="moreCodes('${id}')">توليد أكواد</button><button class="s" onclick="moreCodes('${id}',1)">كود لطالب</button><button class="s" onclick="copyFree('${id}')">نسخ المتاح</button><button class="s" onclick="go('edit','${id}','video')">تعديل</button><button class="${v.disabled?'g':'d'}" onclick="toggleVid('${id}')">${v.disabled?'تفعيل':'إيقاف'}</button><button class="s" onclick="exportPDF('${id}')">تصدير PDF</button><button class="d" onclick="delV('${id}')">حذف</button></div></div><h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الإيميل</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div><h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${x.c}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${x.c}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`}
 
-Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchAuthTab,switchPhoneMode,updateProfilePhoto,toggleSupervisor,delUser});
+Object.assign(window,{login:null,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchAuthTab,switchPhoneMode,updateProfilePhoto,toggleSupervisor,delUser,togglePwd});
 render();
 </script>
 </body>
