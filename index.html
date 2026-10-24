@@ -33,7 +33,7 @@ html.dark{
 html{min-height:100%;height:auto}
 body{height:auto;min-height:100vh}
 body{font-family:Cairo,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;
-  padding-bottom:calc(160px + env(safe-area-inset-bottom));overflow-x:hidden;
+  padding-bottom:calc(120px + env(safe-area-inset-bottom));overflow-x:hidden;
   -webkit-user-select:none;user-select:none;transition:background .25s,color .25s}
 input,select,textarea{-webkit-user-select:text;user-select:text}
 h1,h2,h3{font-weight:800;line-height:1.3}
@@ -142,7 +142,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .tools-row button:hover{background:var(--ac);color:#fff}
 .custom-player-ctrl .tools-row select{width:auto;padding:6px 10px;margin:0;font-size:13px;border-radius:8px}
 
-/* شريط التنقل السفلي + التواصل */
+/* شريط التنقل السفلي */
 .bottombar{position:fixed;bottom:0;left:0;transform:none;z-index:40;
   background:var(--surface);border:1px solid var(--bd);border-bottom:0;border-radius:22px 22px 0 0;
   display:flex;justify-content:space-around;gap:4px;
@@ -157,16 +157,12 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .bottombar button.danger:hover svg{fill:#fff}
 .bottombar button svg{width:22px;height:22px;fill:var(--tx2);transition:.15s}
 
-/* شريط الواتساب فوق شريط التنقل */
-.contact-bar{position:fixed;bottom:calc(70px + env(safe-area-inset-bottom));left:0;right:0;z-index:41;
-  display:flex;justify-content:center;pointer-events:none}
-.contact-btn{background:#25D366;color:#fff;padding:10px 20px;border-radius:25px;font-weight:800;font-size:14px;
-  box-shadow:0 4px 15px rgba(37,211,102,.4);pointer-events:auto;display:flex;align-items:center;gap:8px;
-  text-decoration:none;transition:.2s}
-.contact-btn:hover{background:#128C7E;transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,211,102,.6)}
-.contact-btn svg{width:20px;height:20px;fill:#fff}
+/* شريط الواتساب */
+.contact-btn-nav{color:#25D366 !important;}
+.contact-btn-nav svg{fill:#25D366 !important;}
+.contact-btn-nav:hover{background:#e8f5e9 !important;}
 
-#t{position:fixed;bottom:calc(130px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;border-radius:var(--r);font-weight:700;display:none;z-index:100;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center;font-size:14px}
+#t{position:fixed;bottom:calc(100px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;border-radius:var(--r);font-weight:700;display:none;z-index:100;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center;font-size:14px}
 #t.show{display:block;animation:pop .25s}
 @keyframes pop{0%{transform:translateX(-50%) scale(.8);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 
@@ -282,13 +278,9 @@ window.addEventListener('error',e=>{console.error('Sigma runtime error:',e.error
 const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=s;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,s,s);r(c.toDataURL('image/jpeg',.8))};i.src=URL.createObjectURL(f)});
 
 (()=>{
-  const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
-  const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#2563eb');g.addColorStop(1,'#1d4ed8');
-  x.fillStyle=g;x.fillRect(0,0,192,192);x.fillStyle='#fff';x.font='bold 120px sans-serif';
-  x.textAlign='center';x.textBaseline='middle';x.fillText('S',96,104);
-  const u=c.toDataURL('image/png');
-  $('#ai').href=u;
-  const m={name:'منصة سيجما التعليمية',short_name:'سيجما',start_url:location.pathname,display:'standalone',background_color:'#2563eb',theme_color:'#2563eb',dir:'rtl',lang:'ar',icons:[{src:u,sizes:'192x192',type:'image/png'}]};
+  const iconUrl='https://drive.google.com/uc?export=download&id=1CKwL3gbmyIYtBbfpxEo7ZZOHDLztnDGx';
+  $('#ai').href=iconUrl;
+  const m={name:'منصة سيجما التعليمية',short_name:'سيجما',start_url:location.pathname,display:'standalone',background_color:'#2563eb',theme_color:'#2563eb',dir:'rtl',lang:'ar',icons:[{src:iconUrl,sizes:'192x192',type:'image/png'},{src:iconUrl,sizes:'512x512',type:'image/png'}]};
   $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
 })();
 
@@ -534,12 +526,6 @@ function shell(body){
 
   return `${topBar}
   <main style="padding-bottom:calc(100px + env(safe-area-inset-bottom))">${body}</main>
-  <div class="contact-bar">
-    <a href="https://wa.me/201147758295" target="_blank" class="contact-btn">
-      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      تواصل واستفسار واتساب
-    </a>
-  </div>
   ${bottomBar()}`;
 }
 
@@ -549,15 +535,49 @@ function bottomBar(){
   const svgHome=`<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
   const svgLibrary=`<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>`;
   const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
+  const svgWhatsapp=`<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
 
   return `<nav class="bottombar">
     <button class="${on('home')?'on':''}" onclick="go('home')">${svgHome} <span>الرئيسية</span></button>
     <button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary} <span>المكتبة</span></button>
+    <button class="contact-btn-nav" onclick="window.open('https://wa.me/201147758295','_blank')">${svgWhatsapp} <span>تواصل</span></button>
     ${A?`<button class="${(on('admin')||S.v==='vid'||S.v==='edit'||S.v==='editLib'||S.v==='studentSearch'||S.v==='students')?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
   </nav>`;
 }
 
-function vProfile(){return `<div class="box profile-card"><img src="${U.photoURL||''}" alt="صورة الملف الشخصي"><h2>${esc(U.displayName||'')}</h2><p>${esc(U.email||'')}</p>${A?'<span class="b g">إدارة</span>':'<span class="b">طالب</span>'}<br><button class="d" style="margin-top:20px" onclick="out()">تسجيل الخروج</button></div>`}
+function vProfile(){
+  const currentPhoto = U.photoURL || badge || 'https://ui-avatars.com/api/?name='+encodeURIComponent(U.displayName||'U')+'&background=2563eb&color=fff&size=200';
+  return `<div class="box profile-card">
+    <img src="${currentPhoto}" alt="صورة الملف الشخصي" id="profile-img">
+    <h2>${esc(U.displayName||'')}</h2>
+    <p>${esc(U.email||'')}</p>
+    ${A?'<span class="b g">إدارة</span>':'<span class="b">طالب</span>'}
+    <div style="margin-top:20px;text-align:right">
+      <label>تغيير صورة الملف الشخصي</label>
+      <input type="file" id="profile-photo-input" accept="image/*" style="margin-bottom:10px">
+      <button onclick="updateProfilePhoto()">حفظ الصورة</button>
+    </div>
+    <br><button class="d" onclick="out()">تسجيل الخروج</button>
+  </div>`;
+}
+
+async function updateProfilePhoto() {
+  const fileInput = $('#profile-photo-input');
+  if (!fileInput.files || !fileInput.files[0]) return toast('اختر صورة أولاً');
+  try {
+    toast('جارٍ رفع الصورة...');
+    const photoData = await img(fileInput.files[0], 200);
+    await updateProfile(auth.currentUser, { photoURL: photoData });
+    await update(R('users/' + U.uid), { photo: photoData });
+    U.photoURL = photoData;
+    toast('تم تحديث الصورة بنجاح');
+    render();
+  } catch (e) {
+    console.error(e);
+    toast('تعذر تحديث الصورة: ' + e.message);
+  }
+}
+
 function vHome(){const t=Object.entries(teachers);if(!t.length)return'<div class="mut">لا يوجد مدرسون بعد.</div>';return`<h2>اختر المدرس</h2><div class="grid">${t.map(([id,x])=>`<div class="card" onclick="go('teacher','${id}')"><img class="ph" src="${x.photo||''}" alt=""><b>${esc(x.name)}</b></div>`).join('')}</div>`}
 
 function vTeacher(){
@@ -654,12 +674,33 @@ function setRate(rate){if(ytPlayer&&ytPlayer.setPlaybackRate){try{ytPlayer.setPl
 async function toggleFullscreen(){const box=document.getElementById('plbox');const btn=document.getElementById('fsBtn');if(!box)return;try{if(!document.fullscreenElement){const fn=box.requestFullscreen||box.webkitRequestFullscreen||box.msRequestFullscreen;if(!fn)return toast('ملء الشاشة غير مدعوم في هذا المتصفح');await fn.call(box)}else{const fn=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen;if(fn)await fn.call(document)}}catch(e){toast('تعذر تغيير وضع الشاشة')}if(btn)btn.innerHTML=document.fullscreenElement?'⛶ خروج من ملء الشاشة':'⛶ ملء الشاشة'}
 function stopHB(){clearInterval(hb);hb=null}
 
-async function vAdmin(){if(!A)return'<div class="mut">غير مصرح.</div>';const tab=S.tab||'videos';const tb=`<div class="admin-tabs">${[['videos','الفيديوهات'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']].map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;if(tab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label>الاسم</label><input id="tn"><label>الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||''}" alt=""><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${id}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${id}')">حذف</button></div></div>`).join('')}</div>`;if(tab==='library')return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label>العنوان</label><input id="ltn"><label>الوصف</label><input id="ltd"><label>صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label>رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200'}" alt=""><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${id}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${id}')">حذف</button></div></div>`).join('')}</div>`;if(tab==='students')return tb+vAdminStudents();if(tab==='send_notification')return tb+vSendNotification();if(tab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;if(tab==='bans')return tb+(await renderBans());if(tab==='studentSearch')return tb+vStudentSearch();const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`}
+async function vAdmin(){
+  if(!A)return'<div class="mut">غير مصرح.</div>';
+  const tab=S.tab||'videos';
+  const tb=`<div class="admin-tabs">${[['videos','الفيديوهات'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']].map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
+  
+  if(tab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label>الاسم</label><input id="tn"><label>الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||''}" alt=""><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${id}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${id}')">حذف</button></div></div>`).join('')}</div>`;
+  
+  if(tab==='library')return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label>العنوان</label><input id="ltn"><label>الوصف</label><input id="ltd"><label>صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label>رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200'}" alt=""><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${id}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${id}')">حذف</button></div></div>`).join('')}</div>`;
+  
+  if(tab==='students')return tb+(await vAdminStudents());
+
+  if(tab==='send_notification')return tb+vSendNotification();
+  
+  if(tab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
+  
+  if(tab==='bans')return tb+(await renderBans());
+  
+  if(tab==='studentSearch')return tb+vStudentSearch();
+  
+  const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
+  return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
+}
 
 async function vAdminStudents() {
   if(!A)return'<div class="mut">غير مصرح.</div>';
   const users = await G('users') || {};
-  const arr = Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>b.createdAt-a.createdAt);
+  const arr = Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   
   if(!arr.length) return '<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
   
@@ -783,8 +824,8 @@ function exportPDF(vid){const v=videos[vid];if(!v)return;const rows=[];document.
 
 async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();const cs=[];(await get(query(R('codes'),orderByChild('videoId'),equalTo(id)))).forEach(c=>{cs.push({c:c.key,...c.val()})});cs.sort((a,b)=>b.createdAt-a.createdAt);const lg=Object.values(await G('logs/'+id)||{}).sort((a,b)=>b.lastAt-a.lastAt);const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2><div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p><p style="margin-bottom:14px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end"><div style="width:110px"><label>العدد</label><input id="gn" type="number" min="1" value="10" style="margin-bottom:0"></div><button onclick="moreCodes('${id}')">توليد أكواد</button><button class="s" onclick="moreCodes('${id}',1)">كود لطالب</button><button class="s" onclick="copyFree('${id}')">نسخ المتاح</button><button class="s" onclick="go('edit','${id}','video')">تعديل</button><button class="${v.disabled?'g':'d'}" onclick="toggleVid('${id}')">${v.disabled?'تفعيل':'إيقاف'}</button><button class="s" onclick="exportPDF('${id}')">تصدير PDF</button><button class="d" onclick="delV('${id}')">حذف</button></div></div><h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الإيميل</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div><h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${x.c}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${x.c}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`}
 
-Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchAuthTab,switchPhoneMode});
+Object.assign(window,{login,go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchAuthTab,switchPhoneMode,updateProfilePhoto});
 render();
 </script>
 </body>
-  </html>
+</html>
