@@ -239,7 +239,6 @@ initTheme();
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('show');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('show'),2400)}
 const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=s;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,s,s);r(c.toDataURL('image/jpeg',.8))};i.src=URL.createObjectURL(f)});
 
-// --- توليد الأيقونة تلقائياً للـ PWA بدون الحاجة لصور خارجية ---
 (()=>{
   const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
   const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#5b129e');g.addColorStop(1,'#4a148c');
@@ -247,25 +246,14 @@ const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=docum
   x.textAlign='center';x.textBaseline='middle';x.fillText('S',96,104);
   const u=c.toDataURL('image/png');
   $('#ai').href=u;
-  const m={
-    name:'منصة سيجما التعليمية',
-    short_name:'سيجما',
-    start_url:location.pathname,
-    display:'standalone',
-    background_color:'#5b129e',
-    theme_color:'#5b129e',
-    dir:'rtl',
-    lang:'ar',
-    icons:[{src:u,sizes:'192x192',type:'image/png'}]
-  };
+  const m={name:'منصة سيجما التعليمية',short_name:'سيجما',start_url:location.pathname,display:'standalone',background_color:'#5b129e',theme_color:'#5b129e',dir:'rtl',lang:'ar',icons:[{src:u,sizes:'192x192',type:'image/png'}]};
   $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
 })();
 
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;render()});
-addEventListener('contextmenu',e=>e.preventDefault());
-addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(e.key==='PrintScreen'){navigator.clipboard?.writeText('');toast('التصوير ممنوع');e.preventDefault()}if(e.key==='F12'||(e.ctrlKey||e.metaKey)&&['s','p','u'].includes(k)||(e.ctrlKey||e.metaKey)&&e.shiftKey&&['i','j','c','s'].includes(k))e.preventDefault()});
-document.addEventListener('visibilitychange',()=>$('.pl')?.classList.toggle('bl',document.hidden));
-addEventListener('dragstart',e=>e.preventDefault());
+
+// أزلنا أكواد منع النقر التي تسبب تعارض في الهواتف
+document.addEventListener('visibilitychange',()=>{const p=$('.pl');if(p)p.classList.toggle('bl',document.hidden)});
 
 function embed(u){u=u.trim();let m;if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/))return{t:'yt',id:m[1],s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&controls=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1`};if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))return{t:'drive',s:`https://drive.google.com/file/d/${m[1]}/preview`,id:m[1]};if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return{t:'v',s:u};return{t:'f',s:u}}
 
@@ -283,11 +271,7 @@ const savedCodes=await G('users/'+U.uid+'/videos')||{};window.__mineVideos=Objec
 unsubTeachers=onValue(R('teachers'),s=>{teachers=s.val()||{};if(S.v!=='watch')render()});
 unsubVideos=onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()});
 unsubLibrary=onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()});
-unsubNoti=onValue(R('notifications/'+U.uid),s=>{
-  notifications=s.val()||{};
-  let unread=0;Object.values(notifications).forEach(n=>{if(!n.read)unread++});
-  const dot=$('#notiBadge');if(dot){if(unread>0){dot.textContent=unread;dot.style.display='flex'}else{dot.style.display='none'}}
-});
+unsubNoti=onValue(R('notifications/'+U.uid),s=>{notifications=s.val()||{};let unread=0;Object.values(notifications).forEach(n=>{if(!n.read)unread++});const dot=$('#notiBadge');if(dot){if(unread>0){dot.textContent=unread;dot.style.display='flex'}else{dot.style.display='none'}}});
 badge=await G('settings/badge')||'';
 }catch(e){console.error(e)}
 }else{teachers={};videos={};library={};badge='';notifications={}}
