@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>سيجما</title>
-<meta name="theme-color" content="#6a1b9a">
+<title>منصة سيجما التعليمية</title>
+<meta name="theme-color" content="#5b129e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" id="mf">
@@ -15,7 +15,7 @@
 :root{
   --bg:#f8fafc; --surface:#ffffff; --surface2:#f1f5f9;
   --tx:#0f172a; --tx2:#475569; --mu:#94a3b8;
-  --ac:#6a1b9a; --ac2:#4a148c; --ac-soft:#f3e5f5;
+  --ac:#5b129e; --ac2:#4a148c; --ac-soft:#f3e5f5;
   --ok:#10b981; --er:#ef4444; --warn:#f59e0b;
   --bd:#e2e8f0; --r:16px; --r-sm:10px; --r-lg:22px;
   --shadow:0 1px 3px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.04);
@@ -239,15 +239,25 @@ initTheme();
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('show');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('show'),2400)}
 const img=(f,s)=>new Promise(r=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=s;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,s,s);r(c.toDataURL('image/jpeg',.8))};i.src=URL.createObjectURL(f)});
 
+// --- توليد الأيقونة تلقائياً للـ PWA بدون الحاجة لصور خارجية ---
 (()=>{
   const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
-  const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#6a1b9a');g.addColorStop(1,'#4a148c');
-  x.fillStyle=g;x.fillRect(0,0,192,192);x.fillStyle='#fff';x.font='bold 120px sans-serif';
-  x.textAlign='center';x.textBaseline='middle';x.fillText('Σ',96,104);
-  const u=c.toDataURL();$('#ai').href=u;
-  const m={name:'سيجما',short_name:'سيجما',start_url:location.pathname,display:'standalone',
-    background_color:'#6a1b9a',theme_color:'#6a1b9a',dir:'rtl',lang:'ar',
-    icons:[{src:u,sizes:'192x192',type:'image/png'}]};
+  const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#5b129e');g.addColorStop(1,'#4a148c');
+  x.fillStyle=g;x.fillRect(0,0,192,192);x.fillStyle='#f5c542';x.font='bold 120px sans-serif';
+  x.textAlign='center';x.textBaseline='middle';x.fillText('S',96,104);
+  const u=c.toDataURL('image/png');
+  $('#ai').href=u;
+  const m={
+    name:'منصة سيجما التعليمية',
+    short_name:'سيجما',
+    start_url:location.pathname,
+    display:'standalone',
+    background_color:'#5b129e',
+    theme_color:'#5b129e',
+    dir:'rtl',
+    lang:'ar',
+    icons:[{src:u,sizes:'192x192',type:'image/png'}]
+  };
   $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
 })();
 
@@ -300,7 +310,7 @@ function renderNoti(){
   if(U&&!A){update(R('notifications/'+U.uid),Object.fromEntries(list.map(n=>[n.id||Date.now()+Math.random(),{...n,read:true}])))}
 }
 
-function render(){const a=$('#app');if(!U){a.innerHTML=`<div class="center"><h1>Σ سيجما</h1><p>منصتك التعليمية الحديثة</p><button onclick="login()">الدخول بحساب جوجل</button></div>`;return}let body='';try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}if(body&&typeof body.then==='function'){body.then(html=>{a.innerHTML=shell(html);afterRender()}).catch(e=>{a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`)});a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');return}a.innerHTML=shell(body);afterRender()}
+function render(){const a=$('#app');if(!U){a.innerHTML=`<div class="center"><h1>Σ سيجما</h1><p>منصة سيجما التعليمية</p><button onclick="login()">الدخول بحساب جوجل</button></div>`;return}let body='';try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}if(body&&typeof body.then==='function'){body.then(html=>{a.innerHTML=shell(html);afterRender()}).catch(e=>{a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`)});a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');return}a.innerHTML=shell(body);afterRender()}
 function afterRender(){if(S.v==='watch')setTimeout(initPlayer,300)}
 function shell(body){const isDark=document.documentElement.classList.contains('dark');return `<header><div class="logo" onclick="go('home')">سيجما</div>${ip?`<button class="header-btn" onclick="inst()">تثبيت</button>`:''}<button class="header-btn" onclick="openNoti()" style="padding:8px 10px"><svg viewBox="0 0 24 24" width="20" height="20" fill="var(--tx2)"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg><span id="notiBadge" class="badge-dot"></span></button><button class="header-btn" onclick="toggleTheme()">${isDark?'نهاري':'ليلي'}</button><div class="chip" onclick="go('profile')">${badge?`<img src="${badge}" alt="">`:`<img src="${U.photoURL||''}" class="avatar" alt="">`}<span>${esc(U.displayName||'')}</span></div></header><main>${body}</main>${bottomBar()}`}
 
@@ -414,7 +424,6 @@ async function addV(){
   const k='v'+Date.now();await set(R('videos/'+k),v);
   const n=Math.min(+$('#vc').value||0,500);if(n)await gen(k,n);
   
-  // إشعار للجميع
   await set(R('notifications/all/'+Date.now()), {text: `تمت إضافة فيديو جديد: ${v.title}`, created: Date.now()});
   
   toast('تم الحفظ');go('vid',k);
