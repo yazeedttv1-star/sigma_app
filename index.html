@@ -234,7 +234,7 @@ h2{font-size:18px}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const ADMIN_EMAILS=["yazeedttv1@gmail.com","youssefttv1@gmail.com"];
@@ -336,8 +336,8 @@ function vAuth() {
     <p>منصة سيجما التعليمية</p>
     
     <div class="auth-tabs">
-      <button class="active" onclick="switchAuthTab('google')">حساب جوجل</button>
-      <button onclick="switchAuthTab('phone')">رقم هاتف</button>
+      <button class="active" onclick="switchAuthTab('google', event)">حساب جوجل</button>
+      <button onclick="switchAuthTab('phone', event)">رقم هاتف</button>
     </div>
 
     <div id="auth-google" style="display:block">
@@ -348,7 +348,7 @@ function vAuth() {
     </div>
 
     <div id="auth-phone" style="display:none">
-      <div class="auth-form">
+      <div class="auth-form" id="phone-register">
         <label>الاسم الرباعي</label>
         <input id="reg-name" placeholder="مثال: يزيد أحمد محمد علي">
         <label>رقم الهاتف</label>
@@ -359,7 +359,7 @@ function vAuth() {
         <input id="reg-pass2" type="password" placeholder="••••••••">
         <div class="error" id="reg-error"></div>
         <button class="auth-btn phone" onclick="registerPhone()">إنشاء حساب</button>
-        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">لديك حساب بالفعل؟ <a href="#" onclick="switchPhoneMode('login')" style="color:var(--ac);font-weight:700;text-decoration:none">تسجيل الدخول</a></p>
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">لديك حساب بالفعل؟ <a href="#" onclick="switchPhoneMode('login', event)" style="color:var(--ac);font-weight:700;text-decoration:none">تسجيل الدخول</a></p>
       </div>
       
       <div class="auth-form" id="phone-login" style="display:none">
@@ -369,27 +369,28 @@ function vAuth() {
         <input id="login-pass" type="password" placeholder="••••••••">
         <div class="error" id="login-error"></div>
         <button class="auth-btn phone" onclick="loginPhone()">دخول</button>
-        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">ليس لديك حساب؟ <a href="#" onclick="switchPhoneMode('register')" style="color:var(--ac);font-weight:700;text-decoration:none">إنشاء حساب</a></p>
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">ليس لديك حساب؟ <a href="#" onclick="switchPhoneMode('register', event)" style="color:var(--ac);font-weight:700;text-decoration:none">إنشاء حساب</a></p>
       </div>
     </div>
   </div>`;
 }
 
-function switchAuthTab(tab) {
+function switchAuthTab(tab, e) {
+  if(e) e.preventDefault();
   document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  if(e && e.target) e.target.classList.add('active');
   document.getElementById('auth-google').style.display = tab === 'google' ? 'block' : 'none';
   document.getElementById('auth-phone').style.display = tab === 'phone' ? 'block' : 'none';
 }
 
-function switchPhoneMode(mode) {
-  event.preventDefault();
-  document.querySelectorAll('#auth-phone .auth-form').forEach(f => f.style.display = 'none');
+function switchPhoneMode(mode, e) {
+  if(e) e.preventDefault();
+  document.getElementById('phone-register').style.display = 'none';
+  document.getElementById('phone-login').style.display = 'none';
   if(mode === 'login') {
     document.getElementById('phone-login').style.display = 'block';
   } else {
-    document.getElementById('auth-phone').querySelector('.auth-form').style.display = 'block';
-    document.getElementById('phone-login').style.display = 'none';
+    document.getElementById('phone-register').style.display = 'block';
   }
 }
 
@@ -399,6 +400,8 @@ async function registerPhone() {
   const pass = $('#reg-pass').value;
   const pass2 = $('#reg-pass2').value;
   const err = $('#reg-error');
+
+  err.style.display = 'none';
 
   if (!name || name.split(' ').length < 4) {
     err.textContent = 'يجب كتابة الاسم الرباعي كاملاً (4 مقاطع)';
@@ -421,29 +424,13 @@ async function registerPhone() {
     return;
   }
 
-  err.style.display = 'none';
   try {
-    // التحقق من عدم وجود رقم الهاتف مسبقاً
-    const existing = await G('users');
-    if (existing) {
-      for (const uid in existing) {
-        if (existing[uid].phone === phone) {
-          err.textContent = 'رقم الهاتف مسجل بالفعل';
-          err.style.display = 'block';
-          return;
-        }
-      }
-    }
-
-    // إنشاء حساب وهمي في Firebase Auth باستخدام البريد الإلكتروني
     const fakeEmail = `${phone}@sigma.user`;
     const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
     const user = userCredential.user;
 
-    // تحديث اسم المستخدم
     await updateProfile(user, { displayName: name });
 
-    // حفظ بيانات إضافية في قاعدة البيانات
     await set(R('users/' + user.uid), {
       name: name,
       phone: phone,
@@ -453,11 +440,11 @@ async function registerPhone() {
     });
 
     toast('تم إنشاء الحساب بنجاح');
-    location.reload();
+    setTimeout(() => location.reload(), 1000);
   } catch (e) {
     console.error(e);
     if (e.code === 'auth/email-already-in-use') {
-      err.textContent = 'رقم الهاتف مسجل بالفعل';
+      err.textContent = 'رقم الهاتف مسجل بالفعل، يمكنك تسجيل الدخول.';
     } else {
       err.textContent = 'حدث خطأ: ' + e.message;
     }
@@ -470,13 +457,14 @@ async function loginPhone() {
   const pass = $('#login-pass').value;
   const err = $('#login-error');
 
+  err.style.display = 'none';
+
   if (!/^01[0-9]{9}$/.test(phone)) {
     err.textContent = 'رقم الهاتف غير صحيح';
     err.style.display = 'block';
     return;
   }
 
-  err.style.display = 'none';
   try {
     const fakeEmail = `${phone}@sigma.user`;
     await signInWithEmailAndPassword(auth, fakeEmail, pass);
