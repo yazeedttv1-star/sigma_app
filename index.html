@@ -39,24 +39,12 @@ input,select,textarea{-webkit-user-select:text;user-select:text}
 h1,h2,h3{font-weight:800;line-height:1.3}
 h2{font-size:20px;margin-bottom:16px;color:var(--tx)}
 
-/* شاشة التحميل */
-#loading-overlay {
-  position: fixed; inset: 0; z-index: 9999;
-  background: rgba(248, 250, 252, 0.7);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: opacity 0.3s ease;
-}
-html.dark #loading-overlay { background: rgba(11, 18, 32, 0.7); }
-#loading-overlay.hide { opacity: 0; pointer-events: none; }
-.spinner {
-  width: 40px; height: 40px; border: 4px solid var(--ac-soft);
-  border-top-color: var(--ac); border-radius: 50%; animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+#loading-overlay{position:fixed;inset:0;z-index:9999;background:rgba(248,250,252,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s ease}
+html.dark #loading-overlay{background:rgba(11,18,32,.7)}
+#loading-overlay.hide{opacity:0;pointer-events:none}
+.spinner{width:40px;height:40px;border:4px solid var(--ac-soft);border-top-color:var(--ac);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* الشريط الترحيبي */
 .top-bar{background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);color:#fff;padding:24px 20px;
   border-bottom-left-radius:24px;border-bottom-right-radius:24px;margin-bottom:20px;
   display:flex;justify-content:space-between;align-items:flex-start;position:relative;box-shadow:var(--shadow)}
@@ -70,11 +58,6 @@ html.dark #loading-overlay { background: rgba(11, 18, 32, 0.7); }
 .top-bar .action-btn.icon-only{width:42px;height:42px;padding:0;border-radius:12px;position:relative;flex:0 0 42px}
 .top-bar .action-btn.icon-only svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .top-bar .action-btn.icon-only .badge-dot{position:absolute!important;top:-5px!important;right:-5px!important;min-width:18px;height:18px;padding:0 4px;border-radius:99px;background:#ef4444!important;color:#fff!important;border:2px solid #2563eb!important;align-items:center;justify-content:center;font-size:10px;font-weight:800}
-
-/* زر الرجوع العام */
-.back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);color:var(--tx);padding:8px 16px;border-radius:10px;font-size:14px;font-weight:700;border:0;cursor:pointer;margin-bottom:16px;transition:.15s}
-.back-btn:hover{background:var(--bd);transform:translateX(2px)}
-.back-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 main{max-width:1000px;margin:0 auto;padding:0 20px 40px}
 
@@ -111,7 +94,6 @@ input,select,textarea{font-family:inherit;font-size:14px;width:100%;padding:11px
   margin-bottom:14px;transition:.15s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
 
-/* كلمة المرور */
 .pwd-wrap { position: relative; }
 .pwd-wrap input { padding-left: 40px; }
 .pwd-toggle { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--mu); padding: 5px; }
@@ -147,7 +129,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .center button{padding:14px 32px;font-size:16px;border-radius:var(--r)}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
-/* Video Player */
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;
   width:100%;aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
@@ -157,12 +138,10 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .yt-top-mask{position:absolute;top:0;left:0;right:0;height:50px;z-index:11;background:#000;pointer-events:none}
 .yt-shield{position:absolute;inset:0;z-index:10;background:transparent;cursor:pointer}
 
-/* العلامة المائية */
 .wm{position:absolute;pointer-events:none;z-index:999;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.7;background:rgba(0,0,0,.6);padding:6px 12px;border-radius:99px;animation:mv 24s linear infinite alternate;direction:ltr;color:#fff}
 .wm img{width:22px;height:22px;border-radius:50%;object-fit:cover}
 @keyframes mv{0%{top:20%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:20%;left:60%}}
 
-/* Video Controls */
 .custom-player-ctrl{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--bd);padding:14px 18px;border-radius:var(--r);margin-top:12px;box-shadow:var(--shadow)}
 .custom-player-ctrl .progress-row{display:flex;align-items:center;gap:14px}
 .custom-player-ctrl .play-btn{background:var(--ac);color:#fff;border:0;border-radius:50%;width:50px;height:50px;font-size:22px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0;box-shadow:0 4px 12px rgba(37,99,235,.3)}
@@ -177,7 +156,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .tools-row button:hover{background:var(--ac);color:#fff}
 .custom-player-ctrl .tools-row select{width:auto;padding:8px 12px;margin:0;font-size:13px;border-radius:8px;background:var(--surface2);border:0;font-weight:600;color:var(--tx)}
 
-/* شريط التنقل السفلي */
 .bottombar{position:fixed;bottom:0;left:0;transform:none;z-index:40;
   background:var(--surface);border:1px solid var(--bd);border-bottom:0;border-radius:22px 22px 0 0;
   display:flex;justify-content:space-around;gap:4px;
@@ -205,7 +183,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .profile-card h2{margin-bottom:8px}
 .profile-card p{color:var(--mu);font-size:15px;margin-bottom:24px}
 
-/* Modern Notifications Modal */
 .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 .modal.show{display:flex;animation:fadeIn .2s}
 .modal-content{background:var(--surface);border-radius:var(--r-lg);width:100%;max-width:420px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg);margin-top:60px}
@@ -217,7 +194,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .noti-item:last-child{border-bottom:0}
 .noti-item span{display:block;color:var(--mu);font-size:11px;margin-top:6px;font-weight:600}
 
-/* Auth Styles */
 .auth-container{max-width:400px;margin:0 auto;padding:40px 20px;text-align:center}
 .auth-container h1{font-size:32px;color:var(--ac);margin-bottom:8px;font-weight:800;letter-spacing:-1px}
 .auth-container p{color:var(--mu);margin-bottom:24px;font-size:15px}
@@ -231,7 +207,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .auth-form input{margin-bottom:12px}
 .auth-form .error{color:var(--er);font-size:13px;margin-bottom:10px;display:none}
 
-/* Admin Compact Tabs */
 .admin-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;background:var(--surface2);padding:6px;border-radius:12px}
 .admin-tabs button{flex:1 1 calc(50% - 6px);padding:10px;font-size:13px;border-radius:8px;background:var(--surface);color:var(--tx2);border:1px solid var(--bd)}
 .admin-tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 8px rgba(37,99,235,.3)}
@@ -648,8 +623,7 @@ function bottomBar(){
 
 function vProfile(){
   const currentPhoto = U.photoURL || badge || 'https://ui-avatars.com/api/?name='+encodeURIComponent(U.displayName||'U')+'&background=2563eb&color=fff&size=200';
-  return `<button class="back-btn" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> رجوع</button>
-  <div class="box profile-card">
+  return `<div class="box profile-card">
     <img src="${currentPhoto}" alt="صورة الملف الشخصي" id="profile-img">
     <h2>${esc(U.displayName||'')}</h2>
     <p>${esc(U.email||'')}</p>
@@ -685,8 +659,7 @@ function vHome(){const t=Object.entries(teachers);if(!t.length)return'<div class
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
   if(!S.filter){
-    return `<button class="back-btn" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> رجوع</button>
-    <h2>${esc(t.name)}</h2>
+    return `<h2>${esc(t.name)}</h2>
     <div class="box" style="display:flex;gap:10px;flex-wrap:wrap">
       <button onclick="go('teacher','${S.id}','','prep')" style="flex:1;padding:20px;font-size:16px">إعدادي</button>
       <button onclick="go('teacher','${S.id}','','sec')" style="flex:1;padding:20px;font-size:16px">ثانوي</button>
@@ -698,7 +671,7 @@ function vTeacher(){
   const mine=window.__mineVideos||{};
   const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id && v.stage===(isPrep?'prep':'sec')).sort((a,b)=>b[1].created-a[1].created);
   
-  let html = `<button class="back-btn" onclick="go('teacher','${S.id}')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> رجوع</button><h2>${esc(t.name)} - ${isPrep?'إعدادي':'ثانوي'}</h2>`;
+  let html = `<h2>${esc(t.name)} - ${isPrep?'إعدادي':'ثانوي'}</h2>`;
   
   grades.forEach(g => {
     const gradeVideos = l.filter(([,v]) => v.grade === g);
@@ -719,8 +692,7 @@ function vTeacher(){
 function vCode(){
   const v=videos[S.id];
   if(!v||v.disabled)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
-  return`<button class="back-btn" onclick="go('teacher','${v.teacherId}','','${v.stage}')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> رجوع</button>
-  <div class="box"><h2>${esc(v.title)}</h2><label>أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label><input id="cd" inputmode="numeric" maxlength="6" placeholder="000000" style="font-size:26px;text-align:center;letter-spacing:8px;font-family:monospace"><button onclick="redeem('${S.id}')" style="width:100%">فتح الفيديو</button></div>`;
+  return`<div class="box"><h2>${esc(v.title)}</h2><label>أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label><input id="cd" inputmode="numeric" maxlength="6" placeholder="000000" style="font-size:26px;text-align:center;letter-spacing:8px;font-family:monospace"><button onclick="redeem('${S.id}')" style="width:100%">فتح الفيديو</button></div>`;
 }
 async function redeem(vid){const v=videos[vid];if(!v||v.disabled)return toast('الفيديو موقوف');const c=$('#cd').value.trim();if(!/^\d{6}$/.test(c))return toast('الكود يجب أن يكون 6 أرقام');const r=await runTransaction(R('codes/'+c),cur=>{if(cur===null)return cur;if(cur.videoId!==vid)return;if(cur.used&&cur.usedBy!==U.uid)return;if(!cur.used)Object.assign(cur,{used:true,usedBy:U.uid,usedByName:U.displayName,usedByEmail:U.email,usedAt:Date.now()});return cur}).catch(()=>null);const vv=r?.snapshot.val();if(!vv||vv.usedBy!==U.uid||vv.videoId!==vid)return toast('الكود غير صحيح أو مستخدم من قبل');await set(R(`users/${U.uid}/videos/${vid}`),c);window.__mineVideos=window.__mineVideos||{};window.__mineVideos[vid]=c;go('watch',vid)}
 
@@ -776,8 +748,7 @@ async function vWatch(){
       </div>
     </div>`;
   }
-  return`<button class="back-btn" onclick="go('teacher','${v.teacherId}','','${v.stage}')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> رجوع</button>
-  <h2 style="margin-top:14px">${esc(v.title)} ${(A||IS_SUPERVISOR)?'<span class="b g">إدارة</span>':''}</h2>
+  return`<h2 style="margin-top:14px">${esc(v.title)} ${(A||IS_SUPERVISOR)?'<span class="b g">إدارة</span>':''}</h2>
   <div class="player-wrap"><div class="pl ${isYT?'crop-yt':''}" id="plbox">${playerHTML}<div class="yt-shield"></div>${isYT?'<div class="yt-bottom-mask"></div><div class="yt-top-mask"></div>':''}${wm}</div>${controlsHTML}</div>
   <p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>`;
 }
@@ -827,7 +798,7 @@ async function vAdminStudents() {
   
   if(!arr.length) return '<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
   
-  let html = `<button class="back-btn" onclick="go('admin','','videos')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> رجوع</button><h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>البريد الإلكتروني</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
+  let html = `<h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>البريد الإلكتروني</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
   arr.forEach(u => {
     const isSup = u.isSupervisor === true;
     html += `<tr>
