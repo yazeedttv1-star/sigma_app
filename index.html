@@ -11,7 +11,6 @@
 <link rel="manifest" id="mf">
 <link rel="apple-touch-icon" id="ai">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<!-- مكتبة قص الصور -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
@@ -159,6 +158,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .wm img{width:22px;height:22px;border-radius:50%;object-fit:cover}
 @keyframes mv{0%{top:20%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:20%;left:60%}}
 
+/* أزرار المشغل */
 .custom-player-ctrl{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--bd);padding:12px 16px;border-radius:var(--r);margin-top:12px;box-shadow:var(--shadow)}
 .custom-player-ctrl .progress-row{display:flex;align-items:center;gap:12px}
 .custom-player-ctrl .play-btn{background:var(--ac);color:#fff;border:0;border-radius:50%;width:48px;height:48px;font-size:20px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;flex-shrink:0}
@@ -223,9 +223,9 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .auth-form input{margin-bottom:12px}
 .auth-form .error{color:var(--er);font-size:13px;margin-bottom:10px;display:none}
 
-/* لوحة التحكم (شكل الصورة) */
+/* لوحة التحكم */
 .admin-layout { display: flex; gap: 20px; align-items: flex-start; }
-.admin-sidebar { background: var(--surface); border-radius: var(--r-lg); width: 250px; flex-shrink: 0; padding: 15px 0; box-shadow: var(--shadow); }
+.admin-sidebar { background: var(--surface); border-radius: var(--r-lg); width: 260px; flex-shrink: 0; padding: 15px 0; box-shadow: var(--shadow); }
 .admin-profile { text-align: center; padding: 0 15px 15px; border-bottom: 1px solid var(--bd); margin-bottom: 10px; }
 .admin-profile img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
 .admin-profile h4 { font-size: 15px; color: var(--tx); font-weight: 800; }
@@ -236,12 +236,23 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .admin-menu button svg { width: 18px; height: 18px; fill: currentColor; }
 .admin-content { flex: 1; min-width: 0; }
 
+/* إحصائيات لوحة التحكم */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--surface); border: 1px solid var(--bd); border-radius: var(--r); padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); }
+.stat-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.stat-icon svg { width: 24px; height: 24px; fill: currentColor; }
+.stat-info b { display: block; font-size: 20px; color: var(--tx); line-height: 1.2; }
+.stat-info span { font-size: 12px; color: var(--mu); font-weight: 600; }
+
 @media(max-width: 768px) {
-  .admin-layout { flex-direction: column; }
-  .admin-sidebar { width: 100%; display: flex; flex-direction: column; }
+  .admin-layout { flex-direction: column; gap: 10px; }
+  .admin-sidebar { width: 100%; display: flex; flex-direction: column; padding: 10px 0; }
+  .admin-profile { padding: 0 10px 10px; display: flex; align-items: center; justify-content: flex-start; gap: 10px; border-bottom: 0; margin-bottom: 0; }
+  .admin-profile img { width: 40px; height: 40px; margin-bottom: 0; border-radius: 8px; }
   .admin-menu { flex-direction: row; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
-  .admin-menu button { border-right: 0; border-bottom: 3px solid transparent; padding: 10px 15px; }
+  .admin-menu button { border-right: 0; border-bottom: 3px solid transparent; padding: 10px 15px; border-radius: 8px; }
   .admin-menu button.on { border-right-color: transparent; border-bottom-color: var(--ac); }
+  .admin-content { width: 100%; }
 }
 
 @media(max-width:720px){
@@ -290,7 +301,6 @@ h2{font-size:18px}
   </div>
 </div>
 
-<!-- Modal لقص الصور -->
 <div class="modal" id="cropModal">
   <div class="modal-content" style="max-width:500px">
     <div class="modal-header">
@@ -315,7 +325,6 @@ import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasej
 window.addEventListener('unhandledrejection',e=>{console.error('خطأ:',e.reason);try{toast('حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى')}catch(_){}});
 window.addEventListener('error',e=>{console.error('خطأ:',e.error||e.message)});
 
-// الأرقام التي تم تعيينها كأدمن
 const ADMIN_PHONES = ["01147975962", "01123543649"];
 
 const app=initializeApp({apiKey:"AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",authDomain:"sigma-6f162.firebaseapp.com",databaseURL:"https://sigma-6f162-default-rtdb.firebaseio.com",projectId:"sigma-6f162",storageBucket:"sigma-6f162.firebasestorage.app",messagingSenderId:"420365348074",appId:"1:420365348074:web:0aaecb71ec613bb32abb93"});
@@ -334,7 +343,6 @@ let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'},teachers={},videos={},librar
 let banned=null,unsubBan=null,unsubTeachers=null,unsubVideos=null,unsubLibrary=null,unsubBans=null,unsubNoti=null,unsubBroadcastNoti=null,ownNotifications={},broadcastNotifications={};
 let ytPlayer=null,pollInterval=null;
 
-// متغيرات قص الصور
 let cropper = null;
 let cropResolve = null;
 
@@ -349,7 +357,6 @@ initTheme();
 
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('show');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('show'),2400)}
 
-// دالة قص الصور المعدلة
 function img(f,s){
   return new Promise(resolve => {
     const reader = new FileReader();
@@ -372,7 +379,6 @@ function img(f,s){
         cropper = null;
         if (!croppedDataUrl) return resolve(null);
         
-        // تصغير الصورة النهائية
         const imgObj = new Image();
         imgObj.onload = () => {
           const canvas = document.createElement('canvas');
@@ -397,7 +403,6 @@ function cancelCrop() {
   if (cropResolve) cropResolve(null);
 }
 
-// إعداد PWA
 (()=>{
   const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
   const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#2563eb');g.addColorStop(1,'#1d4ed8');
@@ -462,7 +467,6 @@ onAuthStateChanged(auth,async u=>{
   
   if(u){
     try{
-      // تحديد ما إذا كان أدمن عن طريق الهاتف
       const userData = await G('users/' + u.uid);
       const userPhone = userData?.phone || '';
       A = ADMIN_PHONES.includes(userPhone);
@@ -593,7 +597,6 @@ async function loginPhone() {
   err.style.display = 'none';
   if (!/^01[0-9]{9}$/.test(phone)) { err.textContent = 'رقم الهاتف غير صحيح'; err.style.display = 'block'; return; }
 
-  // نظام محاولات الدخول (3 مرات وفتح بعد 15 دقيقة)
   const failKey = `login_fails_${phone}`;
   const lockKey = `login_lock_${phone}`;
   const lockTime = localStorage.getItem(lockKey);
@@ -612,14 +615,14 @@ async function loginPhone() {
   try {
     const fakeEmail = `${phone}@sigma.user`;
     await signInWithEmailAndPassword(auth, fakeEmail, pass);
-    localStorage.removeItem(failKey); // مسح المحاولات عند النجاح
+    localStorage.removeItem(failKey);
     toast('تم تسجيل الدخول بنجاح');
   } catch (e) {
     let fails = parseInt(localStorage.getItem(failKey) || "0") + 1;
     localStorage.setItem(failKey, fails);
     
     if (fails >= 3) {
-      localStorage.setItem(lockKey, Date.now() + 15 * 60 * 1000); // قفل 15 دقيقة
+      localStorage.setItem(lockKey, Date.now() + 15 * 60 * 1000);
       err.textContent = 'تم إدخال كلمة مرور خاطئة 3 مرات. الحساب مقفل لمدة 15 دقيقة.';
       localStorage.removeItem(failKey);
     } else {
@@ -721,7 +724,6 @@ async function updateProfilePhoto() {
   }
 }
 
-// شكل عرض المدرس بالكروت الجديدة
 function vHome(){
   const t=Object.entries(teachers);
   if(!t.length)return'<div class="mut">لا يوجد مدرسون بعد.</div>';
@@ -736,6 +738,7 @@ function vHome(){
     </div>`).join('')}</div>`
 }
 
+// تصفير المتغيرات عند الرجوع لضمان العودة للبداية
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
   if(!S.filter){
@@ -752,7 +755,7 @@ function vTeacher(){
   const mine=window.__mineVideos||{};
   const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id && v.stage===(isPrep?'prep':'sec')).sort((a,b)=>b[1].created-a[1].created);
   
-  let html = `<button class="s" onclick="go('teacher','${S.id}')" style="margin-bottom:16px">← رجوع</button><h2>${esc(t.name)} - ${isPrep?'إعدادي':'ثانوي'}</h2>`;
+  let html = `<button class="s" onclick="go('teacher','${S.id}','')" style="margin-bottom:16px">← رجوع للمراحل</button><h2>${esc(t.name)} - ${isPrep?'إعدادي':'ثانوي'}</h2>`;
   
   grades.forEach(g => {
     const gradeVideos = l.filter(([,v]) => v.grade === g);
@@ -818,7 +821,7 @@ function vLibrary(){const lib=Object.entries(library).sort((a,b)=>b[1].created-a
 
 function initPlayer(){const el=document.getElementById('vplayer');if(!el)return;if(el.tagName==='IFRAME'&&el.src.includes('youtube')){if(!window.YT){const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);window.onYouTubeIframeAPIReady=()=>setupYT()}else{setupYT()}}else if(el.tagName==='VIDEO'){el.addEventListener('timeupdate',updateUI);el.addEventListener('loadedmetadata',updateUI);el.addEventListener('play',()=>{document.getElementById('playPauseBtn').textContent='❚❚';updateUI()});el.addEventListener('pause',()=>{document.getElementById('playPauseBtn').textContent='▶';updateUI()})}}
 function setupYT(){const iframe=document.getElementById('vplayer');if(!iframe)return;ytPlayer=new YT.Player(iframe,{events:{'onReady':()=>{updateUI();startPoll()},'onStateChange':(event)=>{if(event.data===1){document.getElementById('playPauseBtn').textContent='❚❚'}else{document.getElementById('playPauseBtn').textContent='▶'}}}})}
-function startPoll(){stopPoll();pollInterval=setInterval(updateUI,500)}
+function startPoll(){stopPoll();pollInterval=setInterval(updateUI,250)}
 function stopPoll(){if(pollInterval){clearInterval(pollInterval);pollInterval=null}}
 function updateUI(){const seek=document.getElementById('cSeek');const cTime=document.getElementById('cTime');const dTime=document.getElementById('dTime');if(!seek)return;let cur=0,dur=0;if(ytPlayer&&ytPlayer.getCurrentTime){try{cur=ytPlayer.getCurrentTime()||0;dur=ytPlayer.getDuration()||0}catch(e){}}else{const vid=document.getElementById('vplayer');if(vid&&vid.tagName==='VIDEO'){cur=vid.currentTime||0;dur=vid.duration||0}}if(dur>0){seek.value=(cur/dur)*100;cTime.textContent=fmt(cur);dTime.textContent=fmt(dur)}}
 function fmt(s){s=Math.max(0,Math.floor(s||0));const m=Math.floor(s/60),ss=s%60;return m+':'+String(ss).padStart(2,'0')}
@@ -829,7 +832,7 @@ function setRate(rate){if(ytPlayer&&ytPlayer.setPlaybackRate){try{ytPlayer.setPl
 async function toggleFullscreen(){const box=document.getElementById('plbox');const btn=document.getElementById('fsBtn');if(!box)return;try{if(!document.fullscreenElement){const fn=box.requestFullscreen||box.webkitRequestFullscreen||box.msRequestFullscreen;if(!fn)return toast('ملء الشاشة غير مدعوم في هذا المتصفح');await fn.call(box)}else{const fn=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen;if(fn)await fn.call(document)}}catch(e){toast('تعذر تغيير وضع الشاشة')}if(btn)btn.innerHTML=document.fullscreenElement?'⛶ خروج من ملء الشاشة':'⛶ ملء الشاشة'}
 function stopHB(){clearInterval(hb);hb=null}
 
-// لوحة التحكم بالشكل الجديد (قائمة جانبية)
+// لوحة التحكم الجديدة
 async function vAdmin(){
   if(!A && !IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
@@ -870,8 +873,33 @@ async function vAdmin(){
   else if(tab==='bans') content = await renderBans();
   else if(tab==='studentSearch') content = vStudentSearch();
   else {
+    // الإحصائيات
+    const totalVideos = Object.keys(videos).length;
+    const totalTeachers = Object.keys(teachers).length;
+    let totalStudents = 0;
+    try { totalStudents = Object.keys(await G('users') || {}).length; } catch(e){}
+    
+    const statsHTML = `
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#eff6ff;color:#3b82f6"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+          <div class="stat-info"><b>${totalVideos}</b><span>إجمالي الفيديوهات</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#f0fdf4;color:#22c55e"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+          <div class="stat-info"><b>${totalTeachers}</b><span>إجمالي المدرسين</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#fef2f2;color:#ef4444"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+          <div class="stat-info"><b>${totalStudents}</b><span>إجمالي الطلاب</span></div>
+        </div>
+      </div>
+    `;
+
     const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
-    content = `<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
+    content = `
+      ${statsHTML}
+      <div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
   }
 
   return `<div class="admin-layout">${sidebar}<div class="admin-content">${content}</div></div>`;
@@ -988,12 +1016,25 @@ async function addT(){const n=$('#tn').value.trim(),f=$('#tp').files[0];if(!n)re
 async function delT(id){if(!confirm('حذف المدرس؟'))return;await remove(R('teachers/'+id));toast('تم الحذف');render()}
 async function setB(){const f=$('#bp').files[0];if(!f)return toast('اختر صورة');badge=await img(f,160);if(!badge)return toast('تم إلغاء القص');await set(R('settings/badge'),badge);toast('تم الحفظ');render()}
 
+// إصلاح مشكلة توليد الأكواد
 async function addV(){
   const v={teacherId:$('#vt').value,stage:$('#vs').value,grade:$('#vg').value,title:$('#vn').value.trim(),desc:$('#vd').value.trim(),url:$('#vu').value.trim(),duration:+$('#vm').value||0,created:Date.now(),disabled:false};
   if(!v.teacherId||!v.title||!v.url)return toast('أكمل الحقول');
-  const k='v'+Date.now();await set(R('videos/'+k),v);
-  const n=Math.min(+$('#vc').value||0,500);if(n)await gen(k,n,v);
-  toast('تم الحفظ');go('vid',k);
+  const k='v'+Date.now();
+  await set(R('videos/'+k),v);
+  const n=Math.min(+$('#vc').value||0,500);
+  if(n>0) {
+    toast('جارٍ التوليد...');
+    try {
+      await gen(k,n,v);
+      toast('تم الحفظ وتوليد الأكواد');
+    } catch (err) {
+      toast('تم حفظ الفيديو لكن حدث خطأ في التوليد');
+    }
+  } else {
+    toast('تم الحفظ');
+  }
+  go('vid',k);
 }
 
 function syncGradeOptions(){const stage=$('#vs')?.value||'prep',grade=$('#vg');if(!grade)return;const vals=stage==='prep'?['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي']:['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];const previous=grade.value;grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');if(vals.includes(previous))grade.value=previous}
@@ -1017,7 +1058,20 @@ async function delLib(id){
   catch(e){console.error(e);toast('تعذر حذف الملف: '+(e.code||'خطأ'))}
 }
 async function saveEditLib(id){const n=$('#eltn').value.trim(),d=$('#eltd').value.trim(),u=$('#eltu').value.trim(),f=$('#eltp').files[0];if(!n||!u)return toast('أكمل الحقول');const l=library[id];let photo=l.photo||'';if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}await update(R('library/'+id),{title:n,desc:d,url:u,photo});toast('تم التعديل');go('admin','','library')}
-async function gen(vid,n,video=videos[vid]){const v=video||videos[vid];if(!v)throw new Error('الفيديو غير موجود لتوليد الأكواد');let ok=0;while(ok<n){const c=String(crypto.getRandomValues(new Uint32Array(1))[0]%900000+100000);const r=await runTransaction(R('codes/'+c),cur=>cur===null?{videoId:vid,url:v.url,title:v.title,used:false,createdAt:Date.now()}:undefined);if(r.committed)ok++}return ok}
+
+// إصلاح مشكلة توليد الأكواد (إرجاع التأكيد)
+async function gen(vid,n,video=videos[vid]){
+  const v=video||videos[vid];
+  if(!v) throw new Error('الفيديو غير موجود لتوليد الأكواد');
+  let ok=0, attempts=0;
+  while(ok<n && attempts < n*10){
+    const c=String(crypto.getRandomValues(new Uint32Array(1))[0]%900000+100000);
+    const r=await runTransaction(R('codes/'+c),cur=>cur===null?{videoId:vid,url:v.url,title:v.title,used:false,createdAt:Date.now()}:undefined);
+    if(r.committed) ok++;
+    attempts++;
+  }
+  return ok;
+}
 async function moreCodes(vid,one){const n=one?1:Math.min(+$('#gn').value||0,500);if(!n)return toast('اكتب العدد');toast('جارٍ التوليد...');await gen(vid,n);render()}
 async function delV(id){if(!confirm('حذف الفيديو؟'))return;await remove(R('videos/'+id));toast('تم الحذف');go('admin','','videos')}
 async function toggleVid(id){const v=videos[id];if(!v)return;const next=!v.disabled;if(!confirm(next?'إيقاف الأكواد؟':'إعادة التفعيل؟'))return;await update(R('videos/'+id),{disabled:next});toast(next?'تم الإيقاف':'تم التفعيل');render()}
