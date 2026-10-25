@@ -162,33 +162,10 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .auth-form label{display:block;margin-bottom:6px;font-weight:700;font-size:13px;color:var(--tx2)}
 .auth-form input{margin-bottom:12px}
 .auth-form .error{color:var(--er);font-size:13px;margin-bottom:10px;display:none}
-.admin-layout{display:flex;gap:20px;align-items:flex-start}
-.admin-sidebar{background:var(--surface);border-radius:var(--r-lg);width:260px;flex-shrink:0;padding:15px 0;box-shadow:var(--shadow)}
-.admin-profile{text-align:center;padding:0 15px 15px;border-bottom:1px solid var(--bd);margin-bottom:10px}
-.admin-profile img{width:60px;height:60px;border-radius:12px;object-fit:cover;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.admin-profile h4{font-size:15px;color:var(--tx);font-weight:800}
-.admin-menu{display:flex;flex-direction:column}
-.admin-menu button{background:transparent;color:var(--tx2);border-radius:0;padding:12px 20px;text-align:right;font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;margin:0;border-right:3px solid transparent;transition:.2s}
-.admin-menu button:hover{background:var(--surface2);color:var(--ac);transform:none;box-shadow:none}
-.admin-menu button.on{background:var(--ac-soft);color:var(--ac);border-right-color:var(--ac)}
-.admin-menu button svg{width:18px;height:18px;fill:currentColor}
-.admin-content{flex:1;min-width:0}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)}
-.stat-icon{width:45px;height:45px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.stat-icon svg{width:24px;height:24px;fill:currentColor}
-.stat-info b{display:block;font-size:20px;color:var(--tx);line-height:1.2}
-.stat-info span{font-size:12px;color:var(--mu);font-weight:600}
-@media(max-width:768px){
-  .admin-layout{flex-direction:column;gap:10px}
-  .admin-sidebar{width:100%;display:flex;flex-direction:column;padding:10px 0}
-  .admin-profile{padding:0 10px 10px;display:flex;align-items:center;justify-content:flex-start;gap:10px;border-bottom:0;margin-bottom:0}
-  .admin-profile img{width:40px;height:40px;margin-bottom:0;border-radius:8px}
-  .admin-menu{flex-direction:row;overflow-x:auto;white-space:nowrap;padding-bottom:5px}
-  .admin-menu button{border-right:0;border-bottom:3px solid transparent;padding:10px 15px;border-radius:8px}
-  .admin-menu button.on{border-right-color:transparent;border-bottom-color:var(--ac)}
-  .admin-content{width:100%}
-}
+.admin-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;background:var(--surface2);padding:6px;border-radius:12px}
+.admin-tabs button{flex:1 1 calc(50% - 6px);padding:10px;font-size:13px;border-radius:8px;background:var(--surface);color:var(--tx2);border:1px solid var(--bd)}
+.admin-tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 8px rgba(37,99,235,.3)}
+@media(max-width:768px){.admin-tabs button{flex:1 1 100%}}
 @media(max-width:720px){
   main{padding:0 14px 40px}
   h2{font-size:18px}
@@ -249,7 +226,7 @@ import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistenc
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-window.addEventListener('unhandledrejection',e=>{console.error('خطأ:',e.reason);try{toast('حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى')}catch(_){}});
+window.addEventListener('unhandledrejection',e=>{console.error('خطأ:',e.reason);});
 window.addEventListener('error',e=>{console.error('خطأ:',e.error||e.message)});
 
 const ADMIN_PHONES = ["01147975962", "01123543649"];
@@ -258,7 +235,7 @@ const auth=getAuth(app),db=getDatabase(app);
 let messaging=null;
 try { messaging = getMessaging(app); } catch(e) { console.log('Messaging not supported', e); }
 setPersistence(auth,browserLocalPersistence).catch(()=>{});
-const R=p=>ref(db,p),G=async p=>(await get(R(p))).val();
+const R=p=>ref(db,p),G=async p=>{try{return (await get(R(p))).val();}catch(e){console.warn("Permission error on",p); return null;}};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fd=t=>t?new Date(t).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'-';
@@ -349,11 +326,13 @@ function embed(u){u=u.trim();let m;if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?
 
 async function enforceSingleDevice(){
   if (A || IS_SUPERVISOR) return true;
-  const devId=getDeviceId();const sessionsRef=R('sessions/'+U.uid);const cur=(await get(sessionsRef)).val()||{};const now=Date.now();const existingDevice=cur.deviceId;const existingTs=cur.updatedAt||0;
-  if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
-    await set(R('bans/'+U.uid),{uid:U.uid,name:U.displayName||'',email:U.email||'',photo:U.photoURL||'',oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر'});return false;
-  }
-  await set(sessionsRef,{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});const ban=(await G('bans/'+U.uid));if(ban&&ban.newDevice===devId){await remove(R('bans/'+U.uid))}return true;
+  try{
+    const devId=getDeviceId();const sessionsRef=R('sessions/'+U.uid);const cur=(await get(sessionsRef)).val()||{};const now=Date.now();const existingDevice=cur.deviceId;const existingTs=cur.updatedAt||0;
+    if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
+      await set(R('bans/'+U.uid),{uid:U.uid,name:U.displayName||'',email:U.email||'',photo:U.photoURL||'',oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر'});return false;
+    }
+    await set(sessionsRef,{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});const ban=(await G('bans/'+U.uid));if(ban&&ban.newDevice===devId){await remove(R('bans/'+U.uid))}return true;
+  }catch(e){ return true; }
 }
 async function checkBan(){return await G('bans/'+U.uid)}
 function renderBanned(ban){document.body.innerHTML=`<div class="ban-screen"><div class="box-max"><h1>⛔ تم حظر حسابك</h1><p>تم اكتشاف تسجيل دخول من جهاز آخر.<br>حسابك مسجّل على: <b>${esc(ban.oldDeviceLabel||'جهاز سابق')}</b><br>حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>تواصل مع المدير لفك الحظر.</p><p style="font-size:12px;color:var(--mu)">الإيميل: ${esc(ban.email||'')}</p><button onclick="out()">خروج</button></div></div>`}
@@ -391,11 +370,13 @@ onAuthStateChanged(auth,async u=>{
         }
       }
       const savedCodes=await G('users/'+U.uid+'/videos')||{};window.__mineVideos=Object.assign({},savedCodes);
-      unsubTeachers=onValue(R('teachers'),s=>{teachers=s.val()||{};if(S.v!=='watch')render()});
-      unsubVideos=onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()});
-      unsubLibrary=onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()});
-      unsubNoti=onValue(R('notifications/'+U.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()});
-      unsubBroadcastNoti=onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()});
+      
+      unsubTeachers=onValue(R('teachers'),s=>{teachers=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("teachers read error",e)});
+      unsubVideos=onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("videos read error",e)});
+      unsubLibrary=onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("library read error",e)});
+      unsubNoti=onValue(R('notifications/'+U.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()}, (e)=>{});
+      unsubBroadcastNoti=onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()}, (e)=>{});
+      
       badge=await G('settings/badge')||'';
       setupNotifications();
     }catch(e){console.error(e)}
@@ -419,7 +400,7 @@ function renderNoti(){
   const body=$('#notiBody');
   if(!list.length){body.innerHTML='<div class="mut" style="padding:20px">لا توجد إشعارات حالياً.</div>';return}
   body.innerHTML=list.map(n=>`<div class="noti-item">${esc(n.text||'إشعار جديد')}<span>${fd(n.created)}</span></div>`).join('');
-  if(U&&!A){const updates={};list.forEach(n=>{if(n._key)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(e=>console.warn('تعذر تحديث حالة الإشعارات',e))}
+  if(U&&!A){const updates={};list.forEach(n=>{if(n._key)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(e=>{})}
 }
 
 function vAuth() {
@@ -610,7 +591,7 @@ async function updateProfilePhoto() {
 
 function vHome(){
   const t=Object.entries(teachers);
-  if(!t.length)return'<div class="mut">لا يوجد مدرسون بعد.</div>';
+  if(!t.length)return'<div class="mut">لا يوجد مدرسون بعد أو لا تملك صلاحية رؤيتهم.</div>';
   return`<h2>اختر المدرس</h2><div class="grid">${t.map(([id,x])=>`
     <div class="card" onclick="go('teacher','${id}')">
       <div class="card-img-wrap">
@@ -661,37 +642,43 @@ function vCode(){
 async function redeem(vid){
   const v=videos[vid];if(!v||v.disabled)return toast('الفيديو موقوف');
   const c=$('#cd').value.trim();if(!/^\d{6}$/.test(c))return toast('الكود يجب أن يكون 6 أرقام');
-  const r=await runTransaction(R('codes/'+c),cur=>{
-    if(cur===null)return cur;
-    if(cur.videoId!==vid)return;
-    if(cur.used&&cur.usedBy!==U.uid)return;
-    if(!cur.used)Object.assign(cur,{used:true,usedBy:U.uid,usedByName:U.displayName,usedByEmail:U.email,usedAt:Date.now()});
-    return cur;
-  }).catch(()=>null);
-  const vv=r?.snapshot.val();
-  if(!vv||vv.usedBy!==U.uid||vv.videoId!==vid)return toast('الكود غير صحيح أو مستخدم من قبل');
-  await set(R(`users/${U.uid}/videos/${vid}`),c);
-  window.__mineVideos=window.__mineVideos||{};window.__mineVideos[vid]=c;
-  go('watch',vid);
+  try{
+    const r=await runTransaction(R('codes/'+c),cur=>{
+      if(cur===null)return cur;
+      if(cur.videoId!==vid)return;
+      if(cur.used&&cur.usedBy!==U.uid)return;
+      if(!cur.used)Object.assign(cur,{used:true,usedBy:U.uid,usedByName:U.displayName,usedByEmail:U.email,usedAt:Date.now()});
+      return cur;
+    });
+    const vv=r?.snapshot.val();
+    if(!vv||vv.usedBy!==U.uid||vv.videoId!==vid)return toast('الكود غير صحيح أو مستخدم من قبل');
+    await set(R(`users/${U.uid}/videos/${vid}`),c);
+    window.__mineVideos=window.__mineVideos||{};window.__mineVideos[vid]=c;
+    go('watch',vid);
+  }catch(e){ toast('حدث خطأ أثناء التحقق من الكود'); }
 }
 
 async function vWatch(){
   const v=videos[S.id];if(!v)return vHome();
   if(v.disabled&&!A&&!IS_SUPERVISOR)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
   let c,rec;
-  if(A||IS_SUPERVISOR){c='admin';rec={url:v.url,usedBy:U.uid,videoId:S.id}}
-  else{
-    c=(window.__mineVideos&&window.__mineVideos[S.id])?window.__mineVideos[S.id]:(await G(`users/${U.uid}/videos/${S.id}`));
-    if(!c)return go('code',S.id);
-    rec=await G('codes/'+c);
-    if(!rec||rec.usedBy!==U.uid){if(window.__mineVideos)delete window.__mineVideos[S.id];return go('code',S.id)}
-  }
+  try{
+    if(A||IS_SUPERVISOR){c='admin';rec={url:v.url,usedBy:U.uid,videoId:S.id}}
+    else{
+      c=(window.__mineVideos&&window.__mineVideos[S.id])?window.__mineVideos[S.id]:(await G(`users/${U.uid}/videos/${S.id}`));
+      if(!c)return go('code',S.id);
+      rec=await G('codes/'+c);
+      if(!rec||rec.usedBy!==U.uid){if(window.__mineVideos)delete window.__mineVideos[S.id];return go('code',S.id)}
+    }
+  }catch(e){ return `<div class="mut">ليس لديك صلاحية لمشاهدة هذا الفيديو.</div>`; }
   const e=embed(rec.url),lp=`logs/${S.id}/${U.uid}`,old=(A||IS_SUPERVISOR?{}:await G(lp)||{});
   let sec=old.seconds||0;const dur=(+v.duration||0)*60;
   if(!A&&!IS_SUPERVISOR){
-    await update(R(lp),{name:U.displayName,email:U.email,photo:U.photoURL||'',code:c,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
-    const tick=async(add)=>{if(document.hidden)return;sec+=add;const done=dur&&sec>=dur*.9;await update(R(lp),{seconds:sec,lastAt:Date.now(),completed:done||!!old.completed}).catch(()=>{})};
-    hb=setInterval(()=>tick(10),10000);
+    try{
+      await update(R(lp),{name:U.displayName,email:U.email,photo:U.photoURL||'',code:c,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
+      const tick=async(add)=>{if(document.hidden)return;sec+=add;const done=dur&&sec>=dur*.9;await update(R(lp),{seconds:sec,lastAt:Date.now(),completed:done||!!old.completed}).catch(()=>{})};
+      hb=setInterval(()=>tick(10),10000);
+    }catch(e){}
   }
   const wm=(A||IS_SUPERVISOR)?'':`<div class="wm">${badge?`<img src="${badge}" alt="">`:''}${esc(U.displayName||'')} · ${esc(U.email||'')}</div>`;
   let playerHTML='';
@@ -711,7 +698,7 @@ async function vWatch(){
 }
 
 function openLibraryItem(url){try{const parsed=new URL(url,location.href);if(!['http:','https:'].includes(parsed.protocol))return toast('نوع الرابط غير مسموح');window.open(parsed.href,'_blank','noopener,noreferrer')}catch(e){toast('رابط الملف غير صالح')}}
-function vLibrary(){const lib=Object.entries(library).sort((a,b)=>b[1].created-a[1].created);return`<h2>المكتبة الرقمية</h2>`+(lib.length?`<div class="grid">${lib.map(([id,item])=>`<div class="card" onclick="openLibraryItem('${esc(item.url)}')"><img class="ph" src="${esc(item.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200')}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><b>${esc(item.title)}</b><small style="color:var(--mu);display:block;margin-top:4px">${esc(item.desc||'')}</small></div>`).join('')}</div>`:'<div class="mut">لا توجد ملفات بعد.</div>')}
+function vLibrary(){const lib=Object.entries(library).sort((a,b)=>b[1].created-a[1].created);return`<h2>المكتبة الرقمية</h2>`+(lib.length?`<div class="grid">${lib.map(([id,item])=>`<div class="card" onclick="openLibraryItem('${esc(item.url)}')"><img class="ph" src="${esc(item.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200')}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><b>${esc(item.title)}</b><small style="color:var(--mu);display:block;margin-top:4px">${esc(item.desc||'')}</small></div>`).join('')}</div>`:'<div class="mut">لا توجد ملفات بعد أو لا تملك صلاحية.</div>')}
 
 function initPlayer(){const el=document.getElementById('vplayer');if(!el)return;if(el.tagName==='IFRAME'&&el.src.includes('youtube')){if(!window.YT){const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);window.onYouTubeIframeAPIReady=()=>setupYT()}else{setupYT()}}else if(el.tagName==='VIDEO'){el.addEventListener('timeupdate',updateUI);el.addEventListener('loadedmetadata',updateUI);el.addEventListener('play',()=>{document.getElementById('playPauseBtn').textContent='❚❚';updateUI()});el.addEventListener('pause',()=>{document.getElementById('playPauseBtn').textContent='▶';updateUI()})}}
 function setupYT(){const iframe=document.getElementById('vplayer');if(!iframe)return;ytPlayer=new YT.Player(iframe,{events:{'onReady':()=>{updateUI();startPoll()},'onStateChange':(event)=>{if(event.data===1){document.getElementById('playPauseBtn').textContent='❚❚'}else{document.getElementById('playPauseBtn').textContent='▶'}}}})}
@@ -730,62 +717,21 @@ async function vAdmin(){
   if(!A && !IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
   const allowedTabs = A ? [['videos','الفيديوهات'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']] : [['videos','الفيديوهات']];
-  const menuSVGs = {
-    videos: '<svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>',
-    teachers: '<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
-    library: '<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>',
-    students: '<svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
-    send_notification: '<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/></svg>',
-    studentSearch: '<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>',
-    bans: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9C4.63 15.55 4 13.85 4 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1C19.37 8.45 20 10.15 20 12c0 4.42-3.58 8-8 8z"/></svg>',
-    badge: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>'
-  };
-  const sidebar = `
-    <div class="admin-sidebar">
-      <div class="admin-profile">
-        <img src="${badge || U.photoURL || 'https://ui-avatars.com/api/?name='+encodeURIComponent(U.displayName||'A')+'&background=2563eb&color=fff'}" alt="">
-        <h4>${esc(U.displayName || 'لوحة التحكم')}</h4>
-      </div>
-      <div class="admin-menu">
-        ${allowedTabs.map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${menuSVGs[k]||''} ${n}</button>`).join('')}
-      </div>
-    </div>
-  `;
-  let content = '';
-  if(tab==='teachers') content = `<div class="box"><h2>إضافة مدرس</h2><label>الاسم</label><input id="tn"><label>الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><div class="card-img-wrap"><img src="${x.photo||''}" alt=""></div><div class="card-body"><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${id}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${id}')">حذف</button></div></div></div>`).join('')}</div>`;
-  else if(tab==='library') content = `<div class="box"><h2>إضافة ملف PDF</h2><label>العنوان</label><input id="ltn"><label>الوصف</label><input id="ltd"><label>صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label>رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200'}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${id}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${id}')">حذف</button></div></div>`).join('')}</div>`;
-  else if(tab==='students') content = await vAdminStudents();
-  else if(tab==='send_notification') content = vSendNotification();
-  else if(tab==='badge') content = `<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
-  else if(tab==='bans') content = await renderBans();
-  else if(tab==='studentSearch') content = vStudentSearch();
-  else {
-    const totalVideos = Object.keys(videos).length;
-    const totalTeachers = Object.keys(teachers).length;
-    let totalStudents = 0;
-    try { totalStudents = Object.keys(await G('users') || {}).length; } catch(e){}
-    const statsHTML = `
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#eff6ff;color:#3b82f6"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
-          <div class="stat-info"><b>${totalVideos}</b><span>إجمالي الفيديوهات</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#f0fdf4;color:#22c55e"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
-          <div class="stat-info"><b>${totalTeachers}</b><span>إجمالي المدرسين</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#fef2f2;color:#ef4444"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
-          <div class="stat-info"><b>${totalStudents}</b><span>إجمالي الطلاب</span></div>
-        </div>
-      </div>
-    `;
-    const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
-    content = `
-      ${statsHTML}
-      <div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
-  }
-  return `<div class="admin-layout">${sidebar}<div class="admin-content">${content}</div></div>`;
+  
+  const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
+  
+  if(tab==='teachers') return tb+`<div class="box"><h2>إضافة مدرس</h2><label>الاسم</label><input id="tn"><label>الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><div class="card-img-wrap"><img src="${x.photo||''}" alt=""></div><div class="card-body"><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${id}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${id}')">حذف</button></div></div></div>`).join('')}</div>`;
+  
+  if(tab==='library') return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label>العنوان</label><input id="ltn"><label>الوصف</label><input id="ltd"><label>صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label>رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200'}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${id}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${id}')">حذف</button></div></div>`).join('')}</div>`;
+  
+  if(tab==='students') return tb+await vAdminStudents();
+  if(tab==='send_notification') return tb+vSendNotification();
+  if(tab==='badge') return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
+  if(tab==='bans') return tb+await renderBans();
+  if(tab==='studentSearch') return tb+vStudentSearch();
+  
+  const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
+  return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
 }
 
 async function vAdminStudents() {
@@ -913,8 +859,10 @@ async function gen(vid,n,video=videos[vid]){
   let ok=0, attempts=0;
   while(ok<n && attempts < n*10){
     const c=String(crypto.getRandomValues(new Uint32Array(1))[0]%900000+100000);
-    const r=await runTransaction(R('codes/'+c),cur=>cur===null?{videoId:vid,url:v.url,title:v.title,used:false,createdAt:Date.now()}:undefined);
-    if(r.committed) ok++;
+    try{
+      const r=await runTransaction(R('codes/'+c),cur=>cur===null?{videoId:vid,url:v.url,title:v.title,used:false,createdAt:Date.now()}:undefined);
+      if(r.committed) ok++;
+    }catch(e){}
     attempts++;
   }
   return ok;
