@@ -82,9 +82,6 @@ label{font-size:13px;color:var(--tx2);font-weight:700;display:block;margin-botto
 input,select,textarea{font-family:inherit;font-size:14px;width:100%;padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--bd);background:var(--surface);color:var(--tx);margin-bottom:14px;transition:.15s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
 .box{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:22px;margin-bottom:20px;box-shadow:var(--shadow)}
-.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.tabs button{background:var(--surface2);color:var(--tx2);padding:9px 18px;font-size:14px}
-.tabs button.on{background:var(--ac);color:#fff}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:10px;text-align:right;border-bottom:1px solid var(--bd)}
 th{background:var(--surface2);font-weight:700;color:var(--tx2);font-size:12px}
@@ -98,10 +95,6 @@ html.dark .b.r{background:#7f1d1d;color:#fca5a5}
 html.dark .b.y{background:#78350f;color:#fcd34d}
 .g{color:var(--ok)}.r{color:var(--er)}.y{color:var(--warn)}
 .code{font-family:'Courier New',monospace;font-size:15px;letter-spacing:2px;direction:ltr;display:inline-block;background:var(--surface2);padding:3px 10px;border-radius:6px;color:var(--ac2);font-weight:700}
-.center{text-align:center;padding:15vh 20px 0}
-.center h1{font-size:clamp(40px,10vw,64px);color:var(--ac);margin-bottom:12px;letter-spacing:-2px}
-.center p{color:var(--mu);margin-bottom:32px;font-size:15px}
-.center button{padding:14px 32px;font-size:16px;border-radius:var(--r)}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;width:100%;aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
@@ -125,7 +118,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .tools-row button:hover{background:var(--ac);color:#fff}
 .custom-player-ctrl .tools-row select{width:auto;padding:6px 10px;margin:0;font-size:13px;border-radius:8px}
 .bottombar{position:fixed;bottom:0;left:0;transform:none;z-index:40;background:var(--surface);border:1px solid var(--bd);border-bottom:0;border-radius:22px 22px 0 0;display:flex;justify-content:space-around;gap:4px;padding:8px 16px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -5px 24px rgba(0,0,0,.10);width:100%;max-width:none}
-.bottombar button{background:transparent;color:var(--tx2);border:0;padding:10px 14px;border-radius:25px;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bottombar button{background:transparent;color:var(--tx2);border:0;padding:10px 4px;border-radius:25px;font-size:11px;font-weight:700;cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
 .bottombar button:hover{background:var(--surface2);color:var(--tx)}
 .bottombar button.on{color:var(--ac);background:var(--ac-soft)}
 .bottombar button.on svg{fill:var(--ac)}
@@ -177,7 +170,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 }
 @media(max-width:520px){
   .pl{max-height:60vh}
-  .center h1{font-size:44px}
   .grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .card .card-img-wrap{height:130px}
   .card b{font-size:14px}
@@ -187,6 +179,10 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .ban-screen .box-max{max-width:420px}
 .ban-screen h1{font-size:28px;color:var(--er);margin-bottom:14px}
 .ban-screen p{color:var(--tx2);margin-bottom:24px;line-height:1.7}
+.news-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.news-card img{width:100%;max-height:300px;object-fit:cover;border-radius:var(--r-sm);border:1px solid var(--bd)}
+.news-text{font-size:15px;line-height:1.7;color:var(--tx);white-space:pre-wrap}
+.news-date{font-size:12px;color:var(--mu);font-weight:700;margin-top:4px}
 </style>
 </head>
 <body>
@@ -223,7 +219,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue,push} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 window.addEventListener('unhandledrejection',e=>{console.error('خطأ:',e.reason);});
@@ -240,8 +236,8 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fd=t=>t?new Date(t).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'-';
 
-let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'},teachers={},videos={},library={},notifications={},badge='',hb=null,ip=null;
-let banned=null,unsubBan=null,unsubTeachers=null,unsubVideos=null,unsubLibrary=null,unsubBans=null,unsubNoti=null,unsubBroadcastNoti=null,ownNotifications={},broadcastNotifications={};
+let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'},teachers={},videos={},library={},news={},notifications={},badge='',hb=null,ip=null;
+let banned=null,unsubBan=null,unsubTeachers=null,unsubVideos=null,unsubLibrary=null,unsubNews=null,unsubBans=null,unsubNoti=null,unsubBroadcastNoti=null,ownNotifications={},broadcastNotifications={};
 let ytPlayer=null,pollInterval=null;
 let cropper = null;
 let cropResolve = null;
@@ -336,7 +332,7 @@ async function enforceSingleDevice(){
 }
 async function checkBan(){return await G('bans/'+U.uid)}
 function renderBanned(ban){document.body.innerHTML=`<div class="ban-screen"><div class="box-max"><h1>⛔ تم حظر حسابك</h1><p>تم اكتشاف تسجيل دخول من جهاز آخر.<br>حسابك مسجّل على: <b>${esc(ban.oldDeviceLabel||'جهاز سابق')}</b><br>حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>تواصل مع المدير لفك الحظر.</p><p style="font-size:12px;color:var(--mu)">الإيميل: ${esc(ban.email||'')}</p><button onclick="out()">خروج</button></div></div>`}
-function clearListeners(){[unsubBan,unsubTeachers,unsubVideos,unsubLibrary,unsubBans,unsubNoti,unsubBroadcastNoti].forEach(fn=>{if(typeof fn==='function')try{fn()}catch(e){}});unsubBan=unsubTeachers=unsubVideos=unsubLibrary=unsubBans=unsubNoti=unsubBroadcastNoti=null;}
+function clearListeners(){[unsubBan,unsubTeachers,unsubVideos,unsubLibrary,unsubNews,unsubBans,unsubNoti,unsubBroadcastNoti].forEach(fn=>{if(typeof fn==='function')try{fn()}catch(e){}});unsubBan=unsubTeachers=unsubVideos=unsubLibrary=unsubNews=unsubBans=unsubNoti=unsubBroadcastNoti=null;}
 
 function refreshNotifications(){
   const merged={};
@@ -374,6 +370,7 @@ onAuthStateChanged(auth,async u=>{
       unsubTeachers=onValue(R('teachers'),s=>{teachers=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("teachers read error",e)});
       unsubVideos=onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("videos read error",e)});
       unsubLibrary=onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("library read error",e)});
+      unsubNews=onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()}, (e)=>{});
       unsubNoti=onValue(R('notifications/'+U.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()}, (e)=>{});
       unsubBroadcastNoti=onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()}, (e)=>{});
       
@@ -381,7 +378,7 @@ onAuthStateChanged(auth,async u=>{
       setupNotifications();
     }catch(e){console.error(e)}
   }else{
-    teachers={};videos={};library={};badge='';notifications={};ownNotifications={};broadcastNotifications={};
+    teachers={};videos={};library={};news={};badge='';notifications={};ownNotifications={};broadcastNotifications={};
     IS_SUPERVISOR = false; A = false;
   }
   if(!u&&S.v!=='home')S={v:'home'};
@@ -507,7 +504,7 @@ function render(){
   const a=$('#app');
   if(!U){a.innerHTML=vAuth();return;}
   let body='';
-  try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch,students:vAdminStudents}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}
+  try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch,students:vAdminStudents,news:vNews}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}
   if(body&&typeof body.then==='function'){
     body.then(html=>{a.innerHTML=shell(html);afterRender()}).catch(e=>{a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`)});
     a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');return;
@@ -545,11 +542,13 @@ function shell(body){
 function bottomBar(){
   const on=k=>S.v===k||(k==='home'&&['teacher','code','watch'].includes(S.v));
   const svgHome=`<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
+  const svgNews=`<svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg>`;
   const svgLibrary=`<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>`;
   const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
   const svgWhatsapp=`<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
   return `<nav class="bottombar">
     <button class="${on('home')?'on':''}" onclick="go('home')">${svgHome} <span>الرئيسية</span></button>
+    <button class="${on('news')?'on':''}" onclick="go('news')">${svgNews} <span>الأخبار</span></button>
     <button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary} <span>المكتبة</span></button>
     <button class="contact-btn-nav" onclick="window.open('https://wa.me/201147758295','_blank')">${svgWhatsapp} <span>تواصل</span></button>
     ${A||IS_SUPERVISOR?`<button class="${(on('admin')||S.v==='vid'||S.v==='edit'||S.v==='editLib'||S.v==='studentSearch'||S.v==='students')?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
@@ -700,6 +699,19 @@ async function vWatch(){
 function openLibraryItem(url){try{const parsed=new URL(url,location.href);if(!['http:','https:'].includes(parsed.protocol))return toast('نوع الرابط غير مسموح');window.open(parsed.href,'_blank','noopener,noreferrer')}catch(e){toast('رابط الملف غير صالح')}}
 function vLibrary(){const lib=Object.entries(library).sort((a,b)=>b[1].created-a[1].created);return`<h2>المكتبة الرقمية</h2>`+(lib.length?`<div class="grid">${lib.map(([id,item])=>`<div class="card" onclick="openLibraryItem('${esc(item.url)}')"><img class="ph" src="${esc(item.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200')}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><b>${esc(item.title)}</b><small style="color:var(--mu);display:block;margin-top:4px">${esc(item.desc||'')}</small></div>`).join('')}</div>`:'<div class="mut">لا توجد ملفات بعد أو لا تملك صلاحية.</div>')}
 
+function vNews(){
+  const list = Object.entries(news).sort((a,b)=>b[1].created-a[1].created);
+  if(!list.length) return '<div class="mut">لا توجد أخبار منشورة حالياً.</div>';
+  return `<h2>آخر أخبار السنتر</h2>` + list.map(([id, item]) => `
+    <div class="news-card">
+      ${item.photo ? `<img src="${item.photo}" alt="صورة الخبر">` : ''}
+      ${item.text ? `<div class="news-text">${esc(item.text)}</div>` : ''}
+      <div class="news-date">${fd(item.created)}</div>
+      ${(A||IS_SUPERVISOR) ? `<button class="d" style="padding:4px 8px;font-size:12px;width:fit-content" onclick="delNews('${id}')">حذف الخبر</button>` : ''}
+    </div>
+  `).join('');
+}
+
 function initPlayer(){const el=document.getElementById('vplayer');if(!el)return;if(el.tagName==='IFRAME'&&el.src.includes('youtube')){if(!window.YT){const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);window.onYouTubeIframeAPIReady=()=>setupYT()}else{setupYT()}}else if(el.tagName==='VIDEO'){el.addEventListener('timeupdate',updateUI);el.addEventListener('loadedmetadata',updateUI);el.addEventListener('play',()=>{document.getElementById('playPauseBtn').textContent='❚❚';updateUI()});el.addEventListener('pause',()=>{document.getElementById('playPauseBtn').textContent='▶';updateUI()})}}
 function setupYT(){const iframe=document.getElementById('vplayer');if(!iframe)return;ytPlayer=new YT.Player(iframe,{events:{'onReady':()=>{updateUI();startPoll()},'onStateChange':(event)=>{if(event.data===1){document.getElementById('playPauseBtn').textContent='❚❚'}else{document.getElementById('playPauseBtn').textContent='▶'}}}})}
 function startPoll(){stopPoll();pollInterval=setInterval(updateUI,250)}
@@ -716,7 +728,7 @@ function stopHB(){clearInterval(hb);hb=null}
 async function vAdmin(){
   if(!A && !IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
-  const allowedTabs = A ? [['videos','الفيديوهات'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']] : [['videos','الفيديوهات']];
+  const allowedTabs = A ? [['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']] : [['videos','الفيديوهات'],['news','أخبار السنتر']];
   
   const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
   
@@ -729,9 +741,37 @@ async function vAdmin(){
   if(tab==='badge') return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
   if(tab==='bans') return tb+await renderBans();
   if(tab==='studentSearch') return tb+vStudentSearch();
-  
+  if(tab==='news') return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label>نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label>صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${id}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${x.photo}" style="max-height:100px;object-fit:cover">`:''}<p style="font-size:13px">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
+
   const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
   return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
+}
+
+async function addNews(){
+  const text = $('#newText').value.trim();
+  const file = $('#newImg').files[0];
+  if(!text && !file) return toast('يجب إضافة نص أو صورة على الأقل');
+  try {
+    let photo = '';
+    if(file){
+      photo = await img(file, 800);
+      if(!photo) return toast('تم إلغاء قص الصورة');
+    }
+    const id = 'n' + Date.now();
+    await set(R('news/' + id), { text, photo, created: Date.now() });
+    toast('تم نشر الخبر بنجاح');
+    $('#newText').value = '';
+    $('#newImg').value = '';
+    render();
+  } catch (e) {
+    toast('تعذر نشر الخبر: ' + e.message);
+  }
+}
+async function delNews(id){
+  if(!confirm('حذف هذا الخبر؟')) return;
+  await remove(R('news/' + id));
+  toast('تم الحذف');
+  render();
 }
 
 async function vAdminStudents() {
@@ -877,7 +917,7 @@ function exportPDF(vid){const v=videos[vid];if(!v)return;const rows=[];document.
 
 async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();const cs=[];(await get(query(R('codes'),orderByChild('videoId'),equalTo(id)))).forEach(c=>{cs.push({c:c.key,...c.val()})});cs.sort((a,b)=>b.createdAt-a.createdAt);const lg=Object.values(await G('logs/'+id)||{}).sort((a,b)=>b.lastAt-a.lastAt);const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2><div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p><p style="margin-bottom:14px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end"><div style="width:110px"><label>العدد</label><input id="gn" type="number" min="1" value="10" style="margin-bottom:0"></div><button onclick="moreCodes('${id}')">توليد أكواد</button><button class="s" onclick="moreCodes('${id}',1)">كود لطالب</button><button class="s" onclick="copyFree('${id}')">نسخ المتاح</button><button class="s" onclick="go('edit','${id}','video')">تعديل</button><button class="${v.disabled?'g':'d'}" onclick="toggleVid('${id}')">${v.disabled?'تفعيل':'إيقاف'}</button><button class="s" onclick="exportPDF('${id}')">تصدير PDF</button><button class="d" onclick="delV('${id}')">حذف</button></div></div><h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الإيميل</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div><h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${x.c}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${x.c}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`}
 
-Object.assign(window,{go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,updateProfilePhoto,toggleSupervisor,delUser,confirmCrop,cancelCrop});
+Object.assign(window,{go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,updateProfilePhoto,toggleSupervisor,delUser,confirmCrop,cancelCrop,addNews,delNews});
 render();
 </script>
 </body>
