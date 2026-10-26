@@ -1395,12 +1395,174 @@ function fmtTime(value){
   const n=Math.floor(value);
   return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
 }
-function currentNativeVideo(){return document.querySelector('.pl video')}
-function togglePlay(){
-  const v=currentNativeVideo();
-  if(!v){toast('عناصر التحكم الإضافية متاحة للفيديوهات المباشرة فقط');return}
-  if(v.paused)v.play().catch(()=>toast('تعذر تشغيل الفيديو'));else v.pause();
+/* ---------- مشغل الفيديو المتقدم (يدعم يوتيوب والملفات) ---------- */
+let ytPlayer = null;
+let pollInterval = null;
+
+function initPlayer() {
+  const el = document.getElementById('vplayer');
+  if (!el) return;
+  
+  if (el.tagName === 'IFRAME' && el.src.includes('youtube')) {
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+      window.onYouTubeIframeAPIReady = () => setupYT();
+    } else {
+      setupYT();
+    }
+  } else if (el.tagName === 'VIDEO') {
+    el.addEventListener('timeupdate', updateUI);
+    el.addEventListener('loadedmetadata', updateUI);
+    el.addEventListener('play', () => { 
+      const btn = document.getElementById('playPauseBtn');
+      if(btn) btn.textContent = '❚❚'; 
+      updateUI(); 
+    });
+    el.addEventListener('pause', () => { 
+      const btn = document.getElementById('playPauseBtn');
+      if(btn) btn.textContent = '▶'; 
+      updateUI(); 
+    });
+  }
 }
+
+function setupYT() {
+  const iframe = document.getElementById('vplayer');
+  if (!iframe) return;
+  ytPlayer = new YT.Player(iframe, {
+    events: {
+      'onReady': () => { updateUI(); startPoll(); },
+      'onStateChange': (event) => {
+        const btn = document.getElementById('playPauseBtn');
+        if(!btn) return;
+        if (event.data === 1) btn.textContent = '❚❚';
+        else btn.textContent = '▶';
+      }
+    }
+  });
+}
+
+function startPoll() {
+  stopPoll();
+  pollInterval = setInterval(updateUI, 250);
+}
+function stopPoll() {
+  if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+}
+
+function updateUI() {
+  const seek = document.getElementById('cSeek');
+  const cTime = document.getElementById('cTime');
+  const dTime = document.getElementById('dTime');
+  if (!seek) return;
+  
+  let cur = 0, dur = 0;
+  try {
+    if (ytPlayer && ytPlayer.getCurrentTime) {
+      cur = ytPlayer.getCurrentTime() || 0;
+      dur = ytPlayer.getDuration() || 0;
+    } else {
+      const vid = document.getElementById('vplayer');
+      if (vid && vid.tagName === 'VIDEO') {
+        cur = vid.currentTime || 0;
+        dur = vid.duration || 0;
+      }
+    }
+  } catch(e) {}
+  
+  if (dur > 0 && Number.isFinite(dur)) {
+    seek.value = (cur / dur) * 100;
+    cTime.textContent = fmtTime(cur);
+    dTime.textContent = fmtTime(dur);
+  }
+}
+
+function fmtTime(s) {
+  s = Math.max(0, Math.floor(s || 0));
+  const m = Math.floor(s / 60), ss = s % 60;
+  return m + ':' + String(ss).padStart(2, '0');
+}
+
+function togglePlay() {
+  try {
+    if (ytPlayer && ytPlayer.getPlayerState) {
+      const state = ytPlayer.getPlayerState();
+      if (state === 1) ytPlayer.pauseVideo(); else ytPlayer.playVideo();
+      return;
+    }
+  } catch(e) {}
+  
+  const vid = document.getElementById('vplayer');
+  if (vid && vid.tagName === 'VIDEO') {
+    if (vid.paused) vid.play().catch(()=>{}); else vid.pause();
+  }
+}
+
+function onSeek(val) {
+  try {
+    if (ytPlayer && ytPlayer.getDuration) {
+      const dur = ytPlayer.getDuration() || 0;
+      ytPlayer.seekTo((val / 100) * dur, true);
+      return;
+    }
+  } catch(e) {}
+  
+  const vid = document.getElementById('vplayer');
+  if (vid && vid.tagName === 'VIDEO') {
+    vid.currentTime = (val / 100) * (vid.duration || 0);
+  }
+}
+
+function seekRel(seconds) {
+  try {
+    if (ytPlayer && ytPlayer.getCurrentTime) {
+      const cur = ytPlayer.getCurrentTime() || 0;
+      ytPlayer.seekTo(cur + seconds, true);
+      return;
+    }
+  } catch(e) {}
+  
+  const vid = document.getElementById('vplayer');
+  if (vid && vid.tagName === 'VIDEO') {
+    vid.currentTime = Math.max(0, Math.min(vid.duration || 0, (vid.currentTime || 0) + seconds));
+  }
+}
+
+function setRate(rate) {
+  const r = parseFloat(rate);
+  try {
+    if (ytPlayer && ytPlayer.setPlaybackRate) {
+      ytPlayer.setPlaybackRate(r);
+      return;
+    }
+  } catch(e) {}
+  
+  const vid = document.getElementById('vplayer');
+  if (vid && vid.tagName === 'VIDEO') vid.playbackRate = r;
+}
+
+function toggleFullscreen() {
+  const box = document.getElementById('plbox');
+  const btn = document.getElementById('fsBtn');
+  if (!box) return;
+  
+  try {
+    if (!document.fullscreenElement) {
+      const fn = box.requestFullscreen || box.webkitRequestFullscreen || box.msRequestFullscreen;
+      if (!fn) return toast('ملء الشاشة غير مدعوم في هذا المتصفح');
+      fn.call(box);
+    } else {
+      const fn = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+      if (fn) fn.call(document);
+    }
+  } catch(e) {
+    toast('تعذر تغيير وضع الشاشة');
+  }
+  
+  if (btn) btn.innerHTML = document.fullscreenElement ? '⛶ خروج من ملء الشاشة' : '⛶ ملء الشاشة';
+    }
 function onSeek(value){
   const v=currentNativeVideo();
   if(v&&Number.isFinite(v.duration)&&v.duration>0)v.currentTime=(Number(value)||0)/100*v.duration;
