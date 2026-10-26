@@ -33,15 +33,14 @@ html.dark{
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{min-height:100%;height:auto}
-body{height:auto;min-height:100vh}
 body{font-family:Cairo,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;
   padding-bottom:calc(120px + env(safe-area-inset-bottom));overflow-x:hidden;
   -webkit-user-select:none;user-select:none;transition:background .25s,color .25s}
 input,select,textarea{-webkit-user-select:text;user-select:text}
 h1,h2,h3{font-weight:800;line-height:1.3}
 h2{font-size:20px;margin-bottom:16px;color:var(--tx)}
-#loading-overlay{position:fixed;inset:0;z-index:9999;background:rgba(248,250,252,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s ease}
-html.dark #loading-overlay{background:rgba(11,18,32,.7)}
+#loading-overlay{position:fixed;inset:0;z-index:9999;background:rgba(248,250,252,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s ease}
+html.dark #loading-overlay{background:rgba(11,18,32,.85)}
 #loading-overlay.hide{opacity:0;pointer-events:none}
 .spinner{width:40px;height:40px;border:4px solid var(--ac-soft);border-top-color:var(--ac);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -49,7 +48,7 @@ html.dark #loading-overlay{background:rgba(11,18,32,.7)}
 .top-bar .welcome h1{font-size:22px;margin-bottom:4px;font-weight:800}
 .top-bar .welcome p{font-size:14px;opacity:.9;margin-bottom:12px}
 .top-bar .user-area{display:flex;align-items:center;gap:8px}
-.top-bar .avatar-lg{width:56px;height:56px;border-radius:50%;border:3px solid rgba(255,255,255,.4);object-fit:cover}
+.top-bar .avatar-lg{width:56px;height:56px;border-radius:50%;border:3px solid rgba(255,255,255,.4);object-fit:cover;cursor:pointer;background:#fff}
 .top-bar .actions{display:flex;gap:8px;align-items:center}
 .top-bar .action-btn{background:rgba(255,255,255,.2);color:#fff;border:0;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
 .top-bar .action-btn:hover{background:rgba(255,255,255,.3)}
@@ -58,14 +57,14 @@ html.dark #loading-overlay{background:rgba(11,18,32,.7)}
 .top-bar .action-btn.icon-only .badge-dot{position:absolute!important;top:-2px!important;right:-2px!important;min-width:18px;height:18px;padding:0 4px;border-radius:99px;background:#ef4444!important;color:#fff!important;border:2px solid #fff!important;align-items:center;justify-content:center;font-size:10px;font-weight:800;display:flex}
 main{max-width:1000px;margin:0 auto;padding:0 20px 40px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
-.card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:0;cursor:pointer;text-align:center;transition:.2s var(--shadow);overflow:hidden;position:relative;display:flex;flex-direction:column}
+.card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:0;cursor:pointer;text-align:center;transition:.2s;overflow:hidden;position:relative;display:flex;flex-direction:column}
 .card:hover{border-color:var(--ac);box-shadow:var(--shadow-lg);transform:translateY(-3px)}
 .card:active{transform:scale(.98)}
 .card .card-img-wrap{width:100%;height:160px;background:linear-gradient(135deg,#e0e7ff 0%,#f1f5f9 100%);position:relative}
 .card .card-img-wrap img{width:100%;height:100%;object-fit:cover}
 .card .card-body{padding:12px 10px;background:var(--surface);flex:1;display:flex;flex-direction:column;justify-content:center}
 .card b{font-size:16px;display:block;color:var(--tx);font-weight:800}
-.row{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.15s var(--shadow)}
+.row{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.15s;flex-wrap:wrap}
 .row:hover{border-color:var(--ac);box-shadow:var(--shadow-lg)}
 .row:active{transform:scale(.995)}
 .row>div{flex:1;min-width:0}
@@ -74,6 +73,7 @@ main{max-width:1000px;margin:0 auto;padding:0 20px 40px}
 button,.btn{font-family:inherit;font-weight:700;border:0;border-radius:var(--r-sm);padding:10px 18px;background:var(--ac);color:#fff;cursor:pointer;transition:.15s;font-size:14px}
 button:hover{background:var(--ac2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,.3)}
 button:active{transform:translateY(0) scale(.97)}
+button:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
 button.s{background:var(--surface2);color:var(--tx)}
 button.s:hover{background:var(--bd);box-shadow:none;transform:none}
 button.d{background:var(--er)}button.d:hover{background:#dc2626}
@@ -86,7 +86,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:10px;text-align:right;border-bottom:1px solid var(--bd)}
 th{background:var(--surface2);font-weight:700;color:var(--tx2);font-size:12px}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r)}
-.b{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--tx2)}
+.b{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--tx2);display:inline-block}
 .b.g{background:#d1fae5;color:#065f46}
 .b.r{background:#fee2e2;color:#991b1b}
 .b.y{background:#fef3c7;color:#92400e}
@@ -108,10 +108,10 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 @keyframes mv{0%{top:20%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:20%;left:60%}}
 .custom-player-ctrl{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--bd);padding:12px 16px;border-radius:var(--r);margin-top:12px;box-shadow:var(--shadow)}
 .custom-player-ctrl .progress-row{display:flex;align-items:center;gap:12px}
-.custom-player-ctrl .play-btn{background:var(--ac);color:#fff;border:0;border-radius:50%;width:48px;height:48px;font-size:20px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;flex-shrink:0}
+.custom-player-ctrl .play-btn{background:var(--ac);color:#fff;border:0;border-radius:50%;width:48px;height:48px;font-size:20px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;flex-shrink:0;padding:0;margin:0}
 .custom-player-ctrl .play-btn:hover{background:var(--ac2);transform:scale(1.05)}
 .custom-player-ctrl .progress-container{flex:1;display:flex;align-items:center;gap:8px}
-.custom-player-ctrl input[type=range]{flex:1;padding:0;margin:0;height:6px;accent-color:var(--ac);cursor:pointer;background:transparent}
+.custom-player-ctrl input[type=range]{flex:1;padding:0;margin:0;height:6px;accent-color:var(--ac);cursor:pointer;background:transparent;border:0}
 .custom-player-ctrl .time{font-family:monospace;font-size:14px;font-weight:700;color:var(--tx);direction:ltr;min-width:45px;text-align:center}
 .custom-player-ctrl .tools-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;border-top:1px solid var(--bd);padding-top:10px}
 .custom-player-ctrl .tools-row button{padding:6px 12px;font-size:13px;border-radius:8px;background:var(--surface2);color:var(--tx)}
@@ -119,17 +119,14 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .tools-row select{width:auto;padding:6px 10px;margin:0;font-size:13px;border-radius:8px}
 .bottombar{position:fixed;bottom:0;left:0;transform:none;z-index:40;background:var(--surface);border:1px solid var(--bd);border-bottom:0;border-radius:22px 22px 0 0;display:flex;justify-content:space-around;gap:4px;padding:8px 16px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -5px 24px rgba(0,0,0,.10);width:100%;max-width:none}
 .bottombar button{background:transparent;color:var(--tx2);border:0;padding:10px 4px;border-radius:25px;font-size:11px;font-weight:700;cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
-.bottombar button:hover{background:var(--surface2);color:var(--tx)}
+.bottombar button:hover{background:var(--surface2);color:var(--tx);box-shadow:none;transform:none}
 .bottombar button.on{color:var(--ac);background:var(--ac-soft)}
 .bottombar button.on svg{fill:var(--ac)}
-.bottombar button.danger{color:var(--er)}
-.bottombar button.danger:hover{background:var(--er);color:#fff}
-.bottombar button.danger:hover svg{fill:#fff}
 .bottombar button svg{width:22px;height:22px;fill:var(--tx2);transition:.15s}
 .contact-btn-nav{color:#25D366 !important;}
 .contact-btn-nav svg{fill:#25D366 !important;}
 .contact-btn-nav:hover{background:#e8f5e9 !important;}
-#t{position:fixed;bottom:calc(100px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;border-radius:var(--r);font-weight:700;display:none;z-index:100;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center;font-size:14px}
+#t{position:fixed;bottom:calc(100px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;border-radius:var(--r);font-weight:700;display:none;z-index:300;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center;font-size:14px}
 #t.show{display:block;animation:pop .25s}
 @keyframes pop{0%{transform:translateX(-50%) scale(.8);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 .profile-card{text-align:center;padding:30px 20px}
@@ -142,7 +139,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .modal-header{padding:16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{font-size:16px;margin:0}
 .modal-body{padding:16px;overflow-y:auto;flex:1}
-.noti-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.5}
+.noti-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.5}
 .noti-item:last-child{border-bottom:0}
 .noti-item span{display:block;color:var(--mu);font-size:11px;margin-top:4px}
 .auth-container{max-width:400px;margin:0 auto;padding:40px 20px;text-align:center}
@@ -154,10 +151,13 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .auth-form{text-align:right}
 .auth-form label{display:block;margin-bottom:6px;font-weight:700;font-size:13px;color:var(--tx2)}
 .auth-form input{margin-bottom:12px}
-.auth-form .error{color:var(--er);font-size:13px;margin-bottom:10px;display:none}
+.auth-form .error{color:var(--er);font-size:13px;margin-bottom:10px;display:none;line-height:1.6}
+.link-btn{color:var(--ac);font-weight:700;text-decoration:none;cursor:pointer}
 .admin-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;background:var(--surface2);padding:6px;border-radius:12px}
 .admin-tabs button{flex:1 1 calc(50% - 6px);padding:10px;font-size:13px;border-radius:8px;background:var(--surface);color:var(--tx2);border:1px solid var(--bd)}
 .admin-tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 8px rgba(37,99,235,.3)}
+.code-input{font-size:26px;text-align:center;letter-spacing:8px;font-family:monospace}
+.notice{background:var(--ac-soft);border:1px solid var(--ac);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;color:var(--tx);line-height:1.7}
 @media(max-width:768px){.admin-tabs button{flex:1 1 100%}}
 @media(max-width:720px){
   main{padding:0 14px 40px}
@@ -174,7 +174,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   .card .card-img-wrap{height:130px}
   .card b{font-size:14px}
 }
-@media print{body{display:none}}
 .ban-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;text-align:center}
 .ban-screen .box-max{max-width:420px}
 .ban-screen h1{font-size:28px;color:var(--er);margin-bottom:14px}
@@ -190,8 +189,9 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   <div class="spinner"></div>
   <p style="font-family:Cairo,sans-serif;font-weight:700;color:var(--ac)">جارٍ التحميل...</p>
 </div>
-<div id="app"></div><div id="t"></div>
-<div class="modal" id="notiModal">
+<div id="app"></div><div id="t" role="status" aria-live="polite"></div>
+
+<div class="modal" id="notiModal" onclick="if(event.target===this)closeNoti()">
   <div class="modal-content">
     <div class="modal-header">
       <h3>الإشعارات</h3>
@@ -202,88 +202,241 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
     </div>
   </div>
 </div>
+
 <div class="modal" id="cropModal">
   <div class="modal-content" style="max-width:500px">
-    <div class="modal-header">
-      <h3>قص الصورة</h3>
+    <div class="modal-header"><h3>قص الصورة</h3></div>
+    <div class="modal-body" style="padding:0;background:#333;display:flex;justify-content:center;align-items:center;min-height:300px;">
+      <img id="cropImage" alt="" style="max-width:100%;display:block;">
     </div>
-    <div class="modal-body" style="padding:0; background:#333; display:flex; justify-content:center; align-items:center; min-height:300px;">
-      <img id="cropImage" style="max-width:100%; display:block;">
-    </div>
-    <div style="padding:16px; display:flex; gap:10px;">
+    <div style="padding:16px;display:flex;gap:10px;">
       <button onclick="confirmCrop()" style="flex:1">حفظ القص</button>
       <button class="s" onclick="cancelCrop()" style="flex:1">إلغاء</button>
     </div>
   </div>
 </div>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue,push} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-window.addEventListener('unhandledrejection',e=>{console.error('خطأ:',e.reason);});
+window.addEventListener('unhandledrejection',e=>{console.error('خطأ غير معالج:',e.reason);});
 window.addEventListener('error',e=>{console.error('خطأ:',e.error||e.message)});
 
-const ADMIN_PHONES = ["01147975962", "01123543649"];
+const ADMIN_PHONES=["01147975962","01123543649"];
+const VAPID_KEY='BL3dfL6xBF8jnLy87cWLRwsoLAclt5HIWzkwa4R84L_GJ41vT2y2nBpFwgxPItJ2BmQej6_iZsegmidN6IVTREs';
 const app=initializeApp({apiKey:"AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",authDomain:"sigma-6f162.firebaseapp.com",databaseURL:"https://sigma-6f162-default-rtdb.firebaseio.com",projectId:"sigma-6f162",storageBucket:"sigma-6f162.firebasestorage.app",messagingSenderId:"420365348074",appId:"1:420365348074:web:0aaecb71ec613bb32abb93"});
 const auth=getAuth(app),db=getDatabase(app);
 let messaging=null;
-try { messaging = getMessaging(app); } catch(e) { console.log('Messaging not supported', e); }
+try{messaging=getMessaging(app)}catch(e){console.log('Messaging not supported',e)}
 setPersistence(auth,browserLocalPersistence).catch(()=>{});
-const R=p=>ref(db,p),G=async p=>{try{return (await get(R(p))).val();}catch(e){console.warn("Permission error on",p); return null;}};
+
+/* ---------- helpers ---------- */
+const R=p=>ref(db,p);
+const G=async p=>{try{return (await get(R(p))).val()}catch(e){console.warn('Permission error on',p);return null}};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fd=t=>t?new Date(t).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'-';
+const normDigits=s=>String(s??'').replace(/[\u0660-\u0669]/g,d=>String(d.charCodeAt(0)-0x0660)).replace(/[\u06F0-\u06F9]/g,d=>String(d.charCodeAt(0)-0x06F0));
+const normPhone=s=>normDigits(s).replace(/[\s\-()]/g,'');
+const avatarOf=name=>'https://ui-avatars.com/api/?name='+encodeURIComponent(name||'U')+'&background=2563eb&color=fff&size=200';
+const hasNotifApi=()=>typeof window!=='undefined'&&'Notification' in window;
 
-let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'},teachers={},videos={},library={},news={},notifications={},badge='',hb=null,ip=null;
-let banned=null,unsubBan=null,unsubTeachers=null,unsubVideos=null,unsubLibrary=null,unsubNews=null,unsubBans=null,unsubNoti=null,unsubBroadcastNoti=null,ownNotifications={},broadcastNotifications={};
-let ytPlayer=null,pollInterval=null;
-let cropper = null;
-let cropResolve = null;
+/* منع تكرار الإجراء عند النقر المتكرر */
+const pending=new Set();
+async function once(key,fn){if(pending.has(key))return;pending.add(key);try{return await fn()}finally{pending.delete(key)}}
 
+let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'};
+let teachers={},videos={},library={},news={},notifications={},ownNotifications={},broadcastNotifications={};
+let badge='',myPhoto='',myPhone='',hb=null,ip=null,ytPlayer=null,pollInterval=null,cropper=null,cropResolve=null;
+let unsubs=[],showingBan=false,renderSeq=0,ytWaiters=[];
+let loadedTeachers=false;
+
+/* ---------- device / theme ---------- */
 const DEVICE_KEY='sigma-device-id';
 function getDeviceId(){let id=localStorage.getItem(DEVICE_KEY);if(!id){id='d'+Date.now()+Math.random().toString(36).slice(2,8);localStorage.setItem(DEVICE_KEY,id)}return id}
 function deviceLabel(){const ua=navigator.userAgent;if(/android/i.test(ua))return'Android';if(/iPhone|iPad|iPod/i.test(ua))return'iOS';if(/Windows/i.test(ua))return'Windows';if(/Mac/i.test(ua))return'Mac';if(/Linux/i.test(ua))return'Linux';return'جهاز'}
 
 const THEME_KEY='sigma-theme';
-function initTheme(){const saved=localStorage.getItem(THEME_KEY);const prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;if(saved==='dark'||(!saved&&prefersDark))document.documentElement.classList.add('dark')}
-function toggleTheme(){document.documentElement.classList.toggle('dark');localStorage.setItem(THEME_KEY,document.documentElement.classList.contains('dark')?'dark':'light');render()}
+function initTheme(){const saved=localStorage.getItem(THEME_KEY);const prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(saved==='dark'||(!saved&&prefersDark))document.documentElement.classList.add('dark')}
 initTheme();
 
-function toast(m){const t=$('#t');t.textContent=m;t.classList.add('show');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('show'),2400)}
+function toast(m){const t=$('#t');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('show'),2600)}
 
+/* ---------- image crop ---------- */
 function img(f,s){
-  return new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const cropImage = $('#cropImage');
-      cropImage.src = e.target.result;
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error('تعذر قراءة الصورة'));
+    const squareFrom=(src,crop)=>{
+      const im=new Image();
+      im.onload=()=>{
+        const c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');
+        if(crop){x.drawImage(im,crop.x,crop.y,crop.w,crop.h,0,0,s,s)}
+        else{const side=Math.min(im.width,im.height);x.drawImage(im,(im.width-side)/2,(im.height-side)/2,side,side,0,0,s,s)}
+        resolve(c.toDataURL('image/jpeg',0.8));
+      };
+      im.onerror=()=>reject(new Error('صيغة الصورة غير مدعومة'));
+      im.src=src;
+    };
+    reader.onload=e=>{
+      // إذا فشل تحميل مكتبة القص نكتفي بالقص التلقائي من المنتصف
+      if(typeof Cropper==='undefined'){squareFrom(e.target.result,null);return}
+      const cropImage=$('#cropImage');
+      cropImage.src=e.target.result;
       $('#cropModal').classList.add('show');
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1, background: false, autoCropArea: 1 });
-      cropResolve = (croppedDataUrl) => {
+      if(cropper){cropper.destroy();cropper=null}
+      cropper=new Cropper(cropImage,{aspectRatio:1,viewMode:1,background:false,autoCropArea:1});
+      cropResolve=(dataUrl)=>{
         $('#cropModal').classList.remove('show');
-        cropper.destroy();
-        cropper = null;
-        if (!croppedDataUrl) return resolve(null);
-        const imgObj = new Image();
-        imgObj.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = canvas.height = s;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(imgObj, 0, 0, s, s);
-          resolve(canvas.toDataURL('image/jpeg', 0.8));
-        };
-        imgObj.src = croppedDataUrl;
+        if(cropper){cropper.destroy();cropper=null}
+        cropResolve=null;
+        if(!dataUrl)return resolve(null);
+        squareFrom(dataUrl,null);
       };
     };
     reader.readAsDataURL(f);
   });
 }
-function confirmCrop() { if (!cropper) return; const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 }); cropResolve(canvas.toDataURL('image/jpeg')); }
-function cancelCrop() { if (cropResolve) cropResolve(null); }
+function confirmCrop(){
+  if(!cropper||!cropResolve)return;
+  const c=cropper.getCroppedCanvas({width:400,height:400});
+  cropResolve(c.toDataURL('image/jpeg'));
+}
+function cancelCrop(){if(cropResolve)cropResolve(null)}
 
+/* ---------- messaging / notifications ---------- */
+async function enableNotifications(silent){
+  if(!messaging||!hasNotifApi()){if(!silent)toast('الإشعارات غير مدعومة في هذا المتصفح');return}
+  try{
+    const p=await Notification.requestPermission();
+    if(p!=='granted'){if(!silent)toast('لم يتم السماح بالإشعارات من إعدادات المتصفح');return}
+    const token=await getToken(messaging,{vapidKey:VAPID_KEY});
+    if(token){await set(R('users/'+U.uid+'/fcmToken'),token);if(!silent)toast('تم تفعيل الإشعارات ✅')}
+  }catch(e){console.error('Notifications error:',e);if(!silent)toast('تعذر تفعيل الإشعارات')}
+}
+if(messaging){
+  try{
+    onMessage(messaging,payload=>{
+      const {title,body}=payload.notification||{};
+      if(hasNotifApi()&&Notification.permission==='granted'){
+        try{new Notification(title||'إشعار جديد',{body:body||'لديك إشعار جديد',icon:$('#ai')?.href})}catch(e){}
+      }
+      refreshNotifications();
+    });
+  }catch(e){console.log('onMessage failed',e)}
+}
+
+/* ---------- video embed ---------- */
+function embed(u){
+  u=String(u||'').trim();let m;
+  if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/))
+    return{t:'yt',id:m[1],s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&controls=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1`};
+  if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))
+    return{t:'drive',s:`https://drive.google.com/file/d/${m[1]}/preview`,id:m[1]};
+  if(!/^https?:\/\//i.test(u))return{t:'f',s:''};   // رفض أي رابط غير http/https
+  if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return{t:'v',s:u};
+  return{t:'f',s:u};
+}
+
+/* ---------- single device enforcement ---------- */
+async function enforceSingleDevice(){
+  if(A||IS_SUPERVISOR)return true;
+  try{
+    const devId=getDeviceId();const sessionsRef=R('sessions/'+U.uid);
+    const cur=(await get(sessionsRef)).val()||{};const now=Date.now();
+    const existingDevice=cur.deviceId;const existingTs=cur.updatedAt||0;
+    if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
+      await set(R('bans/'+U.uid),{uid:U.uid,name:U.displayName||'',email:U.email||'',photo:'',oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر'});
+      return false;
+    }
+    await set(sessionsRef,{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});
+    const ban=await G('bans/'+U.uid);
+    if(ban&&ban.newDevice===devId)await remove(R('bans/'+U.uid));
+    return true;
+  }catch(e){console.warn('enforceSingleDevice',e);return true}
+}
+function renderBanned(ban){
+  showingBan=true;
+  document.body.innerHTML=`<div class="ban-screen"><div class="box-max"><h1>⛔ تم حظر حسابك</h1><p>تم اكتشاف تسجيل دخول من جهاز آخر.<br>حسابك مسجّل على: <b>${esc(ban.oldDeviceLabel||'جهاز سابق')}</b><br>حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>تواصل مع المدير لفك الحظر.</p><p style="font-size:12px;color:var(--mu)">الحساب: ${esc(ban.email||'')}</p><button onclick="out()">خروج</button></div></div>`;
+}
+
+function clearListeners(){unsubs.forEach(fn=>{try{if(typeof fn==='function')fn()}catch(e){}});unsubs=[]}
+function destroyYT(){if(ytPlayer&&ytPlayer.destroy){try{ytPlayer.destroy()}catch(e){}}ytPlayer=null}
+function stopHB(){if(hb)clearInterval(hb);hb=null}
+function stopPoll(){if(pollInterval){clearInterval(pollInterval);pollInterval=null}}
+
+function refreshNotifications(){
+  const merged={};
+  Object.entries(broadcastNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}});
+  Object.entries(ownNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...(merged[id]||{}),...n,_key:id}});
+  notifications=Object.fromEntries(Object.entries(merged).filter(([,n])=>!n.dismissed));
+  const unread=Object.values(notifications).filter(n=>!n.read).length;
+  const dot=$('#notiBadge');
+  if(dot){dot.textContent=unread>99?'99+':String(unread);dot.style.display=unread?'flex':'none'}
+}
+
+function hideOverlay(){setTimeout(()=>{const ov=$('#loading-overlay');if(ov)ov.classList.add('hide')},300)}
+
+/* ---------- auth state ---------- */
+onAuthStateChanged(auth,async u=>{
+  clearListeners();
+  U=u;myPhoto='';myPhone='';
+  if(!u){
+    if(showingBan){location.reload();return}
+    teachers={};videos={};library={};news={};badge='';notifications={};ownNotifications={};broadcastNotifications={};
+    IS_SUPERVISOR=false;A=false;S={v:'home'};
+    render();hideOverlay();return;
+  }
+  try{
+    const userData=await G('users/'+u.uid);
+    A=ADMIN_PHONES.includes(userData?.phone||'');
+    IS_SUPERVISOR=userData?.isSupervisor===true;
+    myPhoto=userData?.photo||'';
+    myPhone=userData?.phone||'';
+    if(!A&&!IS_SUPERVISOR){
+      const ban=await G('bans/'+u.uid);
+      if(ban){
+        renderBanned(ban);
+        unsubs.push(onValue(R('bans/'+u.uid),snap=>{if(!snap.val())location.reload()},()=>{}));
+        hideOverlay();return;
+      }
+      const ok=await enforceSingleDevice();
+      if(!ok){
+        const b=await G('bans/'+u.uid);
+        if(b){renderBanned(b);hideOverlay();return}
+      }
+    }
+    const savedCodes=(await G('users/'+u.uid+'/videos'))||{};
+    window.__mineVideos={...savedCodes};
+
+    unsubs.push(onValue(R('teachers'),s=>{teachers=s.val()||{};loadedTeachers=true;if(S.v!=='watch')render()},()=>{loadedTeachers=true}));
+    unsubs.push(onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()},()=>{}));
+    unsubs.push(onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()},()=>{}));
+    unsubs.push(onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()},()=>{}));
+    unsubs.push(onValue(R('notifications/'+u.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()},()=>{}));
+    unsubs.push(onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()},()=>{}));
+
+    badge=(await G('settings/badge'))||'';
+    if(hasNotifApi()&&Notification.permission==='granted')enableNotifications(true);
+  }catch(e){console.error(e)}
+  render();hideOverlay();
+});
+
+/* ---------- navigation ---------- */
+const go=(v,id,tab,filter)=>{
+  stopHB();stopPoll();destroyYT();
+  S={v,id,tab:tab!==undefined?tab:S.tab,filter:filter!==undefined?filter:S.filter};
+  window.scrollTo({top:0,behavior:'auto'});
+  render();
+};
+const inst=async()=>{if(!ip)return;ip.prompt();await ip.userChoice;ip=null;render()};
+const out=()=>{stopHB();stopPoll();destroyYT();clearListeners();signOut(auth)};
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;render()});
+
+/* ---------- PWA icon & manifest ---------- */
 (()=>{
   const c=document.createElement('canvas');c.width=c.height=192;const x=c.getContext('2d');
   const g=x.createLinearGradient(0,0,192,192);g.addColorStop(0,'#2563eb');g.addColorStop(1,'#1d4ed8');
@@ -295,261 +448,194 @@ function cancelCrop() { if (cropResolve) cropResolve(null); }
   $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
 })();
 
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;render()});
-document.addEventListener('visibilitychange',()=>{const p=$('.pl');if(p)p.classList.toggle('bl',document.hidden)});
-
-async function setupNotifications() {
-  if (!messaging) return;
-  try {
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      const token = await getToken(messaging, { vapidKey: 'BL3dfL6xBF8jnLy87cWLRwsoLAclt5HIWzkwa4R84L_GJ41vT2y2nBpFwgxPItJ2BmQej6_iZsegmidN6IVTREs' });
-      if (token) await set(R('users/' + U.uid + '/fcmToken'), token);
-    }
-  } catch (e) { console.error('Error getting notification permission:', e); }
-}
-if(messaging) {
-  onMessage(messaging, (payload) => {
-    const { title, body } = payload.notification || {};
-    if (Notification.permission === 'granted') {
-      new Notification(title || 'إشعار جديد', { body: body || 'لديك إشعار جديد', icon: $('#ai').href });
-    }
-    refreshNotifications();
-  });
-}
-
-function embed(u){u=u.trim();let m;if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/))return{t:'yt',id:m[1],s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&controls=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1`};if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))return{t:'drive',s:`https://drive.google.com/file/d/${m[1]}/preview`,id:m[1]};if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return{t:'v',s:u};return{t:'f',s:u}}
-
-async function enforceSingleDevice(){
-  if (A || IS_SUPERVISOR) return true;
-  try{
-    const devId=getDeviceId();const sessionsRef=R('sessions/'+U.uid);const cur=(await get(sessionsRef)).val()||{};const now=Date.now();const existingDevice=cur.deviceId;const existingTs=cur.updatedAt||0;
-    if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
-      await set(R('bans/'+U.uid),{uid:U.uid,name:U.displayName||'',email:U.email||'',photo:U.photoURL||'',oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر'});return false;
-    }
-    await set(sessionsRef,{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});const ban=(await G('bans/'+U.uid));if(ban&&ban.newDevice===devId){await remove(R('bans/'+U.uid))}return true;
-  }catch(e){ return true; }
-}
-async function checkBan(){return await G('bans/'+U.uid)}
-function renderBanned(ban){document.body.innerHTML=`<div class="ban-screen"><div class="box-max"><h1>⛔ تم حظر حسابك</h1><p>تم اكتشاف تسجيل دخول من جهاز آخر.<br>حسابك مسجّل على: <b>${esc(ban.oldDeviceLabel||'جهاز سابق')}</b><br>حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>تواصل مع المدير لفك الحظر.</p><p style="font-size:12px;color:var(--mu)">الإيميل: ${esc(ban.email||'')}</p><button onclick="out()">خروج</button></div></div>`}
-function clearListeners(){[unsubBan,unsubTeachers,unsubVideos,unsubLibrary,unsubNews,unsubBans,unsubNoti,unsubBroadcastNoti].forEach(fn=>{if(typeof fn==='function')try{fn()}catch(e){}});unsubBan=unsubTeachers=unsubVideos=unsubLibrary=unsubNews=unsubBans=unsubNoti=unsubBroadcastNoti=null;}
-
-function refreshNotifications(){
-  const merged={};
-  Object.entries(broadcastNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}});
-  Object.entries(ownNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...(merged[id]||{}),...n,_key:id}});
-  notifications=merged;
-  const unread=Object.values(notifications).filter(n=>!n.read).length;
-  const dot=$('#notiBadge');
-  if(dot){dot.textContent=unread>99?'99+':String(unread);dot.style.display=unread?'flex':'none'}
-}
-
-onAuthStateChanged(auth,async u=>{
-  clearListeners();U=u;
-  if(u){
-    try{
-      const userData = await G('users/' + u.uid);
-      const userPhone = userData?.phone || '';
-      A = ADMIN_PHONES.includes(userPhone);
-      IS_SUPERVISOR = (userData && userData.isSupervisor === true);
-      if(!A && !IS_SUPERVISOR){
-        const ban=await checkBan();
-        if(ban){
-          banned=ban;renderBanned(ban);
-          unsubBan=onValue(R('bans/'+U.uid),snap=>{if(!snap.val()){banned=null;location.reload()}});
-          return;
-        }
-        const ok=await enforceSingleDevice();
-        if(!ok){
-          const b=await checkBan();
-          if(b){banned=b;renderBanned(b);return}
-        }
-      }
-      const savedCodes=await G('users/'+U.uid+'/videos')||{};window.__mineVideos=Object.assign({},savedCodes);
-      
-      unsubTeachers=onValue(R('teachers'),s=>{teachers=s.val()||{};if(S.v!=='watch')render()}, (e)=>{});
-      unsubVideos=onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()}, (e)=>{});
-      unsubLibrary=onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()}, (e)=>{});
-      unsubNews=onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()}, (e)=>{});
-      unsubNoti=onValue(R('notifications/'+U.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()}, (e)=>{});
-      unsubBroadcastNoti=onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()}, (e)=>{});
-      
-      badge=await G('settings/badge')||'';
-      setupNotifications();
-    }catch(e){console.error(e)}
-  }else{
-    teachers={};videos={};library={};news={};badge='';notifications={};ownNotifications={};broadcastNotifications={};
-    IS_SUPERVISOR = false; A = false;
-  }
-  if(!u&&S.v!=='home')S={v:'home'};
-  if(!banned)render();
-  setTimeout(()=>{const ov=$('#loading-overlay');if(ov)ov.classList.add('hide')}, 800);
-});
-
-const go=(v,id,tab,filter)=>{stopHB();stopPoll();if(ytPlayer&&ytPlayer.destroy)try{ytPlayer.destroy()}catch(e){}S={v,id,tab:tab!==undefined?tab:S.tab,filter:filter!==undefined?filter:S.filter};window.scrollTo({top:0,behavior:'auto'});render()};
-const inst=async()=>{ip.prompt();await ip.userChoice;ip=null;render()};
-const out=()=>{stopHB();stopPoll();if(ytPlayer&&ytPlayer.destroy)try{ytPlayer.destroy()}catch(e){}clearListeners();signOut(auth)};
-
+/* ---------- notifications UI ---------- */
 function openNoti(){$('#notiModal').classList.add('show');renderNoti()}
 function closeNoti(){$('#notiModal').classList.remove('show')}
 function renderNoti(){
   const list=Object.values(notifications).sort((a,b)=>(b.created||0)-(a.created||0));
   const body=$('#notiBody');
   if(!list.length){body.innerHTML='<div class="mut" style="padding:20px">لا توجد إشعارات حالياً.</div>';return}
-  body.innerHTML=list.map(n=>`<div class="noti-item"><div>${esc(n.text||'إشعار جديد')}<span>${fd(n.created)}</span></div>${!A?`<button class="d" style="padding:4px 8px;font-size:10px" onclick="delNoti('${n._key}')">مسح</button>`:''}</div>`).join('');
-  if(U&&!A){const updates={};list.forEach(n=>{if(n._key)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(e=>{})}
+  body.innerHTML=list.map(n=>`<div class="noti-item"><div>${esc(n.text||'إشعار جديد')}<span>${fd(n.created)}</span></div><button class="d" style="padding:4px 8px;font-size:11px" onclick="delNoti('${esc(n._key)}')">مسح</button></div>`).join('')
+    +`<div style="text-align:center;padding-top:12px"><button class="s" style="font-size:12px" onclick="clearAllMyNotis()">مسح الكل</button></div>`;
+  if(U){
+    const updates={};
+    list.forEach(n=>{if(!n.read)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});
+    if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(()=>{});
+  }
 }
 async function delNoti(key){
-  if(!confirm('مسح هذا الإشعار؟')) return;
+  if(!confirm('مسح هذا الإشعار؟'))return;
+  const n=notifications[key]||{};
   try{
-    const snap = await get(R('notifications/all/'+key));
-    if(snap.exists()){ await remove(R('notifications/'+U.uid+'/'+key)); alert('لا يمكن مسح الإشعار العام من قاعدته، تم إخفاؤه لك.'); }
-    else { await remove(R('notifications/'+U.uid+'/'+key)); }
-    toast('تم المسح'); renderNoti();
-  }catch(e){ toast('تعذر المسح'); }
+    // نكتب نسخة شخصية مخفية، فلا يعود الإشعار العام للظهور ولا نحذف من القاعدة العامة
+    await set(R('notifications/'+U.uid+'/'+key),{text:n.text||'',created:n.created||Date.now(),read:true,dismissed:true});
+    toast('تم المسح');renderNoti();
+  }catch(e){toast('تعذر المسح')}
 }
 async function clearAllMyNotis(){
-  if(!confirm('مسح كل الإشعارات الخاصة بك؟')) return;
-  try{ await remove(R('notifications/'+U.uid)); toast('تم مسح الإشعارات'); renderNoti(); }catch(e){ toast('تعذر المسح'); }
+  if(!confirm('مسح كل الإشعارات؟'))return;
+  const ups={};
+  Object.values(notifications).forEach(n=>{ups[n._key]={text:n.text||'',created:n.created||Date.now(),read:true,dismissed:true}});
+  try{
+    if(Object.keys(ups).length)await update(R('notifications/'+U.uid),ups);
+    toast('تم مسح الإشعارات');renderNoti();
+  }catch(e){toast('تعذر المسح')}
 }
 
-function vAuth() {
+/* ---------- auth screens ---------- */
+function vAuth(){
   return `<div class="auth-container">
     <h1>Σ سيجما</h1>
     <p>منصة سيجما التعليمية</p>
-    <div id="auth-phone" style="display:block; margin-top:30px;">
+    <div style="margin-top:30px;">
       <div class="auth-form" id="phone-register">
-        <label>الاسم الرباعي</label>
-        <input id="reg-name" placeholder="مثال: يزيد أحمد محمد علي">
-        <label>رقم الهاتف</label>
-        <input id="reg-phone" type="tel" placeholder="01xxxxxxxxx" dir="ltr">
-        <label>كلمة المرور</label>
-        <input id="reg-pass" type="password" placeholder="••••••••">
-        <label>تأكيد كلمة المرور</label>
-        <input id="reg-pass2" type="password" placeholder="••••••••">
+        <label for="reg-name">الاسم الرباعي</label>
+        <input id="reg-name" autocomplete="name" placeholder="مثال: يزيد أحمد محمد علي">
+        <label for="reg-phone">رقم الهاتف</label>
+        <input id="reg-phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="01xxxxxxxxx" dir="ltr">
+        <label for="reg-pass">كلمة المرور</label>
+        <input id="reg-pass" type="password" autocomplete="new-password" placeholder="••••••••">
+        <label for="reg-pass2">تأكيد كلمة المرور</label>
+        <input id="reg-pass2" type="password" autocomplete="new-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')registerPhone()">
         <div class="error" id="reg-error"></div>
         <button class="auth-btn phone" onclick="registerPhone()">إنشاء حساب</button>
-        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">لديك حساب بالفعل؟ <a href="#" onclick="switchPhoneMode('login', event)" style="color:var(--ac);font-weight:700;text-decoration:none">تسجيل الدخول</a></p>
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">لديك حساب بالفعل؟ <a href="#" class="link-btn" onclick="switchPhoneMode('login',event)">تسجيل الدخول</a></p>
       </div>
       <div class="auth-form" id="phone-login" style="display:none">
-        <label>رقم الهاتف</label>
-        <input id="login-phone" type="tel" placeholder="01xxxxxxxxx" dir="ltr">
-        <label>كلمة المرور</label>
-        <input id="login-pass" type="password" placeholder="••••••••">
+        <label for="login-phone">رقم الهاتف</label>
+        <input id="login-phone" type="tel" inputmode="numeric" autocomplete="username" placeholder="01xxxxxxxxx" dir="ltr">
+        <label for="login-pass">كلمة المرور</label>
+        <input id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginPhone()">
         <div class="error" id="login-error"></div>
         <button class="auth-btn phone" onclick="loginPhone()">دخول</button>
-        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">ليس لديك حساب؟ <a href="#" onclick="switchPhoneMode('register', event)" style="color:var(--ac);font-weight:700;text-decoration:none">إنشاء حساب</a></p>
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--mu)">ليس لديك حساب؟ <a href="#" class="link-btn" onclick="switchPhoneMode('register',event)">إنشاء حساب</a></p>
       </div>
     </div>
   </div>`;
 }
-function switchPhoneMode(mode, e) {
-  if(e) e.preventDefault();
-  document.getElementById('phone-register').style.display = 'none';
-  document.getElementById('phone-login').style.display = 'none';
-  if(mode === 'login') { document.getElementById('phone-login').style.display = 'block'; } 
-  else { document.getElementById('phone-register').style.display = 'block'; }
+function switchPhoneMode(mode,e){
+  if(e)e.preventDefault();
+  $('#phone-register').style.display=mode==='login'?'none':'block';
+  $('#phone-login').style.display=mode==='login'?'block':'none';
 }
-async function registerPhone() {
-  const name = $('#reg-name').value.trim();
-  const phone = $('#reg-phone').value.trim();
-  const pass = $('#reg-pass').value;
-  const pass2 = $('#reg-pass2').value;
-  const err = $('#reg-error');
-  err.style.display = 'none';
-  if (!name || name.split(' ').length < 4) { err.textContent = 'يجب كتابة الاسم الرباعي كاملاً (4 مقاطع)'; err.style.display = 'block'; return; }
-  if (!/^01[0-9]{9}$/.test(phone)) { err.textContent = 'رقم الهاتف يجب أن يكون 11 رقم ويبدأ بـ 01'; err.style.display = 'block'; return; }
-  if (pass.length < 6) { err.textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'; err.style.display = 'block'; return; }
-  if (pass !== pass2) { err.textContent = 'كلمتا المرور غير متطابقتين'; err.style.display = 'block'; return; }
-  try {
-    const fakeEmail = `${phone}@sigma.user`;
-    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
-    const user = userCredential.user;
-    await updateProfile(user, { displayName: name });
-    await set(R('users/' + user.uid), { name: name, phone: phone, email: fakeEmail, photo: '', createdAt: Date.now(), isSupervisor: false });
+function showErr(id,msg){const el=$('#'+id);el.textContent=msg;el.style.display='block'}
+function authMsg(e){
+  const c=e?.code||'';
+  if(c==='auth/network-request-failed')return 'تعذر الاتصال بالإنترنت، تحقق من الشبكة وحاول مرة أخرى';
+  if(c==='auth/too-many-requests')return 'محاولات كثيرة جداً، انتظر قليلاً ثم حاول مرة أخرى';
+  if(c==='auth/weak-password')return 'كلمة المرور ضعيفة، استخدم 6 أحرف على الأقل';
+  if(c==='auth/email-already-in-use')return 'رقم الهاتف مسجل بالفعل، يمكنك تسجيل الدخول.';
+  if(c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found'||c==='auth/invalid-login-credentials')return null;
+  return 'حدث خطأ: '+(e?.message||c||'غير معروف');
+}
+
+function registerPhone(){return once('register',doRegister)}
+async function doRegister(){
+  const name=$('#reg-name').value.trim().replace(/\s+/g,' ');
+  const phone=normPhone($('#reg-phone').value);
+  const pass=$('#reg-pass').value;
+  const pass2=$('#reg-pass2').value;
+  $('#reg-error').style.display='none';
+  if(name.split(' ').filter(Boolean).length<4)return showErr('reg-error','يجب كتابة الاسم الرباعي كاملاً (4 مقاطع)');
+  if(!/^01[0-9]{9}$/.test(phone))return showErr('reg-error','رقم الهاتف يجب أن يكون 11 رقم ويبدأ بـ 01');
+  if(pass.length<6)return showErr('reg-error','كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+  if(pass!==pass2)return showErr('reg-error','كلمتا المرور غير متطابقتين');
+  try{
+    const fakeEmail=`${phone}@sigma.user`;
+    const cred=await createUserWithEmailAndPassword(auth,fakeEmail,pass);
+    const user=cred.user;
+    await updateProfile(user,{displayName:name});
+    await set(R('users/'+user.uid),{name,phone,email:fakeEmail,photo:'',createdAt:Date.now(),isSupervisor:false});
     toast('تم إنشاء الحساب بنجاح');
-    setTimeout(() => location.reload(), 1000);
-  } catch (e) {
-    if (e.code === 'auth/email-already-in-use') { err.textContent = 'رقم الهاتف مسجل بالفعل، يمكنك تسجيل الدخول.'; } 
-    else { err.textContent = 'حدث خطأ: ' + e.message; }
-    err.style.display = 'block';
-  }
-}
-async function loginPhone() {
-  const phone = $('#login-phone').value.trim();
-  const pass = $('#login-pass').value;
-  const err = $('#login-error');
-  err.style.display = 'none';
-  if (!/^01[0-9]{9}$/.test(phone)) { err.textContent = 'رقم الهاتف غير صحيح'; err.style.display = 'block'; return; }
-  const failKey = `login_fails_${phone}`;
-  const lockKey = `login_lock_${phone}`;
-  const lockTime = localStorage.getItem(lockKey);
-  if (lockTime) {
-    const remaining = Math.ceil((parseInt(lockTime) - Date.now()) / 60000);
-    if (remaining > 0) {
-      err.textContent = `تم قفل الحساب مؤقتاً. يرجى المحاولة بعد ${remaining} دقيقة.`;
-      err.style.display = 'block'; return;
-    } else {
-      localStorage.removeItem(lockKey);
-      localStorage.removeItem(failKey);
-    }
-  }
-  try {
-    const fakeEmail = `${phone}@sigma.user`;
-    await signInWithEmailAndPassword(auth, fakeEmail, pass);
-    localStorage.removeItem(failKey);
-    toast('تم تسجيل الدخول بنجاح');
-  } catch (e) {
-    let fails = parseInt(localStorage.getItem(failKey) || "0") + 1;
-    localStorage.setItem(failKey, fails);
-    if (fails >= 3) {
-      localStorage.setItem(lockKey, Date.now() + 15 * 60 * 1000);
-      err.textContent = 'تم إدخال كلمة مرور خاطئة 3 مرات. الحساب مقفل لمدة 15 دقيقة.';
-      localStorage.removeItem(failKey);
-    } else {
-      err.textContent = `رقم الهاتف أو كلمة المرور غير صحيحة (المحاولة ${fails} من 3)`;
-    }
-    err.style.display = 'block';
+    setTimeout(()=>location.reload(),800);
+  }catch(e){
+    const m=authMsg(e);
+    showErr('reg-error',m||'حدث خطأ غير متوقع');
   }
 }
 
+function loginPhone(){return once('login',doLogin)}
+async function doLogin(){
+  const phone=normPhone($('#login-phone').value);
+  const pass=$('#login-pass').value;
+  $('#login-error').style.display='none';
+  if(!/^01[0-9]{9}$/.test(phone))return showErr('login-error','رقم الهاتف غير صحيح');
+  if(!pass)return showErr('login-error','اكتب كلمة المرور');
+  const failKey=`login_fails_${phone}`,lockKey=`login_lock_${phone}`;
+  const lockTime=parseInt(localStorage.getItem(lockKey)||'0',10);
+  if(lockTime){
+    const remaining=Math.ceil((lockTime-Date.now())/60000);
+    if(remaining>0)return showErr('login-error',`تم قفل الحساب مؤقتاً. يرجى المحاولة بعد ${remaining} دقيقة.`);
+    localStorage.removeItem(lockKey);localStorage.removeItem(failKey);
+  }
+  try{
+    await signInWithEmailAndPassword(auth,`${phone}@sigma.user`,pass);
+    localStorage.removeItem(failKey);
+    toast('تم تسجيل الدخول بنجاح');
+  }catch(e){
+    const m=authMsg(e);
+    if(m!==null)return showErr('login-error',m);
+    const fails=parseInt(localStorage.getItem(failKey)||'0',10)+1;
+    if(fails>=3){
+      localStorage.setItem(lockKey,String(Date.now()+15*60*1000));
+      localStorage.removeItem(failKey);
+      showErr('login-error','تم إدخال كلمة مرور خاطئة 3 مرات. الحساب مقفل لمدة 15 دقيقة.');
+    }else{
+      localStorage.setItem(failKey,String(fails));
+      showErr('login-error',`رقم الهاتف أو كلمة المرور غير صحيحة (المحاولة ${fails} من 3)`);
+    }
+  }
+}
+
+/* ---------- render ---------- */
 function render(){
   const a=$('#app');
-  if(!U){a.innerHTML=vAuth();return;}
-  let body='';
-  try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch,students:vAdminStudents,news:vNews,studentProfile:vStudentProfile}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}
-  if(body&&typeof body.then==='function'){
-    body.then(html=>{a.innerHTML=shell(html);afterRender()}).catch(e=>{a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`)});
-    a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');return;
+  if(!a)return;
+  const seq=++renderSeq;
+  if(!U){a.innerHTML=vAuth();return}
+  const views={home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,students:vAdminStudents,news:vNews,studentProfile:vStudentProfile};
+  const fn=views[S.v]||vHome;
+  let res;
+  try{res=fn()}catch(e){console.error(e);a.innerHTML=shell(`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`);return}
+  if(res&&typeof res.then==='function'){
+    a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');
+    res.then(html=>{
+      if(seq!==renderSeq)return;           // تجاهل النتائج القديمة إذا تغيّرت الصفحة
+      a.innerHTML=shell(html??'');afterRender();
+    }).catch(e=>{
+      if(seq!==renderSeq)return;
+      console.error(e);a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`);
+    });
+    return;
   }
-  a.innerHTML=shell(body);afterRender();
+  a.innerHTML=shell(res??'');afterRender();
 }
 function afterRender(){if(S.v==='watch')setTimeout(initPlayer,300)}
 
-function shell(body){
-  let topBar = '';
-  if(U) {
-    const displayName = U.displayName || 'الطالب';
-    const firstName = displayName.split(' ')[0];
-    const isDark = document.documentElement.classList.contains('dark');
-    topBar = `
-      <div class="top-bar">
-        <div class="welcome">
-          <h1>أهلاً، ${esc(firstName)} 👋</h1>
-          <p>مرحباً بك في منصة سيجما التعليمية</p>
-          <div class="actions">
-            ${ip?`<button class="action-btn icon-only" type="button" onclick="inst()" title="تثبيت التطبيق"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg></button>`:''}
-            <button class="action-btn icon-only" type="button" onclick="openNoti()" title="الإشعارات"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="notiBadge" class="badge-dot" style="display:none"></span></button>
-            <button class="action-btn icon-only" type="button" onclick="toggleTheme()" title="${isDark?'نهاري':'ليلي'}"><svg viewBox="0 0 24 24">${isDark?'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>':'<path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/>'}</svg></button>
-          </div>
-        </div>
-        <div class="user-area">
-          <img src="${badge||U.photoURL||''}" class="avatar-lg" onclick="go('profile')" style="cursor:pointer">
-        </div>
+function topBarHTML(){
+  if(!U)return '';
+  const firstName=(U.displayName||'الطالب').split(' ')[0];
+  const isDark=document.documentElement.classList.contains('dark');
+  const avatar=badge||myPhoto||U.photoURL||avatarOf(U.displayName);
+  const canNotify=!!messaging;
+  return `
+  <div class="top-bar">
+    <div class="welcome">
+      <h1>أهلاً، ${esc(firstName)} 👋</h1>
+      <p>مرحباً بك في منصة سيجما التعليمية</p>
+      <div class="actions">
+        ${ip?`<button class="action-btn icon-only" type="button" onclick="inst()" title="تثبيت التطبيق" aria-label="تثبيت التطبيق"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg></button>`:''}
+        <button class="action-btn icon-only" type="button" onclick="openNoti()" title="الإشعارات" aria-label="الإشعارات"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="notiBadge" class="badge-dot" style="display:none"></span></button>
+        <button class="action-btn icon-only" type="button" onclick="toggleTheme()" title="${isDark?'الوضع النهاري':'الوضع الليلي'}" aria-label="تغيير المظهر"><svg viewBox="0 0 24 24">${isDark?'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>':'<path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/>'}</svg></button>
       </div>
-    `;
-  }
-  return `${topBar}<main style="padding-bottom:calc(100px + env(safe-area-inset-bottom))">${body}</main>${bottomBar()}`;
+    </div>
+    <div class="user-area">
+      <img src="${esc(avatar)}" alt="" class="avatar-lg" onclick="go('profile')" title="الملف الشخصي">
+    </div>
+  </div>`;
+}
+function shell(body){
+  return `<div id="topbar-slot">${topBarHTML()}</div><main style="padding-bottom:calc(100px + env(safe-area-inset-bottom))">${body}</main>${bottomBar()}`;
 }
 
 function bottomBar(){
@@ -557,294 +643,429 @@ function bottomBar(){
   const svgHome=`<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
   const svgNews=`<svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg>`;
   const svgLibrary=`<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>`;
-  const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
+  const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
   const svgWhatsapp=`<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
-  return `<nav class="bottombar">
+  const adminOn=['admin','vid','edit','editLib','students','studentProfile'].includes(S.v);
+  return `<nav class="bottombar" aria-label="التنقل">
     <button class="${on('home')?'on':''}" onclick="go('home')">${svgHome} <span>الرئيسية</span></button>
     <button class="${on('news')?'on':''}" onclick="go('news')">${svgNews} <span>الأخبار</span></button>
     <button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary} <span>المكتبة</span></button>
-    <button class="contact-btn-nav" onclick="window.open('https://wa.me/201147758295','_blank')">${svgWhatsapp} <span>تواصل</span></button>
-    ${A||IS_SUPERVISOR?`<button class="${(on('admin')||S.v==='vid'||S.v==='edit'||S.v==='editLib'||S.v==='studentSearch'||S.v==='students'||S.v==='studentProfile')?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
+    <button class="contact-btn-nav" onclick="window.open('https://wa.me/201147758295','_blank','noopener')">${svgWhatsapp} <span>تواصل</span></button>
+    ${A||IS_SUPERVISOR?`<button class="${adminOn?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
   </nav>`;
 }
 
+/* تبديل المظهر يحدّث الشريط العلوي فقط، حتى لا يُعاد تحميل الفيديو */
+function toggleTheme(){
+  document.documentElement.classList.toggle('dark');
+  localStorage.setItem(THEME_KEY,document.documentElement.classList.contains('dark')?'dark':'light');
+  const slot=$('#topbar-slot');
+  if(slot)slot.innerHTML=topBarHTML();
+  else render();
+}
+
+/* ---------- profile ---------- */
 function vProfile(){
-  const currentPhoto = U.photoURL || badge || 'https://ui-avatars.com/api/?name='+encodeURIComponent(U.displayName||'U')+'&background=2563eb&color=fff&size=200';
+  const photo=myPhoto||U.photoURL||badge||avatarOf(U.displayName);
+  const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
+  const canNotify=!!messaging&&hasNotifApi()&&Notification.permission!=='granted';
   return `<div class="box profile-card">
-    <img src="${currentPhoto}" alt="صورة الملف الشخصي" id="profile-img">
+    <img src="${esc(photo)}" alt="صورة الملف الشخصي" id="profile-img">
     <h2>${esc(U.displayName||'')}</h2>
-    <p>${esc(U.email||'')}</p>
-    ${A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>'}
+    <p dir="ltr">${esc(myPhone||'')}</p>
+    ${role}
     <div style="margin-top:20px;text-align:right">
-      <label>تغيير صورة الملف الشخصي</label>
+      <label for="profile-photo-input">تغيير صورة الملف الشخصي</label>
       <input type="file" id="profile-photo-input" accept="image/*" style="margin-bottom:10px">
       <button onclick="updateProfilePhoto()">حفظ الصورة</button>
     </div>
-    <br><button class="d" onclick="out()">تسجيل الخروج</button>
+    ${canNotify?`<div style="margin-top:20px"><button class="s" onclick="enableNotifications()">🔔 تفعيل الإشعارات</button></div>`:''}
+    <div style="margin-top:20px"><button class="d" onclick="out()">تسجيل الخروج</button></div>
   </div>`;
 }
-async function updateProfilePhoto() {
-  const fileInput = $('#profile-photo-input');
-  if (!fileInput.files || !fileInput.files[0]) return toast('اختر صورة أولاً');
-  try {
+function updateProfilePhoto(){return once('photo',doUpdatePhoto)}
+async function doUpdatePhoto(){
+  const f=$('#profile-photo-input').files?.[0];
+  if(!f)return toast('اختر صورة أولاً');
+  try{
     toast('جارٍ رفع الصورة...');
-    const photoData = await img(fileInput.files[0], 200);
-    if (!photoData) return toast('تم إلغاء القص');
-    await updateProfile(auth.currentUser, { photoURL: photoData });
-    await update(R('users/' + U.uid), { photo: photoData });
-    U.photoURL = photoData;
+    const data=await img(f,200);
+    if(!data)return toast('تم إلغاء القص');
+    // نحفظ الصورة في قاعدة البيانات فقط؛ حقل photoURL في Auth لا يقبل صور base64
+    await update(R('users/'+U.uid),{photo:data});
+    myPhoto=data;
     toast('تم تحديث الصورة بنجاح');
     render();
-  } catch (e) {
-    console.error(e);
-    toast('تعذر تحديث الصورة: ' + e.message);
-  }
+  }catch(e){console.error(e);toast('تعذر تحديث الصورة: '+e.message)}
 }
 
+/* ---------- home / teacher ---------- */
 function vHome(){
+  if(!loadedTeachers)return'<div class="mut">جارٍ التحميل…</div>';
   const t=Object.entries(teachers);
   if(!t.length)return'<div class="mut">لا يوجد مدرسون بعد.</div>';
   return`<h2>اختر المدرس</h2><div class="grid">${t.map(([id,x])=>`
-    <div class="card" onclick="go('teacher','${id}')">
+    <div class="card" onclick="go('teacher','${id}')" role="button" tabindex="0">
       <div class="card-img-wrap">
-        <img src="${x.photo||'https://ui-avatars.com/api/?name='+encodeURIComponent(x.name)+'&background=e2e8f0&color=475569&size=200'}" alt="">
+        <img src="${esc(x.photo||avatarOf(x.name))}" alt="">
       </div>
-      <div class="card-body">
-        <b>${esc(x.name)}</b>
-      </div>
-    </div>`).join('')}</div>`
+      <div class="card-body"><b>${esc(x.name)}</b></div>
+    </div>`).join('')}</div>`;
 }
 
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
-  
   const mine=window.__mineVideos||{};
-  const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id).sort((a,b)=>b[1].created-a[1].created);
-  
-  let html = `<button class="s" onclick="go('home')" style="margin-bottom:16px">← رجوع</button><h2>${esc(t.name)}</h2>`;
-  
-  if(!l.length) return html + '<div class="mut">لا توجد فيديوهات لهذا المدرس.</div>';
-  
-  const grades = ['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي','الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
-  
-  grades.forEach(g => {
-    const gradeVideos = l.filter(([,v]) => v.grade === g);
-    if(gradeVideos.length) {
-      html += `<h3 style="margin:20px 0 10px;color:var(--ac2)">${g}</h3>`;
-      html += gradeVideos.map(([id,v])=>{
-        if(v.disabled&&!A&&!IS_SUPERVISOR)return`<div class="row" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
-        const open=A||IS_SUPERVISOR||!!mine[id];
-        return`<div class="row" onclick="${open?`go('watch','${id}')`:`go('code','${id}')`}"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b ${open?'g':''}">${open?((A||IS_SUPERVISOR)?'مفتوح (إدارة)':'مفتوح'):'يحتاج كود'}</span></div>`;
-      }).join('');
-    }
+  const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
+  let html=`<button class="s" onclick="go('home')" style="margin-bottom:16px">← رجوع</button><h2>${esc(t.name)}</h2>`;
+  if(!l.length)return html+'<div class="mut">لا توجد فيديوهات لهذا المدرس.</div>';
+  const grades=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي','الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
+  grades.forEach(g=>{
+    const gv=l.filter(([,v])=>v.grade===g);
+    if(!gv.length)return;
+    html+=`<h3 style="margin:20px 0 10px;color:var(--ac2)">${g}</h3>`;
+    html+=gv.map(([id,v])=>{
+      if(v.disabled&&!A&&!IS_SUPERVISOR)return`<div class="row" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
+      const open=A||IS_SUPERVISOR||!!mine[id];
+      const label=open?((A||IS_SUPERVISOR)?'مفتوح (إدارة)':'مفتوح'):'يحتاج كود';
+      return`<div class="row" onclick="go('${open?'watch':'code'}','${id}')" role="button" tabindex="0"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b ${open?'g':''}">${label}</span></div>`;
+    }).join('');
   });
   return html;
 }
 
+/* ---------- code / watch ---------- */
 function vCode(){
   const v=videos[S.id];
   if(!v||v.disabled)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
-  return`<button class="s" onclick="go('teacher','${v.teacherId}')" style="margin-bottom:16px">← رجوع</button>
-  <div class="box"><h2>${esc(v.title)}</h2><label>أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label><input id="cd" inputmode="numeric" maxlength="6" placeholder="000000" style="font-size:26px;text-align:center;letter-spacing:8px;font-family:monospace"><button onclick="redeem('${S.id}')" style="width:100%">فتح الفيديو</button></div>`;
+  return`<button class="s" onclick="go('teacher','${esc(v.teacherId)}')" style="margin-bottom:16px">← رجوع</button>
+  <div class="box"><h2>${esc(v.title)}</h2>
+    <label for="cd">أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label>
+    <input id="cd" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" onkeydown="if(event.key==='Enter')redeem('${S.id}')">
+    <button onclick="redeem('${S.id}')" style="width:100%">فتح الفيديو</button></div>`;
 }
-async function redeem(vid){
+function redeem(vid){return once('redeem',()=>doRedeem(vid))}
+async function doRedeem(vid){
   const v=videos[vid];if(!v||v.disabled)return toast('الفيديو موقوف');
-  const c=$('#cd').value.trim();if(!/^\d{6}$/.test(c))return toast('الكود يجب أن يكون 6 أرقام');
+  const c=normDigits($('#cd').value).replace(/\D/g,'');
+  if(!/^\d{6}$/.test(c))return toast('الكود يجب أن يكون 6 أرقام');
   try{
     const r=await runTransaction(R('codes/'+c),cur=>{
       if(cur===null)return cur;
       if(cur.videoId!==vid)return;
       if(cur.used&&cur.usedBy!==U.uid)return;
-      if(!cur.used)Object.assign(cur,{used:true,usedBy:U.uid,usedByName:U.displayName,usedByEmail:U.email,usedAt:Date.now()});
+      if(!cur.used)Object.assign(cur,{used:true,usedBy:U.uid,usedByName:U.displayName||'',usedByEmail:U.email||'',usedAt:Date.now()});
       return cur;
     });
-    const vv=r?.snapshot.val();
+    const vv=r.snapshot.val();
     if(!vv||vv.usedBy!==U.uid||vv.videoId!==vid)return toast('الكود غير صحيح أو مستخدم من قبل');
     await set(R(`users/${U.uid}/videos/${vid}`),c);
-    window.__mineVideos=window.__mineVideos||{};window.__mineVideos[vid]=c;
+    window.__mineVideos={...(window.__mineVideos||{}),[vid]:c};
     go('watch',vid);
-  }catch(e){ toast('حدث خطأ أثناء التحقق من الكود'); }
+  }catch(e){console.error(e);toast('حدث خطأ أثناء التحقق من الكود')}
 }
 
 async function vWatch(){
   const v=videos[S.id];if(!v)return vHome();
-  if(v.disabled&&!A&&!IS_SUPERVISOR)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
+  const isStaff=A||IS_SUPERVISOR;
+  if(v.disabled&&!isStaff)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
   let c,rec;
   try{
-    if(A||IS_SUPERVISOR){c='admin';rec={url:v.url,usedBy:U.uid,videoId:S.id}}
+    if(isStaff){c='admin';rec={url:v.url}}
     else{
-      c=(window.__mineVideos&&window.__mineVideos[S.id])?window.__mineVideos[S.id]:(await G(`users/${U.uid}/videos/${S.id}`));
-      if(!c)return go('code',S.id);
+      c=window.__mineVideos?.[S.id]||(await G(`users/${U.uid}/videos/${S.id}`));
+      if(!c)return vCode();
       rec=await G('codes/'+c);
-      if(!rec||rec.usedBy!==U.uid){if(window.__mineVideos)delete window.__mineVideos[S.id];return go('code',S.id)}
+      if(!rec||rec.usedBy!==U.uid||rec.videoId!==S.id){
+        if(window.__mineVideos)delete window.__mineVideos[S.id];
+        return vCode();
+      }
     }
-  }catch(e){ return `<div class="mut">ليس لديك صلاحية لمشاهدة هذا الفيديو.</div>`; }
-  const e=embed(rec.url),lp=`logs/${S.id}/${U.uid}`,old=(A||IS_SUPERVISOR?{}:await G(lp)||{});
-  let sec=old.seconds||0;const dur=(+v.duration||0)*60;
-  if(!A&&!IS_SUPERVISOR){
+  }catch(e){return`<div class="mut">ليس لديك صلاحية لمشاهدة هذا الفيديو.</div>`}
+
+  const e=embed(rec.url);
+  if(!e.s)return`<div class="mut">رابط الفيديو غير صالح، تواصل مع الإدارة.</div>`;
+
+  const lp=`logs/${S.id}/${U.uid}`;
+  const old=isStaff?{}:((await G(lp))||{});
+  let sec=old.seconds||0;
+  const dur=(+v.duration||0)*60;
+
+  stopHB();   // منع تكرار المؤقتات عند إعادة الرسم
+  if(!isStaff){
     try{
-      await update(R(lp),{name:U.displayName,email:U.email,photo:U.photoURL||'',code:c,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
-      const tick=async(add)=>{if(document.hidden)return;sec+=add;const done=dur&&sec>=dur*.9;await update(R(lp),{seconds:sec,lastAt:Date.now(),completed:done||!!old.completed}).catch(()=>{})};
-      hb=setInterval(()=>tick(10),10000);
-    }catch(e){}
+      await update(R(lp),{name:U.displayName||'',email:U.email||'',code:c,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
+    }catch(err){console.warn('log init failed',err)}
+    hb=setInterval(async()=>{
+      if(document.hidden)return;
+      sec+=10;
+      const done=dur&&sec>=dur*.9;
+      await update(R(lp),{seconds:sec,lastAt:Date.now(),completed:!!(done||old.completed)}).catch(()=>{});
+    },10000);
   }
-  const wm=(A||IS_SUPERVISOR)?'':`<div class="wm">${badge?`<img src="${badge}" alt="">`:''}${esc(U.displayName||'')} · ${esc(U.email||'')}</div>`;
+
+  const wm=isStaff?'':`<div class="wm">${badge?`<img src="${esc(badge)}" alt="">`:''}${esc(U.displayName||'')} · ${esc(myPhone||U.email||'')}</div>`;
+  const isYT=e.t==='yt';
   let playerHTML='';
-  let isYT=(e.t==='yt');
-  if(e.t==='v'){playerHTML=`<video id="vplayer" src="${esc(e.s)}" playsinline></video>`}
-  else if(isYT){playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>`}
-  else if(e.t==='drive'){playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`}
-  else{playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`}
-  let controlsHTML='';
-  if(isYT||e.t==='v'){
-    controlsHTML=`<div class="custom-player-ctrl"><div class="progress-row"><button id="playPauseBtn" class="play-btn" onclick="togglePlay()">▶</button><div class="progress-container"><span class="time" id="cTime">0:00</span><input type="range" id="cSeek" min="0" max="100" value="0" step="0.1" oninput="onSeek(this.value)"><span class="time" id="dTime">0:00</span></div></div><div class="tools-row"><button onclick="seekRel(-5)">⏪ -5 ثوان</button><button onclick="seekRel(5)">+5 ثوان ⏩</button><span style="color:var(--mu);font-size:13px;font-weight:700;margin:0 4px">السرعة:</span><select id="speedSelector" onchange="setRate(this.value)"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x (عادي)</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button onclick="toggleFullscreen()" id="fsBtn">⛶ ملء الشاشة</button></div></div>`;
-  }
-  return`<button class="s" onclick="go('teacher','${v.teacherId}')">← رجوع</button>
-  <h2 style="margin-top:14px">${esc(v.title)} ${(A||IS_SUPERVISOR)?'<span class="b g">إدارة</span>':''}</h2>
+  if(e.t==='v')playerHTML=`<video id="vplayer" src="${esc(e.s)}" playsinline controlsList="nodownload"></video>`;
+  else if(isYT)playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  else if(e.t==='drive')playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  else playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`;
+
+  const controlsHTML=(isYT||e.t==='v')?`<div class="custom-player-ctrl">
+    <div class="progress-row">
+      <button id="playPauseBtn" class="play-btn" onclick="togglePlay()" aria-label="تشغيل/إيقاف">▶</button>
+      <div class="progress-container">
+        <span class="time" id="cTime">0:00</span>
+        <input type="range" id="cSeek" min="0" max="100" value="0" step="0.1" oninput="onSeek(this.value)" aria-label="شريط التقدم">
+        <span class="time" id="dTime">0:00</span>
+      </div>
+    </div>
+    <div class="tools-row">
+      <button onclick="seekRel(-5)">⏪ -5 ثوان</button>
+      <button onclick="seekRel(5)">+5 ثوان ⏩</button>
+      <span style="color:var(--mu);font-size:13px;font-weight:700;margin:0 4px">السرعة:</span>
+      <select id="speedSelector" onchange="setRate(this.value)" aria-label="سرعة التشغيل">
+        <option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x (عادي)</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option>
+      </select>
+      <button onclick="toggleFullscreen()" id="fsBtn">⛶ ملء الشاشة</button>
+    </div>
+  </div>`:'';
+
+  return`<button class="s" onclick="go('teacher','${esc(v.teacherId)}')">← رجوع</button>
+  <h2 style="margin-top:14px">${esc(v.title)} ${isStaff?'<span class="b g">إدارة</span>':''}</h2>
   <div class="player-wrap"><div class="pl ${isYT?'crop-yt':''}" id="plbox">${playerHTML}<div class="yt-shield"></div>${isYT?'<div class="yt-bottom-mask"></div><div class="yt-top-mask"></div>':''}${wm}</div>${controlsHTML}</div>
   <p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>`;
 }
 
-function openLibraryItem(url){try{const parsed=new URL(url,location.href);if(!['http:','https:'].includes(parsed.protocol))return toast('نوع الرابط غير مسموح');window.open(parsed.href,'_blank','noopener,noreferrer')}catch(e){toast('رابط الملف غير صالح')}}
-function vLibrary(){const lib=Object.entries(library).sort((a,b)=>b[1].created-a[1].created);return`<h2>المكتبة الرقمية</h2>`+(lib.length?`<div class="grid">${lib.map(([id,item])=>`<div class="card" onclick="openLibraryItem('${esc(item.url)}')"><img class="ph" src="${esc(item.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200')}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><b>${esc(item.title)}</b><small style="color:var(--mu);display:block;margin-top:4px">${esc(item.desc||'')}</small></div>`).join('')}</div>`:'<div class="mut">لا توجد ملفات بعد.</div>')}
-
-function vNews(){
-  const list = Object.entries(news).sort((a,b)=>b[1].created-a[1].created);
-  if(!list.length) return '<div class="mut">لا توجد أخبار منشورة حالياً.</div>';
-  return `<h2>آخر أخبار السنتر</h2>` + list.map(([id, item]) => {
-    let embedHTML = '';
-    if(item.url) {
-      const e = embed(item.url);
-      if (e.t === 'yt') embedHTML = `<iframe width="100%" height="200" src="${e.s}" frameborder="0" allowfullscreen style="border-radius:10px;margin-bottom:10px"></iframe>`;
-      else if (e.t === 'v') embedHTML = `<video src="${e.s}" controls style="width:100%;border-radius:10px;margin-bottom:10px"></video>`;
-      else if (e.t === 'drive') embedHTML = `<iframe src="${e.s}" width="100%" height="200" style="border-radius:10px;margin-bottom:10px" allowfullscreen></iframe>`;
-    }
-    return `
-    <div class="news-card">
-      ${item.photo ? `<img src="${item.photo}" alt="صورة الخبر">` : ''}
-      ${embedHTML}
-      ${item.text ? `<div class="news-text">${esc(item.text)}</div>` : ''}
-      <div class="news-date">${fd(item.created)}</div>
-      ${(A||IS_SUPERVISOR) ? `<button class="d" style="padding:4px 8px;font-size:12px;width:fit-content" onclick="delNews('${id}')">حذف الخبر</button>` : ''}
-    </div>`}).join('');
-}
-
-function initPlayer(){const el=document.getElementById('vplayer');if(!el)return;if(el.tagName==='IFRAME'&&el.src.includes('youtube')){if(!window.YT){const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);window.onYouTubeIframeAPIReady=()=>setupYT()}else{setupYT()}}else if(el.tagName==='VIDEO'){el.addEventListener('timeupdate',updateUI);el.addEventListener('loadedmetadata',updateUI);el.addEventListener('play',()=>{document.getElementById('playPauseBtn').textContent='❚❚';updateUI()});el.addEventListener('pause',()=>{document.getElementById('playPauseBtn').textContent='▶';updateUI()})}}
-function setupYT(){const iframe=document.getElementById('vplayer');if(!iframe)return;ytPlayer=new YT.Player(iframe,{events:{'onReady':()=>{updateUI();startPoll()},'onStateChange':(event)=>{if(event.data===1){document.getElementById('playPauseBtn').textContent='❚❚'}else{document.getElementById('playPauseBtn').textContent='▶'}}}})}
-function startPoll(){stopPoll();pollInterval=setInterval(updateUI,250)}
-function stopPoll(){if(pollInterval){clearInterval(pollInterval);pollInterval=null}}
-function updateUI(){const seek=document.getElementById('cSeek');const cTime=document.getElementById('cTime');const dTime=document.getElementById('dTime');if(!seek)return;let cur=0,dur=0;if(ytPlayer&&ytPlayer.getCurrentTime){try{cur=ytPlayer.getCurrentTime()||0;dur=ytPlayer.getDuration()||0}catch(e){}}else{const vid=document.getElementById('vplayer');if(vid&&vid.tagName==='VIDEO'){cur=vid.currentTime||0;dur=vid.duration||0}}if(dur>0){seek.value=(cur/dur)*100;cTime.textContent=fmt(cur);dTime.textContent=fmt(dur)}}
-function fmt(s){s=Math.max(0,Math.floor(s||0));const m=Math.floor(s/60),ss=s%60;return m+':'+String(ss).padStart(2,'0')}
-function togglePlay(){if(ytPlayer&&ytPlayer.getPlayerState){const state=ytPlayer.getPlayerState();if(state===1){ytPlayer.pauseVideo()}else{ytPlayer.playVideo()}}else{const vid=document.getElementById('vplayer');if(vid&&vid.tagName==='VIDEO'){if(vid.paused)vid.play();else vid.pause()}}}
-function onSeek(val){let dur=0,target=0;if(ytPlayer&&ytPlayer.getDuration){try{dur=ytPlayer.getDuration()||0;target=(val/100)*dur;ytPlayer.seekTo(target,true)}catch(e){}}else{const vid=document.getElementById('vplayer');if(vid&&vid.tagName==='VIDEO'){dur=vid.duration||0;vid.currentTime=(val/100)*dur}}}
-function seekRel(seconds){let cur=0;if(ytPlayer&&ytPlayer.getCurrentTime){try{cur=ytPlayer.getCurrentTime()||0;ytPlayer.seekTo(cur+seconds,true)}catch(e){}}else{const vid=document.getElementById('vplayer');if(vid&&vid.tagName==='VIDEO'){cur=vid.currentTime||0;vid.currentTime=cur+seconds}}}
-function setRate(rate){if(ytPlayer&&ytPlayer.setPlaybackRate){try{ytPlayer.setPlaybackRate(parseFloat(rate))}catch(e){}}else{const vid=document.getElementById('vplayer');if(vid&&vid.tagName==='VIDEO'){vid.playbackRate=parseFloat(rate)}}}
-async function toggleFullscreen(){const box=document.getElementById('plbox');const btn=document.getElementById('fsBtn');if(!box)return;try{if(!document.fullscreenElement){const fn=box.requestFullscreen||box.webkitRequestFullscreen||box.msRequestFullscreen;if(!fn)return toast('ملء الشاشة غير مدعوم في هذا المتصفح');await fn.call(box)}else{const fn=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen;if(fn)await fn.call(document)}}catch(e){toast('تعذر تغيير وضع الشاشة')}if(btn)btn.innerHTML=document.fullscreenElement?'⛶ خروج من ملء الشاشة':'⛶ ملء الشاشة'}
-function stopHB(){clearInterval(hb);hb=null}
-
-async function vAdmin(){
-  if(!A && !IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
-  const tab=S.tab||'videos';
-  const allowedTabs = A ? [['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['bans','الحظر'],['badge','صورة التعريف']] : [['videos','الفيديوهات'],['news','أخبار السنتر']];
-  
-  const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
-  
-  if(tab==='teachers') return tb+`<div class="box"><h2>إضافة مدرس</h2><label>الاسم</label><input id="tn"><label>الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><div class="card-img-wrap"><img src="${x.photo||''}" alt=""></div><div class="card-body"><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${id}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${id}')">حذف</button></div></div></div>`).join('')}</div>`;
-  
-  if(tab==='library') return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label>العنوان</label><input id="ltn"><label>الوصف</label><input id="ltd"><label>صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label>رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="card" style="cursor:default"><img class="ph" src="${x.photo||'https://ui-avatars.com/api/?name=PDF&background=2563eb&color=fff&size=200'}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${id}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${id}')">حذف</button></div></div>`).join('')}</div>`;
-  
-  if(tab==='students') return tb+await vAdminStudents();
-  if(tab==='send_notification') return tb+vSendNotification();
-  if(tab==='badge') return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
-  if(tab==='bans') return tb+await renderBans();
-  if(tab==='news') return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label>نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label>رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label>صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${id}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${x.photo}" style="max-height:100px;object-fit:cover">`:''}<p style="font-size:13px">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
-
-  const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
-  return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
-}
-
-async function addNews(){
-  const text = $('#newText').value.trim();
-  const url = $('#newVid').value.trim();
-  const file = $('#newImg').files[0];
-  if(!text && !file && !url) return toast('يجب إضافة نص أو صورة أو فيديو على الأقل');
-  try {
-    let photo = '';
-    if(file){
-      photo = await img(file, 800);
-      if(!photo) return toast('تم إلغاء قص الصورة');
-    }
-    const id = 'n' + Date.now();
-    await set(R('news/' + id), { text, url, photo, created: Date.now() });
-    toast('تم نشر الخبر بنجاح');
-    $('#newText').value = '';
-    $('#newVid').value = '';
-    $('#newImg').value = '';
-    render();
-  } catch (e) {
-    toast('تعذر نشر الخبر: ' + e.message);
+/* ---------- player ---------- */
+function setPlayBtn(playing){const b=$('#playPauseBtn');if(b)b.textContent=playing?'❚❚':'▶'}
+function initPlayer(){
+  const el=document.getElementById('vplayer');if(!el)return;
+  if(el.tagName==='IFRAME'&&/youtube(-nocookie)?\.com/.test(el.src)){
+    loadYT(setupYT);
+  }else if(el.tagName==='VIDEO'){
+    el.addEventListener('timeupdate',updateUI);
+    el.addEventListener('loadedmetadata',updateUI);
+    el.addEventListener('play',()=>{setPlayBtn(true);updateUI()});
+    el.addEventListener('pause',()=>{setPlayBtn(false);updateUI()});
   }
 }
-async function delNews(id){
-  if(!confirm('حذف هذا الخبر؟')) return;
-  await remove(R('news/' + id));
-  toast('تم الحذف');
-  render();
+function loadYT(cb){
+  if(window.YT&&window.YT.Player)return cb();
+  ytWaiters.push(cb);
+  if(document.getElementById('yt-api'))return;
+  window.onYouTubeIframeAPIReady=()=>{const w=ytWaiters;ytWaiters=[];w.forEach(f=>f())};
+  const tag=document.createElement('script');
+  tag.id='yt-api';tag.src='https://www.youtube.com/iframe_api';
+  tag.onerror=()=>toast('تعذر تحميل مشغل يوتيوب، تحقق من الاتصال');
+  document.head.appendChild(tag);
+}
+function setupYT(){
+  const iframe=document.getElementById('vplayer');if(!iframe)return;
+  destroyYT();
+  try{
+    ytPlayer=new YT.Player(iframe,{events:{
+      onReady:()=>{updateUI();startPoll()},
+      onStateChange:e=>setPlayBtn(e.data===1)
+    }});
+  }catch(e){console.error('YT init failed',e)}
+}
+function startPoll(){stopPoll();pollInterval=setInterval(updateUI,250)}
+function updateUI(){
+  const seek=$('#cSeek'),cTime=$('#cTime'),dTime=$('#dTime');if(!seek)return;
+  let cur=0,dur=0;
+  try{
+    if(ytPlayer&&ytPlayer.getCurrentTime){cur=ytPlayer.getCurrentTime()||0;dur=ytPlayer.getDuration()||0}
+    else{const vid=document.getElementById('vplayer');if(vid&&vid.tagName==='VIDEO'){cur=vid.currentTime||0;dur=vid.duration||0}}
+  }catch(e){}
+  if(dur>0&&Number.isFinite(dur)){seek.value=(cur/dur)*100;cTime.textContent=fmt(cur);dTime.textContent=fmt(dur)}
+}
+function fmt(s){s=Math.max(0,Math.floor(s||0));const m=Math.floor(s/60),ss=s%60;return m+':'+String(ss).padStart(2,'0')}
+function togglePlay(){
+  try{
+    if(ytPlayer&&ytPlayer.getPlayerState){
+      const st=ytPlayer.getPlayerState();
+      st===1?ytPlayer.pauseVideo():ytPlayer.playVideo();
+      return;
+    }
+  }catch(e){}
+  const vid=document.getElementById('vplayer');
+  if(vid&&vid.tagName==='VIDEO'){vid.paused?vid.play().catch(()=>{}):vid.pause()}
+}
+function onSeek(val){
+  try{
+    if(ytPlayer&&ytPlayer.getDuration){const dur=ytPlayer.getDuration()||0;ytPlayer.seekTo((val/100)*dur,true);return}
+  }catch(e){}
+  const vid=document.getElementById('vplayer');
+  if(vid&&vid.tagName==='VIDEO')vid.currentTime=(val/100)*(vid.duration||0);
+}
+function seekRel(sec){
+  try{
+    if(ytPlayer&&ytPlayer.getCurrentTime){ytPlayer.seekTo((ytPlayer.getCurrentTime()||0)+sec,true);return}
+  }catch(e){}
+  const vid=document.getElementById('vplayer');
+  if(vid&&vid.tagName==='VIDEO')vid.currentTime=(vid.currentTime||0)+sec;
+}
+function setRate(rate){
+  const r=parseFloat(rate);
+  try{if(ytPlayer&&ytPlayer.setPlaybackRate){ytPlayer.setPlaybackRate(r);return}}catch(e){}
+  const vid=document.getElementById('vplayer');
+  if(vid&&vid.tagName==='VIDEO')vid.playbackRate=r;
+}
+async function toggleFullscreen(){
+  const box=document.getElementById('plbox'),btn=document.getElementById('fsBtn');if(!box)return;
+  try{
+    if(!document.fullscreenElement){
+      const fn=box.requestFullscreen||box.webkitRequestFullscreen;
+      if(!fn)return toast('ملء الشاشة غير مدعوم في هذا المتصفح');
+      await fn.call(box);
+    }else{
+      const fn=document.exitFullscreen||document.webkitExitFullscreen;
+      if(fn)await fn.call(document);
+    }
+  }catch(e){toast('تعذر تغيير وضع الشاشة')}
+  if(btn)btn.innerHTML=document.fullscreenElement?'⛶ خروج من ملء الشاشة':'⛶ ملء الشاشة';
 }
 
-async function vAdminStudents() {
+/* ---------- library / news ---------- */
+function openLibraryItem(enc){
+  let url='';
+  try{url=decodeURIComponent(enc)}catch(e){}
+  try{
+    const p=new URL(url,location.href);
+    if(!['http:','https:'].includes(p.protocol))return toast('نوع الرابط غير مسموح');
+    window.open(p.href,'_blank','noopener,noreferrer');
+  }catch(e){toast('رابط الملف غير صالح')}
+}
+function vLibrary(){
+  const lib=Object.entries(library).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
+  if(!lib.length)return'<h2>المكتبة الرقمية</h2><div class="mut">لا توجد ملفات بعد.</div>';
+  return`<h2>المكتبة الرقمية</h2><div class="grid">${lib.map(([id,item])=>`
+    <div class="card" onclick="openLibraryItem('${encodeURIComponent(item.url||'')}')" role="button" tabindex="0">
+      <img src="${esc(item.photo||avatarOf('PDF'))}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:16px auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)">
+      <div class="card-body"><b>${esc(item.title)}</b><small style="color:var(--mu);display:block;margin-top:4px">${esc(item.desc||'')}</small></div>
+    </div>`).join('')}</div>`;
+}
+
+function vNews(){
+  const list=Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
+  if(!list.length)return'<div class="mut">لا توجد أخبار منشورة حالياً.</div>';
+  return`<h2>آخر أخبار السنتر</h2>`+list.map(([id,item])=>{
+    let embedHTML='';
+    if(item.url){
+      const e=embed(item.url);
+      if(e.t==='yt')embedHTML=`<iframe width="100%" height="200" src="${esc(e.s)}" frameborder="0" allowfullscreen style="border-radius:10px;margin-bottom:10px"></iframe>`;
+      else if(e.t==='v')embedHTML=`<video src="${esc(e.s)}" controls playsinline style="width:100%;border-radius:10px;margin-bottom:10px"></video>`;
+      else if(e.t==='drive')embedHTML=`<iframe src="${esc(e.s)}" width="100%" height="200" style="border-radius:10px;margin-bottom:10px" allowfullscreen></iframe>`;
+    }
+    return`<div class="news-card">
+      ${item.photo?`<img src="${esc(item.photo)}" alt="صورة الخبر">`:''}
+      ${embedHTML}
+      ${item.text?`<div class="news-text">${esc(item.text)}</div>`:''}
+      <div class="news-date">${fd(item.created)}</div>
+      ${(A||IS_SUPERVISOR)?`<button class="d" style="padding:4px 8px;font-size:12px;width:fit-content" onclick="delNews('${esc(id)}')">حذف الخبر</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+/* ---------- admin ---------- */
+async function vAdmin(){
+  if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
+  const tab=S.tab||'videos';
+  const allowedTabs=A
+    ?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['bans','الحظر'],['badge','صورة التعريف']]
+    :[['videos','الفيديوهات'],['news','أخبار السنتر']];
+  const effTab=allowedTabs.some(([k])=>k===tab)?tab:'videos';
+  const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${effTab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
+
+  if(effTab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label for="tn">الاسم</label><input id="tn"><label for="tp">الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><div class="card-img-wrap"><img src="${esc(x.photo||avatarOf(x.name))}" alt=""></div><div class="card-body"><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${id}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${id}')">حذف</button></div></div></div>`).join('')}</div>`;
+
+  if(effTab==='library')return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label for="ltn">العنوان</label><input id="ltn"><label for="ltd">الوصف</label><input id="ltd"><label for="ltp">صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label for="ltu">رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="card" style="cursor:default"><img src="${esc(x.photo||avatarOf('PDF'))}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:16px auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><div class="card-body"><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${id}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${id}')">حذف</button></div></div></div>`).join('')}</div>`;
+
+  if(effTab==='students')return tb+await vAdminStudents();
+  if(effTab==='send_notification')return tb+vSendNotification();
+  if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
+  if(effTab==='bans')return tb+await renderBans();
+  if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" style="max-height:100px;object-fit:cover">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
+
+  // تبويب الفيديوهات
+  const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
+  const vidList=Object.entries(videos).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
+  return tb+`<div class="box"><h2>إضافة فيديو</h2>
+    <label for="vt">المدرس</label><select id="vt">${tOpts||'<option value="">— أضف مدرساً أولاً —</option>'}</select>
+    <label for="vs">المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select>
+    <label for="vg">الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option></select>
+    <label for="vn">العنوان</label><input id="vn">
+    <label for="vd">الوصف</label><textarea id="vd" rows="2"></textarea>
+    <label for="vu">رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://...">
+    <label for="vm">مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0">
+    <label for="vc">عدد الأكواد</label><input id="vc" type="number" min="1" max="500" value="1">
+    <button onclick="addV()">حفظ وتوليد الأكواد</button></div>
+    <h2>الفيديوهات</h2>${vidList.map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
+}
+
+function addNews(){return once('news',doAddNews)}
+async function doAddNews(){
+  const text=$('#newText').value.trim();
+  const url=$('#newVid').value.trim();
+  const file=$('#newImg').files[0];
+  if(!text&&!file&&!url)return toast('يجب إضافة نص أو صورة أو فيديو على الأقل');
+  if(url&&!/^https?:\/\//i.test(url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
+  try{
+    let photo='';
+    if(file){photo=await img(file,800);if(!photo)return toast('تم إلغاء قص الصورة')}
+    await set(R('news/n'+Date.now()),{text,url,photo,created:Date.now()});
+    toast('تم نشر الخبر بنجاح');
+    render();
+  }catch(e){toast('تعذر نشر الخبر: '+e.message)}
+}
+async function delNews(id){
+  if(!confirm('حذف هذا الخبر؟'))return;
+  try{await remove(R('news/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
+}
+
+async function vAdminStudents(){
   if(!A)return'<div class="mut">غير مصرح.</div>';
-  const users = await G('users') || {};
-  const arr = Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  if(!arr.length) return '<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
-  
-  let html = `<div class="box"><label>بحث سريع (بالاسم أو الهاتف)</label><input id="searchStudent" placeholder="اكتب اسم الطالب..." oninput="filterStudents(this.value)"></div>
+  const users=(await G('users'))||{};
+  const arr=Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  if(!arr.length)return'<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
+  let html=`<div class="box"><label for="searchStudent">بحث سريع (بالاسم أو الهاتف)</label><input id="searchStudent" placeholder="اكتب اسم الطالب..." oninput="filterStudents(this.value)"></div>
   <h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
-  
-  arr.forEach(u => {
-    const isSup = u.isSupervisor === true;
-    const isAdmin = ADMIN_PHONES.includes(u.phone || '');
-    html += `<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)}">
-      <td><b onclick="go('studentProfile','${u.id}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td>
+  arr.forEach(u=>{
+    const isSup=u.isSupervisor===true;
+    const isAdmin=ADMIN_PHONES.includes(u.phone||'');
+    html+=`<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)}">
+      <td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td>
       <td dir="ltr">${esc(u.phone||'-')}</td>
-      <td>${isAdmin ? '<span class="b r">أدمن</span>' : isSup ? '<span class="b y">مشرف</span>' : '<span class="b">طالب</span>'}</td>
-      <td>
-        ${!isAdmin ? `<button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="toggleSupervisor('${u.id}', ${isSup})">${isSup?'إلغاء الإشراف':'تعيين مشرف'}</button>
-        <button class="d" style="padding:4px 8px;font-size:12px" onclick="delUser('${u.id}')">حذف</button>` : ''}
-      </td>
+      <td>${isAdmin?'<span class="b r">أدمن</span>':isSup?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>'}</td>
+      <td>${!isAdmin?`<button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="toggleSupervisor('${esc(u.id)}', ${isSup})">${isSup?'إلغاء الإشراف':'تعيين مشرف'}</button><button class="d" style="padding:4px 8px;font-size:12px" onclick="delUser('${esc(u.id)}')">حذف</button>`:''}</td>
     </tr>`;
   });
-  html += `</tbody></table></div>`;
-  return html;
+  return html+`</tbody></table></div>`;
 }
-
 function filterStudents(q){
-  const query = q.toLowerCase();
-  document.querySelectorAll('.student-row').forEach(row => {
-    const text = row.getAttribute('data-search').toLowerCase();
-    row.style.display = text.includes(query) ? '' : 'none';
+  const query=String(q||'').toLowerCase();
+  document.querySelectorAll('.student-row').forEach(row=>{
+    row.style.display=(row.getAttribute('data-search')||'').toLowerCase().includes(query)?'':'none';
   });
 }
 
 async function vStudentProfile(){
-  if(!A) return '<div class="mut">غير مصرح.</div>';
-  const uid = S.id;
-  const user = await G('users/'+uid);
-  if(!user) return '<div class="mut">الطالب غير موجود.</div>';
-  
-  const allLogs = await G('logs') || {};
-  const studentVideos = [];
-  for (const vid in allLogs) {
-    if(allLogs[vid][uid]) {
-      studentVideos.push({ vid, title: videos[vid]?.title || 'محذوف', ...allLogs[vid][uid] });
-    }
+  if(!A)return'<div class="mut">غير مصرح.</div>';
+  const uid=S.id;
+  const user=await G('users/'+uid);
+  if(!user)return'<div class="mut">الطالب غير موجود.</div>';
+  const allLogs=(await G('logs'))||{};
+  const studentVideos=[];
+  for(const vid in allLogs){
+    if(allLogs[vid]&&allLogs[vid][uid])studentVideos.push({vid,title:videos[vid]?.title||'محذوف',...allLogs[vid][uid]});
   }
   studentVideos.sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
-  
-  return `<button class="s" onclick="go('admin','','students')" style="margin-bottom:16px">← رجوع للطلاب</button>
+  return`<button class="s" onclick="go('admin','','students')" style="margin-bottom:16px">← رجوع للطلاب</button>
   <div class="box">
-    <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px">
-      <img src="${user.photo||badge||'https://ui-avatars.com/api/?name='+encodeURIComponent(user.name||'U')+'&background=2563eb&color=fff&size=100'}" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac)">
+    <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+      <img src="${esc(user.photo||badge||avatarOf(user.name))}" alt="" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac);object-fit:cover">
       <div>
         <h2 style="margin:0">${esc(user.name)}</h2>
         <p style="margin:4px 0;color:var(--mu);direction:ltr">${esc(user.phone)}</p>
@@ -854,68 +1075,190 @@ async function vStudentProfile(){
     <h3>سجل المشاهدة (${studentVideos.length} فيديو)</h3>
     <div class="tw"><table>
       <tr><th>الفيديو</th><th>الكود</th><th>آخر مشاهدة</th><th>الحالة</th></tr>
-      ${studentVideos.map(v=>`<tr><td>${esc(v.title)}</td><td><span class="code">${v.code||'-'}</span></td><td>${fd(v.lastAt)}</td><td>${v.completed?'<span class="g">أكمل</span>':'<span class="y">لم يكمل</span>'}</td></tr>`).join('') || '<tr><td colspan="4" class="mut">لا يوجد سجل مشاهدة.</td></tr>'}
+      ${studentVideos.map(v=>`<tr><td>${esc(v.title)}</td><td><span class="code">${esc(v.code||'-')}</span></td><td>${fd(v.lastAt)}</td><td>${v.completed?'<span class="g">أكمل</span>':'<span class="y">لم يكمل</span>'}</td></tr>`).join('')||'<tr><td colspan="4" class="mut">لا يوجد سجل مشاهدة.</td></tr>'}
     </table></div>
   </div>`;
 }
 
-async function toggleSupervisor(uid, isSup) {
-  if(!A) return toast('غير مصرح');
-  if(!confirm(isSup ? 'إلغاء صلاحية الإشراف؟' : 'تعيين هذا الطالب كمشرف؟ (سيتمكن من إضافة فيديوهات فقط)')) return;
-  try { await update(R('users/' + uid), { isSupervisor: !isSup }); toast(isSup ? 'تم إلغاء الإشراف' : 'تم تعيين الطالب كمشرف'); render(); } catch(e) { toast('تعذر التعديل'); }
+async function toggleSupervisor(uid,isSup){
+  if(!A)return toast('غير مصرح');
+  if(!confirm(isSup?'إلغاء صلاحية الإشراف؟':'تعيين هذا الطالب كمشرف؟ (سيتمكن من إضافة فيديوهات فقط)'))return;
+  try{await update(R('users/'+uid),{isSupervisor:!isSup});toast(isSup?'تم إلغاء الإشراف':'تم تعيين الطالب كمشرف');render()}
+  catch(e){toast('تعذر التعديل')}
 }
-async function delUser(uid) {
-  if(!A) return toast('غير مصرح');
-  if(!confirm('هل أنت متأكد من حذف هذا المستخدم نهائياً؟')) return;
-  try { await remove(R('users/' + uid)); toast('تم حذف المستخدم بنجاح'); render(); } catch(e) { toast('تعذر حذف المستخدم'); }
+async function delUser(uid){
+  if(!A)return toast('غير مصرح');
+  if(!confirm('هل أنت متأكد من حذف هذا المستخدم نهائياً؟'))return;
+  try{
+    const u=await G('users/'+uid);
+    if(u&&ADMIN_PHONES.includes(u.phone||''))return toast('لا يمكن حذف حساب الإدارة');
+    await remove(R('users/'+uid));toast('تم حذف المستخدم بنجاح');render();
+  }catch(e){toast('تعذر حذف المستخدم')}
 }
 
-function vSendNotification(){ return `<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label>نص الإشعار</label><textarea id="notiText" rows="3" placeholder="اكتب رسالتك هنا..."></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات</button></div></div>`; }
-async function sendAdminNotification(){ const text=$('#notiText').value.trim(); if(!text)return toast('اكتب نص الإشعار'); try{ await set(R('notifications/all/'+Date.now()), {text, created: Date.now()}); $('#notiText').value=''; toast('تم إرسال الإشعار بنجاح'); }catch(e){console.error(e);toast('تعذر إرسال الإشعار: '+(e.code||e.message))} }
-async function clearAllNotifications(){ if(!confirm('هل أنت متأكد من حذف جميع الإشعارات للجميع؟'))return; try{ await remove(R('notifications/all')); toast('تم حذف جميع الإشعارات'); }catch(e){console.error(e);toast('تعذر حذف الإشعارات: '+(e.code||e.message))} }
+function vSendNotification(){
+  return`<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label for="notiText">نص الإشعار</label><textarea id="notiText" rows="3" placeholder="اكتب رسالتك هنا..."></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات</button></div></div>`;
+}
+function sendAdminNotification(){return once('notify',doSendNotification)}
+async function doSendNotification(){
+  const text=$('#notiText').value.trim();
+  if(!text)return toast('اكتب نص الإشعار');
+  try{await set(R('notifications/all/'+Date.now()),{text,created:Date.now()});$('#notiText').value='';toast('تم إرسال الإشعار بنجاح')}
+  catch(e){console.error(e);toast('تعذر إرسال الإشعار: '+(e.code||e.message))}
+}
+async function clearAllNotifications(){
+  if(!confirm('هل أنت متأكد من حذف جميع الإشعارات للجميع؟'))return;
+  try{await remove(R('notifications/all'));toast('تم حذف جميع الإشعارات')}
+  catch(e){console.error(e);toast('تعذر حذف الإشعارات: '+(e.code||e.message))}
+}
 
-async function renderBans(){const bans=await G('bans')||{};const entries=Object.values(bans);const note=`<div class="box" style="background:var(--ac-soft);border-color:var(--ac)"><b>ملاحظة:</b> حسابات الإدارة محمية ولا تُحظر أبداً.</div>`;if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">${b.photo?`<img src="${esc(b.photo)}" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}<div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||'')}</small></div><span class="b r">محظور</span></div><p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">الجهاز السابق: <b>${esc(b.oldDeviceLabel||'-')}</b><br>الجهاز الجديد: <b>${esc(b.newDeviceLabel||'-')}</b><br>وقت الحظر: ${fd(b.bannedAt)}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button><button class="s" onclick="keepBan('${esc(b.uid)}')">تركه محظوراً</button></div></div>`).join('')}
-async function unban(uid){await remove(R('bans/'+uid));toast('تم فك الحظر');render()}
-async function keepBan(uid){toast('بقي محظوراً')}
-async function addT(){const n=$('#tn').value.trim(),f=$('#tp').files[0];if(!n)return toast('اكتب اسم المدرس');const k='t'+Date.now();let photo='';if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}await set(R('teachers/'+k),{name:n,photo});toast('تمت الإضافة');render()}
-async function delT(id){if(!confirm('حذف المدرس؟'))return;await remove(R('teachers/'+id));toast('تم الحذف');render()}
-async function setB(){const f=$('#bp').files[0];if(!f)return toast('اختر صورة');badge=await img(f,160);if(!badge)return toast('تم إلغاء القص');await set(R('settings/badge'),badge);toast('تم الحفظ');render()}
+async function renderBans(){
+  const bans=(await G('bans'))||{};
+  const entries=Object.values(bans);
+  const note=`<div class="notice"><b>ملاحظة:</b> حسابات الإدارة محمية ولا تُحظر أبداً.</div>`;
+  if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;
+  return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+      ${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}
+      <div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||'')}</small></div>
+      <span class="b r">محظور</span>
+    </div>
+    <p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">الجهاز السابق: <b>${esc(b.oldDeviceLabel||'-')}</b><br>الجهاز الجديد: <b>${esc(b.newDeviceLabel||'-')}</b><br>وقت الحظر: ${fd(b.bannedAt)}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button><button class="s" onclick="keepBan()">تركه محظوراً</button></div>
+  </div>`).join('');
+}
+async function unban(uid){
+  try{await remove(R('bans/'+uid));toast('تم فك الحظر');render()}catch(e){toast('تعذر فك الحظر')}
+}
+function keepBan(){toast('بقي محظوراً')}
 
-async function addV(){
+function addT(){return once('addT',doAddT)}
+async function doAddT(){
+  const n=$('#tn').value.trim(),f=$('#tp').files[0];
+  if(!n)return toast('اكتب اسم المدرس');
+  try{
+    let photo='';
+    if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}
+    await set(R('teachers/t'+Date.now()),{name:n,photo});
+    toast('تمت الإضافة');render();
+  }catch(e){toast('تعذر الإضافة: '+e.message)}
+}
+async function delT(id){
+  if(!confirm('حذف المدرس؟'))return;
+  try{await remove(R('teachers/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
+}
+async function setB(){
+  const f=$('#bp').files[0];
+  if(!f)return toast('اختر صورة');
+  try{
+    const data=await img(f,160);
+    if(!data)return toast('تم إلغاء القص');   // لا نمسح الصورة الحالية عند الإلغاء
+    await set(R('settings/badge'),data);
+    badge=data;toast('تم الحفظ');render();
+  }catch(e){toast('تعذر الحفظ: '+e.message)}
+}
+
+function addV(){return once('addV',doAddV)}
+async function doAddV(){
   const v={teacherId:$('#vt').value,stage:$('#vs').value,grade:$('#vg').value,title:$('#vn').value.trim(),desc:$('#vd').value.trim(),url:$('#vu').value.trim(),duration:+$('#vm').value||0,created:Date.now(),disabled:false};
   if(!v.teacherId||!v.title||!v.url)return toast('أكمل الحقول');
+  if(!/^https?:\/\//i.test(v.url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
   const k='v'+Date.now();
-  await set(R('videos/'+k),v);
-  const n=Math.min(+$('#vc').value||0,500);
-  if(n>0) {
-    toast('جارٍ التوليد...');
-    try { await gen(k,n,v); toast('تم الحفظ وتوليد الأكواد'); } 
-    catch (err) { toast('تم حفظ الفيديو لكن حدث خطأ في التوليد'); }
-  } else { toast('تم الحفظ'); }
-  go('vid',k);
+  try{
+    await set(R('videos/'+k),v);
+    const n=Math.min(+$('#vc').value||0,500);
+    if(n>0){
+      toast('جارٍ توليد الأكواد...');
+      await gen(k,n,v);
+      toast('تم الحفظ وتوليد الأكواد');
+    }else toast('تم الحفظ');
+    go('vid',k);
+  }catch(e){console.error(e);toast('تعذر الحفظ: '+(e.code||e.message))}
 }
-function syncGradeOptions(){const stage=$('#vs')?.value||'prep',grade=$('#vg');if(!grade)return;const vals=stage==='prep'?['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي']:['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];const previous=grade.value;grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');if(vals.includes(previous))grade.value=previous}
-function syncEditGradeOptions(){const stage=$('#evs')?.value||'prep',grade=$('#evg');if(!grade)return;const vals=stage==='prep'?['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي']:['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];const previous=grade.value;grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');if(vals.includes(previous))grade.value=previous}
+function syncGradeOptions(){
+  const stage=$('#vs')?.value||'prep',grade=$('#vg');if(!grade)return;
+  const vals=stage==='prep'?['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي']:['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
+  const previous=grade.value;
+  grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
+  if(vals.includes(previous))grade.value=previous;
+}
+function syncEditGradeOptions(){
+  const stage=$('#evs')?.value||'prep',grade=$('#evg');if(!grade)return;
+  const vals=stage==='prep'?['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي']:['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
+  const previous=grade.value;
+  grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
+  if(vals.includes(previous))grade.value=previous;
+}
 
 function vEdit(){
   if(!A)return'<div class="mut">غير مصرح.</div>';
-  const isT=S.tab==='teacher';const data=isT?teachers[S.id]:videos[S.id];if(!data)return vAdmin();
-  if(isT){return`<button class="s" onclick="go('admin','','teachers')">← رجوع</button><h2 style="margin-top:14px">تعديل المدرس</h2><div class="box"><label>الاسم</label><input id="etn" value="${esc(data.name)}"><label>الصورة (اختياري)</label><input id="etp" type="file" accept="image/*"><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditT('${S.id}')">حفظ</button><button class="s" onclick="go('admin','','teachers')">إلغاء</button></div></div>`}
-  else{
-    const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}" ${id===data.teacherId?'selected':''}>${esc(x.name)}</option>`).join('');
-    return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">تعديل الفيديو</h2><div class="box"><label>المدرس</label><select id="evt">${tOpts}</select><label>المرحلة</label><select id="evs" onchange="syncEditGradeOptions()"><option value="prep" ${data.stage==='prep'?'selected':''}>إعدادي</option><option value="sec" ${data.stage==='sec'?'selected':''}>ثانوي</option></select><label>الصف</label><select id="evg"><option ${data.grade==='الصف الأول الإعدادي'?'selected':''}>الصف الأول الإعدادي</option><option ${data.grade==='الصف الثاني الإعدادي'?'selected':''}>الصف الثاني الإعدادي</option><option ${data.grade==='الصف الثالث الإعدادي'?'selected':''}>الصف الثالث الإعدادي</option><option ${data.grade==='الصف الأول الثانوي'?'selected':''}>الصف الأول الثانوي</option><option ${data.grade==='الصف الثاني الثانوي'?'selected':''}>الصف الثاني الثانوي</option><option ${data.grade==='الصف الثالث الثانوي'?'selected':''}>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="evn" value="${esc(data.title)}"><label>الوصف</label><textarea id="evd" rows="2">${esc(data.desc||'')}</textarea><label>رابط الفيديو</label><input id="evu" dir="ltr" value="${esc(data.url)}"><label>مدة الفيديو بالدقائق</label><input id="evm" type="number" min="0" value="${data.duration||0}"><label>الحالة</label><select id="evst"><option value="0" ${!data.disabled?'selected':''}>نشط</option><option value="1" ${data.disabled?'selected':''}>موقوف</option></select><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditV('${S.id}')">حفظ</button><button class="s" onclick="go('admin','','videos')">إلغاء</button></div></div>`
+  const isT=S.tab==='teacher';
+  const data=isT?teachers[S.id]:videos[S.id];
+  if(!data)return vAdmin();
+  if(isT){
+    return`<button class="s" onclick="go('admin','','teachers')">← رجوع</button><h2 style="margin-top:14px">تعديل المدرس</h2><div class="box"><label for="etn">الاسم</label><input id="etn" value="${esc(data.name)}"><label for="etp">الصورة (اختياري)</label><input id="etp" type="file" accept="image/*"><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditT('${S.id}')">حفظ</button><button class="s" onclick="go('admin','','teachers')">إلغاء</button></div></div>`;
   }
+  const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}" ${id===data.teacherId?'selected':''}>${esc(x.name)}</option>`).join('');
+  const gradeOpt=g=>`<option ${data.grade===g?'selected':''}>${g}</option>`;
+  return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">تعديل الفيديو</h2><div class="box">
+    <label for="evt">المدرس</label><select id="evt">${tOpts}</select>
+    <label for="evs">المرحلة</label><select id="evs" onchange="syncEditGradeOptions()"><option value="prep" ${data.stage==='prep'?'selected':''}>إعدادي</option><option value="sec" ${data.stage==='sec'?'selected':''}>ثانوي</option></select>
+    <label for="evg">الصف</label><select id="evg">${['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي','الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'].map(gradeOpt).join('')}</select>
+    <label for="evn">العنوان</label><input id="evn" value="${esc(data.title)}">
+    <label for="evd">الوصف</label><textarea id="evd" rows="2">${esc(data.desc||'')}</textarea>
+    <label for="evu">رابط الفيديو</label><input id="evu" dir="ltr" value="${esc(data.url)}">
+    <label for="evm">مدة الفيديو بالدقائق</label><input id="evm" type="number" min="0" value="${data.duration||0}">
+    <label for="evst">الحالة</label><select id="evst"><option value="0" ${!data.disabled?'selected':''}>نشط</option><option value="1" ${data.disabled?'selected':''}>موقوف</option></select>
+    <div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditV('${S.id}')">حفظ</button><button class="s" onclick="go('admin','','videos')">إلغاء</button></div>
+  </div>`;
 }
-function vEditLib(){if(!A)return'<div class="mut">غير مصرح.</div>';const data=library[S.id];if(!data)return vAdmin();return`<button class="s" onclick="go('admin','','library')">← رجوع</button><h2 style="margin-top:14px">تعديل الملف</h2><div class="box"><label>العنوان</label><input id="eltn" value="${esc(data.title)}"><label>الوصف</label><input id="eltd" value="${esc(data.desc||'')}"><label>صورة الغلاف (اختياري)</label><input id="eltp" type="file" accept="image/*"><label>رابط الملف</label><input id="eltu" dir="ltr" value="${esc(data.url)}"><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditLib('${S.id}')">حفظ</button><button class="s" onclick="go('admin','','library')">إلغاء</button></div></div>`}
-async function saveEditT(id){const n=$('#etn').value.trim(),f=$('#etp').files[0];if(!n)return toast('اكتب الاسم');const t=teachers[id];let photo=t.photo||'';if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}await update(R('teachers/'+id),{name:n,photo});toast('تم التعديل');go('admin','','teachers')}
-async function saveEditV(id){const v=videos[id];if(!v)return;const nv={teacherId:$('#evt').value,stage:$('#evs').value,grade:$('#evg').value,title:$('#evn').value.trim(),desc:$('#evd').value.trim(),url:$('#evu').value.trim(),duration:+$('#evm').value||0,disabled:$('#evst').value==='1'};if(!nv.teacherId||!nv.title||!nv.url)return toast('أكمل الحقول');await update(R('videos/'+id),nv);try{const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));const updates={};s.forEach(c=>{updates['codes/'+c.key+'/url']=nv.url;updates['codes/'+c.key+'/title']=nv.title});if(Object.keys(updates).length)await update(R('/'),updates)}catch(e){}toast('تم التعديل');go('admin','','videos')}
-async function addLib(){
+function vEditLib(){
+  if(!A)return'<div class="mut">غير مصرح.</div>';
+  const data=library[S.id];if(!data)return vAdmin();
+  return`<button class="s" onclick="go('admin','','library')">← رجوع</button><h2 style="margin-top:14px">تعديل الملف</h2><div class="box"><label for="eltn">العنوان</label><input id="eltn" value="${esc(data.title)}"><label for="eltd">الوصف</label><input id="eltd" value="${esc(data.desc||'')}"><label for="eltp">صورة الغلاف (اختياري)</label><input id="eltp" type="file" accept="image/*"><label for="eltu">رابط الملف</label><input id="eltu" dir="ltr" value="${esc(data.url)}"><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditLib('${S.id}')">حفظ</button><button class="s" onclick="go('admin','','library')">إلغاء</button></div></div>`;
+}
+function saveEditT(id){return once('editT',()=>doSaveEditT(id))}
+async function doSaveEditT(id){
+  const n=$('#etn').value.trim(),f=$('#etp').files[0];
+  if(!n)return toast('اكتب الاسم');
+  try{
+    let photo=teachers[id]?.photo||'';
+    if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}
+    await update(R('teachers/'+id),{name:n,photo});
+    toast('تم التعديل');go('admin','','teachers');
+  }catch(e){toast('تعذر الحفظ: '+e.message)}
+}
+function saveEditV(id){return once('editV',()=>doSaveEditV(id))}
+async function doSaveEditV(id){
+  const v=videos[id];if(!v)return;
+  const nv={teacherId:$('#evt').value,stage:$('#evs').value,grade:$('#evg').value,title:$('#evn').value.trim(),desc:$('#evd').value.trim(),url:$('#evu').value.trim(),duration:+$('#evm').value||0,disabled:$('#evst').value==='1'};
+  if(!nv.teacherId||!nv.title||!nv.url)return toast('أكمل الحقول');
+  if(!/^https?:\/\//i.test(nv.url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
+  try{
+    await update(R('videos/'+id),nv);
+    // تحديث الروابط المنسوخة في الأكواد
+    try{
+      const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
+      const updates={};
+      s.forEach(c=>{updates['codes/'+c.key+'/url']=nv.url;updates['codes/'+c.key+'/title']=nv.title});
+      if(Object.keys(updates).length)await update(R('/'),updates);
+    }catch(e){console.warn('codes sync failed',e)}
+    toast('تم التعديل');go('admin','','videos');
+  }catch(e){toast('تعذر الحفظ: '+(e.code||e.message))}
+}
+
+function addLib(){return once('addLib',doAddLib)}
+async function doAddLib(){
   if(!A)return toast('غير مصرح');
   const title=$('#ltn')?.value.trim()||'',desc=$('#ltd')?.value.trim()||'',url=$('#ltu')?.value.trim()||'',file=$('#ltp')?.files?.[0];
   if(!title||!url)return toast('اكتب عنوان الملف والرابط');
   if(!/^https?:\/\//i.test(url))return toast('الرابط يجب أن يبدأ بـ https:// أو http://');
-  try{let photo='';if(file){photo=await img(file,200);if(!photo)return toast('تم إلغاء القص')}const id='l'+Date.now();await set(R('library/'+id),{title,desc,url,photo,created:Date.now()});toast('تمت إضافة الملف للمكتبة');go('admin','','library')}
-  catch(e){console.error(e);toast('تعذر إضافة الملف: '+(e.code||e.message||'خطأ'))}
+  try{
+    let photo='';
+    if(file){photo=await img(file,200);if(!photo)return toast('تم إلغاء القص')}
+    await set(R('library/l'+Date.now()),{title,desc,url,photo,created:Date.now()});
+    toast('تمت إضافة الملف للمكتبة');go('admin','','library');
+  }catch(e){console.error(e);toast('تعذر إضافة الملف: '+(e.code||e.message||'خطأ'))}
 }
 async function delLib(id){
   if(!A)return toast('غير مصرح');
@@ -923,33 +1266,126 @@ async function delLib(id){
   try{await remove(R('library/'+id));toast('تم حذف الملف');go('admin','','library')}
   catch(e){console.error(e);toast('تعذر حذف الملف: '+(e.code||'خطأ'))}
 }
-async function saveEditLib(id){const n=$('#eltn').value.trim(),d=$('#eltd').value.trim(),u=$('#eltu').value.trim(),f=$('#eltp').files[0];if(!n||!u)return toast('أكمل الحقول');const l=library[id];let photo=l.photo||'';if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}await update(R('library/'+id),{title:n,desc:d,url:u,photo});toast('تم التعديل');go('admin','','library')}
+function saveEditLib(id){return once('editLib',()=>doSaveEditLib(id))}
+async function doSaveEditLib(id){
+  const n=$('#eltn').value.trim(),d=$('#eltd').value.trim(),u=$('#eltu').value.trim(),f=$('#eltp').files[0];
+  if(!n||!u)return toast('أكمل الحقول');
+  if(!/^https?:\/\//i.test(u))return toast('الرابط يجب أن يبدأ بـ https://');
+  try{
+    let photo=library[id]?.photo||'';
+    if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}
+    await update(R('library/'+id),{title:n,desc:d,url:u,photo});
+    toast('تم التعديل');go('admin','','library');
+  }catch(e){toast('تعذر الحفظ: '+e.message)}
+}
 
-async function gen(vid,n,video=videos[vid]){
+/* ---------- codes ---------- */
+async function gen(vid,n,video){
   const v=video||videos[vid];
-  if(!v) throw new Error('الفيديو غير موجود لتوليد الأكواد');
-  let ok=0, attempts=0;
-  while(ok<n && attempts < n*10){
+  if(!v)throw new Error('الفيديو غير موجود لتوليد الأكواد');
+  let ok=0,attempts=0;
+  while(ok<n&&attempts<n*10){
     const c=String(crypto.getRandomValues(new Uint32Array(1))[0]%900000+100000);
     try{
-      const r=await runTransaction(R('codes/'+c),cur=>cur===null?{videoId:vid,url:v.url,title:v.title,used:false,createdAt:Date.now()}:undefined);
-      if(r.committed) ok++;
+      const r=await runTransaction(R('codes/'+c),cur=>cur===null
+        ?{videoId:vid,url:v.url,title:v.title||'',used:false,createdAt:Date.now()}
+        :undefined);
+      if(r.committed)ok++;
     }catch(e){}
     attempts++;
   }
   return ok;
 }
-async function moreCodes(vid,one){const n=one?1:Math.min(+$('#gn').value||0,500);if(!n)return toast('اكتب العدد');toast('جارٍ التوليد...');await gen(vid,n);render()}
-async function delV(id){if(!confirm('حذف الفيديو؟'))return;await remove(R('videos/'+id));toast('تم الحذف');go('admin','','videos')}
-async function toggleVid(id){const v=videos[id];if(!v)return;const next=!v.disabled;if(!confirm(next?'إيقاف الأكواد؟':'إعادة التفعيل؟'))return;await update(R('videos/'+id),{disabled:next});toast(next?'تم الإيقاف':'تم التفعيل');render()}
-const cp=async t=>{try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(t)}else{const el=document.createElement('textarea');el.value=t;el.style.position='fixed';el.style.opacity='0';document.body.appendChild(el);el.select();const ok=document.execCommand('copy');el.remove();if(!ok)throw new Error('تعذر النسخ')}toast('تم النسخ')}catch(e){toast('تعذر النسخ تلقائياً؛ حاول تحديد النص ونسخه')}};
-window.copyFree=async id=>{const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));const a=[];s.forEach(c=>{if(!c.val().used)a.push(c.key)});cp(a.join('\n'))};
+function moreCodes(vid,one){return once('moreCodes',()=>doMoreCodes(vid,one))}
+async function doMoreCodes(vid,one){
+  const n=one?1:Math.min(+$('#gn').value||0,500);
+  if(!n)return toast('اكتب العدد');
+  toast('جارٍ التوليد...');
+  try{const ok=await gen(vid,n);toast(`تم توليد ${ok} كود`);render()}
+  catch(e){toast('تعذر التوليد')}
+}
+async function delV(id){
+  if(!confirm('حذف الفيديو؟'))return;
+  try{await remove(R('videos/'+id));toast('تم الحذف');go('admin','','videos')}catch(e){toast('تعذر الحذف')}
+}
+async function toggleVid(id){
+  const v=videos[id];if(!v)return;
+  const next=!v.disabled;
+  if(!confirm(next?'إيقاف الأكواد؟':'إعادة التفعيل؟'))return;
+  try{await update(R('videos/'+id),{disabled:next});toast(next?'تم الإيقاف':'تم التفعيل');render()}
+  catch(e){toast('تعذر التعديل')}
+}
+const cp=async t=>{
+  try{
+    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(t)}
+    else{
+      const el=document.createElement('textarea');el.value=t;el.style.position='fixed';el.style.opacity='0';
+      document.body.appendChild(el);el.select();const ok=document.execCommand('copy');el.remove();
+      if(!ok)throw new Error('تعذر النسخ');
+    }
+    toast('تم النسخ');
+  }catch(e){toast('تعذر النسخ تلقائياً؛ حاول تحديد النص ونسخه')}
+};
+async function copyFree(id){
+  try{
+    const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
+    const a=[];s.forEach(c=>{if(!c.val().used)a.push(c.key)});
+    if(!a.length)return toast('لا توجد أكواد متاحة');
+    cp(a.join('\n'));
+  }catch(e){toast('تعذر جلب الأكواد')}
+}
 
-function exportPDF(vid){const v=videos[vid];if(!v)return;const rows=[];document.querySelectorAll('#pdf-src tbody tr').forEach(tr=>{const tds=tr.querySelectorAll('td');if(tds.length)rows.push([...tds].map(td=>td.innerText.trim()))});const headers=[...document.querySelectorAll('#pdf-src thead th')].map(th=>th.innerText.trim());const win=window.open('','_blank');win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${v.title}</title><style>body{font-family:Cairo,sans-serif;padding:24px;color:#0f172a}h2{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}th,td{border:1px solid #cbd5e1;padding:8px;text-align:right}th{background:#2563eb;color:#fff}@media print{button{display:none}}</style></head><body><h2>${v.title}</h2><p>${v.desc||''}</p><p>عدد السجلات: ${rows.length}</p><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table><br><button onclick="window.print()">طباعة / حفظ PDF</button><script>window.onload=()=>setTimeout(()=>window.print(),400)<\/script></body></html>`);win.document.close()}
+/* ---------- PDF export ---------- */
+function exportPDF(vid){
+  const v=videos[vid];if(!v)return;
+  const rows=[];
+  document.querySelectorAll('#pdf-src tbody tr').forEach(tr=>{
+    const tds=tr.querySelectorAll('td');
+    if(tds.length)rows.push([...tds].map(td=>td.innerText.trim()));
+  });
+  const headers=[...document.querySelectorAll('#pdf-src thead th')].map(th=>th.innerText.trim());
+  const win=window.open('','_blank');
+  if(!win)return toast('اسمح بالنوافذ المنبثقة لتصدير الملف');
+  win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(v.title)}</title><style>body{font-family:Cairo,sans-serif,Tahoma;padding:24px;color:#0f172a}h2{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}th,td{border:1px solid #cbd5e1;padding:8px;text-align:right}th{background:#2563eb;color:#fff}@media print{button{display:none}}</style></head><body><h2>${esc(v.title)}</h2><p>${esc(v.desc||'')}</p><p>عدد السجلات: ${rows.length}</p><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table><br><button onclick="window.print()">طباعة / حفظ PDF</button></body></html>`);
+  win.document.close();
+  setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
+}
 
-async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();const cs=[];(await get(query(R('codes'),orderByChild('videoId'),equalTo(id)))).forEach(c=>{cs.push({c:c.key,...c.val()})});cs.sort((a,b)=>b.createdAt-a.createdAt);const lg=Object.values(await G('logs/'+id)||{}).sort((a,b)=>b.lastAt-a.lastAt);const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2><div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p><p style="margin-bottom:14px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end"><div style="width:110px"><label>العدد</label><input id="gn" type="number" min="1" value="10" style="margin-bottom:0"></div><button onclick="moreCodes('${id}')">توليد أكواد</button><button class="s" onclick="moreCodes('${id}',1)">كود لطالب</button><button class="s" onclick="copyFree('${id}')">نسخ المتاح</button><button class="s" onclick="go('edit','${id}','video')">تعديل</button><button class="${v.disabled?'g':'d'}" onclick="toggleVid('${id}')">${v.disabled?'تفعيل':'إيقاف'}</button><button class="s" onclick="exportPDF('${id}')">تصدير PDF</button><button class="d" onclick="delV('${id}')">حذف</button></div></div><h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الإيميل</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div><h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${x.c}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${x.c}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`}
+/* ---------- video admin view ---------- */
+async function vVid(){
+  const id=S.id,v=videos[id];if(!v)return vAdmin();
+  const cs=[];
+  (await get(query(R('codes'),orderByChild('videoId'),equalTo(id)))).forEach(c=>{cs.push({c:c.key,...c.val()})});
+  cs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  const lg=Object.values((await G('logs/'+id))||{}).sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
+  const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';
+  return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2>
+  <div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p>
+  <p style="margin-bottom:14px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
+    <div style="width:110px"><label for="gn">العدد</label><input id="gn" type="number" min="1" max="500" value="10" style="margin-bottom:0"></div>
+    <button onclick="moreCodes('${id}')">توليد أكواد</button>
+    <button class="s" onclick="moreCodes('${id}',1)">كود لطالب</button>
+    <button class="s" onclick="copyFree('${id}')">نسخ المتاح</button>
+    <button class="s" onclick="go('edit','${id}','video')">تعديل</button>
+    <button class="${v.disabled?'g':'d'}" onclick="toggleVid('${id}')">${v.disabled?'تفعيل':'إيقاف'}</button>
+    <button class="s" onclick="exportPDF('${id}')">تصدير PDF</button>
+    <button class="d" onclick="delV('${id}')">حذف</button>
+  </div></div>
+  <h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الهاتف</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div>
+  <h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${esc(x.c)}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${esc(x.c)}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`;
+}
 
-Object.assign(window,{go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,updateProfilePhoto,toggleSupervisor,delUser,confirmCrop,cancelCrop,addNews,delNews,filterStudents,delNoti,clearAllMyNotis});
+/* ---------- expose handlers used by inline onclick ---------- */
+Object.assign(window,{
+  go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,
+  toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,
+  addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,
+  sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,
+  updateProfilePhoto,toggleSupervisor,delUser,confirmCrop,cancelCrop,addNews,delNews,
+  filterStudents,delNoti,clearAllMyNotis,enableNotifications
+});
+
 render();
 </script>
 </body>
