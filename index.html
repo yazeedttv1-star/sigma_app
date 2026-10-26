@@ -632,7 +632,7 @@ function topBarHTML(){
   if(!U)return '';
   const firstName=(U.displayName||'الطالب').split(' ')[0];
   const isDark=document.documentElement.classList.contains('dark');
-  const avatar=myPhoto||U.photoURL||avatarOf(U.displayName); // المنصة لها شعار مستقل، والملف الشخصي له صورته
+  const avatar=myPhoto||U.photoURL||avatarOf(U.displayName);
   return `
   <div class="top-bar">
     <div class="welcome">
@@ -1366,4 +1366,4 @@ Object.assign(window,{
 render();
 </script>
 </body>
-  </html>
+</html>
