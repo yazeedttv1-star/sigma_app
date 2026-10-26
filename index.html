@@ -159,17 +159,26 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
 /* =========================================================
-   9) PLAYER
+   9) PLAYER (Updated for full crop & no black borders)
    ========================================================= */
 .player-wrap{width:100%;margin-bottom:16px}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;width:100%;
   aspect-ratio:16/9;max-height:80vh;margin:0 auto;box-shadow:var(--shadow-lg)}
 .pl iframe,.pl video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
-.pl.crop-yt iframe{height:115%!important;top:-7.5%!important}
-.yt-bottom-mask{position:absolute;bottom:0;left:0;right:0;height:50px;z-index:11;
+
+/* تعديل قص يوتيوب لإخفاء الحواف السوداء واسم القناة بالكامل */
+.pl.crop-yt iframe{
+  width: 106%!important;
+  height: 135%!important;
+  top: -17.5%!important;
+  left: -3%!important;
+}
+
+.yt-top-mask{position:absolute;top:0;left:0;right:0;height:65px;z-index:11;
   background:#000;pointer-events:none}
-.yt-top-mask{position:absolute;top:0;left:0;right:0;height:50px;z-index:11;
+.yt-bottom-mask{position:absolute;bottom:0;left:0;right:0;height:65px;z-index:11;
   background:#000;pointer-events:none}
+
 .yt-shield{position:absolute;inset:0;z-index:10;background:transparent;cursor:pointer}
 .wm{position:absolute;pointer-events:none;z-index:20;display:flex;align-items:center;gap:6px;
   font-size:12px;opacity:.45;background:rgba(0,0,0,.6);padding:4px 10px;border-radius:99px;
@@ -394,9 +403,16 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
   h2{font-size:18px}
   .top-bar{padding:16px}
   .top-bar .welcome h1{font-size:18px}
-  .pl.crop-yt iframe{height:118%!important;top:-9%!important}
-  .yt-bottom-mask{height:55px}
-  .yt-top-mask{height:55px}
+  
+  /* تعديل إضافي للموبايل لحجب الأجزاء تماماً */
+  .pl.crop-yt iframe{
+    width: 110%!important;
+    height: 140%!important;
+    top: -20%!important;
+    left: -5%!important;
+  }
+  .yt-bottom-mask{height:75px}
+  .yt-top-mask{height:75px}
 }
 @media(max-width:520px){
   .pl{max-height:60vh}
@@ -702,13 +718,11 @@ function renderBanned(ban){
    ========================================================= */
 function clearListeners(){unsubs.forEach(fn=>{try{if(typeof fn==='function')fn()}catch(e){}});unsubs=[]}
 function destroyPlayer(){
-  // Destroy YouTube player
   if(currentYTUiTimer){ clearInterval(currentYTUiTimer); currentYTUiTimer=null; }
   if(currentYTPlayer){
     try{ currentYTPlayer.destroy(); }catch(e){}
     currentYTPlayer = null;
   }
-  // Destroy iframe fallback timer
   if(iframeTimer){ clearInterval(iframeTimer); iframeTimer=null; }
   iframeTime = 0; iframeDuration = 0; iframePlaying = false;
   currentPlayerType = null;
@@ -1420,7 +1434,6 @@ async function vWatch(){
     </div>
   </div>`;
 
-  // Store metadata for initPlayer
   setTimeout(()=>{
     window.__pendingEmbed={
       type:e.t,id:e.id||'',src:e.s,duration:+(v.duration||0)
