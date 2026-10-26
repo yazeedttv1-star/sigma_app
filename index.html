@@ -107,7 +107,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .wm img{width:22px;height:22px;border-radius:50%;object-fit:cover}
 @keyframes mv{0%{top:20%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:20%;left:60%}}
 
-/* ============ PLAYER CONTROLS - NEW DESIGN ============ */
+/* ============ PLAYER CONTROLS ============ */
 .custom-player-ctrl{
   background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%);
   border:1px solid var(--bd);padding:16px 18px;border-radius:var(--r-lg);
@@ -150,7 +150,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   border:1px solid var(--bd);display:inline-flex;align-items:center;gap:6px;font-weight:700;
 }
 .custom-player-ctrl .tool-btn:hover{background:var(--ac);color:#fff;border-color:var(--ac);transform:translateY(-1px)}
-.custom-player-ctrl .tool-btn svg{width:16px;height:16px;fill:currentColor}
 .custom-player-ctrl .speed-box{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--bd);border-radius:10px;padding:4px 10px}
 .custom-player-ctrl .speed-box label{margin:0;font-size:12px;color:var(--tx2)}
 .custom-player-ctrl .speed-box select{width:auto;padding:4px 8px;margin:0;font-size:12px;border-radius:6px;border:1px solid var(--bd);background:var(--surface2);color:var(--tx)}
@@ -178,7 +177,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .modal-header h3{font-size:16px;margin:0}
 .modal-body{padding:16px;overflow-y:auto;flex:1}
 
-/* ============ NOTIFICATIONS - NEW DESIGN ============ */
+/* ============ NOTIFICATIONS ============ */
 .noti-item{
   display:flex;align-items:flex-start;gap:12px;padding:14px;margin-bottom:10px;
   background:var(--surface2);border:1px solid var(--bd);border-radius:14px;
@@ -203,7 +202,7 @@ html.dark .noti-item.unread{background:rgba(30,58,138,.35)}
 .noti-empty{text-align:center;padding:50px 20px;color:var(--mu)}
 .noti-empty svg{width:60px;height:60px;fill:var(--bd);margin-bottom:14px}
 
-/* ============ STUDENT STATS - NEW DESIGN ============ */
+/* ============ STUDENT STATS ============ */
 .stats-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px}
 .stat-box{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--bd);border-radius:var(--r);padding:16px;text-align:center;transition:.2s}
 .stat-box:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
@@ -341,7 +340,39 @@ let teachers={},videos={},library={},news={},notifications={},ownNotifications={
 let badge='',myPhoto='',myPhone='',hb=null,ip=null,ytPlayer=null,pollInterval=null,cropper=null,cropResolve=null;
 let unsubs=[],showingBan=false,renderSeq=0,ytWaiters=[];
 let loadedTeachers=false;
-let studentStatsFilter='all'; // all | watched | available
+let studentStatsFilter='all';
+
+/* ============================================================
+   UNIVERSAL PLAYER STATE (for youtube / drive / iframe / native)
+   ============================================================ */
+let currentPlayerType = null;   // 'native' | 'yt' | 'iframe'
+let currentYTPlayer = null;     // YouTube IFrame API instance
+let ytApiReady = false;
+let ytApiLoading = false;
+let ytApiQueue = [];
+let iframeTimer = null;         // fallback timer for drive/other iframes
+let iframeTime = 0;             // seconds
+let iframeDuration = 0;         // seconds
+let iframePlaying = false;
+
+/* Load YouTube IFrame API once */
+function loadYouTubeAPI(){
+  if(window.YT && window.YT.Player) { ytApiReady=true; flushYTQueue(); return; }
+  if(ytApiLoading) return;
+  ytApiLoading = true;
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+  window.onYouTubeIframeAPIReady = ()=>{ ytApiReady = true; flushYTQueue(); };
+}
+function flushYTQueue(){
+  ytApiQueue.forEach(fn=>{ try{fn()}catch(e){} });
+  ytApiQueue = [];
+}
+function onYTReady(fn){
+  if(ytApiReady) fn();
+  else { ytApiQueue.push(fn); loadYouTubeAPI(); }
+}
 
 /* ---------- device / theme ---------- */
 const DEVICE_KEY='sigma-device-id';
@@ -421,7 +452,7 @@ if(messaging){
 function embed(u){
   u=String(u||'').trim();let m;
   if(m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/))
-    return{t:'yt',id:m[1],s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&controls=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1`};
+    return{t:'yt',id:m[1],s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&controls=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&origin=${encodeURIComponent(location.origin)}`};
   if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))
     return{t:'drive',s:`https://drive.google.com/file/d/${m[1]}/preview`,id:m[1]};
   if(!/^https?:\/\//i.test(u))return{t:'f',s:''};
@@ -452,7 +483,17 @@ function renderBanned(ban){
 }
 
 function clearListeners(){unsubs.forEach(fn=>{try{if(typeof fn==='function')fn()}catch(e){}});unsubs=[]}
-function destroyYT(){if(ytPlayer&&ytPlayer.destroy){try{ytPlayer.destroy()}catch(e){}}ytPlayer=null}
+function destroyYT(){
+  // destroy YouTube player safely
+  if(currentYTPlayer){
+    try{ currentYTPlayer.destroy(); }catch(e){}
+    currentYTPlayer = null;
+  }
+  // stop iframe fallback timer
+  if(iframeTimer){ clearInterval(iframeTimer); iframeTimer = null; }
+  iframeTime = 0; iframeDuration = 0; iframePlaying = false;
+  currentPlayerType = null;
+}
 function stopHB(){if(hb)clearInterval(hb);hb=null}
 function stopPoll(){if(pollInterval){clearInterval(pollInterval);pollInterval=null}}
 
@@ -544,7 +585,7 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;render()});
   $('#mf').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
 })();
 
-/* ---------- notifications UI (NEW DESIGN) ---------- */
+/* ---------- notifications UI ---------- */
 function openNoti(){$('#notiModal').classList.add('show');renderNoti()}
 function closeNoti(){$('#notiModal').classList.remove('show')}
 
@@ -791,7 +832,7 @@ function toggleTheme(){
 }
 
 /* ============================================================
-   SETTINGS + STUDENT STATS (NEW: full lecture dashboard)
+   SETTINGS + STUDENT STATS
    ============================================================ */
 async function vSettings(){
   const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
@@ -825,16 +866,11 @@ async function vSettings(){
   ${statsHtml}`;
 }
 
-/* ============================================================
-   STUDENT STATS - NEW DASHBOARD
-   Shows: all videos in system + teacher name + grade + open/needs code + watched status
-   ============================================================ */
 async function buildStudentStats(){
   const myVideos = window.__mineVideos || {};
   const allLogs = (await G('logs')) || {};
   const mine = {};
 
-  // collect watched logs for this user
   for(const vid in allLogs){
     const rec = allLogs[vid] && allLogs[vid][U.uid];
     if(rec) mine[vid] = rec;
@@ -845,13 +881,11 @@ async function buildStudentStats(){
   const openedCount = Object.keys(myVideos).length;
   const lockedCount = totalVideos - openedCount;
 
-  // build rows for every video in system
   const rows = [];
   for(const [vid, v] of Object.entries(videos)){
     const teacher = teachers[v.teacherId];
     const log = mine[vid];
     const isOpen = A || IS_SUPERVISOR || !!myVideos[vid];
-    const code = myVideos[vid] || '';
     let status = '';
     if(v.disabled && !A && !IS_SUPERVISOR) status = '<span class="b r">موقوف</span>';
     else if(!isOpen) status = '<span class="b y">يحتاج كود</span>';
@@ -875,13 +909,11 @@ async function buildStudentStats(){
     });
   }
 
-  // filter
   let filtered = rows;
   if(studentStatsFilter === 'watched') filtered = rows.filter(r => r.watched);
   else if(studentStatsFilter === 'available') filtered = rows.filter(r => r.isOpen && !r.disabled);
   else if(studentStatsFilter === 'locked') filtered = rows.filter(r => !r.isOpen);
 
-  // sort: watched first, then open, then locked
   filtered.sort((a,b)=>{
     const score = r => r.watched ? 3 : (r.isOpen ? 2 : 1);
     const d = score(b) - score(a);
@@ -952,10 +984,7 @@ async function buildStudentStats(){
   </div>`;
 }
 
-function setStatsFilter(f){
-  studentStatsFilter=f;
-  render();
-}
+function setStatsFilter(f){studentStatsFilter=f;render()}
 
 function updateProfilePhoto(){return once('photo',doUpdatePhoto)}
 async function doUpdatePhoto(){
@@ -980,7 +1009,6 @@ async function doChangePassword(){
   if(newPass !== confirmPass) return toast('كلمتا المرور غير متطابقتين');
   try {
     await updatePassword(auth.currentUser, newPass);
-    // REMOVED: insecure plaintext password storage
     await set(R('adminNotifications/n'+Date.now()), {
       text: `قام الطالب (${U.displayName}) بتغيير كلمة المرور الخاصة به.`,
       created: Date.now(),
@@ -1064,7 +1092,7 @@ async function doRedeem(vid){
 }
 
 /* ============================================================
-   WATCH - controls appear ONLY for native video (no toast)
+   WATCH — controls work for ALL video types
    ============================================================ */
 async function vWatch(){
   const v=videos[S.id];if(!v)return vHome();
@@ -1107,17 +1135,15 @@ async function vWatch(){
 
   const wm=isStaff?'':`<div class="wm">${badge?`<img src="${esc(badge)}" alt="">`:''}${esc(U.displayName||'')} · ${esc(myPhone||U.email||'')}</div>`;
   const isYT=e.t==='yt';
-  const isDrive=e.t==='drive';
-  const isNative=e.t==='v';
 
   let playerHTML='';
-  if(isNative)playerHTML=`<video id="vplayer" src="${esc(e.s)}" playsinline controlsList="nodownload"></video>`;
-  else if(isYT)playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
-  else if(isDrive)playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  if(e.t==='v')playerHTML=`<video id="vplayer" src="${esc(e.s)}" playsinline controlsList="nodownload"></video>`;
+  else if(isYT)playerHTML=`<div id="ytTarget" style="position:absolute;inset:0;width:100%;height:100%"></div>`;
+  else if(e.t==='drive')playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   else playerHTML=`<iframe id="vplayer" src="${esc(e.s)}" allow="autoplay;encrypted-media;fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe>`;
 
-  // Controls ONLY for native video — no misleading toast for YouTube/Drive
-  const controlsHTML = isNative ? `<div class="custom-player-ctrl">
+  // Controls for ALL types now
+  const controlsHTML = `<div class="custom-player-ctrl">
     <div class="progress-row">
       <button id="playPauseBtn" class="play-btn" onclick="togglePlay()" aria-label="تشغيل/إيقاف">
         <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -1149,12 +1175,20 @@ async function vWatch(){
       </div>
       <button class="tool-btn" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
     </div>
-  </div>` : '';
+  </div>`;
 
   return`<button class="s" onclick="go('teacher','${esc(v.teacherId)}')">← رجوع</button>
   <h2 style="margin-top:14px">${esc(v.title)} ${isStaff?'<span class="b g">إدارة</span>':''}</h2>
-  <div class="player-wrap"><div class="pl ${isYT?'crop-yt':''}" id="plbox">${playerHTML}<div class="yt-shield"></div>${isYT?'<div class="yt-bottom-mask"></div><div class="yt-top-mask"></div>':''}${wm}</div>${controlsHTML}</div>
-  <p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>`;
+  <div class="player-wrap">
+    <div class="pl ${isYT?'crop-yt':''}" id="plbox">
+      ${playerHTML}
+      ${isYT?'<div class="yt-bottom-mask"></div><div class="yt-top-mask"></div>':''}
+      ${wm}
+    </div>
+    ${controlsHTML}
+  </div>
+  <p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>
+  <script>window.__pendingEmbed=${JSON.stringify({type:e.t,id:e.id||'',src:e.s,duration:+(v.duration||0)})};<\/script>`;
 }
 
 function openLibraryItem(enc){
@@ -1609,11 +1643,27 @@ async function vVid(){
 
 
 /* ============================================================
-   PLAYER CONTROLS — safe, no misleading toast
+   UNIVERSAL PLAYER INIT — handles native, youtube, drive, iframe
    ============================================================ */
 function initPlayer(){
+  destroyYT();
+  const pending = window.__pendingEmbed || null;
+  if(!pending) return;
+
+  if(pending.type === 'v'){
+    initNativePlayer();
+  } else if(pending.type === 'yt'){
+    initYTPlayer(pending.id);
+  } else {
+    // drive or other iframe — use estimated time since no API access
+    initIframeFallback(pending.duration);
+  }
+}
+
+function initNativePlayer(){
   const video=document.querySelector('.pl video');
   if(!video)return;
+  currentPlayerType = 'native';
 
   const playIcon=$('#playIcon');
   const seekFill=$('#seekFill');
@@ -1647,34 +1697,216 @@ function initPlayer(){
 
   updatePlayIcon();
 }
+
+function initYTPlayer(videoId){
+  currentPlayerType = 'yt';
+  onYTReady(()=>{
+    const target = document.getElementById('ytTarget');
+    if(!target) return;
+    try{
+      currentYTPlayer = new YT.Player('ytTarget',{
+        videoId: videoId,
+        playerVars:{
+          rel:0, modestbranding:1, playsinline:1,
+          controls:0, showinfo:0, iv_load_policy:3, fs:0, disablekb:1
+        },
+        events:{
+          'onReady': (ev)=>{ attachYTControls(ev.target); },
+          'onStateChange': (ev)=>{ updateYTPlayIcon(ev.data); }
+        }
+      });
+    }catch(err){
+      console.warn('YT init failed, using iframe fallback', err);
+      initIframeFallback(0);
+    }
+  });
+}
+
+function attachYTControls(yt){
+  currentYTPlayer = yt;
+
+  const playIcon = $('#playIcon');
+  const seekFill = $('#seekFill');
+  const cTime = $('#cTime');
+  const dTime = $('#dTime');
+  const seek = $('#cSeek');
+
+  const updateUI = ()=>{
+    if(!currentYTPlayer || !currentYTPlayer.getCurrentTime) return;
+    try{
+      const cur = currentYTPlayer.getCurrentTime() || 0;
+      const total = currentYTPlayer.getDuration() || 0;
+      if(cTime) cTime.textContent = fmtTime(cur);
+      if(dTime) dTime.textContent = fmtTime(total);
+      if(seek && total > 0){
+        const pct = cur / total * 100;
+        seek.value = String(pct);
+        if(seekFill) seekFill.style.width = pct + '%';
+      }
+    }catch(e){}
+  };
+
+  // update UI ~4 times per second while playing
+  const uiTimer = setInterval(()=>{
+    if(!currentYTPlayer || typeof currentYTPlayer.getPlayerState !== 'function'){ clearInterval(uiTimer); return; }
+    const st = currentYTPlayer.getPlayerState();
+    if(st === 1) updateUI(); // playing
+  }, 250);
+  // store for cleanup
+  currentYTPlayer.__uiTimer = uiTimer;
+}
+
+function updateYTPlayIcon(state){
+  const icon = $('#playIcon');
+  if(!icon) return;
+  // 1 = playing, 2 = paused, 0 = ended, 3 = buffering, 5 = cued
+  if(state === 1){
+    icon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+  } else {
+    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+  }
+}
+
+function initIframeFallback(durationMinutes){
+  currentPlayerType = 'iframe';
+  iframePlaying = false;
+  iframeTime = 0;
+  iframeDuration = (durationMinutes || 0) * 60;
+
+  // expose duration on the time label
+  const dTime = $('#dTime');
+  if(dTime && iframeDuration > 0){
+    dTime.textContent = fmtTime(iframeDuration);
+  }
+
+  if(iframeTimer){ clearInterval(iframeTimer); }
+  iframeTimer = setInterval(()=>{
+    if(document.hidden) return;
+    if(iframePlaying && iframeDuration > 0){
+      iframeTime = Math.min(iframeDuration, iframeTime + 1);
+      const cTime = $('#cTime');
+      const seek = $('#cSeek');
+      const seekFill = $('#seekFill');
+      if(cTime) cTime.textContent = fmtTime(iframeTime);
+      if(seek && iframeDuration > 0){
+        const pct = iframeTime / iframeDuration * 100;
+        seek.value = String(pct);
+        if(seekFill) seekFill.style.width = pct + '%';
+      }
+    }
+  }, 1000);
+}
+
 function fmtTime(value){
   if(!Number.isFinite(value)||value<0)return '0:00';
   const n=Math.floor(value);
   return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
 }
-function currentNativeVideo(){return document.querySelector('.pl video')}
+
+/* ============================================================
+   UNIVERSAL CONTROLS — work on any player type
+   ============================================================ */
 function togglePlay(){
-  const v=currentNativeVideo();
-  if(!v)return; // silent — no toast
-  if(v.paused)v.play().catch(()=>{});else v.pause();
+  if(currentPlayerType === 'native'){
+    const v=document.querySelector('.pl video');
+    if(!v)return;
+    if(v.paused)v.play().catch(()=>{}); else v.pause();
+    return;
+  }
+  if(currentPlayerType === 'yt' && currentYTPlayer && currentYTPlayer.playVideo){
+    try{
+      const st = currentYTPlayer.getPlayerState();
+      if(st === 1) currentYTPlayer.pauseVideo();
+      else currentYTPlayer.playVideo();
+    }catch(e){ toast('تعذر التحكم بالفيديو'); }
+    return;
+  }
+  if(currentPlayerType === 'iframe'){
+    // Drive / other iframe: cannot programmatically play (cross-origin).
+    // Just flip our internal state so progress simulation starts.
+    iframePlaying = !iframePlaying;
+    const icon = $('#playIcon');
+    if(icon){
+      icon.innerHTML = iframePlaying
+        ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
+        : '<path d="M8 5v14l11-7z"/>';
+    }
+    if(iframePlaying){
+      toast('الفيديو الخارجي — اضغط تشغيل داخل المشغل إن لم يبدأ تلقائياً');
+    }
+    return;
+  }
 }
+
 function onSeek(value){
-  const v=currentNativeVideo();
-  if(v&&Number.isFinite(v.duration)&&v.duration>0)v.currentTime=(Number(value)||0)/100*v.duration;
+  const pct = Number(value) || 0;
+  if(currentPlayerType === 'native'){
+    const v=document.querySelector('.pl video');
+    if(v && Number.isFinite(v.duration) && v.duration>0){
+      v.currentTime = pct/100 * v.duration;
+    }
+  } else if(currentPlayerType === 'yt' && currentYTPlayer && currentYTPlayer.getDuration){
+    try{
+      const total = currentYTPlayer.getDuration();
+      if(total>0) currentYTPlayer.seekTo(pct/100 * total, true);
+    }catch(e){}
+  } else if(currentPlayerType === 'iframe' && iframeDuration > 0){
+    iframeTime = pct/100 * iframeDuration;
+    const cTime = $('#cTime');
+    if(cTime) cTime.textContent = fmtTime(iframeTime);
+    const seekFill = $('#seekFill');
+    if(seekFill) seekFill.style.width = pct + '%';
+  }
 }
+
 function seekRel(seconds){
-  const v=currentNativeVideo();
-  if(v&&Number.isFinite(v.duration))v.currentTime=Math.max(0,Math.min(v.duration,v.currentTime+(Number(seconds)||0)));
+  const delta = Number(seconds) || 0;
+  if(currentPlayerType === 'native'){
+    const v=document.querySelector('.pl video');
+    if(v && Number.isFinite(v.duration)){
+      v.currentTime = Math.max(0, Math.min(v.duration, v.currentTime + delta));
+    }
+  } else if(currentPlayerType === 'yt' && currentYTPlayer && currentYTPlayer.getCurrentTime){
+    try{
+      const cur = currentYTPlayer.getCurrentTime() || 0;
+      const total = currentYTPlayer.getDuration() || 0;
+      currentYTPlayer.seekTo(Math.max(0, Math.min(total, cur + delta)), true);
+    }catch(e){}
+  } else if(currentPlayerType === 'iframe' && iframeDuration > 0){
+    iframeTime = Math.max(0, Math.min(iframeDuration, iframeTime + delta));
+    const cTime = $('#cTime');
+    if(cTime) cTime.textContent = fmtTime(iframeTime);
+    const pct = iframeTime/iframeDuration*100;
+    const seekFill = $('#seekFill');
+    if(seekFill) seekFill.style.width = pct + '%';
+    const seek = $('#cSeek');
+    if(seek) seek.value = String(pct);
+  }
 }
+
 function setRate(value){
-  const v=currentNativeVideo();
-  if(v){const rate=Number(value);if(Number.isFinite(rate)&&rate>0)v.playbackRate=rate}
+  const rate = Number(value);
+  if(!Number.isFinite(rate) || rate <= 0) return;
+  if(currentPlayerType === 'native'){
+    const v=document.querySelector('.pl video');
+    if(v) v.playbackRate = rate;
+  } else if(currentPlayerType === 'yt' && currentYTPlayer && currentYTPlayer.setPlaybackRate){
+    try{ currentYTPlayer.setPlaybackRate(rate); }catch(e){}
+  } else if(currentPlayerType === 'iframe'){
+    // can't change speed of external iframe; silent no-op
+  }
 }
+
 function toggleFullscreen(){
   const el=document.querySelector('.pl');
   if(!el)return;
-  if(document.fullscreenElement){document.exitFullscreen?.().catch(()=>{})}
-  else if(el.requestFullscreen){el.requestFullscreen().catch(()=>{})}
+  if(document.fullscreenElement){
+    document.exitFullscreen?.().catch(()=>{});
+  } else if(el.requestFullscreen){
+    el.requestFullscreen().catch(()=>{});
+  } else {
+    toast('ملء الشاشة غير مدعوم في هذا المتصفح');
+  }
 }
 
 /* ---------- expose handlers used by inline onclick ---------- */
