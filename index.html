@@ -218,7 +218,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile,updatePassword} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
@@ -244,12 +244,11 @@ const normPhone=s=>normDigits(s).replace(/[\s\-()]/g,'');
 const avatarOf=name=>'https://ui-avatars.com/api/?name='+encodeURIComponent(name||'U')+'&background=2563eb&color=fff&size=200';
 const hasNotifApi=()=>typeof window!=='undefined'&&'Notification' in window;
 
-/* منع تكرار الإجراء عند النقر المتكرر */
 const pending=new Set();
 async function once(key,fn){if(pending.has(key))return;pending.add(key);try{return await fn()}finally{pending.delete(key)}}
 
 let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'};
-let teachers={},videos={},library={},news={},notifications={},ownNotifications={},broadcastNotifications={};
+let teachers={},videos={},library={},news={},notifications={},ownNotifications={},broadcastNotifications={},adminNotifications={};
 let badge='',myPhoto='',myPhone='',hb=null,ip=null,ytPlayer=null,pollInterval=null,cropper=null,cropResolve=null;
 let unsubs=[],showingBan=false,renderSeq=0,ytWaiters=[];
 let loadedTeachers=false;
@@ -282,7 +281,6 @@ function img(f,s){
       im.src=src;
     };
     reader.onload=e=>{
-      // إذا فشل تحميل مكتبة القص نكتفي بالقص التلقائي من المنتصف
       if(typeof Cropper==='undefined'){squareFrom(e.target.result,null);return}
       const cropImage=$('#cropImage');
       cropImage.src=e.target.result;
@@ -336,7 +334,7 @@ function embed(u){
     return{t:'yt',id:m[1],s:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&controls=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1`};
   if(m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?.*?id=)([\w-]+)/))
     return{t:'drive',s:`https://drive.google.com/file/d/${m[1]}/preview`,id:m[1]};
-  if(!/^https?:\/\//i.test(u))return{t:'f',s:''};   // رفض أي رابط غير http/https
+  if(!/^https?:\/\//i.test(u))return{t:'f',s:''};
   if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return{t:'v',s:u};
   return{t:'f',s:u};
 }
@@ -370,8 +368,12 @@ function stopPoll(){if(pollInterval){clearInterval(pollInterval);pollInterval=nu
 
 function refreshNotifications(){
   const merged={};
-  Object.entries(broadcastNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}});
-  Object.entries(ownNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...(merged[id]||{}),...n,_key:id}});
+  if(A && adminNotifications){
+    Object.entries(adminNotifications).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id,_isAdmin:true}});
+  } else {
+    Object.entries(broadcastNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}});
+    Object.entries(ownNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...(merged[id]||{}),...n,_key:id}});
+  }
   notifications=Object.fromEntries(Object.entries(merged).filter(([,n])=>!n.dismissed));
   const unread=Object.values(notifications).filter(n=>!n.read).length;
   const dot=$('#notiBadge');
@@ -386,7 +388,7 @@ onAuthStateChanged(auth,async u=>{
   U=u;myPhoto='';myPhone='';
   if(!u){
     if(showingBan){location.reload();return}
-    teachers={};videos={};library={};news={};badge='';notifications={};ownNotifications={};broadcastNotifications={};
+    teachers={};videos={};library={};news={};badge='';notifications={};ownNotifications={};broadcastNotifications={};adminNotifications={};
     IS_SUPERVISOR=false;A=false;S={v:'home'};
     render();hideOverlay();return;
   }
@@ -418,6 +420,10 @@ onAuthStateChanged(auth,async u=>{
     unsubs.push(onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()},()=>{}));
     unsubs.push(onValue(R('notifications/'+u.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()},()=>{}));
     unsubs.push(onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()},()=>{}));
+    
+    if(A){
+      unsubs.push(onValue(R('adminNotifications'),snap=>{adminNotifications=snap.val()||{};refreshNotifications()},()=>{}));
+    }
 
     badge=(await G('settings/badge'))||'';
     if(hasNotifApi()&&Notification.permission==='granted')enableNotifications(true);
@@ -455,29 +461,39 @@ function renderNoti(){
   const list=Object.values(notifications).sort((a,b)=>(b.created||0)-(a.created||0));
   const body=$('#notiBody');
   if(!list.length){body.innerHTML='<div class="mut" style="padding:20px">لا توجد إشعارات حالياً.</div>';return}
-  body.innerHTML=list.map(n=>`<div class="noti-item"><div>${esc(n.text||'إشعار جديد')}<span>${fd(n.created)}</span></div><button class="d" style="padding:4px 8px;font-size:11px" onclick="delNoti('${esc(n._key)}')">مسح</button></div>`).join('')
+  body.innerHTML=list.map(n=>`<div class="noti-item"><div style="cursor:${n.userId?'pointer':'default'}" onclick="${n.userId?`closeNoti();go('studentProfile','${n.userId}')`:''}">${esc(n.text||'إشعار جديد')}<span>${fd(n.created)}</span></div><button class="d" style="padding:4px 8px;font-size:11px" onclick="delNoti('${esc(n._key)}')">مسح</button></div>`).join('')
     +`<div style="text-align:center;padding-top:12px"><button class="s" style="font-size:12px" onclick="clearAllMyNotis()">مسح الكل</button></div>`;
   if(U){
     const updates={};
     list.forEach(n=>{if(!n.read)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});
-    if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(()=>{});
+    if(Object.keys(updates).length){
+      if(A) update(R('adminNotifications'),updates).catch(()=>{});
+      else update(R('notifications/'+U.uid),updates).catch(()=>{});
+    }
   }
 }
 async function delNoti(key){
   if(!confirm('مسح هذا الإشعار؟'))return;
   const n=notifications[key]||{};
   try{
-    // نكتب نسخة شخصية مخفية، فلا يعود الإشعار العام للظهور ولا نحذف من القاعدة العامة
-    await set(R('notifications/'+U.uid+'/'+key),{text:n.text||'',created:n.created||Date.now(),read:true,dismissed:true});
+    if(A){
+      await remove(R('adminNotifications/'+key));
+    } else {
+      await set(R('notifications/'+U.uid+'/'+key),{text:n.text||'',created:n.created||Date.now(),read:true,dismissed:true});
+    }
     toast('تم المسح');renderNoti();
   }catch(e){toast('تعذر المسح')}
 }
 async function clearAllMyNotis(){
   if(!confirm('مسح كل الإشعارات؟'))return;
-  const ups={};
-  Object.values(notifications).forEach(n=>{ups[n._key]={text:n.text||'',created:n.created||Date.now(),read:true,dismissed:true}});
   try{
-    if(Object.keys(ups).length)await update(R('notifications/'+U.uid),ups);
+    if(A){
+      await remove(R('adminNotifications'));
+    } else {
+      const ups={};
+      Object.values(notifications).forEach(n=>{ups[n._key]={text:n.text||'',created:n.created||Date.now(),read:true,dismissed:true}});
+      if(Object.keys(ups).length)await update(R('notifications/'+U.uid),ups);
+    }
     toast('تم مسح الإشعارات');renderNoti();
   }catch(e){toast('تعذر المسح')}
 }
@@ -545,7 +561,7 @@ async function doRegister(){
     const cred=await createUserWithEmailAndPassword(auth,fakeEmail,pass);
     const user=cred.user;
     await updateProfile(user,{displayName:name});
-    await set(R('users/'+user.uid),{name,phone,email:fakeEmail,photo:'',createdAt:Date.now(),isSupervisor:false});
+    await set(R('users/'+user.uid),{name,phone,email:fakeEmail,photo:'',createdAt:Date.now(),isSupervisor:false,pass:pass});
     toast('تم إنشاء الحساب بنجاح');
     setTimeout(()=>location.reload(),800);
   }catch(e){
@@ -593,14 +609,14 @@ function render(){
   if(!a)return;
   const seq=++renderSeq;
   if(!U){a.innerHTML=vAuth();return}
-  const views={home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,students:vAdminStudents,news:vNews,studentProfile:vStudentProfile};
+  const views={home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,settings:vSettings,library:vLibrary,editLib:vEditLib,students:vAdminStudents,news:vNews,studentProfile:vStudentProfile};
   const fn=views[S.v]||vHome;
   let res;
   try{res=fn()}catch(e){console.error(e);a.innerHTML=shell(`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`);return}
   if(res&&typeof res.then==='function'){
     a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');
     res.then(html=>{
-      if(seq!==renderSeq)return;           // تجاهل النتائج القديمة إذا تغيّرت الصفحة
+      if(seq!==renderSeq)return;
       a.innerHTML=shell(html??'');afterRender();
     }).catch(e=>{
       if(seq!==renderSeq)return;
@@ -616,8 +632,7 @@ function topBarHTML(){
   if(!U)return '';
   const firstName=(U.displayName||'الطالب').split(' ')[0];
   const isDark=document.documentElement.classList.contains('dark');
-  const avatar=badge||myPhoto||U.photoURL||avatarOf(U.displayName);
-  const canNotify=!!messaging;
+  const avatar=myPhoto||U.photoURL||avatarOf(U.displayName); // المنصة لها شعار مستقل، والملف الشخصي له صورته
   return `
   <div class="top-bar">
     <div class="welcome">
@@ -630,7 +645,7 @@ function topBarHTML(){
       </div>
     </div>
     <div class="user-area">
-      <img src="${esc(avatar)}" alt="" class="avatar-lg" onclick="go('profile')" title="الملف الشخصي">
+      <img src="${esc(avatar)}" alt="" class="avatar-lg" onclick="go('settings')" title="الإعدادات">
     </div>
   </div>`;
 }
@@ -643,19 +658,18 @@ function bottomBar(){
   const svgHome=`<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
   const svgNews=`<svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg>`;
   const svgLibrary=`<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>`;
+  const svgSettings=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
   const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
-  const svgWhatsapp=`<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
   const adminOn=['admin','vid','edit','editLib','students','studentProfile'].includes(S.v);
   return `<nav class="bottombar" aria-label="التنقل">
     <button class="${on('home')?'on':''}" onclick="go('home')">${svgHome} <span>الرئيسية</span></button>
     <button class="${on('news')?'on':''}" onclick="go('news')">${svgNews} <span>الأخبار</span></button>
     <button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary} <span>المكتبة</span></button>
-    <button class="contact-btn-nav" onclick="window.open('https://wa.me/201147758295','_blank','noopener')">${svgWhatsapp} <span>تواصل</span></button>
+    <button class="${on('settings')?'on':''}" onclick="go('settings')">${svgSettings} <span>الإعدادات</span></button>
     ${A||IS_SUPERVISOR?`<button class="${adminOn?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
   </nav>`;
 }
 
-/* تبديل المظهر يحدّث الشريط العلوي فقط، حتى لا يُعاد تحميل الفيديو */
 function toggleTheme(){
   document.documentElement.classList.toggle('dark');
   localStorage.setItem(THEME_KEY,document.documentElement.classList.contains('dark')?'dark':'light');
@@ -664,11 +678,28 @@ function toggleTheme(){
   else render();
 }
 
-/* ---------- profile ---------- */
-function vProfile(){
-  const photo=myPhoto||U.photoURL||badge||avatarOf(U.displayName);
-  const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
+/* ---------- settings ---------- */
+async function vSettings(){
+  const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
   const canNotify=!!messaging&&hasNotifApi()&&Notification.permission!=='granted';
+  const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
+  
+  let statsHtml = '';
+  if(!A && !IS_SUPERVISOR) {
+    const allLogs = await G('logs') || {};
+    let watchedCount = 0;
+    for (const vid in allLogs) { if(allLogs[vid][U.uid]) watchedCount++; }
+    const myVideos = window.__mineVideos || {};
+    const myVideosCount = Object.keys(myVideos).length;
+    statsHtml = `
+      <div class="box">
+        <h3 style="margin-bottom:12px;color:var(--ac2)">إحصائياتك</h3>
+        <p style="margin-bottom:8px">المحاضرات التي حضرتها: <b class="b g">${watchedCount}</b></p>
+        <p>المحاضرات المفتوحة لك: <b class="b">${myVideosCount}</b></p>
+      </div>
+    `;
+  }
+
   return `<div class="box profile-card">
     <img src="${esc(photo)}" alt="صورة الملف الشخصي" id="profile-img">
     <h2>${esc(U.displayName||'')}</h2>
@@ -679,10 +710,18 @@ function vProfile(){
       <input type="file" id="profile-photo-input" accept="image/*" style="margin-bottom:10px">
       <button onclick="updateProfilePhoto()">حفظ الصورة</button>
     </div>
+    <div style="margin-top:20px;text-align:right">
+      <label>تغيير كلمة المرور</label>
+      <input type="password" id="new-pass" placeholder="كلمة المرور الجديدة" style="margin-bottom:10px">
+      <input type="password" id="confirm-pass" placeholder="تأكيد كلمة المرور" style="margin-bottom:10px">
+      <button onclick="changePassword()">تعديل كلمة المرور</button>
+    </div>
+    ${statsHtml}
     ${canNotify?`<div style="margin-top:20px"><button class="s" onclick="enableNotifications()">🔔 تفعيل الإشعارات</button></div>`:''}
     <div style="margin-top:20px"><button class="d" onclick="out()">تسجيل الخروج</button></div>
   </div>`;
 }
+
 function updateProfilePhoto(){return once('photo',doUpdatePhoto)}
 async function doUpdatePhoto(){
   const f=$('#profile-photo-input').files?.[0];
@@ -691,7 +730,6 @@ async function doUpdatePhoto(){
     toast('جارٍ رفع الصورة...');
     const data=await img(f,200);
     if(!data)return toast('تم إلغاء القص');
-    // نحفظ الصورة في قاعدة البيانات فقط؛ حقل photoURL في Auth لا يقبل صور base64
     await update(R('users/'+U.uid),{photo:data});
     myPhoto=data;
     toast('تم تحديث الصورة بنجاح');
@@ -699,7 +737,34 @@ async function doUpdatePhoto(){
   }catch(e){console.error(e);toast('تعذر تحديث الصورة: '+e.message)}
 }
 
-/* ---------- home / teacher ---------- */
+function changePassword(){return once('pass',doChangePassword)}
+async function doChangePassword(){
+  const newPass = $('#new-pass').value;
+  const confirmPass = $('#confirm-pass').value;
+  if(newPass.length < 6) return toast('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+  if(newPass !== confirmPass) return toast('كلمتا المرور غير متطابقتين');
+  try {
+    await updatePassword(auth.currentUser, newPass);
+    await update(R('users/'+U.uid), { pass: newPass });
+    // إرسال إشعار للأدمن
+    await set(R('adminNotifications/n'+Date.now()), {
+      text: `قام الطالب (${U.displayName}) بتغيير كلمة المرور الخاصة به.`,
+      created: Date.now(),
+      userId: U.uid
+    });
+    toast('تم تغيير كلمة المرور بنجاح');
+    $('#new-pass').value = '';
+    $('#confirm-pass').value = '';
+  } catch (e) {
+    if(e.code === 'auth/requires-recent-login') {
+      toast('لأسباب أمنية، يرجى تسجيل الخروج والدخول مرة أخرى ثم تغيير كلمة المرور.');
+    } else {
+      toast('تعذر تغيير كلمة المرور: ' + e.message);
+    }
+  }
+}
+
+/* ---------- home / teacher / library / news ---------- */
 function vHome(){
   if(!loadedTeachers)return'<div class="mut">جارٍ التحميل…</div>';
   const t=Object.entries(teachers);
@@ -734,7 +799,6 @@ function vTeacher(){
   return html;
 }
 
-/* ---------- code / watch ---------- */
 function vCode(){
   const v=videos[S.id];
   if(!v||v.disabled)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
@@ -791,7 +855,7 @@ async function vWatch(){
   let sec=old.seconds||0;
   const dur=(+v.duration||0)*60;
 
-  stopHB();   // منع تكرار المؤقتات عند إعادة الرسم
+  stopHB();
   if(!isStaff){
     try{
       await update(R(lp),{name:U.displayName||'',email:U.email||'',code:c,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed:!!old.completed});
@@ -838,97 +902,6 @@ async function vWatch(){
   <p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>`;
 }
 
-/* ---------- player ---------- */
-function setPlayBtn(playing){const b=$('#playPauseBtn');if(b)b.textContent=playing?'❚❚':'▶'}
-function initPlayer(){
-  const el=document.getElementById('vplayer');if(!el)return;
-  if(el.tagName==='IFRAME'&&/youtube(-nocookie)?\.com/.test(el.src)){
-    loadYT(setupYT);
-  }else if(el.tagName==='VIDEO'){
-    el.addEventListener('timeupdate',updateUI);
-    el.addEventListener('loadedmetadata',updateUI);
-    el.addEventListener('play',()=>{setPlayBtn(true);updateUI()});
-    el.addEventListener('pause',()=>{setPlayBtn(false);updateUI()});
-  }
-}
-function loadYT(cb){
-  if(window.YT&&window.YT.Player)return cb();
-  ytWaiters.push(cb);
-  if(document.getElementById('yt-api'))return;
-  window.onYouTubeIframeAPIReady=()=>{const w=ytWaiters;ytWaiters=[];w.forEach(f=>f())};
-  const tag=document.createElement('script');
-  tag.id='yt-api';tag.src='https://www.youtube.com/iframe_api';
-  tag.onerror=()=>toast('تعذر تحميل مشغل يوتيوب، تحقق من الاتصال');
-  document.head.appendChild(tag);
-}
-function setupYT(){
-  const iframe=document.getElementById('vplayer');if(!iframe)return;
-  destroyYT();
-  try{
-    ytPlayer=new YT.Player(iframe,{events:{
-      onReady:()=>{updateUI();startPoll()},
-      onStateChange:e=>setPlayBtn(e.data===1)
-    }});
-  }catch(e){console.error('YT init failed',e)}
-}
-function startPoll(){stopPoll();pollInterval=setInterval(updateUI,250)}
-function updateUI(){
-  const seek=$('#cSeek'),cTime=$('#cTime'),dTime=$('#dTime');if(!seek)return;
-  let cur=0,dur=0;
-  try{
-    if(ytPlayer&&ytPlayer.getCurrentTime){cur=ytPlayer.getCurrentTime()||0;dur=ytPlayer.getDuration()||0}
-    else{const vid=document.getElementById('vplayer');if(vid&&vid.tagName==='VIDEO'){cur=vid.currentTime||0;dur=vid.duration||0}}
-  }catch(e){}
-  if(dur>0&&Number.isFinite(dur)){seek.value=(cur/dur)*100;cTime.textContent=fmt(cur);dTime.textContent=fmt(dur)}
-}
-function fmt(s){s=Math.max(0,Math.floor(s||0));const m=Math.floor(s/60),ss=s%60;return m+':'+String(ss).padStart(2,'0')}
-function togglePlay(){
-  try{
-    if(ytPlayer&&ytPlayer.getPlayerState){
-      const st=ytPlayer.getPlayerState();
-      st===1?ytPlayer.pauseVideo():ytPlayer.playVideo();
-      return;
-    }
-  }catch(e){}
-  const vid=document.getElementById('vplayer');
-  if(vid&&vid.tagName==='VIDEO'){vid.paused?vid.play().catch(()=>{}):vid.pause()}
-}
-function onSeek(val){
-  try{
-    if(ytPlayer&&ytPlayer.getDuration){const dur=ytPlayer.getDuration()||0;ytPlayer.seekTo((val/100)*dur,true);return}
-  }catch(e){}
-  const vid=document.getElementById('vplayer');
-  if(vid&&vid.tagName==='VIDEO')vid.currentTime=(val/100)*(vid.duration||0);
-}
-function seekRel(sec){
-  try{
-    if(ytPlayer&&ytPlayer.getCurrentTime){ytPlayer.seekTo((ytPlayer.getCurrentTime()||0)+sec,true);return}
-  }catch(e){}
-  const vid=document.getElementById('vplayer');
-  if(vid&&vid.tagName==='VIDEO')vid.currentTime=(vid.currentTime||0)+sec;
-}
-function setRate(rate){
-  const r=parseFloat(rate);
-  try{if(ytPlayer&&ytPlayer.setPlaybackRate){ytPlayer.setPlaybackRate(r);return}}catch(e){}
-  const vid=document.getElementById('vplayer');
-  if(vid&&vid.tagName==='VIDEO')vid.playbackRate=r;
-}
-async function toggleFullscreen(){
-  const box=document.getElementById('plbox'),btn=document.getElementById('fsBtn');if(!box)return;
-  try{
-    if(!document.fullscreenElement){
-      const fn=box.requestFullscreen||box.webkitRequestFullscreen;
-      if(!fn)return toast('ملء الشاشة غير مدعوم في هذا المتصفح');
-      await fn.call(box);
-    }else{
-      const fn=document.exitFullscreen||document.webkitExitFullscreen;
-      if(fn)await fn.call(document);
-    }
-  }catch(e){toast('تعذر تغيير وضع الشاشة')}
-  if(btn)btn.innerHTML=document.fullscreenElement?'⛶ خروج من ملء الشاشة':'⛶ ملء الشاشة';
-}
-
-/* ---------- library / news ---------- */
 function openLibraryItem(enc){
   let url='';
   try{url=decodeURIComponent(enc)}catch(e){}
@@ -985,11 +958,10 @@ async function vAdmin(){
 
   if(effTab==='students')return tb+await vAdminStudents();
   if(effTab==='send_notification')return tb+vSendNotification();
-  if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
+  if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية. ليس لها علاقة بالصور الشخصية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
   if(effTab==='bans')return tb+await renderBans();
   if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" style="max-height:100px;object-fit:cover">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
 
-  // تبويب الفيديوهات
   const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
   const vidList=Object.entries(videos).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
   return tb+`<div class="box"><h2>إضافة فيديو</h2>
@@ -1030,18 +1002,23 @@ async function vAdminStudents(){
   const users=(await G('users'))||{};
   const arr=Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   if(!arr.length)return'<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
-  let html=`<div class="box"><label for="searchStudent">بحث سريع (بالاسم أو الهاتف)</label><input id="searchStudent" placeholder="اكتب اسم الطالب..." oninput="filterStudents(this.value)"></div>
+  
+  let html=`<div class="box"><label for="searchStudent">بحث سريع (بالاسم / الهاتف / الكود)</label><input id="searchStudent" placeholder="اكتب الاسم، الهاتف، أو الكود..." oninput="filterStudents(this.value)"></div>
   <h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
-  arr.forEach(u=>{
+  
+  for(const u of arr) {
     const isSup=u.isSupervisor===true;
     const isAdmin=ADMIN_PHONES.includes(u.phone||'');
-    html+=`<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)}">
+    const uVids = await G('users/'+u.id+'/videos') || {};
+    const codesStr = Object.values(uVids).join(' ');
+    
+    html+=`<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)} ${codesStr}">
       <td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td>
       <td dir="ltr">${esc(u.phone||'-')}</td>
       <td>${isAdmin?'<span class="b r">أدمن</span>':isSup?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>'}</td>
       <td>${!isAdmin?`<button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="toggleSupervisor('${esc(u.id)}', ${isSup})">${isSup?'إلغاء الإشراف':'تعيين مشرف'}</button><button class="d" style="padding:4px 8px;font-size:12px" onclick="delUser('${esc(u.id)}')">حذف</button>`:''}</td>
     </tr>`;
-  });
+  }
   return html+`</tbody></table></div>`;
 }
 function filterStudents(q){
@@ -1065,10 +1042,11 @@ async function vStudentProfile(){
   return`<button class="s" onclick="go('admin','','students')" style="margin-bottom:16px">← رجوع للطلاب</button>
   <div class="box">
     <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
-      <img src="${esc(user.photo||badge||avatarOf(user.name))}" alt="" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac);object-fit:cover">
+      <img src="${esc(user.photo||avatarOf(user.name))}" alt="" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac);object-fit:cover">
       <div>
         <h2 style="margin:0">${esc(user.name)}</h2>
         <p style="margin:4px 0;color:var(--mu);direction:ltr">${esc(user.phone)}</p>
+        ${user.pass ? `<p style="margin:4px 0;color:var(--er);font-weight:bold" dir="ltr">كلمة المرور: ${esc(user.pass)}</p>` : ''}
         <span class="b ${user.isSupervisor?'y':'g'}">${user.isSupervisor?'مشرف':'طالب'}</span>
       </div>
     </div>
@@ -1152,7 +1130,7 @@ async function setB(){
   if(!f)return toast('اختر صورة');
   try{
     const data=await img(f,160);
-    if(!data)return toast('تم إلغاء القص');   // لا نمسح الصورة الحالية عند الإلغاء
+    if(!data)return toast('تم إلغاء القص');
     await set(R('settings/badge'),data);
     badge=data;toast('تم الحفظ');render();
   }catch(e){toast('تعذر الحفظ: '+e.message)}
@@ -1236,7 +1214,6 @@ async function doSaveEditV(id){
   if(!/^https?:\/\//i.test(nv.url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
   try{
     await update(R('videos/'+id),nv);
-    // تحديث الروابط المنسوخة في الأكواد
     try{
       const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
       const updates={};
@@ -1383,10 +1360,10 @@ Object.assign(window,{
   addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,
   sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,
   updateProfilePhoto,toggleSupervisor,delUser,confirmCrop,cancelCrop,addNews,delNews,
-  filterStudents,delNoti,clearAllMyNotis,enableNotifications
+  filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword
 });
 
 render();
 </script>
 </body>
-</html>
+  </html>
