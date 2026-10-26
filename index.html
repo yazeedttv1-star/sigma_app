@@ -142,7 +142,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .modal-header{padding:16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{font-size:16px;margin:0}
 .modal-body{padding:16px;overflow-y:auto;flex:1}
-.noti-item{padding:12px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.5}
+.noti-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--bd);font-size:13px;line-height:1.5}
 .noti-item:last-child{border-bottom:0}
 .noti-item span{display:block;color:var(--mu);font-size:11px;margin-top:4px}
 .auth-container{max-width:400px;margin:0 auto;padding:40px 20px;text-align:center}
@@ -367,9 +367,9 @@ onAuthStateChanged(auth,async u=>{
       }
       const savedCodes=await G('users/'+U.uid+'/videos')||{};window.__mineVideos=Object.assign({},savedCodes);
       
-      unsubTeachers=onValue(R('teachers'),s=>{teachers=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("teachers read error",e)});
-      unsubVideos=onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("videos read error",e)});
-      unsubLibrary=onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()}, (e)=>{console.warn("library read error",e)});
+      unsubTeachers=onValue(R('teachers'),s=>{teachers=s.val()||{};if(S.v!=='watch')render()}, (e)=>{});
+      unsubVideos=onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()}, (e)=>{});
+      unsubLibrary=onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()}, (e)=>{});
       unsubNews=onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()}, (e)=>{});
       unsubNoti=onValue(R('notifications/'+U.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()}, (e)=>{});
       unsubBroadcastNoti=onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()}, (e)=>{});
@@ -396,8 +396,21 @@ function renderNoti(){
   const list=Object.values(notifications).sort((a,b)=>(b.created||0)-(a.created||0));
   const body=$('#notiBody');
   if(!list.length){body.innerHTML='<div class="mut" style="padding:20px">لا توجد إشعارات حالياً.</div>';return}
-  body.innerHTML=list.map(n=>`<div class="noti-item">${esc(n.text||'إشعار جديد')}<span>${fd(n.created)}</span></div>`).join('');
+  body.innerHTML=list.map(n=>`<div class="noti-item"><div>${esc(n.text||'إشعار جديد')}<span>${fd(n.created)}</span></div>${!A?`<button class="d" style="padding:4px 8px;font-size:10px" onclick="delNoti('${n._key}')">مسح</button>`:''}</div>`).join('');
   if(U&&!A){const updates={};list.forEach(n=>{if(n._key)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(e=>{})}
+}
+async function delNoti(key){
+  if(!confirm('مسح هذا الإشعار؟')) return;
+  try{
+    const snap = await get(R('notifications/all/'+key));
+    if(snap.exists()){ await remove(R('notifications/'+U.uid+'/'+key)); alert('لا يمكن مسح الإشعار العام من قاعدته، تم إخفاؤه لك.'); }
+    else { await remove(R('notifications/'+U.uid+'/'+key)); }
+    toast('تم المسح'); renderNoti();
+  }catch(e){ toast('تعذر المسح'); }
+}
+async function clearAllMyNotis(){
+  if(!confirm('مسح كل الإشعارات الخاصة بك؟')) return;
+  try{ await remove(R('notifications/'+U.uid)); toast('تم مسح الإشعارات'); renderNoti(); }catch(e){ toast('تعذر المسح'); }
 }
 
 function vAuth() {
@@ -504,7 +517,7 @@ function render(){
   const a=$('#app');
   if(!U){a.innerHTML=vAuth();return;}
   let body='';
-  try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch,students:vAdminStudents,news:vNews}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}
+  try{body=({home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,admin:vAdmin,vid:vVid,edit:vEdit,profile:vProfile,library:vLibrary,editLib:vEditLib,studentSearch:vStudentSearch,students:vAdminStudents,news:vNews,studentProfile:vStudentProfile}[S.v]||vHome)()}catch(e){body=`<div class="mut">حدث خطأ: ${esc(e.message)}</div>`}
   if(body&&typeof body.then==='function'){
     body.then(html=>{a.innerHTML=shell(html);afterRender()}).catch(e=>{a.innerHTML=shell(`<div class="mut">خطأ: ${esc(e.message)}</div>`)});
     a.innerHTML=shell('<div class="mut">جارٍ التحميل…</div>');return;
@@ -551,7 +564,7 @@ function bottomBar(){
     <button class="${on('news')?'on':''}" onclick="go('news')">${svgNews} <span>الأخبار</span></button>
     <button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary} <span>المكتبة</span></button>
     <button class="contact-btn-nav" onclick="window.open('https://wa.me/201147758295','_blank')">${svgWhatsapp} <span>تواصل</span></button>
-    ${A||IS_SUPERVISOR?`<button class="${(on('admin')||S.v==='vid'||S.v==='edit'||S.v==='editLib'||S.v==='studentSearch'||S.v==='students')?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
+    ${A||IS_SUPERVISOR?`<button class="${(on('admin')||S.v==='vid'||S.v==='edit'||S.v==='editLib'||S.v==='studentSearch'||S.v==='students'||S.v==='studentProfile')?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
   </nav>`;
 }
 
@@ -590,7 +603,7 @@ async function updateProfilePhoto() {
 
 function vHome(){
   const t=Object.entries(teachers);
-  if(!t.length)return'<div class="mut">لا يوجد مدرسون بعد أو لا تملك صلاحية رؤيتهم.</div>';
+  if(!t.length)return'<div class="mut">لا يوجد مدرسون بعد.</div>';
   return`<h2>اختر المدرس</h2><div class="grid">${t.map(([id,x])=>`
     <div class="card" onclick="go('teacher','${id}')">
       <div class="card-img-wrap">
@@ -604,19 +617,16 @@ function vHome(){
 
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
-  if(!S.filter){
-    return `<button class="s" onclick="go('home')" style="margin-bottom:16px">← رجوع</button>
-    <h2>${esc(t.name)}</h2>
-    <div class="box" style="display:flex;gap:10px;flex-wrap:wrap">
-      <button onclick="go('teacher','${S.id}','','prep')" style="flex:1;padding:20px;font-size:16px">إعدادي</button>
-      <button onclick="go('teacher','${S.id}','','sec')" style="flex:1;padding:20px;font-size:16px">ثانوي</button>
-    </div>`;
-  }
-  const isPrep = S.filter==='prep';
-  const grades = isPrep ? ['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'] : ['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
+  
   const mine=window.__mineVideos||{};
-  const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id && v.stage===(isPrep?'prep':'sec')).sort((a,b)=>b[1].created-a[1].created);
-  let html = `<button class="s" onclick="go('teacher','${S.id}','')" style="margin-bottom:16px">← رجوع للمراحل</button><h2>${esc(t.name)} - ${isPrep?'إعدادي':'ثانوي'}</h2>`;
+  const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id).sort((a,b)=>b[1].created-a[1].created);
+  
+  let html = `<button class="s" onclick="go('home')" style="margin-bottom:16px">← رجوع</button><h2>${esc(t.name)}</h2>`;
+  
+  if(!l.length) return html + '<div class="mut">لا توجد فيديوهات لهذا المدرس.</div>';
+  
+  const grades = ['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي','الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
+  
   grades.forEach(g => {
     const gradeVideos = l.filter(([,v]) => v.grade === g);
     if(gradeVideos.length) {
@@ -628,14 +638,13 @@ function vTeacher(){
       }).join('');
     }
   });
-  if(!l.length) html += '<div class="mut">لا توجد فيديوهات في هذا القسم.</div>';
   return html;
 }
 
 function vCode(){
   const v=videos[S.id];
   if(!v||v.disabled)return`<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
-  return`<button class="s" onclick="go('teacher','${v.teacherId}','','${v.stage}')" style="margin-bottom:16px">← رجوع</button>
+  return`<button class="s" onclick="go('teacher','${v.teacherId}')" style="margin-bottom:16px">← رجوع</button>
   <div class="box"><h2>${esc(v.title)}</h2><label>أدخل الكود المكوّن من 6 أرقام (يُستخدم مرة واحدة)</label><input id="cd" inputmode="numeric" maxlength="6" placeholder="000000" style="font-size:26px;text-align:center;letter-spacing:8px;font-family:monospace"><button onclick="redeem('${S.id}')" style="width:100%">فتح الفيديو</button></div>`;
 }
 async function redeem(vid){
@@ -690,7 +699,7 @@ async function vWatch(){
   if(isYT||e.t==='v'){
     controlsHTML=`<div class="custom-player-ctrl"><div class="progress-row"><button id="playPauseBtn" class="play-btn" onclick="togglePlay()">▶</button><div class="progress-container"><span class="time" id="cTime">0:00</span><input type="range" id="cSeek" min="0" max="100" value="0" step="0.1" oninput="onSeek(this.value)"><span class="time" id="dTime">0:00</span></div></div><div class="tools-row"><button onclick="seekRel(-5)">⏪ -5 ثوان</button><button onclick="seekRel(5)">+5 ثوان ⏩</button><span style="color:var(--mu);font-size:13px;font-weight:700;margin:0 4px">السرعة:</span><select id="speedSelector" onchange="setRate(this.value)"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x (عادي)</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select><button onclick="toggleFullscreen()" id="fsBtn">⛶ ملء الشاشة</button></div></div>`;
   }
-  return`<button class="s" onclick="go('teacher','${v.teacherId}','','${v.stage}')">← رجوع</button>
+  return`<button class="s" onclick="go('teacher','${v.teacherId}')">← رجوع</button>
   <h2 style="margin-top:14px">${esc(v.title)} ${(A||IS_SUPERVISOR)?'<span class="b g">إدارة</span>':''}</h2>
   <div class="player-wrap"><div class="pl ${isYT?'crop-yt':''}" id="plbox">${playerHTML}<div class="yt-shield"></div>${isYT?'<div class="yt-bottom-mask"></div><div class="yt-top-mask"></div>':''}${wm}</div>${controlsHTML}</div>
   <p style="color:var(--tx2);margin-top:14px;line-height:1.7">${esc(v.desc||'')}</p>`;
@@ -702,14 +711,22 @@ function vLibrary(){const lib=Object.entries(library).sort((a,b)=>b[1].created-a
 function vNews(){
   const list = Object.entries(news).sort((a,b)=>b[1].created-a[1].created);
   if(!list.length) return '<div class="mut">لا توجد أخبار منشورة حالياً.</div>';
-  return `<h2>آخر أخبار السنتر</h2>` + list.map(([id, item]) => `
+  return `<h2>آخر أخبار السنتر</h2>` + list.map(([id, item]) => {
+    let embedHTML = '';
+    if(item.url) {
+      const e = embed(item.url);
+      if (e.t === 'yt') embedHTML = `<iframe width="100%" height="200" src="${e.s}" frameborder="0" allowfullscreen style="border-radius:10px;margin-bottom:10px"></iframe>`;
+      else if (e.t === 'v') embedHTML = `<video src="${e.s}" controls style="width:100%;border-radius:10px;margin-bottom:10px"></video>`;
+      else if (e.t === 'drive') embedHTML = `<iframe src="${e.s}" width="100%" height="200" style="border-radius:10px;margin-bottom:10px" allowfullscreen></iframe>`;
+    }
+    return `
     <div class="news-card">
       ${item.photo ? `<img src="${item.photo}" alt="صورة الخبر">` : ''}
+      ${embedHTML}
       ${item.text ? `<div class="news-text">${esc(item.text)}</div>` : ''}
       <div class="news-date">${fd(item.created)}</div>
       ${(A||IS_SUPERVISOR) ? `<button class="d" style="padding:4px 8px;font-size:12px;width:fit-content" onclick="delNews('${id}')">حذف الخبر</button>` : ''}
-    </div>
-  `).join('');
+    </div>`}).join('');
 }
 
 function initPlayer(){const el=document.getElementById('vplayer');if(!el)return;if(el.tagName==='IFRAME'&&el.src.includes('youtube')){if(!window.YT){const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);window.onYouTubeIframeAPIReady=()=>setupYT()}else{setupYT()}}else if(el.tagName==='VIDEO'){el.addEventListener('timeupdate',updateUI);el.addEventListener('loadedmetadata',updateUI);el.addEventListener('play',()=>{document.getElementById('playPauseBtn').textContent='❚❚';updateUI()});el.addEventListener('pause',()=>{document.getElementById('playPauseBtn').textContent='▶';updateUI()})}}
@@ -728,7 +745,7 @@ function stopHB(){clearInterval(hb);hb=null}
 async function vAdmin(){
   if(!A && !IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
-  const allowedTabs = A ? [['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['studentSearch','بحث طالب'],['bans','الحظر'],['badge','صورة التعريف']] : [['videos','الفيديوهات'],['news','أخبار السنتر']];
+  const allowedTabs = A ? [['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['bans','الحظر'],['badge','صورة التعريف']] : [['videos','الفيديوهات'],['news','أخبار السنتر']];
   
   const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${tab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
   
@@ -740,8 +757,7 @@ async function vAdmin(){
   if(tab==='send_notification') return tb+vSendNotification();
   if(tab==='badge') return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${badge}" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft)">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
   if(tab==='bans') return tb+await renderBans();
-  if(tab==='studentSearch') return tb+vStudentSearch();
-  if(tab==='news') return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label>نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label>صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${id}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${x.photo}" style="max-height:100px;object-fit:cover">`:''}<p style="font-size:13px">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
+  if(tab==='news') return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label>نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label>رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label>صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>b[1].created-a[1].created).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${id}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${x.photo}" style="max-height:100px;object-fit:cover">`:''}<p style="font-size:13px">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
 
   const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${id}">${esc(x.name)}</option>`).join('');
   return tb+`<div class="box"><h2>إضافة فيديو</h2><label>المدرس</label><select id="vt">${tOpts}</select><label>المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label>الصف</label><select id="vg"><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select><label>العنوان</label><input id="vn"><label>الوصف</label><textarea id="vd" rows="2"></textarea><label>رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label>مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label>عدد الأكواد</label><input id="vc" type="number" min="1" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${Object.entries(videos).sort((a,b)=>b[1].created-a[1].created).map(([id,v])=>`<div class="row"><div onclick="go('vid','${id}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${id}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${id}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
@@ -749,8 +765,9 @@ async function vAdmin(){
 
 async function addNews(){
   const text = $('#newText').value.trim();
+  const url = $('#newVid').value.trim();
   const file = $('#newImg').files[0];
-  if(!text && !file) return toast('يجب إضافة نص أو صورة على الأقل');
+  if(!text && !file && !url) return toast('يجب إضافة نص أو صورة أو فيديو على الأقل');
   try {
     let photo = '';
     if(file){
@@ -758,9 +775,10 @@ async function addNews(){
       if(!photo) return toast('تم إلغاء قص الصورة');
     }
     const id = 'n' + Date.now();
-    await set(R('news/' + id), { text, photo, created: Date.now() });
+    await set(R('news/' + id), { text, url, photo, created: Date.now() });
     toast('تم نشر الخبر بنجاح');
     $('#newText').value = '';
+    $('#newVid').value = '';
     $('#newImg').value = '';
     render();
   } catch (e) {
@@ -779,14 +797,16 @@ async function vAdminStudents() {
   const users = await G('users') || {};
   const arr = Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   if(!arr.length) return '<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
-  let html = `<h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>البريد الإلكتروني</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
+  
+  let html = `<div class="box"><label>بحث سريع (بالاسم أو الهاتف)</label><input id="searchStudent" placeholder="اكتب اسم الطالب..." oninput="filterStudents(this.value)"></div>
+  <h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
+  
   arr.forEach(u => {
     const isSup = u.isSupervisor === true;
     const isAdmin = ADMIN_PHONES.includes(u.phone || '');
-    html += `<tr>
-      <td><b>${esc(u.name||'-')}</b></td>
+    html += `<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)}">
+      <td><b onclick="go('studentProfile','${u.id}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td>
       <td dir="ltr">${esc(u.phone||'-')}</td>
-      <td>${esc(u.email||'-')}</td>
       <td>${isAdmin ? '<span class="b r">أدمن</span>' : isSup ? '<span class="b y">مشرف</span>' : '<span class="b">طالب</span>'}</td>
       <td>
         ${!isAdmin ? `<button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="toggleSupervisor('${u.id}', ${isSup})">${isSup?'إلغاء الإشراف':'تعيين مشرف'}</button>
@@ -797,6 +817,48 @@ async function vAdminStudents() {
   html += `</tbody></table></div>`;
   return html;
 }
+
+function filterStudents(q){
+  const query = q.toLowerCase();
+  document.querySelectorAll('.student-row').forEach(row => {
+    const text = row.getAttribute('data-search').toLowerCase();
+    row.style.display = text.includes(query) ? '' : 'none';
+  });
+}
+
+async function vStudentProfile(){
+  if(!A) return '<div class="mut">غير مصرح.</div>';
+  const uid = S.id;
+  const user = await G('users/'+uid);
+  if(!user) return '<div class="mut">الطالب غير موجود.</div>';
+  
+  const allLogs = await G('logs') || {};
+  const studentVideos = [];
+  for (const vid in allLogs) {
+    if(allLogs[vid][uid]) {
+      studentVideos.push({ vid, title: videos[vid]?.title || 'محذوف', ...allLogs[vid][uid] });
+    }
+  }
+  studentVideos.sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
+  
+  return `<button class="s" onclick="go('admin','','students')" style="margin-bottom:16px">← رجوع للطلاب</button>
+  <div class="box">
+    <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px">
+      <img src="${user.photo||badge||'https://ui-avatars.com/api/?name='+encodeURIComponent(user.name||'U')+'&background=2563eb&color=fff&size=100'}" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac)">
+      <div>
+        <h2 style="margin:0">${esc(user.name)}</h2>
+        <p style="margin:4px 0;color:var(--mu);direction:ltr">${esc(user.phone)}</p>
+        <span class="b ${user.isSupervisor?'y':'g'}">${user.isSupervisor?'مشرف':'طالب'}</span>
+      </div>
+    </div>
+    <h3>سجل المشاهدة (${studentVideos.length} فيديو)</h3>
+    <div class="tw"><table>
+      <tr><th>الفيديو</th><th>الكود</th><th>آخر مشاهدة</th><th>الحالة</th></tr>
+      ${studentVideos.map(v=>`<tr><td>${esc(v.title)}</td><td><span class="code">${v.code||'-'}</span></td><td>${fd(v.lastAt)}</td><td>${v.completed?'<span class="g">أكمل</span>':'<span class="y">لم يكمل</span>'}</td></tr>`).join('') || '<tr><td colspan="4" class="mut">لا يوجد سجل مشاهدة.</td></tr>'}
+    </table></div>
+  </div>`;
+}
+
 async function toggleSupervisor(uid, isSup) {
   if(!A) return toast('غير مصرح');
   if(!confirm(isSup ? 'إلغاء صلاحية الإشراف؟' : 'تعيين هذا الطالب كمشرف؟ (سيتمكن من إضافة فيديوهات فقط)')) return;
@@ -804,43 +866,13 @@ async function toggleSupervisor(uid, isSup) {
 }
 async function delUser(uid) {
   if(!A) return toast('غير مصرح');
-  if(!confirm('هل أنت متأكد من حذف هذا المستخدم نهائياً من قاعدة البيانات؟')) return;
+  if(!confirm('هل أنت متأكد من حذف هذا المستخدم نهائياً؟')) return;
   try { await remove(R('users/' + uid)); toast('تم حذف المستخدم بنجاح'); render(); } catch(e) { toast('تعذر حذف المستخدم'); }
 }
 
 function vSendNotification(){ return `<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label>نص الإشعار</label><textarea id="notiText" rows="3" placeholder="اكتب رسالتك هنا..."></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات</button></div></div>`; }
 async function sendAdminNotification(){ const text=$('#notiText').value.trim(); if(!text)return toast('اكتب نص الإشعار'); try{ await set(R('notifications/all/'+Date.now()), {text, created: Date.now()}); $('#notiText').value=''; toast('تم إرسال الإشعار بنجاح'); }catch(e){console.error(e);toast('تعذر إرسال الإشعار: '+(e.code||e.message))} }
 async function clearAllNotifications(){ if(!confirm('هل أنت متأكد من حذف جميع الإشعارات للجميع؟'))return; try{ await remove(R('notifications/all')); toast('تم حذف جميع الإشعارات'); }catch(e){console.error(e);toast('تعذر حذف الإشعارات: '+(e.code||e.message))} }
-
-function vStudentSearch(){ return `<div class="box"><h2>بحث عن طالب</h2><label>اسم الطالب أو الإيميل أو رقم الهاتف أو الكود</label><div style="display:flex;gap:8px"><input id="searchStudent" placeholder="اكتب أي شيء للبحث..." style="margin-bottom:0"><button onclick="doStudentSearch()">بحث</button></div></div><div id="studentResult"></div>`; }
-async function doStudentSearch(){
-  const q=$('#searchStudent').value.trim().toLowerCase(); if(!q)return;
-  const res=$('#studentResult');res.innerHTML='<div class="mut">جارٍ البحث...</div>';
-  const allLogs = await G('logs') || {};
-  const studentLogs = {};
-  for (const vid in allLogs) {
-    for (const uid in allLogs[vid]) {
-      const log = allLogs[vid][uid];
-      const match = (log.name && log.name.toLowerCase().includes(q)) || (log.email && log.email.toLowerCase().includes(q)) || (log.code && log.code.includes(q));
-      if (match) {
-        if (!studentLogs[uid]) studentLogs[uid] = {name: log.name, email: log.email, videos: []};
-        studentLogs[uid].videos.push({vid, title: videos[vid]?.title || 'محذوف', time: log.lastAt, completed: log.completed});
-      }
-    }
-  }
-  const entries = Object.values(studentLogs);
-  if (!entries.length) { res.innerHTML = '<div class="mut">لم يتم العثور على نتائج.</div>'; return; }
-  res.innerHTML = entries.map(s => `
-    <div class="box">
-      <h3>${esc(s.name)} <small style="color:var(--mu);font-size:12px">(${esc(s.email)})</small></h3>
-      <p style="margin:10px 0;font-weight:bold">عدد المحاضرات التي حضرها: <span class="b g">${s.videos.length}</span></p>
-      <table style="margin-top:10px">
-        <tr><th>المحاضرة</th><th>آخر مشاهدة</th><th>الحالة</th></tr>
-        ${s.videos.map(v => `<tr><td>${esc(v.title)}</td><td>${fd(v.time)}</td><td>${v.completed ? '<span class="g">أكمل</span>' : '<span class="y">لم يكمل</span>'}</td></tr>`).join('')}
-      </table>
-    </div>
-  `).join('');
-}
 
 async function renderBans(){const bans=await G('bans')||{};const entries=Object.values(bans);const note=`<div class="box" style="background:var(--ac-soft);border-color:var(--ac)"><b>ملاحظة:</b> حسابات الإدارة محمية ولا تُحظر أبداً.</div>`;if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">${b.photo?`<img src="${esc(b.photo)}" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}<div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||'')}</small></div><span class="b r">محظور</span></div><p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">الجهاز السابق: <b>${esc(b.oldDeviceLabel||'-')}</b><br>الجهاز الجديد: <b>${esc(b.newDeviceLabel||'-')}</b><br>وقت الحظر: ${fd(b.bannedAt)}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button><button class="s" onclick="keepBan('${esc(b.uid)}')">تركه محظوراً</button></div></div>`).join('')}
 async function unban(uid){await remove(R('bans/'+uid));toast('تم فك الحظر');render()}
@@ -917,7 +949,7 @@ function exportPDF(vid){const v=videos[vid];if(!v)return;const rows=[];document.
 
 async function vVid(){const id=S.id,v=videos[id];if(!v)return vAdmin();const cs=[];(await get(query(R('codes'),orderByChild('videoId'),equalTo(id)))).forEach(c=>{cs.push({c:c.key,...c.val()})});cs.sort((a,b)=>b.createdAt-a.createdAt);const lg=Object.values(await G('logs/'+id)||{}).sort((a,b)=>b.lastAt-a.lastAt);const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2><div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p><p style="margin-bottom:14px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end"><div style="width:110px"><label>العدد</label><input id="gn" type="number" min="1" value="10" style="margin-bottom:0"></div><button onclick="moreCodes('${id}')">توليد أكواد</button><button class="s" onclick="moreCodes('${id}',1)">كود لطالب</button><button class="s" onclick="copyFree('${id}')">نسخ المتاح</button><button class="s" onclick="go('edit','${id}','video')">تعديل</button><button class="${v.disabled?'g':'d'}" onclick="toggleVid('${id}')">${v.disabled?'تفعيل':'إيقاف'}</button><button class="s" onclick="exportPDF('${id}')">تصدير PDF</button><button class="d" onclick="delV('${id}')">حذف</button></div></div><h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الإيميل</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div><h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${x.c}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${x.c}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`}
 
-Object.assign(window,{go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,updateProfilePhoto,toggleSupervisor,delUser,confirmCrop,cancelCrop,addNews,delNews});
+Object.assign(window,{go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,toggleVid,exportPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,onSeek,seekRel,setRate,toggleFullscreen,addLib,delLib,saveEditLib,openNoti,closeNoti,doStudentSearch,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,updateProfilePhoto,toggleSupervisor,delUser,confirmCrop,cancelCrop,addNews,delNews,filterStudents,delNoti,clearAllMyNotis});
 render();
 </script>
 </body>
