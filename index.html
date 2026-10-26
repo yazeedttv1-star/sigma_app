@@ -561,7 +561,7 @@ async function doRegister(){
     const cred=await createUserWithEmailAndPassword(auth,fakeEmail,pass);
     const user=cred.user;
     await updateProfile(user,{displayName:name});
-    await set(R('users/'+user.uid),{name,phone,email:fakeEmail,photo:'',createdAt:Date.now(),isSupervisor:false,pass:pass});
+    await set(R('users/'+user.uid),{name,phone,email:fakeEmail,photo:'',createdAt:Date.now(),isSupervisor:false});
     toast('تم إنشاء الحساب بنجاح');
     setTimeout(()=>location.reload(),800);
   }catch(e){
@@ -1351,6 +1351,53 @@ async function vVid(){
   </div></div>
   <h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الهاتف</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div>
   <h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${esc(x.c)}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${esc(x.c)}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+
+/* ---------- safe player controls ---------- */
+function initPlayer(){
+  // Embedded YouTube/Drive players are cross-origin; do not assume their internals.
+  const video=document.querySelector('.pl video');
+  if(video){
+    video.addEventListener('timeupdate',()=>{
+      const cur=$('#cTime'),dur=$('#dTime'),seek=$('#cSeek');
+      if(cur)cur.textContent=fmtTime(video.currentTime);
+      if(dur)dur.textContent=fmtTime(video.duration);
+      if(seek&&Number.isFinite(video.duration)&&video.duration>0){
+        seek.value=String(video.currentTime/video.duration*100);
+      }
+    });
+  }
+}
+function fmtTime(value){
+  if(!Number.isFinite(value)||value<0)return '0:00';
+  const n=Math.floor(value);
+  return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
+}
+function currentNativeVideo(){return document.querySelector('.pl video')}
+function togglePlay(){
+  const v=currentNativeVideo();
+  if(!v){toast('عناصر التحكم الإضافية متاحة للفيديوهات المباشرة فقط');return}
+  if(v.paused)v.play().catch(()=>toast('تعذر تشغيل الفيديو'));else v.pause();
+}
+function onSeek(value){
+  const v=currentNativeVideo();
+  if(v&&Number.isFinite(v.duration)&&v.duration>0)v.currentTime=(Number(value)||0)/100*v.duration;
+}
+function seekRel(seconds){
+  const v=currentNativeVideo();
+  if(v&&Number.isFinite(v.duration))v.currentTime=Math.max(0,Math.min(v.duration,v.currentTime+(Number(seconds)||0)));
+}
+function setRate(value){
+  const v=currentNativeVideo();
+  if(v){const rate=Number(value);if(Number.isFinite(rate)&&rate>0)v.playbackRate=rate}
+}
+function toggleFullscreen(){
+  const el=document.querySelector('.pl');
+  if(!el)return;
+  if(document.fullscreenElement){document.exitFullscreen?.().catch(()=>{})}
+  else if(el.requestFullscreen){el.requestFullscreen().catch(()=>toast('تعذر تفعيل ملء الشاشة'))}
+  else toast('ملء الشاشة غير مدعوم في هذا المتصفح');
 }
 
 /* ---------- expose handlers used by inline onclick ---------- */
