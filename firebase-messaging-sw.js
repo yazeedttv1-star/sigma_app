@@ -1,4 +1,3 @@
-// firebase-messaging-sw.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
@@ -14,28 +13,13 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// يُستدعى عندما يصل إشعار والتطبيق مغلق أو في الخلفية
 messaging.onBackgroundMessage((payload) => {
-  const title = payload.notification?.title || 'منصة سيجما التعليمية';
-  const options = {
-    body: payload.notification?.body || 'لديك إشعار جديد',
-    tag: 'sigma-notification',       // يمنع تكرار الإشعار نفسه
-    renotify: true,
-    data: { url: payload.fcmOptions?.link || '/' }
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/firebase-logo.png' 
   };
-  self.registration.showNotification(title, options);
-});
 
-// عند الضغط على الإشعار: افتح التطبيق أو انتقل إلى نافذة مفتوحة
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const targetUrl = event.notification.data?.url || '/';
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
-      for (const client of list) {
-        if ('focus' in client) return client.focus();
-      }
-      if (clients.openWindow) return clients.openWindow(targetUrl);
-    })
-  );
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
