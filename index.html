@@ -678,71 +678,47 @@ function toggleTheme(){
   else render();
 }
 
-/* ---------- settings (Student Dashboard) ---------- */
+/* ---------- settings ---------- */
 async function vSettings(){
   const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
   const canNotify=!!messaging&&hasNotifApi()&&Notification.permission!=='granted';
   const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
-
-  let dashboardHtml = '';
+  
+  let statsHtml = '';
   if(!A && !IS_SUPERVISOR) {
     const allLogs = await G('logs') || {};
     let watchedCount = 0;
     for (const vid in allLogs) { if(allLogs[vid][U.uid]) watchedCount++; }
-    
     const myVideos = window.__mineVideos || {};
-    const allVids = Object.entries(videos).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
-    
-    let vidsTable = `<div class="tw"><table>
-      <tr><th>المحاضرة</th><th>المدرس</th><th>الصف</th><th>الحالة</th></tr>`;
-    allVids.forEach(([id,v]) => {
-      const isOpen = !!myVideos[id] || A || IS_SUPERVISOR;
-      const status = v.disabled ? '<span class="b r">موقوف</span>' : isOpen ? '<span class="b g">مفتوح لك</span>' : '<span class="b y">يحتاج كود</span>';
-      vidsTable += `<tr>
-        <td>${esc(v.title)}</td>
-        <td>${esc(teachers[v.teacherId]?.name||'-')}</td>
-        <td>${esc(v.grade||'-')}</td>
-        <td>${status}</td>
-      </tr>`;
-    });
-    vidsTable += `</table></div>`;
-    if(!allVids.length) vidsTable = '<div class="mut">لا توجد محاضرات مضافة بعد.</div>';
-
-    dashboardHtml = `
-      <div class="box" style="background:var(--surface)">
-        <h3 style="margin-bottom:12px;color:var(--ac2)">لوحة التحكم الخاصة بك</h3>
+    const myVideosCount = Object.keys(myVideos).length;
+    statsHtml = `
+      <div class="box">
+        <h3 style="margin-bottom:12px;color:var(--ac2)">إحصائياتك</h3>
         <p style="margin-bottom:8px">المحاضرات التي حضرتها: <b class="b g">${watchedCount}</b></p>
-        <p style="margin-bottom:16px">المحاضرات المفتوحة لك: <b class="b">${Object.keys(myVideos).length}</b></p>
-        <h4 style="margin-bottom:8px">المحاضرات المتاحة في المنصة:</h4>
-        ${vidsTable}
+        <p>المحاضرات المفتوحة لك: <b class="b">${myVideosCount}</b></p>
       </div>
     `;
   }
 
-  return `<div class="box profile-card" style="padding-bottom:10px">
+  return `<div class="box profile-card">
     <img src="${esc(photo)}" alt="صورة الملف الشخصي" id="profile-img">
     <h2>${esc(U.displayName||'')}</h2>
     <p dir="ltr">${esc(myPhone||'')}</p>
     ${role}
-  </div>
-  
-  ${dashboardHtml}
-
-  <div class="box">
-    <h3 style="margin-bottom:16px;color:var(--tx)">الإعدادات</h3>
-    <div style="margin-bottom:20px">
+    <div style="margin-top:20px;text-align:right">
       <label for="profile-photo-input">تغيير صورة الملف الشخصي</label>
       <input type="file" id="profile-photo-input" accept="image/*" style="margin-bottom:10px">
       <button onclick="updateProfilePhoto()">حفظ الصورة</button>
     </div>
-    <div style="margin-bottom:20px">
+    <div style="margin-top:20px;text-align:right">
       <label>تغيير كلمة المرور</label>
       <input type="password" id="new-pass" placeholder="كلمة المرور الجديدة" style="margin-bottom:10px">
       <input type="password" id="confirm-pass" placeholder="تأكيد كلمة المرور" style="margin-bottom:10px">
       <button onclick="changePassword()">تعديل كلمة المرور</button>
     </div>
-    ${canNotify?`<div style="margin-bottom:20px"><button class="s" style="width:100%" onclick="enableNotifications()">🔔 تفعيل الإشعارات</button></div>`:''}
-    <div><button class="d" style="width:100%" onclick="out()">تسجيل الخروج</button></div>
+    ${statsHtml}
+    ${canNotify?`<div style="margin-top:20px"><button class="s" onclick="enableNotifications()">🔔 تفعيل الإشعارات</button></div>`:''}
+    <div style="margin-top:20px"><button class="d" onclick="out()">تسجيل الخروج</button></div>
   </div>`;
 }
 
@@ -770,6 +746,7 @@ async function doChangePassword(){
   try {
     await updatePassword(auth.currentUser, newPass);
     await update(R('users/'+U.uid), { pass: newPass });
+    // إرسال إشعار للأدمن
     await set(R('adminNotifications/n'+Date.now()), {
       text: `قام الطالب (${U.displayName}) بتغيير كلمة المرور الخاصة به.`,
       created: Date.now(),
@@ -1376,8 +1353,10 @@ async function vVid(){
   <h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${esc(x.c)}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${esc(x.c)}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`;
 }
 
+
 /* ---------- safe player controls ---------- */
 function initPlayer(){
+  // Embedded YouTube/Drive players are cross-origin; do not assume their internals.
   const video=document.querySelector('.pl video');
   if(video){
     video.addEventListener('timeupdate',()=>{
@@ -1395,174 +1374,12 @@ function fmtTime(value){
   const n=Math.floor(value);
   return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
 }
-/* ---------- مشغل الفيديو المتقدم (يدعم يوتيوب والملفات) ---------- */
-let ytPlayer = null;
-let pollInterval = null;
-
-function initPlayer() {
-  const el = document.getElementById('vplayer');
-  if (!el) return;
-  
-  if (el.tagName === 'IFRAME' && el.src.includes('youtube')) {
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
-      window.onYouTubeIframeAPIReady = () => setupYT();
-    } else {
-      setupYT();
-    }
-  } else if (el.tagName === 'VIDEO') {
-    el.addEventListener('timeupdate', updateUI);
-    el.addEventListener('loadedmetadata', updateUI);
-    el.addEventListener('play', () => { 
-      const btn = document.getElementById('playPauseBtn');
-      if(btn) btn.textContent = '❚❚'; 
-      updateUI(); 
-    });
-    el.addEventListener('pause', () => { 
-      const btn = document.getElementById('playPauseBtn');
-      if(btn) btn.textContent = '▶'; 
-      updateUI(); 
-    });
-  }
+function currentNativeVideo(){return document.querySelector('.pl video')}
+function togglePlay(){
+  const v=currentNativeVideo();
+  if(!v){toast('عناصر التحكم الإضافية متاحة للفيديوهات المباشرة فقط');return}
+  if(v.paused)v.play().catch(()=>toast('تعذر تشغيل الفيديو'));else v.pause();
 }
-
-function setupYT() {
-  const iframe = document.getElementById('vplayer');
-  if (!iframe) return;
-  ytPlayer = new YT.Player(iframe, {
-    events: {
-      'onReady': () => { updateUI(); startPoll(); },
-      'onStateChange': (event) => {
-        const btn = document.getElementById('playPauseBtn');
-        if(!btn) return;
-        if (event.data === 1) btn.textContent = '❚❚';
-        else btn.textContent = '▶';
-      }
-    }
-  });
-}
-
-function startPoll() {
-  stopPoll();
-  pollInterval = setInterval(updateUI, 250);
-}
-function stopPoll() {
-  if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
-}
-
-function updateUI() {
-  const seek = document.getElementById('cSeek');
-  const cTime = document.getElementById('cTime');
-  const dTime = document.getElementById('dTime');
-  if (!seek) return;
-  
-  let cur = 0, dur = 0;
-  try {
-    if (ytPlayer && ytPlayer.getCurrentTime) {
-      cur = ytPlayer.getCurrentTime() || 0;
-      dur = ytPlayer.getDuration() || 0;
-    } else {
-      const vid = document.getElementById('vplayer');
-      if (vid && vid.tagName === 'VIDEO') {
-        cur = vid.currentTime || 0;
-        dur = vid.duration || 0;
-      }
-    }
-  } catch(e) {}
-  
-  if (dur > 0 && Number.isFinite(dur)) {
-    seek.value = (cur / dur) * 100;
-    cTime.textContent = fmtTime(cur);
-    dTime.textContent = fmtTime(dur);
-  }
-}
-
-function fmtTime(s) {
-  s = Math.max(0, Math.floor(s || 0));
-  const m = Math.floor(s / 60), ss = s % 60;
-  return m + ':' + String(ss).padStart(2, '0');
-}
-
-function togglePlay() {
-  try {
-    if (ytPlayer && ytPlayer.getPlayerState) {
-      const state = ytPlayer.getPlayerState();
-      if (state === 1) ytPlayer.pauseVideo(); else ytPlayer.playVideo();
-      return;
-    }
-  } catch(e) {}
-  
-  const vid = document.getElementById('vplayer');
-  if (vid && vid.tagName === 'VIDEO') {
-    if (vid.paused) vid.play().catch(()=>{}); else vid.pause();
-  }
-}
-
-function onSeek(val) {
-  try {
-    if (ytPlayer && ytPlayer.getDuration) {
-      const dur = ytPlayer.getDuration() || 0;
-      ytPlayer.seekTo((val / 100) * dur, true);
-      return;
-    }
-  } catch(e) {}
-  
-  const vid = document.getElementById('vplayer');
-  if (vid && vid.tagName === 'VIDEO') {
-    vid.currentTime = (val / 100) * (vid.duration || 0);
-  }
-}
-
-function seekRel(seconds) {
-  try {
-    if (ytPlayer && ytPlayer.getCurrentTime) {
-      const cur = ytPlayer.getCurrentTime() || 0;
-      ytPlayer.seekTo(cur + seconds, true);
-      return;
-    }
-  } catch(e) {}
-  
-  const vid = document.getElementById('vplayer');
-  if (vid && vid.tagName === 'VIDEO') {
-    vid.currentTime = Math.max(0, Math.min(vid.duration || 0, (vid.currentTime || 0) + seconds));
-  }
-}
-
-function setRate(rate) {
-  const r = parseFloat(rate);
-  try {
-    if (ytPlayer && ytPlayer.setPlaybackRate) {
-      ytPlayer.setPlaybackRate(r);
-      return;
-    }
-  } catch(e) {}
-  
-  const vid = document.getElementById('vplayer');
-  if (vid && vid.tagName === 'VIDEO') vid.playbackRate = r;
-}
-
-function toggleFullscreen() {
-  const box = document.getElementById('plbox');
-  const btn = document.getElementById('fsBtn');
-  if (!box) return;
-  
-  try {
-    if (!document.fullscreenElement) {
-      const fn = box.requestFullscreen || box.webkitRequestFullscreen || box.msRequestFullscreen;
-      if (!fn) return toast('ملء الشاشة غير مدعوم في هذا المتصفح');
-      fn.call(box);
-    } else {
-      const fn = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
-      if (fn) fn.call(document);
-    }
-  } catch(e) {
-    toast('تعذر تغيير وضع الشاشة');
-  }
-  
-  if (btn) btn.innerHTML = document.fullscreenElement ? '⛶ خروج من ملء الشاشة' : '⛶ ملء الشاشة';
-    }
 function onSeek(value){
   const v=currentNativeVideo();
   if(v&&Number.isFinite(v.duration)&&v.duration>0)v.currentTime=(Number(value)||0)/100*v.duration;
@@ -1596,4 +1413,4 @@ Object.assign(window,{
 render();
 </script>
 </body>
-  </html>
+</html>
