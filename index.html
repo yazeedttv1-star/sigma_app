@@ -383,15 +383,9 @@ import {
   getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
-import {initializeAppCheck, ReCaptchaEnterpriseProvider} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js";
 
 window.addEventListener('unhandledrejection',e=>{});
 window.addEventListener('error',e=>{});
-
-// ============================================================
-// مفتاح reCAPTCHA Enterprise (Fraud Defense) - المفتاح الجديد
-// ============================================================
-const RECAPTCHA_SITE_KEY = '6LfQoQMuAAAAAHAfGwnNinGn3K_T1NYfiQfofhhy';
 
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
@@ -414,16 +408,6 @@ const app=initializeApp({
   messagingSenderId:"420365348074",
   appId:"1:420365348074:web:0aaecb71ec613bb32abb93"
 });
-
-// ============================================================
-// تفعيل App Check لحماية قاعدة البيانات من الطلبات الخارجية
-// ============================================================
-try {
-  initializeAppCheck(app, {
-    provider: new ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),
-    isTokenAutoRefreshEnabled: true
-  });
-} catch(e) { console.warn('App Check error:', e); }
 
 const auth=getAuth(app),db=getDatabase(app);
 let messaging=null;
