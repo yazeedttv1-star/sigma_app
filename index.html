@@ -179,7 +179,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .custom-player-ctrl .slider-wrap input[type=range]::-moz-range-track{height:22px;background:transparent;border:0}
 .custom-player-ctrl .slider-wrap input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
   background:#ff0000;border:0;cursor:pointer}
-.custom-player-ctrl .slider-wrap input[type=range]::-ms-track{background:transparent;border-color:transparent;color:transparent}
 
 .player-wrap:fullscreen{background:#000;display:flex;flex-direction:column;justify-content:center;
   width:100%;height:100%;margin:0;padding:0}
@@ -326,9 +325,7 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
 .news-text{font-size:15px;line-height:1.7;color:var(--tx);white-space:pre-wrap}
 .news-date{font-size:12px;color:var(--mu);font-weight:700;margin-top:4px}
 
-/* ═══════════════════════════════════════════════════════════════
-   ميزة: أنماط الامتحانات
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ أنماط الامتحانات ═══ */
 .exam-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
   padding:18px;margin-bottom:14px;transition:.2s;box-shadow:var(--shadow)}
 .exam-card:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
@@ -463,7 +460,7 @@ const pendingOps=new Set();
 async function once(key,fn){if(pendingOps.has(key))return;pendingOps.add(key);try{return await fn()}finally{pendingOps.delete(key)}}
 
 // ═══════════════════════════════════════════════════════════════
-// ميزة 5: وضع عدم الاتصال (كاش محلي للبيانات الثابتة)
+// ميزة 5: كاش Offline
 // ═══════════════════════════════════════════════════════════════
 const CACHE_KEY='sigma-offline-cache';
 const cache={
@@ -507,13 +504,13 @@ function img(f,maxSize=800){
 let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'};
 let teachers={},videos={},library={},news={},notifications={},ownNotifications={},broadcastNotifications={},adminNotifications={};
 let mineVideos={};
-let myLogs={}; // ميزة 2: سجل مشاهدة الطالب
-let exams={},examAttempts={}; // ميزة الامتحانات
+let myLogs={};
+let exams={},examAttempts={};
 let badge='',myPhoto='',myPhone='',hb=null,ip=null;
 let unsubs=[],showingBan=false,renderSeq=0,loadedTeachers=false,studentStatsFilter='all';
 let pendingEmbed=null,pendingEmbedSnapshot=null;
 
-// ميزة 8: المفضلة
+// ═══ ميزة 8: المفضلة ═══
 const FAV_KEY='sigma-favs';
 const favs={
   get(){try{return JSON.parse(store.get(FAV_KEY)||'{}')}catch(e){return{}}},
@@ -919,15 +916,13 @@ const go=(v,id,tab,filter)=>{
   window.scrollTo({top:0,behavior:'auto'});
   render();
 };
-const inst=async()=>{if(!ip)return;ip.prompt();await ip.userChoice;ip=null;renderTopbar()};
 
-// ═══════════════════════════════════════════════════════════════
-// ميزة 6: تأكيد قبل تسجيل الخروج
-// ═══════════════════════════════════════════════════════════════
+// ═══ ميزة 6: تأكيد تسجيل الخروج ═══
 const out=()=>{
   if(!confirm('هل تريد تسجيل الخروج من حسابك؟'))return;
   stopHB();destroyPlayer();clearListeners();signOut(auth);
 };
+const inst=async()=>{if(!ip)return;ip.prompt();await ip.userChoice;ip=null;renderTopbar()};
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;if(U)renderTopbar()});
 
 function refreshNotifications(){
@@ -977,7 +972,7 @@ onAuthStateChanged(auth,async u=>{
     }
     mineVideos={...((await G('users/'+u.uid+'/videos'))||{})};
 
-    // ميزة 5: استرجاع الكاش عند عدم الاتصال
+    // ميزة 5: استرجاع الكاش
     if(cache.isOffline()){
       const cached=cache.load();
       if(cached){
@@ -999,11 +994,11 @@ onAuthStateChanged(auth,async u=>{
     unsubs.push(onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()},()=>{}));
     unsubs.push(onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()},()=>{}));
 
-    // ميزة الامتحانات: مستمعو الامتحانات والمحاولات
+    // الامتحانات
     unsubs.push(onValue(R('exams'),s=>{exams=s.val()||{};if(['exams','exam','takeExam','admin'].includes(S.v))render()},()=>{}));
     unsubs.push(onValue(R('examAttempts/'+u.uid),s=>{examAttempts=s.val()||{};if(['exams','exam'].includes(S.v))render()},()=>{}));
 
-    // ميزة 2: متابعة سجل المشاهدة الحي
+    // ميزة 2: سجل المشاهدة الحي
     if(!A&&!IS_SUPERVISOR){
       unsubs.push(onValue(R('logs'),snap=>{
         const all=snap.val()||{};
@@ -1211,7 +1206,7 @@ function render(){
     admin:vAdmin,vid:vVid,edit:vEdit,settings:vSettings,
     library:vLibrary,editLib:vEditLib,students:vAdminStudents,
     news:vNews,studentProfile:vStudentProfile,
-    // ميزة الامتحانات
+    myCodes:vMyCodes,myFavs:vMyFavs,
     exams:vExams,exam:vExamDetail,takeExam:vTakeExam,examResult:vExamResult
   };
   const fn=views[S.v]||vHome;
@@ -1266,26 +1261,24 @@ function shell(body){
   return `<div id="topbar-slot">${topBarHTML()}</div><main style="padding-bottom:calc(100px + env(safe-area-inset-bottom))">${body}</main>${bottomBar()}`;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// البار السفلي + زر الامتحانات الجديد (ميزة الامتحانات)
-// ═══════════════════════════════════════════════════════════════
+// ═══ البار السفلي + زر الامتحانات ═══
 function bottomBar(){
   const on=k=>S.v===k||(k==='home'&&['teacher','code','watch'].includes(S.v));
   const svgHome=`<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
   const svgNews=`<svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg>`;
   const svgLibrary=`<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>`;
-  // ميزة الامتحانات: أيقونة الامتحانات
   const svgExams=`<svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`;
   const svgSettings=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
   const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`;
   const adminOn=['admin','vid','edit','editLib','students','studentProfile'].includes(S.v);
+  const isStaff=A||IS_SUPERVISOR;
   return `<nav class="bottombar" aria-label="التنقل">
     <button class="${on('home')?'on':''}" onclick="go('home')">${svgHome} <span>الرئيسية</span></button>
     <button class="${on('news')?'on':''}" onclick="go('news')">${svgNews} <span>الأخبار</span></button>
     <button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary} <span>المكتبة</span></button>
     <button class="${['exams','exam','takeExam','examResult'].includes(S.v)?'on':''}" onclick="go('exams')">${svgExams} <span>الامتحانات</span></button>
     <button class="${on('settings')?'on':''}" onclick="go('settings')">${svgSettings} <span>الإعدادات</span></button>
-    ${A||IS_SUPERVISOR?`<button class="${adminOn?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
+    ${isStaff?`<button class="${adminOn?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
   </nav>`;
 }
 function toggleTheme(){
@@ -1294,9 +1287,7 @@ function toggleTheme(){
   renderTopbar();
 }
 
-// ═══════════════════════════════════════════════════════════════
-// ميزة 4: صفحة "الأكواد الخاصة بي"
-// ═══════════════════════════════════════════════════════════════
+// ═══ ميزة 4: صفحة أكوادي ═══
 async function vMyCodes(){
   if(A||IS_SUPERVISOR)return vSettings();
   const entries=Object.entries(mineVideos);
@@ -1324,9 +1315,32 @@ async function vMyCodes(){
     <h2>🔑 أكوادي (${entries.length})</h2>${rows.join('')}`;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// الإعدادات (محدّثة: زر أكوادي + زر المفضلة)
-// ═══════════════════════════════════════════════════════════════
+// ═══ ميزة 8: صفحة المفضلة ═══
+function vMyFavs(){
+  const f=favs.get();
+  const ids=Object.keys(f);
+  if(!ids.length)return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <h2>❤️ المفضلة</h2><div class="mut">لم تضف أي فيديو للمفضلة بعد.</div>`;
+  const list=ids.filter(id=>videos[id]).map(id=>{
+    const v=videos[id];
+    const teacher=teachers[v.teacherId]?.name||'';
+    return `<div class="row">
+      <div onclick="go('${mineVideos[id]?'watch':'code'}','${esc(id)}')" style="cursor:pointer">
+        <b>${esc(v.title)}</b>
+        <small>${esc(teacher)} — ${esc(v.grade||'')}</small>
+      </div>
+      <button class="s" style="padding:6px 10px;font-size:12px" onclick="event.stopPropagation();toggleFav('${esc(id)}')">💔 إزالة</button>
+    </div>`;
+  });
+  return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <h2>❤️ المفضلة (${list.length})</h2>${list.join('')}`;
+}
+function toggleFav(id){
+  const on=favs.toggle(id);
+  toast(on?'أضيف للمفضلة ❤️':'أزيل من المفضلة');
+  if(S.v==='myFavs'||S.v==='teacher')render();
+}
+
 async function vSettings(){
   const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
   const canNotify=!!hasNotifApi()&&Notification.permission!=='granted';
@@ -1372,32 +1386,6 @@ async function vSettings(){
     <button onclick="changePassword()">حفظ</button>
   </div>
   ${!A&&!IS_SUPERVISOR?await buildStudentStats():''}`;
-}
-
-// ميزة 8: صفحة المفضلة
-function vMyFavs(){
-  const f=favs.get();
-  const ids=Object.keys(f);
-  if(!ids.length)return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
-    <h2>❤️ المفضلة</h2><div class="mut">لم تضف أي فيديو للمفضلة بعد.</div>`;
-  const list=ids.filter(id=>videos[id]).map(id=>{
-    const v=videos[id];
-    const teacher=teachers[v.teacherId]?.name||'';
-    return `<div class="row">
-      <div onclick="go('${mineVideos[id]?'watch':'code'}','${esc(id)}')" style="cursor:pointer">
-        <b>${esc(v.title)}</b>
-        <small>${esc(teacher)} — ${esc(v.grade||'')}</small>
-      </div>
-      <button class="s" style="padding:6px 10px;font-size:12px" onclick="event.stopPropagation();toggleFav('${esc(id)}')">💔 إزالة</button>
-    </div>`;
-  });
-  return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
-    <h2>❤️ المفضلة (${list.length})</h2>${list.join('')}`;
-}
-function toggleFav(id){
-  const on=favs.toggle(id);
-  toast(on?'أضيف للمفضلة ❤️':'أزيل من المفضلة');
-  if(S.v==='myFavs')render();
 }
 
 async function buildStudentStats(){
@@ -1516,9 +1504,6 @@ async function changePassword(){
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// ميزة 1: بحث داخل صفحة المدرس + ميزة 2: شريط التقدم + ميزة 8: المفضلة
-// ═══════════════════════════════════════════════════════════════
 function vHome(){
   if(!loadedTeachers)return'<div class="mut">جارٍ التحميل…</div>';
   const t=Object.entries(teachers);
@@ -1530,13 +1515,14 @@ function vHome(){
     </div>`).join('')}</div>`;
 }
 
+// ═══ ميزة 1 + 2 + 8: صفحة المدرس ═══
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
   const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id)
     .sort((a,b)=>(b[1].created||0)-(a[1].created||0));
   let html=`<button class="s" onclick="go('home')" style="margin-bottom:16px">← رجوع</button>
     <h2>${esc(t.name)}</h2>`;
-  // ميزة 1: مربع بحث
+  // ميزة 1: بحث
   html+=`<div style="margin-bottom:16px">
     <input id="teacherSearch" placeholder="🔍 ابحث في فيديوهات المدرس..." oninput="filterTeacherVideos(this.value)" style="margin-bottom:0">
   </div>`;
@@ -1545,7 +1531,7 @@ function vTeacher(){
   ALL_GRADES.forEach(g=>{
     const gv=l.filter(([,v])=>v.grade===g);
     if(!gv.length)return;
-    html+=`<h3 style="margin:20px 0 10px;color:var(--ac2)" class="grade-section" data-grade="${esc(g)}">${esc(g)}</h3>`;
+    html+=`<h3 style="margin:20px 0 10px;color:var(--ac2)" class="grade-section">${esc(g)}</h3>`;
     html+=gv.map(([id,v])=>{
       if(v.disabled&&!isStaff)
         return`<div class="row teacher-video-row" data-search="${esc(v.title)} ${esc(v.desc||'')}" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
@@ -1573,7 +1559,6 @@ function vTeacher(){
       const isFav=favs.has(id);
       const favBtn=`<button class="s" style="padding:6px 8px;font-size:14px;background:transparent;color:${isFav?'var(--er)':'var(--mu)'}" onclick="event.stopPropagation();toggleFav('${esc(id)}')" title="${isFav?'إزالة من المفضلة':'إضافة للمفضلة'}">${isFav?'❤️':'🤍'}</button>`;
 
-      // زر المتابعة
       const actionBtn = (open && !isStaff && myLogs[id] && myLogs[id].seconds>0)
         ? `<button class="s" style="padding:6px 12px;font-size:12px;background:var(--ac);color:#fff" onclick="event.stopPropagation();go('watch','${esc(id)}')">▶ متابعة</button>`
         : '';
@@ -1598,7 +1583,6 @@ function filterTeacherVideos(q){
     const txt=(row.getAttribute('data-search')||'').toLowerCase();
     row.style.display=(!query||txt.includes(query))?'':'none';
   });
-  // إخفاء عناوين الصفوف الفارغة
   document.querySelectorAll('.grade-section').forEach(h=>{
     let next=h.nextElementSibling;
     let hasVisible=false;
@@ -1774,9 +1758,7 @@ function vNews(){
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// ميزة 7: عدّاد مشاهدات في صفحة الفيديو (vVid)
-// ═══════════════════════════════════════════════════════════════
+// ═══ لوحة الأدمن (مضافة: تبويب الامتحانات للمشرف) ═══
 async function vAdmin(){
   if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
@@ -1813,7 +1795,7 @@ async function vAdmin(){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// إدارة الامتحانات (أدمن/مشرف)
+// إدارة الامتحانات
 // ═══════════════════════════════════════════════════════════════
 async function vAdminExams(){
   if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
@@ -1850,7 +1832,6 @@ async function vAdminExams(){
       </div>`;
     }).join('');
   }
-  // تهيئة المنشئ
   setTimeout(()=>{if(!document.querySelector('.q-builder-item'))addQuestion()},50);
   return html;
 }
@@ -1903,7 +1884,7 @@ function addQuestion(){
       <select class="q-tf-answer"><option value="true">صح</option><option value="false">خطأ</option></select>
     </div>
     <div class="q-short-box" style="display:none">
-      <label>الإجابة النموذجية (اختياري — للمراجعة اليدوية)</label>
+      <label>الإجابة النموذجية (اختياري)</label>
       <input class="q-short-answer" placeholder="اكتب الإجابة الصحيحة...">
     </div>
   `;
@@ -1926,6 +1907,7 @@ async function doCreateExam(){
   const questions=[];
   const items=document.querySelectorAll('.q-builder-item');
   if(!items.length)return toast('أضف سؤالاً واحداً على الأقل');
+  if(items.length>100)return toast('الحد الأقصى 100 سؤال');
   for(const item of items){
     const type=item.querySelector('.q-type').value;
     const text=item.querySelector('.q-text').value.trim();
@@ -1970,7 +1952,6 @@ async function delExam(id){
   }catch(e){toast('تعذر الحذف')}
 }
 
-// صفحة نتائج الامتحان (أدمن)
 async function vExamDetail(){
   if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const e=exams[S.id];if(!e)return vAdmin();
@@ -1997,9 +1978,7 @@ async function vExamDetail(){
     </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// صفحة الامتحانات (طالب)
-// ═══════════════════════════════════════════════════════════════
+// ═══ صفحة الامتحانات للطالب ═══
 async function vExams(){
   const userData=await G('users/'+U.uid);
   const myGrade=userData?.grade||'';
@@ -2011,6 +1990,7 @@ async function vExams(){
       <div class="mut">
         <svg viewBox="0 0 24 24" style="width:70px;height:70px;fill:var(--bd);margin-bottom:16px"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
         <p>لا توجد امتحانات متاحة لصفك حالياً.</p>
+        ${!myGrade?'<p style="font-size:12px;margin-top:8px">(لم يتم تحديد صفك بعد — تواصل مع الإدارة)</p>':''}
       </div>`;
   }
   return `<h2>📝 الامتحانات المتاحة</h2>` + list.map(([id,e])=>{
@@ -2035,9 +2015,7 @@ async function vExams(){
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// خوض الامتحان (طالب) + منع الغش + التوقيت
-// ═══════════════════════════════════════════════════════════════
+// ═══ خوض الامتحان ═══
 let activeExamTimer=null;
 let activeExamState=null;
 
@@ -2046,7 +2024,6 @@ function vTakeExam(){
   if(!e)return vExams();
   const att=examAttempts[S.id];
   if(att)return vExamResult();
-  // تهيئة الحالة
   activeExamState={
     id:S.id,
     startedAt:Date.now(),
@@ -2055,13 +2032,11 @@ function vTakeExam(){
     submitted:false
   };
   const questions=e.questions||[];
-  // منع النسخ
-  const preventCopy=e=>{e.preventDefault();return false};
+  const preventCopy=ev=>{ev.preventDefault();return false};
   document.addEventListener('copy',preventCopy);
   document.addEventListener('cut',preventCopy);
   document.addEventListener('paste',preventCopy);
   document.addEventListener('contextmenu',preventCopy);
-  // كشف الخروج من التبويب
   const onVis=()=>{
     if(document.hidden && activeExamState && !activeExamState.submitted){
       activeExamState.violations++;
@@ -2076,7 +2051,6 @@ function vTakeExam(){
     document.removeEventListener('contextmenu',preventCopy);
     document.removeEventListener('visibilitychange',onVis);
   };
-  // بدء المؤقّت
   const startMs=Date.now();
   const totalMs=e.duration*60*1000;
   if(activeExamTimer)clearInterval(activeExamTimer);
@@ -2143,14 +2117,12 @@ function vTakeExam(){
 function recordAnswer(i,val){
   if(!activeExamState)return;
   activeExamState.answers[i]=val;
-  // تحديث عرض المخالفات
   const box=document.getElementById('examVioBox');
   const cnt=document.getElementById('examVioCount');
   if(activeExamState.violations>0 && box){
     box.style.display='block';
     cnt.textContent=activeExamState.violations;
   }
-  // تحديث المحدد بصرياً
   document.querySelectorAll(`input[name="q_${i}"]`).forEach(inp=>{
     inp.closest('.exam-opt').classList.toggle('selected',inp.checked);
   });
@@ -2198,6 +2170,7 @@ function submitExam(force){
   };
   try{
     update(R('exams/'+activeExamState.id+'/attempts/'+U.uid),attempt).catch(()=>{});
+    set(R('examAttempts/'+U.uid+'/'+activeExamState.id),attempt).catch(()=>{});
   }catch(err){}
   cleanupExam();
   go('examResult',S.id);
@@ -2221,14 +2194,33 @@ async function vExamResult(){
     </div>`;
 }
 
-// استئناف باقي الدوال (vAdminStudents، vStudentProfile، إلخ)
+// باقي الدوال (كما هي)
+function addNews(){return once('news',doAddNews)}
+async function doAddNews(){
+  const text=$('#newText').value.trim();
+  const url=$('#newVid').value.trim();
+  const file=$('#newImg').files[0];
+  if(!text&&!file&&!url)return toast('يجب إضافة نص أو صورة أو فيديو على الأقل');
+  if(url&&!/^https?:\/\//i.test(url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
+  try{
+    let photo='';
+    if(file){photo=await img(file,1200);if(!photo)return toast('تم إلغاء الصورة')}
+    await set(R('news/n'+Date.now()),{text,url,photo,created:Date.now()});
+    toast('تم نشر الخبر بنجاح');
+    render();
+  }catch(e){toast('تعذر نشر الخبر: '+e.message)}
+}
+async function delNews(id){
+  if(!confirm('حذف هذا الخبر؟'))return;
+  try{await remove(R('news/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
+}
 async function vAdminStudents(){
   if(!A)return'<div class="mut">غير مصرح.</div>';
   const users=(await G('users'))||{};
   const arr=Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   if(!arr.length)return'<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
   let html=`<div class="box"><label for="searchStudent">بحث سريع (بالاسم / الهاتف / الكود)</label><input id="searchStudent" placeholder="اكتب الاسم، الهاتف، أو الكود..." oninput="filterStudents(this.value)"></div>
-  <h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
+  <h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الصف</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
   for(const u of arr){
     const isSup=u.isSupervisor===true;
     const isAdmin=ADMIN_PHONES.includes(u.phone||'');
@@ -2236,8 +2228,9 @@ async function vAdminStudents(){
     html+=`<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)} ${esc(codesStr)}">
       <td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td>
       <td dir="ltr">${esc(u.phone||'-')}</td>
+      <td>${u.grade?`<span class="b">${esc(u.grade)}</span>`:'<span class="b y">غير محدد</span>'}</td>
       <td>${isAdmin?'<span class="b r">أدمن</span>':isSup?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>'}</td>
-      <td>${!isAdmin?`<button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="toggleSupervisor('${esc(u.id)}', ${isSup})">${isSup?'إلغاء الإشراف':'تعيين مشرف'}</button><button class="d" style="padding:4px 8px;font-size:12px" onclick="delUser('${esc(u.id)}')">حذف</button>`:''}</td>
+      <td>${!isAdmin?`<button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="setGrade('${esc(u.id)}')">تحديد الصف</button><button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="toggleSupervisor('${esc(u.id)}', ${isSup})">${isSup?'إلغاء الإشراف':'تعيين مشرف'}</button><button class="d" style="padding:4px 8px;font-size:12px" onclick="delUser('${esc(u.id)}')">حذف</button>`:''}</td>
     </tr>`;
   }
   return html+`</tbody></table></div>`;
@@ -2247,6 +2240,13 @@ function filterStudents(q){
   document.querySelectorAll('.student-row').forEach(row=>{
     row.style.display=(row.getAttribute('data-search')||'').toLowerCase().includes(query)?'':'none';
   });
+}
+async function setGrade(uid){
+  if(!A)return toast('غير مصرح');
+  const grade=prompt('اكتب صف الطالب (مثلاً: الصف الأول الثانوي):');
+  if(!grade)return;
+  if(!ALL_GRADES.includes(grade))return toast('الصف غير صحيح. اختر من: '+ALL_GRADES.join(' / '));
+  try{await update(R('users/'+uid),{grade});toast('تم تحديد الصف');render()}catch(e){toast('تعذر الحفظ')}
 }
 async function vStudentProfile(){
   if(!A)return'<div class="mut">غير مصرح.</div>';
@@ -2267,6 +2267,7 @@ async function vStudentProfile(){
         <h2 style="margin:0">${esc(user.name)}</h2>
         <p style="margin:4px 0;color:var(--mu);direction:ltr">${esc(user.phone)}</p>
         <span class="b ${user.isSupervisor?'y':'g'}">${user.isSupervisor?'مشرف':'طالب'}</span>
+        ${user.grade?`<span class="b">${esc(user.grade)}</span>`:''}
       </div>
     </div>
     <h3>سجل المشاهدة (${studentVideos.length} فيديو)</h3>
@@ -2557,11 +2558,10 @@ function exportPDF(vid){
   const headers=[...document.querySelectorAll('#pdf-src thead th')].map(th=>th.innerText.trim());
   const win=window.open('','_blank');
   if(!win)return toast('اسمح بالنوافذ المنبثقة لتصدير الملف');
-  win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(v.title)}</title><style>body{font-family:Cairo,sans-serif,Tahoma;padding:24px}h2{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}th,td{border:1px solid #cbd5e1;padding:8px;text-align:right}th{background:#2563eb;color:#fff}@media print{button{display:none}}</style></head><body><h2>${esc(v.title)}</h2><p>${esc(v.desc||'')}</p><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table><br><button onclick="window.print()">طباعة / حفظ PDF</button></body></html>`);
+  win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(v.title)}</title><style>body{font-family:Cairo,sans-serif,Tahoma;padding:24px}h2{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}th,td{border:1px solid #cbd5e1;padding:8px;text-align:right}th{background:#2563eb;color:#fff}@media print{button{display:none}}</style></head><body><h2>${esc(v.title)}</h2><p>${esc(v.desc||'')}</p><p>عدد السجلات: ${rows.length}</p><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table><br><button onclick="window.print()">طباعة / حفظ PDF</button></body></html>`);
   win.document.close();
   setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
 }
-
 async function exportCodesPDF(vid) {
   const v = videos[vid];
   if (!v) return;
@@ -2588,9 +2588,7 @@ async function exportCodesPDF(vid) {
   setTimeout(() => { try { win.focus(); win.print(); } catch(e) {} }, 600);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// ميزة 7: صفحة الفيديو (vVid) — إحصائيات المشاهدات
-// ═══════════════════════════════════════════════════════════════
+// ═══ ميزة 7: صفحة الفيديو (vVid) مع إحصائيات ═══
 async function vVid(){
   const id=S.id,v=videos[id];if(!v)return vAdmin();
   const cs=[];
@@ -2599,7 +2597,6 @@ async function vVid(){
   cs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   const lg=Object.values((await G('logs/'+id))||{}).sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
   const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';
-  // ميزة 7: إحصائيات
   const totalViews=lg.length;
   const completedCount=lg.filter(x=>x.completed).length;
   const completionRate=totalViews?Math.round(completedCount/totalViews*100):0;
@@ -2635,12 +2632,11 @@ Object.assign(window,{
   sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,
   updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,
   filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword,setStatsFilter,
-  // ميزات جديدة
   filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,
-  recordAnswer,submitExam,confirmExitExam
+  recordAnswer,submitExam,confirmExitExam,setGrade
 });
 
 render();
 </script>
 </body>
-  </html>
+</html>
