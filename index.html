@@ -12,8 +12,6 @@
 <link rel="manifest" id="mf">
 <link rel="apple-touch-icon" id="ai">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 <style>
 :root{
   --bg:#f8fafc; --surface:#ffffff; --surface2:#f1f5f9;
@@ -57,7 +55,7 @@ html.dark #loading-overlay{background:rgba(11,18,32,.85)}
 .top-bar .welcome p{font-size:14px;opacity:.9;margin-bottom:12px}
 .top-bar .user-area{display:flex;align-items:center;gap:8px}
 .top-bar .avatar-lg{width:56px;height:56px;border-radius:50%;border:3px solid rgba(255,255,255,.4);
-  object-fit:contain;cursor:pointer;background:#fff}
+  object-fit:cover;cursor:pointer;background:#fff}
 .top-bar .actions{display:flex;gap:8px;align-items:center}
 .top-bar .action-btn{background:rgba(255,255,255,.2);color:#fff;border:0;padding:6px 12px;
   border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
@@ -79,7 +77,7 @@ main{max-width:1000px;margin:0 auto;padding:0 20px 40px}
 .card:hover{border-color:var(--ac);box-shadow:var(--shadow-lg);transform:translateY(-3px)}
 .card:active{transform:scale(.98)}
 .card .card-img-wrap{width:100%;height:160px;background:linear-gradient(135deg,#e0e7ff 0%,#f1f5f9 100%);position:relative}
-.card .card-img-wrap img{width:100%;height:100%;object-fit:contain;background:var(--surface2)}
+.card .card-img-wrap img{width:100%;height:100%;object-fit:cover;background:var(--surface2)}
 .card .card-body{padding:12px 10px;background:var(--surface);flex:1;
   display:flex;flex-direction:column;justify-content:center}
 .card b{font-size:16px;display:block;color:var(--tx);font-weight:800}
@@ -157,7 +155,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .wm{position:absolute;pointer-events:none;z-index:22;display:flex;align-items:center;gap:6px;
   font-size:12px;opacity:.45;background:rgba(0,0,0,.6);padding:4px 10px;border-radius:99px;
   animation:mv 24s linear infinite alternate;direction:ltr;color:#fff;white-space:nowrap}
-.wm img{width:22px;height:22px;border-radius:50%;object-fit:contain}
+.wm img{width:22px;height:22px;border-radius:50%;object-fit:cover}
 @keyframes mv{0%{top:20%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:20%;left:60%}}
 
 .custom-player-ctrl{direction:ltr;background:#1e1e2f;padding:10px 14px;border-radius:6px;margin-top:8px;
@@ -239,9 +237,16 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 @keyframes pop{0%{transform:translateX(-50%) scale(.8);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 .profile-card{text-align:center;padding:30px 20px}
 .profile-card img{width:100px;height:100px;border-radius:50%;border:4px solid var(--ac-soft);
-  margin-bottom:16px;object-fit:contain;background:var(--surface2)}
+  margin-bottom:16px;object-fit:cover;background:var(--surface2)}
 .profile-card h2{margin-bottom:8px}
 .profile-card p{color:var(--mu);font-size:15px;margin-bottom:24px}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:20px}
+.settings-btn{background:var(--surface2);border:1px solid var(--bd);border-radius:var(--r);
+  padding:16px 12px;text-align:center;cursor:pointer;transition:.2s;display:flex;
+  flex-direction:column;align-items:center;gap:8px}
+.settings-btn:hover{border-color:var(--ac);background:var(--ac-soft);transform:translateY(-2px)}
+.settings-btn svg{width:28px;height:28px;fill:var(--ac)}
+.settings-btn span{font-size:13px;font-weight:700;color:var(--tx)}
 .modal{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.5);z-index:200;display:none;
   align-items:center;justify-content:center;padding:20px}
 .modal.show{display:flex;animation:pop .2s}
@@ -361,18 +366,6 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
     </div>
   </div>
 </div>
-<div class="modal" id="cropModal">
-  <div class="modal-content" style="max-width:500px">
-    <div class="modal-header"><h3>قص الصورة</h3></div>
-    <div class="modal-body" style="padding:0;background:#333;display:flex;justify-content:center;align-items:center;min-height:300px;">
-      <img id="cropImage" alt="" style="max-width:100%;display:block;">
-    </div>
-    <div style="padding:16px;display:flex;gap:10px;">
-      <button onclick="confirmCrop()" style="flex:1">حفظ القص</button>
-      <button class="s" onclick="cancelCrop()" style="flex:1">إلغاء</button>
-    </div>
-  </div>
-</div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
@@ -433,10 +426,37 @@ const store={
 const pendingOps=new Set();
 async function once(key,fn){if(pendingOps.has(key))return;pendingOps.add(key);try{return await fn()}finally{pendingOps.delete(key)}}
 
+// ============================================================
+// رفع الصور كاملة بدون قص (Base64)
+// ============================================================
+function img(f,maxSize=800){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error('تعذر قراءة الصورة'));
+    reader.onload=e=>{
+      const im=new Image();
+      im.onload=()=>{
+        let w=im.width,h=im.height;
+        if(w>maxSize||h>maxSize){
+          const ratio=Math.min(maxSize/w,maxSize/h);
+          w=Math.round(w*ratio);h=Math.round(h*ratio);
+        }
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        const x=c.getContext('2d');
+        x.drawImage(im,0,0,w,h);
+        resolve(c.toDataURL('image/jpeg',0.85));
+      };
+      im.onerror=()=>reject(new Error('صيغة الصورة غير مدعومة'));
+      im.src=e.target.result;
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
 let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'};
 let teachers={},videos={},library={},news={},notifications={},ownNotifications={},broadcastNotifications={},adminNotifications={};
 let mineVideos={};
-let badge='',myPhoto='',myPhone='',hb=null,ip=null,cropper=null,cropResolve=null;
+let badge='',myPhoto='',myPhone='',hb=null,ip=null;
 let unsubs=[],showingBan=false,renderSeq=0,loadedTeachers=false,studentStatsFilter='all';
 let pendingEmbed=null,pendingEmbedSnapshot=null;
 
@@ -469,54 +489,16 @@ function toast(m){
   clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600);
 }
 
-function img(f,s){
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onerror=()=>reject(new Error('تعذر قراءة الصورة'));
-    const squareFrom=(src)=>{
-      const im=new Image();
-      im.onload=()=>{
-        const c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');
-        const side=Math.min(im.width,im.height);
-        x.drawImage(im,(im.width-side)/2,(im.height-side)/2,side,side,0,0,s,s);
-        resolve(c.toDataURL('image/jpeg',0.8));
-      };
-      im.onerror=()=>reject(new Error('صيغة الصورة غير مدعومة'));
-      im.src=src;
-    };
-    reader.onload=e=>{
-      if(typeof Cropper==='undefined'){squareFrom(e.target.result);return}
-      const cropImage=$('#cropImage');
-      cropImage.src=e.target.result;
-      $('#cropModal').classList.add('show');
-      if(cropper){cropper.destroy();cropper=null}
-      cropper=new Cropper(cropImage,{aspectRatio:1,viewMode:1,background:false,autoCropArea:1});
-      cropResolve=(dataUrl)=>{
-        $('#cropModal').classList.remove('show');
-        if(cropper){cropper.destroy();cropper=null}
-        cropResolve=null;
-        if(!dataUrl)return resolve(null);
-        squareFrom(dataUrl);
-      };
-    };
-    reader.readAsDataURL(f);
-  });
-}
-function confirmCrop(){
-  if(!cropper||!cropResolve)return;
-  const c=cropper.getCroppedCanvas({width:400,height:400});
-  if(!c)return;
-  cropResolve(c.toDataURL('image/jpeg'));
-}
-function cancelCrop(){if(cropResolve)cropResolve(null)}
-
 async function enableNotifications(silent){
-  if(!messaging||!hasNotifApi()){if(!silent)toast('الإشعارات غير مدعومة في هذا المتصفح');return}
+  if(!hasNotifApi()){if(!silent)toast('الإشعارات غير مدعومة في هذا المتصفح');return}
   try{
     const p=await Notification.requestPermission();
     if(p!=='granted'){if(!silent)toast('لم يتم السماح بالإشعارات من إعدادات المتصفح');return}
-    const token=await getToken(messaging,{vapidKey:VAPID_KEY});
-    if(token){await set(R('users/'+U.uid+'/fcmToken'),token);if(!silent)toast('تم تفعيل الإشعارات ✅')}
+    if(messaging){
+      const token=await getToken(messaging,{vapidKey:VAPID_KEY});
+      if(token)await set(R('users/'+U.uid+'/fcmToken'),token);
+    }
+    if(!silent)toast('تم تفعيل الإشعارات ✅');
   }catch(e){if(!silent)toast('تعذر تفعيل الإشعارات')}
 }
 if(messaging){
@@ -1199,33 +1181,47 @@ function toggleTheme(){
   renderTopbar();
 }
 
-async function vSettings(){
+// ============================================================
+// الإعدادات المختصرة (أزرار)
+// ============================================================
+function vSettings(){
   const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
-  const canNotify=!!messaging&&hasNotifApi()&&Notification.permission!=='granted';
+  const canNotify=!!hasNotifApi()&&Notification.permission!=='granted';
   const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
-  let statsHtml='';
-  if(!A&&!IS_SUPERVISOR)statsHtml=await buildStudentStats();
   return `<div class="box profile-card">
-    <img src="${esc(photo)}" alt="صورة الملف الشخصي" id="profile-img">
+    <img src="${esc(photo)}" alt="صورة الملف الشخصي">
     <h2>${esc(U.displayName||'')}</h2>
     <p dir="ltr">${esc(myPhone||'')}</p>
     ${role}
-    <div style="margin-top:20px;text-align:right">
-      <label for="profile-photo-input">تغيير صورة الملف الشخصي</label>
-      <input type="file" id="profile-photo-input" accept="image/*" style="margin-bottom:10px">
-      <button onclick="updateProfilePhoto()">حفظ الصورة</button>
+    <div class="settings-grid">
+      <div class="settings-btn" onclick="document.getElementById('profile-photo-input').click()">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span>تغيير الصورة</span>
+      </div>
+      <div class="settings-btn" onclick="document.getElementById('new-pass').focus()">
+        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        <span>تغيير كلمة المرور</span>
+      </div>
+      ${canNotify?`<div class="settings-btn" onclick="enableNotifications()">
+        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <span>تفعيل الإشعارات</span>
+      </div>`:''}
+      <div class="settings-btn" onclick="out()">
+        <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+        <span>تسجيل الخروج</span>
+      </div>
     </div>
-    <div style="margin-top:20px;text-align:right">
-      <label for="new-pass">تغيير كلمة المرور</label>
-      <input type="password" id="new-pass" placeholder="كلمة المرور الجديدة" autocomplete="new-password" style="margin-bottom:10px">
-      <input type="password" id="confirm-pass" placeholder="تأكيد كلمة المرور" autocomplete="new-password" style="margin-bottom:10px">
-      <button onclick="changePassword()">تعديل كلمة المرور</button>
-    </div>
-    ${canNotify?`<div style="margin-top:20px"><button class="s" onclick="enableNotifications()">🔔 تفعيل الإشعارات</button></div>`:''}
-    <div style="margin-top:20px"><button class="d" onclick="out()">تسجيل الخروج</button></div>
   </div>
-  ${statsHtml}`;
+  <div class="box" style="display:none">
+    <input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()">
+    <label for="new-pass">كلمة المرور الجديدة</label>
+    <input type="password" id="new-pass" placeholder="••••••••">
+    <input type="password" id="confirm-pass" placeholder="تأكيد كلمة المرور">
+    <button onclick="changePassword()">حفظ</button>
+  </div>
+  ${!A&&!IS_SUPERVISOR?await buildStudentStats():''}`;
 }
+
 async function buildStudentStats(){
   const myVids=mineVideos||{};
   const allLogs=(await G('logs'))||{};
@@ -1314,42 +1310,32 @@ async function buildStudentStats(){
   </div>`;
 }
 function setStatsFilter(f){studentStatsFilter=f;render()}
-function updateProfilePhoto(){return once('photo',doUpdatePhoto)}
-async function doUpdatePhoto(){
+async function updateProfilePhoto(){
   const input=$('#profile-photo-input');
   const f=input?.files?.[0];
-  if(!f)return toast('اختر صورة أولاً');
+  if(!f)return;
   try{
     toast('جارٍ رفع الصورة...');
     const data=await img(f,200);
-    if(!data)return toast('تم إلغاء القص');
     await update(R('users/'+U.uid),{photo:data});
     myPhoto=data;input.value='';
     toast('تم تحديث الصورة بنجاح');
     render();
   }catch(e){toast('تعذر تحديث الصورة: '+e.message)}
 }
-function changePassword(){return once('pass',doChangePassword)}
-async function doChangePassword(){
+async function changePassword(){
   const newPass=$('#new-pass').value;
   const confirmPass=$('#confirm-pass').value;
   if(newPass.length<6)return toast('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
   if(newPass!==confirmPass)return toast('كلمتا المرور غير متطابقتين');
   try{
     await updatePassword(auth.currentUser,newPass);
+    toast('تم تغيير كلمة المرور بنجاح');
+    $('#new-pass').value='';$('#confirm-pass').value='';
   }catch(e){
     if(e.code==='auth/requires-recent-login')toast('لأسباب أمنية، سجّل الخروج ثم الدخول مرة أخرى وأعد المحاولة.');
     else toast('تعذر تغيير كلمة المرور: '+(e.message||''));
-    return;
   }
-  try{
-    await set(R('adminNotifications/n'+Date.now()),{
-      text:`قام الطالب (${U.displayName}) بتغيير كلمة المرور الخاصة به.`,
-      created:Date.now(),userId:U.uid
-    });
-  }catch(e){}
-  toast('تم تغيير كلمة المرور بنجاح');
-  $('#new-pass').value='';$('#confirm-pass').value='';
 }
 
 function vHome(){
@@ -1523,7 +1509,7 @@ function vLibrary(){
   if(!lib.length)return'<h2>المكتبة الرقمية</h2><div class="mut">لا توجد ملفات بعد.</div>';
   return`<h2>المكتبة الرقمية</h2><div class="grid">${lib.map(([id,item])=>`
     <div class="card" data-url="${esc(item.url||'')}" onclick="openLibraryItem(this.dataset.url)" role="button" tabindex="0">
-      <img src="${esc(item.photo||avatarOf('PDF'))}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:contain;margin:16px auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)">
+      <img src="${esc(item.photo||avatarOf('PDF'))}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:16px auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)">
       <div class="card-body"><b>${esc(item.title)}</b><small style="color:var(--mu);display:block;margin-top:4px">${esc(item.desc||'')}</small></div>
     </div>`).join('')}</div>`;
 }
@@ -1559,11 +1545,11 @@ async function vAdmin(){
 
   if(effTab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label for="tn">الاسم</label><input id="tn"><label for="tp">الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><div class="card-img-wrap"><img src="${esc(x.photo||avatarOf(x.name))}" alt=""></div><div class="card-body"><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${esc(id)}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${esc(id)}')">حذف</button></div></div></div>`).join('')}</div>`;
 
-  if(effTab==='library')return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label for="ltn">العنوان</label><input id="ltn"><label for="ltd">الوصف</label><input id="ltd"><label for="ltp">صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label for="ltu">رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="card" style="cursor:default"><img src="${esc(x.photo||avatarOf('PDF'))}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:contain;margin:16px auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><div class="card-body"><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${esc(id)}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${esc(id)}')">حذف</button></div></div></div>`).join('')}</div>`;
+  if(effTab==='library')return tb+`<div class="box"><h2>إضافة ملف PDF</h2><label for="ltn">العنوان</label><input id="ltn"><label for="ltd">الوصف</label><input id="ltd"><label for="ltp">صورة الغلاف (اختياري)</label><input id="ltp" type="file" accept="image/*"><label for="ltu">رابط الملف</label><input id="ltu" dir="ltr" placeholder="https://..."><button onclick="addLib()">إضافة</button></div><div class="grid">${Object.entries(library).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="card" style="cursor:default"><img src="${esc(x.photo||avatarOf('PDF'))}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:16px auto 12px;display:block;background:var(--surface2);border:3px solid var(--ac-soft)"><div class="card-body"><b>${esc(x.title)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('editLib','${esc(id)}')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delLib('${esc(id)}')">حذف</button></div></div></div>`).join('')}</div>`;
 
   if(effTab==='students')return tb+await vAdminStudents();
   if(effTab==='send_notification')return tb+vSendNotification();
-  if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية. ليس لها علاقة بالصور الشخصية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:contain">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
+  if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية. ليس لها علاقة بالصور الشخصية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
   if(effTab==='bans')return tb+await renderBans();
   if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" style="max-height:200px;object-fit:contain">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
 
@@ -1590,7 +1576,7 @@ async function doAddNews(){
   if(url&&!/^https?:\/\//i.test(url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
   try{
     let photo='';
-    if(file){photo=await img(file,800);if(!photo)return toast('تم إلغاء قص الصورة')}
+    if(file){photo=await img(file,1200);if(!photo)return toast('تم إلغاء الصورة')}
     await set(R('news/n'+Date.now()),{text,url,photo,created:Date.now()});
     toast('تم نشر الخبر بنجاح');
     render();
@@ -1640,7 +1626,7 @@ async function vStudentProfile(){
   return`<button class="s" onclick="go('admin','','students')" style="margin-bottom:16px">← رجوع للطلاب</button>
   <div class="box">
     <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
-      <img src="${esc(user.photo||avatarOf(user.name))}" alt="" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac);object-fit:contain">
+      <img src="${esc(user.photo||avatarOf(user.name))}" alt="" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac);object-fit:cover">
       <div>
         <h2 style="margin:0">${esc(user.name)}</h2>
         <p style="margin:4px 0;color:var(--mu);direction:ltr">${esc(user.phone)}</p>
@@ -1691,7 +1677,7 @@ async function renderBans(){
   if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;
   return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box">
     <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-      ${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:contain">`:''}
+      ${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}
       <div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||'')}</small></div>
       <span class="b r">محظور</span>
     </div>
@@ -1709,7 +1695,7 @@ async function doAddT(){
   if(!n)return toast('اكتب اسم المدرس');
   try{
     let photo='';
-    if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}
+    if(f){photo=await img(f,600);if(!photo)return toast('تم إلغاء الصورة')}
     await set(R('teachers/t'+Date.now()),{name:n,photo});
     toast('تمت الإضافة');render();
   }catch(e){toast('تعذر الإضافة: '+e.message)}
@@ -1722,8 +1708,8 @@ async function setB(){
   const f=$('#bp').files[0];
   if(!f)return toast('اختر صورة');
   try{
-    const data=await img(f,160);
-    if(!data)return toast('تم إلغاء القص');
+    const data=await img(f,400);
+    if(!data)return toast('تم إلغاء الصورة');
     await set(R('settings/badge'),data);
     badge=data;toast('تم الحفظ');render();
   }catch(e){toast('تعذر الحفظ: '+e.message)}
@@ -1797,7 +1783,7 @@ async function doSaveEditT(id){
   if(!n)return toast('اكتب الاسم');
   try{
     let photo=teachers[id]?.photo||'';
-    if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}
+    if(f){photo=await img(f,600);if(!photo)return toast('تم إلغاء الصورة')}
     await update(R('teachers/'+id),{name:n,photo});
     toast('تم التعديل');go('admin','','teachers');
   }catch(e){toast('تعذر الحفظ: '+e.message)}
@@ -1832,7 +1818,7 @@ async function doAddLib(){
   if(!/^https?:\/\//i.test(url))return toast('الرابط يجب أن يبدأ بـ https:// أو http://');
   try{
     let photo='';
-    if(file){photo=await img(file,200);if(!photo)return toast('تم إلغاء القص')}
+    if(file){photo=await img(file,600);if(!photo)return toast('تم إلغاء الصورة')}
     await set(R('library/l'+Date.now()),{title,desc,url,photo,created:Date.now()});
     toast('تمت إضافة الملف للمكتبة');go('admin','','library');
   }catch(e){toast('تعذر إضافة الملف: '+(e.code||e.message||'خطأ'))}
@@ -1851,7 +1837,7 @@ async function doSaveEditLib(id){
   if(!/^https?:\/\//i.test(u))return toast('الرابط يجب أن يبدأ بـ https://');
   try{
     let photo=library[id]?.photo||'';
-    if(f){photo=await img(f,200);if(!photo)return toast('تم إلغاء القص')}
+    if(f){photo=await img(f,600);if(!photo)return toast('تم إلغاء الصورة')}
     await update(R('library/'+id),{title:n,desc:d,url:u,photo});
     toast('تم التعديل');go('admin','','library');
   }catch(e){toast('تعذر الحفظ: '+e.message)}
@@ -2031,11 +2017,11 @@ Object.assign(window,{
   toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,
   addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,
   sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,
-  updateProfilePhoto,toggleSupervisor,delUser,confirmCrop,cancelCrop,addNews,delNews,
+  updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,
   filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword,setStatsFilter
 });
 
 render();
 </script>
 </body>
-</html>
+  </html>
