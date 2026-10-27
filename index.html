@@ -1911,7 +1911,20 @@ async function copyFree(id){
     const a=[];
     s.forEach(c=>{if(!c.val().used)a.push(c.key)});
     if(!a.length)return toast('لا توجد أكواد متاحة');
-    cp(a.join('\n'));
+    
+    const v = videos[id];
+    const teacher = teachers[v?.teacherId]?.name || '-';
+    const title = v?.title || '-';
+    
+    let text = `📌 *بيانات الفيديو*\n`;
+    text += `📚 العنوان: ${title}\n`;
+    text += `👨‍🏫 المدرس: ${teacher}\n`;
+    text += `📅 الصف: ${v?.grade || '-'}\n`;
+    text += `---------------------------\n`;
+    text += `🔑 *الأكواد المتاحة (${a.length})*:\n`;
+    text += a.join('\n');
+    
+    cp(text);
   }catch(e){toast('تعذر جلب الأكواد')}
 }
 function exportPDF(vid){
@@ -1929,12 +1942,10 @@ function exportPDF(vid){
   setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
 }
 
-// دالة تصدير الأكواد مع بيانات الفيديو
 async function exportCodesPDF(vid) {
   const v = videos[vid];
   if (!v) return;
   
-  // جلب الأكواد المتاحة
   const s = await get(query(R('codes'), orderByChild('videoId'), equalTo(vid)));
   const codes = [];
   s.forEach(c => { if (!c.val().used) codes.push(c.key); });
@@ -1986,31 +1997,6 @@ async function exportCodesPDF(vid) {
   `);
   win.document.close();
   setTimeout(() => { try { win.focus(); win.print(); } catch(e) {} }, 600);
-}
-
-// تعديل دالة نسخ المتاح لتشمل بيانات الفيديو
-async function copyFree(id) {
-  try {
-    const s = await get(query(R('codes'), orderByChild('videoId'), equalTo(id)));
-    const a = [];
-    s.forEach(c => { if (!c.val().used) a.push(c.key); });
-    if (!a.length) return toast('لا توجد أكواد متاحة');
-    
-    const v = videos[id];
-    const teacher = teachers[v?.teacherId]?.name || '-';
-    const title = v?.title || '-';
-    
-    // نسخ الأكواد مع بيانات الفيديو
-    let text = `📌 *بيانات الفيديو*\n`;
-    text += `📚 العنوان: ${title}\n`;
-    text += `👨‍🏫 المدرس: ${teacher}\n`;
-    text += `📅 الصف: ${v?.grade || '-'}\n`;
-    text += `---------------------------\n`;
-    text += `🔑 *الأكواد المتاحة (${a.length})*:\n`;
-    text += a.join('\n');
-    
-    cp(text);
-  } catch(e) { toast('تعذر جلب الأكواد'); }
 }
 
 async function vVid(){
