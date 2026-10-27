@@ -127,7 +127,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   color:var(--ac2);font-weight:700}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
 
-/* ===== مشغل الفيديو ===== */
 .player-wrap{width:100%;margin-bottom:16px;background:transparent}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;width:100%;
   height:0;padding-bottom:56.25%;margin:0 auto;box-shadow:var(--shadow-lg)}
@@ -138,14 +137,8 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   border:0;display:block;background:#000;pointer-events:none;object-fit:contain}
 .pl.is-embed iframe{pointer-events:auto}
 
-/* حل جذري: شفافية تامة ومقاس 100% بدون قص لمنع أي واجهة ليوتيوب */
-.pl.is-yt {
-  background: #000;
-}
 .pl.is-yt iframe {
   pointer-events: none !important;
-  width: 100% !important;
-  height: 100% !important;
   transform: scale(1.01) !important;
 }
 
@@ -203,7 +196,6 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
   aspect-ratio:auto;border-radius:0;box-shadow:none}
 .player-wrap:fullscreen .custom-player-ctrl,.player-wrap:-webkit-full-screen .custom-player-ctrl{border-radius:0;margin-top:0}
 
-/* ملء الشاشة التلقائي في الوضع الأفقي (Landscape) */
 @media (orientation: landscape) and (pointer: coarse) {
   body.is-watching .bottombar { display: none !important; }
   body.is-watching main { padding: 0 !important; }
@@ -781,18 +773,15 @@ function bindSeek(){
   s.addEventListener('pointercancel',endDrag);
 }
 
-/* التعديل الجذري: تحديث واجهة الزر لحظياً قبل إرسال الأمر */
 function togglePlay(){
   const isPlaying = pIsPlaying();
   const nextState = !isPlaying;
 
-  // تحديث الواجهة فوراً (بدون انتظار استجابة يوتيوب)
   const icon = document.getElementById('playIcon');
   if(icon) icon.innerHTML = ICON(nextState ? PAUSE_PATH : PLAY_PATH);
   const ov = document.getElementById('bigPlayOverlay');
   if(ov) ov.style.display = nextState ? 'none' : 'flex';
 
-  // إرسال أمر التشغيل أو الإيقاف للمشغل
   if(P.type==='native'&&P.el){
     if(nextState) P.el.play().catch(()=>toast('تعذر التشغيل، اضغط مرة أخرى'));
     else P.el.pause();
@@ -1939,6 +1928,91 @@ function exportPDF(vid){
   win.document.close();
   setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
 }
+
+// دالة تصدير الأكواد مع بيانات الفيديو
+async function exportCodesPDF(vid) {
+  const v = videos[vid];
+  if (!v) return;
+  
+  // جلب الأكواد المتاحة
+  const s = await get(query(R('codes'), orderByChild('videoId'), equalTo(vid)));
+  const codes = [];
+  s.forEach(c => { if (!c.val().used) codes.push(c.key); });
+  
+  if (!codes.length) return toast('لا توجد أكواد متاحة لتصديرها');
+  
+  const teacher = teachers[v.teacherId]?.name || '-';
+  const grade = v.grade || '-';
+  const win = window.open('', '_blank');
+  if (!win) return toast('اسمح بالنوافذ المنبثقة لتصدير الملف');
+  
+  win.document.write(`
+    <!DOCTYPE html><html dir="rtl" lang="ar">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>أكواد ${esc(v.title)}</title>
+      <style>
+        body { font-family: Cairo, sans-serif, Tahoma; padding: 24px; color: #0f172a; }
+        h2 { color: #2563eb; margin-bottom: 8px; }
+        .meta { background: #f1f5f9; padding: 14px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; line-height: 1.8; }
+        .meta b { color: #1d4ed8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+        th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: center; }
+        th { background: #2563eb; color: #fff; }
+        td.code { font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; letter-spacing: 2px; }
+        @media print { button { display: none; } }
+      </style>
+    </head>
+    <body>
+      <h2>أكواد: ${esc(v.title)}</h2>
+      <div class="meta">
+        <b>المدرس:</b> ${esc(teacher)} <br>
+        <b>الصف:</b> ${esc(grade)} <br>
+        <b>عدد الأكواد:</b> ${codes.length} كود
+      </div>
+      <table>
+        <thead>
+          <tr><th>الكود</th><th>الفيديو</th><th>المدرس</th></tr>
+        </thead>
+        <tbody>
+          ${codes.map(c => `<tr><td class="code">${esc(c)}</td><td>${esc(v.title)}</td><td>${esc(teacher)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+      <br>
+      <button onclick="window.print()">طباعة / حفظ PDF</button>
+    </body>
+    </html>
+  `);
+  win.document.close();
+  setTimeout(() => { try { win.focus(); win.print(); } catch(e) {} }, 600);
+}
+
+// تعديل دالة نسخ المتاح لتشمل بيانات الفيديو
+async function copyFree(id) {
+  try {
+    const s = await get(query(R('codes'), orderByChild('videoId'), equalTo(id)));
+    const a = [];
+    s.forEach(c => { if (!c.val().used) a.push(c.key); });
+    if (!a.length) return toast('لا توجد أكواد متاحة');
+    
+    const v = videos[id];
+    const teacher = teachers[v?.teacherId]?.name || '-';
+    const title = v?.title || '-';
+    
+    // نسخ الأكواد مع بيانات الفيديو
+    let text = `📌 *بيانات الفيديو*\n`;
+    text += `📚 العنوان: ${title}\n`;
+    text += `👨‍🏫 المدرس: ${teacher}\n`;
+    text += `📅 الصف: ${v?.grade || '-'}\n`;
+    text += `---------------------------\n`;
+    text += `🔑 *الأكواد المتاحة (${a.length})*:\n`;
+    text += a.join('\n');
+    
+    cp(text);
+  } catch(e) { toast('تعذر جلب الأكواد'); }
+}
+
 async function vVid(){
   const id=S.id,v=videos[id];if(!v)return vAdmin();
   const cs=[];
@@ -1955,9 +2029,10 @@ async function vVid(){
     <button onclick="moreCodes('${esc(id)}')">توليد أكواد</button>
     <button class="s" onclick="moreCodes('${esc(id)}',1)">كود لطالب</button>
     <button class="s" onclick="copyFree('${esc(id)}')">نسخ المتاح</button>
+    <button class="s" onclick="exportCodesPDF('${esc(id)}')">تصدير الأكواد PDF</button>
     <button class="s" onclick="go('edit','${esc(id)}','video')">تعديل</button>
     <button class="${v.disabled?'g':'d'}" onclick="toggleVid('${esc(id)}')">${v.disabled?'تفعيل':'إيقاف'}</button>
-    <button class="s" onclick="exportPDF('${esc(id)}')">تصدير PDF</button>
+    <button class="s" onclick="exportPDF('${esc(id)}')">تصدير سجل الطلاب PDF</button>
     <button class="d" onclick="delV('${esc(id)}')">حذف</button>
   </div></div>
   <h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الهاتف</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div>
@@ -1965,7 +2040,7 @@ async function vVid(){
 }
 
 Object.assign(window,{
-  go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,
+  go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,exportCodesPDF,
   toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,
   addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,
   sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,
@@ -1976,4 +2051,4 @@ Object.assign(window,{
 render();
 </script>
 </body>
-  </html>
+</html>
