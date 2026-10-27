@@ -134,12 +134,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .pl iframe,.pl video{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;
   border:0;display:block;background:#000;pointer-events:none;object-fit:contain}
 .pl.is-embed iframe{pointer-events:auto}
-
-.pl.is-yt iframe {
-  pointer-events: none !important;
-  transform: scale(1.01) !important;
-}
-
+.pl.is-yt iframe {pointer-events: none !important;transform: scale(1.01) !important;}
 .pl .video-blocker{position:absolute;top:0;right:0;bottom:0;left:0;z-index:99;background:transparent;
   cursor:pointer;display:block;touch-action:none;}
 .pl .end-cover{position:absolute;top:0;right:0;bottom:0;left:0;z-index:100;background:#000;
@@ -330,11 +325,55 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
 .embed-box iframe,.embed-box video{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;border:0}
 .news-text{font-size:15px;line-height:1.7;color:var(--tx);white-space:pre-wrap}
 .news-date{font-size:12px;color:var(--mu);font-weight:700;margin-top:4px}
+
+/* ═══════════════════════════════════════════════════════════════
+   ميزة: أنماط الامتحانات
+   ═══════════════════════════════════════════════════════════════ */
+.exam-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
+  padding:18px;margin-bottom:14px;transition:.2s;box-shadow:var(--shadow)}
+.exam-card:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.exam-card h3{font-size:17px;margin-bottom:8px;color:var(--tx)}
+.exam-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px}
+.exam-meta .b{font-size:11px}
+.exam-q{background:var(--surface2);border:1px solid var(--bd);border-radius:var(--r);
+  padding:16px;margin-bottom:14px}
+.exam-q .q-text{font-size:15px;font-weight:700;margin-bottom:12px;line-height:1.7;color:var(--tx)}
+.exam-q .q-num{display:inline-block;background:var(--ac);color:#fff;width:26px;height:26px;
+  border-radius:50%;text-align:center;line-height:26px;font-size:12px;font-weight:800;margin-left:8px}
+.exam-opt{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:8px;
+  background:var(--surface);border:1.5px solid var(--bd);border-radius:10px;cursor:pointer;transition:.15s}
+.exam-opt:hover{border-color:var(--ac);background:var(--ac-soft)}
+.exam-opt.selected{border-color:var(--ac);background:var(--ac-soft);box-shadow:0 0 0 2px var(--ac-soft)}
+.exam-opt input{margin:0;width:18px;height:18px;cursor:pointer}
+.exam-opt span{font-size:14px;color:var(--tx);flex:1}
+.exam-timer{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--ac),var(--ac2));
+  color:#fff;padding:12px 18px;border-radius:12px;margin-bottom:16px;display:flex;
+  justify-content:space-between;align-items:center;font-weight:800;box-shadow:var(--shadow-lg)}
+.exam-timer.warn{background:linear-gradient(135deg,var(--warn),#d97706);animation:pulse 1s infinite}
+.exam-timer.danger{background:linear-gradient(135deg,var(--er),#dc2626);animation:pulse .6s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.exam-timer .time-big{font-size:22px;font-family:'Courier New',monospace;letter-spacing:2px}
+.exam-result{text-align:center;padding:30px 20px}
+.exam-result .score{font-size:60px;font-weight:900;margin:14px 0;
+  background:linear-gradient(135deg,var(--ac),var(--ok));-webkit-background-clip:text;
+  background-clip:text;color:transparent}
+.exam-result .label{font-size:16px;color:var(--tx2);margin-bottom:8px}
+.exam-result .detail{font-size:14px;color:var(--mu);margin-top:10px}
+.exam-vio{background:#fef3c7;color:#92400e;border:1px solid #fbbf24;
+  padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:13px;font-weight:700}
+html.dark .exam-vio{background:#78350f;color:#fcd34d;border-color:#b45309}
+.exam-locked{text-align:center;padding:40px 20px;color:var(--mu)}
+.exam-locked svg{width:70px;height:70px;fill:var(--bd);margin-bottom:16px}
+
 @media(max-width:720px){
   main{padding:0 14px 40px}
   h2{font-size:18px}
   .top-bar{padding:16px}
   .top-bar .welcome h1{font-size:18px}
+  .bottombar button{font-size:10px;padding:8px 2px}
+  .bottombar button svg{width:20px;height:20px}
+  .exam-timer .time-big{font-size:18px}
+  .exam-result .score{font-size:44px}
 }
 @media(max-width:520px){
   .grid{grid-template-columns:repeat(2,1fr);gap:10px}
@@ -423,9 +462,18 @@ const store={
 const pendingOps=new Set();
 async function once(key,fn){if(pendingOps.has(key))return;pendingOps.add(key);try{return await fn()}finally{pendingOps.delete(key)}}
 
-// ============================================================
-// رفع الصور كاملة بدون قص (Base64) - نسخة مُصلحة
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
+// ميزة 5: وضع عدم الاتصال (كاش محلي للبيانات الثابتة)
+// ═══════════════════════════════════════════════════════════════
+const CACHE_KEY='sigma-offline-cache';
+const cache={
+  save(data){try{store.set(CACHE_KEY,JSON.stringify({...data,t:Date.now()}))}catch(e){}},
+  load(){try{const s=store.get(CACHE_KEY);return s?JSON.parse(s):null}catch(e){return null}},
+  isOffline(){return !navigator.onLine}
+};
+window.addEventListener('online',()=>{if(U)toast('تم استعادة الاتصال ✅')});
+window.addEventListener('offline',()=>{if(U)toast('انقطع الاتصال — تعرض بيانات محفوظة')});
+
 function img(f,maxSize=800){
   return new Promise((resolve,reject)=>{
     if(!f)return resolve(null);
@@ -459,9 +507,19 @@ function img(f,maxSize=800){
 let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'};
 let teachers={},videos={},library={},news={},notifications={},ownNotifications={},broadcastNotifications={},adminNotifications={};
 let mineVideos={};
+let myLogs={}; // ميزة 2: سجل مشاهدة الطالب
+let exams={},examAttempts={}; // ميزة الامتحانات
 let badge='',myPhoto='',myPhone='',hb=null,ip=null;
 let unsubs=[],showingBan=false,renderSeq=0,loadedTeachers=false,studentStatsFilter='all';
 let pendingEmbed=null,pendingEmbedSnapshot=null;
+
+// ميزة 8: المفضلة
+const FAV_KEY='sigma-favs';
+const favs={
+  get(){try{return JSON.parse(store.get(FAV_KEY)||'{}')}catch(e){return{}}},
+  has(id){return !!this.get()[id]},
+  toggle(id){const f=this.get();if(f[id])delete f[id];else f[id]=Date.now();store.set(FAV_KEY,JSON.stringify(f));return !!f[id]}
+};
 
 const DEVICE_KEY='sigma-device-id';
 function getDeviceId(){
@@ -662,6 +720,11 @@ function fmtTime(value){
   const ss=String(s).padStart(2,'0');
   return h>0?`${h}:${String(m).padStart(2,'0')}:${ss}`:`${m}:${ss}`;
 }
+function fmtClock(sec){
+  if(!Number.isFinite(sec)||sec<0)sec=0;
+  const m=Math.floor(sec/60),s=Math.floor(sec%60);
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
 
 function destroyPlayer(){
   if(P.ytTimer){clearInterval(P.ytTimer);P.ytTimer=null}
@@ -762,12 +825,10 @@ function bindSeek(){
 function togglePlay(){
   const isPlaying = pIsPlaying();
   const nextState = !isPlaying;
-
   const icon = document.getElementById('playIcon');
   if(icon) icon.innerHTML = ICON(nextState ? PAUSE_PATH : PLAY_PATH);
   const ov = document.getElementById('bigPlayOverlay');
   if(ov) ov.style.display = nextState ? 'none' : 'flex';
-
   if(P.type==='native'&&P.el){
     if(nextState) P.el.play().catch(()=>toast('تعذر التشغيل، اضغط مرة أخرى'));
     else P.el.pause();
@@ -859,7 +920,14 @@ const go=(v,id,tab,filter)=>{
   render();
 };
 const inst=async()=>{if(!ip)return;ip.prompt();await ip.userChoice;ip=null;renderTopbar()};
-const out=()=>{stopHB();destroyPlayer();clearListeners();signOut(auth)};
+
+// ═══════════════════════════════════════════════════════════════
+// ميزة 6: تأكيد قبل تسجيل الخروج
+// ═══════════════════════════════════════════════════════════════
+const out=()=>{
+  if(!confirm('هل تريد تسجيل الخروج من حسابك؟'))return;
+  stopHB();destroyPlayer();clearListeners();signOut(auth);
+};
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;if(U)renderTopbar()});
 
 function refreshNotifications(){
@@ -884,7 +952,7 @@ onAuthStateChanged(auth,async u=>{
     if(showingBan){location.reload();return}
     teachers={};videos={};library={};news={};badge='';mineVideos={};
     notifications={};ownNotifications={};broadcastNotifications={};adminNotifications={};
-    IS_SUPERVISOR=false;A=false;S={v:'home'};
+    IS_SUPERVISOR=false;A=false;S={v:'home'};myLogs={};exams={};examAttempts={};
     document.body.classList.remove('is-watching');
     render();hideOverlay();return;
   }
@@ -908,13 +976,46 @@ onAuthStateChanged(auth,async u=>{
       }
     }
     mineVideos={...((await G('users/'+u.uid+'/videos'))||{})};
+
+    // ميزة 5: استرجاع الكاش عند عدم الاتصال
+    if(cache.isOffline()){
+      const cached=cache.load();
+      if(cached){
+        teachers=cached.teachers||{};
+        videos=cached.videos||{};
+        library=cached.library||{};
+        news=cached.news||{};
+        loadedTeachers=true;
+        toast('وضع عدم الاتصال — بيانات محفوظة');
+      }
+    }
+
     unsubs.push(onValue(R('teachers'),s=>{
       teachers=s.val()||{};loadedTeachers=true;
-      if(S.v!=='watch')render();
+      cache.save({teachers,videos,library,news});
+      if(S.v!=='watch'&&S.v!=='exam'&&S.v!=='takeExam')render();
     },()=>{loadedTeachers=true}));
     unsubs.push(onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch')render()},()=>{}));
     unsubs.push(onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch')render()},()=>{}));
     unsubs.push(onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()},()=>{}));
+
+    // ميزة الامتحانات: مستمعو الامتحانات والمحاولات
+    unsubs.push(onValue(R('exams'),s=>{exams=s.val()||{};if(['exams','exam','takeExam','admin'].includes(S.v))render()},()=>{}));
+    unsubs.push(onValue(R('examAttempts/'+u.uid),s=>{examAttempts=s.val()||{};if(['exams','exam'].includes(S.v))render()},()=>{}));
+
+    // ميزة 2: متابعة سجل المشاهدة الحي
+    if(!A&&!IS_SUPERVISOR){
+      unsubs.push(onValue(R('logs'),snap=>{
+        const all=snap.val()||{};
+        const next={};
+        for(const vid in all){
+          if(all[vid]&&all[vid][u.uid])next[vid]=all[vid][u.uid];
+        }
+        myLogs=next;
+        if(S.v==='teacher')render();
+      },()=>{}));
+    }
+
     unsubs.push(onValue(R('notifications/'+u.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()},()=>{}));
     unsubs.push(onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()},()=>{}));
     if(A){
@@ -1109,7 +1210,9 @@ function render(){
     home:vHome,teacher:vTeacher,code:vCode,watch:vWatch,
     admin:vAdmin,vid:vVid,edit:vEdit,settings:vSettings,
     library:vLibrary,editLib:vEditLib,students:vAdminStudents,
-    news:vNews,studentProfile:vStudentProfile
+    news:vNews,studentProfile:vStudentProfile,
+    // ميزة الامتحانات
+    exams:vExams,exam:vExamDetail,takeExam:vTakeExam,examResult:vExamResult
   };
   const fn=views[S.v]||vHome;
   let res;
@@ -1162,11 +1265,17 @@ function topBarHTML(){
 function shell(body){
   return `<div id="topbar-slot">${topBarHTML()}</div><main style="padding-bottom:calc(100px + env(safe-area-inset-bottom))">${body}</main>${bottomBar()}`;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// البار السفلي + زر الامتحانات الجديد (ميزة الامتحانات)
+// ═══════════════════════════════════════════════════════════════
 function bottomBar(){
   const on=k=>S.v===k||(k==='home'&&['teacher','code','watch'].includes(S.v));
   const svgHome=`<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
   const svgNews=`<svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg>`;
   const svgLibrary=`<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>`;
+  // ميزة الامتحانات: أيقونة الامتحانات
+  const svgExams=`<svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`;
   const svgSettings=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>`;
   const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`;
   const adminOn=['admin','vid','edit','editLib','students','studentProfile'].includes(S.v);
@@ -1174,6 +1283,7 @@ function bottomBar(){
     <button class="${on('home')?'on':''}" onclick="go('home')">${svgHome} <span>الرئيسية</span></button>
     <button class="${on('news')?'on':''}" onclick="go('news')">${svgNews} <span>الأخبار</span></button>
     <button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary} <span>المكتبة</span></button>
+    <button class="${['exams','exam','takeExam','examResult'].includes(S.v)?'on':''}" onclick="go('exams')">${svgExams} <span>الامتحانات</span></button>
     <button class="${on('settings')?'on':''}" onclick="go('settings')">${svgSettings} <span>الإعدادات</span></button>
     ${A||IS_SUPERVISOR?`<button class="${adminOn?'on':''}" onclick="go('admin','','videos')">${svgAdmin} <span>التحكم</span></button>`:''}
   </nav>`;
@@ -1184,10 +1294,44 @@ function toggleTheme(){
   renderTopbar();
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ميزة 4: صفحة "الأكواد الخاصة بي"
+// ═══════════════════════════════════════════════════════════════
+async function vMyCodes(){
+  if(A||IS_SUPERVISOR)return vSettings();
+  const entries=Object.entries(mineVideos);
+  if(!entries.length)return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <h2>أكوادي</h2><div class="mut">لم تستخدم أي كود بعد.</div>`;
+  const rows=[];
+  for(const [vid,code] of entries){
+    const v=videos[vid];
+    if(!v)continue;
+    const log=myLogs[vid]||{};
+    const pct=v.duration?Math.min(100,Math.round((log.seconds||0)/(v.duration*60)*100)):0;
+    rows.push(`<div class="row" style="cursor:default">
+      <div>
+        <b>${esc(v.title)}</b>
+        <small>${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.grade||'')}</small>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span class="code">${esc(code)}</span>
+          ${log.completed?'<span class="b g">أكملت المشاهدة</span>':`<span class="b y">${pct}% مشاهدة</span>`}
+        </div>
+      </div>
+      <button class="s" style="padding:6px 12px;font-size:12px;background:var(--ac);color:#fff" onclick="go('watch','${esc(vid)}')">مشاهدة</button>
+    </div>`);
+  }
+  return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <h2>🔑 أكوادي (${entries.length})</h2>${rows.join('')}`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// الإعدادات (محدّثة: زر أكوادي + زر المفضلة)
+// ═══════════════════════════════════════════════════════════════
 async function vSettings(){
   const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
   const canNotify=!!hasNotifApi()&&Notification.permission!=='granted';
   const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
+  const favCount=Object.keys(favs.get()).length;
   return `<div class="box profile-card">
     <img src="${esc(photo)}" alt="صورة الملف الشخصي">
     <h2>${esc(U.displayName||'')}</h2>
@@ -1201,6 +1345,14 @@ async function vSettings(){
       <div class="settings-btn" onclick="document.getElementById('new-pass').focus()">
         <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
         <span>تغيير كلمة المرور</span>
+      </div>
+      ${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myCodes')">
+        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        <span>أكوادي (${Object.keys(mineVideos).length})</span>
+      </div>`:''}
+      <div class="settings-btn" onclick="go('myFavs')">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span>المفضلة (${favCount})</span>
       </div>
       ${canNotify?`<div class="settings-btn" onclick="enableNotifications()">
         <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
@@ -1220,6 +1372,32 @@ async function vSettings(){
     <button onclick="changePassword()">حفظ</button>
   </div>
   ${!A&&!IS_SUPERVISOR?await buildStudentStats():''}`;
+}
+
+// ميزة 8: صفحة المفضلة
+function vMyFavs(){
+  const f=favs.get();
+  const ids=Object.keys(f);
+  if(!ids.length)return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <h2>❤️ المفضلة</h2><div class="mut">لم تضف أي فيديو للمفضلة بعد.</div>`;
+  const list=ids.filter(id=>videos[id]).map(id=>{
+    const v=videos[id];
+    const teacher=teachers[v.teacherId]?.name||'';
+    return `<div class="row">
+      <div onclick="go('${mineVideos[id]?'watch':'code'}','${esc(id)}')" style="cursor:pointer">
+        <b>${esc(v.title)}</b>
+        <small>${esc(teacher)} — ${esc(v.grade||'')}</small>
+      </div>
+      <button class="s" style="padding:6px 10px;font-size:12px" onclick="event.stopPropagation();toggleFav('${esc(id)}')">💔 إزالة</button>
+    </div>`;
+  });
+  return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <h2>❤️ المفضلة (${list.length})</h2>${list.join('')}`;
+}
+function toggleFav(id){
+  const on=favs.toggle(id);
+  toast(on?'أضيف للمفضلة ❤️':'أزيل من المفضلة');
+  if(S.v==='myFavs')render();
 }
 
 async function buildStudentStats(){
@@ -1338,6 +1516,9 @@ async function changePassword(){
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ميزة 1: بحث داخل صفحة المدرس + ميزة 2: شريط التقدم + ميزة 8: المفضلة
+// ═══════════════════════════════════════════════════════════════
 function vHome(){
   if(!loadedTeachers)return'<div class="mut">جارٍ التحميل…</div>';
   const t=Object.entries(teachers);
@@ -1348,26 +1529,85 @@ function vHome(){
       <div class="card-body"><b>${esc(x.name)}</b></div>
     </div>`).join('')}</div>`;
 }
+
 function vTeacher(){
   const t=teachers[S.id];if(!t)return vHome();
   const l=Object.entries(videos).filter(([,v])=>v.teacherId===S.id)
     .sort((a,b)=>(b[1].created||0)-(a[1].created||0));
-  let html=`<button class="s" onclick="go('home')" style="margin-bottom:16px">← رجوع</button><h2>${esc(t.name)}</h2>`;
+  let html=`<button class="s" onclick="go('home')" style="margin-bottom:16px">← رجوع</button>
+    <h2>${esc(t.name)}</h2>`;
+  // ميزة 1: مربع بحث
+  html+=`<div style="margin-bottom:16px">
+    <input id="teacherSearch" placeholder="🔍 ابحث في فيديوهات المدرس..." oninput="filterTeacherVideos(this.value)" style="margin-bottom:0">
+  </div>`;
   if(!l.length)return html+'<div class="mut">لا توجد فيديوهات لهذا المدرس.</div>';
+  const isStaff=A||IS_SUPERVISOR;
   ALL_GRADES.forEach(g=>{
     const gv=l.filter(([,v])=>v.grade===g);
     if(!gv.length)return;
-    html+=`<h3 style="margin:20px 0 10px;color:var(--ac2)">${esc(g)}</h3>`;
+    html+=`<h3 style="margin:20px 0 10px;color:var(--ac2)" class="grade-section" data-grade="${esc(g)}">${esc(g)}</h3>`;
     html+=gv.map(([id,v])=>{
-      const isStaff=A||IS_SUPERVISOR;
       if(v.disabled&&!isStaff)
-        return`<div class="row" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
+        return`<div class="row teacher-video-row" data-search="${esc(v.title)} ${esc(v.desc||'')}" style="opacity:.5;cursor:default"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b r">موقوف</span></div>`;
       const open=isStaff||!!mineVideos[id];
       const label=open?(isStaff?'مفتوح (إدارة)':'مفتوح'):'يحتاج كود';
-      return`<div class="row" onclick="go('${open?'watch':'code'}','${esc(id)}')" role="button" tabindex="0"><div><b>${esc(v.title)}</b><small>${esc(v.desc||'')}</small></div><span class="b ${open?'g':''}">${label}</span></div>`;
+
+      // ميزة 2: شريط التقدم
+      let progressHTML='';
+      if(open && !isStaff && v.duration>0 && myLogs[id] && myLogs[id].seconds>0){
+        const log=myLogs[id];
+        const pct=Math.min(100,Math.round(log.seconds/(v.duration*60)*100));
+        const done=log.completed;
+        progressHTML=`
+          <div style="width:100%;margin-top:8px">
+            <div style="height:6px;background:var(--surface2);border-radius:99px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:${done?'var(--ok)':'var(--ac)'};transition:width .3s"></div>
+            </div>
+            <small style="color:var(--mu);font-size:11px;display:block;margin-top:4px">
+              ${done?'✅ أكملت المشاهدة':'⏳ توقفت عند '+pct+'%'}
+            </small>
+          </div>`;
+      }
+
+      // ميزة 8: زر المفضلة
+      const isFav=favs.has(id);
+      const favBtn=`<button class="s" style="padding:6px 8px;font-size:14px;background:transparent;color:${isFav?'var(--er)':'var(--mu)'}" onclick="event.stopPropagation();toggleFav('${esc(id)}')" title="${isFav?'إزالة من المفضلة':'إضافة للمفضلة'}">${isFav?'❤️':'🤍'}</button>`;
+
+      // زر المتابعة
+      const actionBtn = (open && !isStaff && myLogs[id] && myLogs[id].seconds>0)
+        ? `<button class="s" style="padding:6px 12px;font-size:12px;background:var(--ac);color:#fff" onclick="event.stopPropagation();go('watch','${esc(id)}')">▶ متابعة</button>`
+        : '';
+
+      return `<div class="row teacher-video-row" data-search="${esc(v.title)} ${esc(v.desc||'')}" onclick="go('${open?'watch':'code'}','${esc(id)}')" role="button" tabindex="0">
+        <div style="flex:1">
+          <b>${esc(v.title)}</b>
+          <small>${esc(v.desc||'')}</small>
+          ${progressHTML}
+        </div>
+        ${favBtn}
+        ${actionBtn}
+        <span class="b ${open?'g':''}">${label}</span>
+      </div>`;
     }).join('');
   });
   return html;
+}
+function filterTeacherVideos(q){
+  const query=String(q||'').toLowerCase().trim();
+  document.querySelectorAll('.teacher-video-row').forEach(row=>{
+    const txt=(row.getAttribute('data-search')||'').toLowerCase();
+    row.style.display=(!query||txt.includes(query))?'':'none';
+  });
+  // إخفاء عناوين الصفوف الفارغة
+  document.querySelectorAll('.grade-section').forEach(h=>{
+    let next=h.nextElementSibling;
+    let hasVisible=false;
+    while(next && !next.classList.contains('grade-section')){
+      if(next.classList.contains('teacher-video-row') && next.style.display!=='none'){hasVisible=true;break}
+      next=next.nextElementSibling;
+    }
+    h.style.display=hasVisible?'':'none';
+  });
 }
 
 function vCode(){
@@ -1534,12 +1774,15 @@ function vNews(){
   }).join('');
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ميزة 7: عدّاد مشاهدات في صفحة الفيديو (vVid)
+// ═══════════════════════════════════════════════════════════════
 async function vAdmin(){
   if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
   const allowedTabs=A
-    ?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['send_notification','إرسال إشعار'],['bans','الحظر'],['badge','صورة التعريف']]
-    :[['videos','الفيديوهات'],['news','أخبار السنتر']];
+    ?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['send_notification','إرسال إشعار'],['bans','الحظر'],['badge','صورة التعريف']]
+    :[['videos','الفيديوهات'],['news','أخبار السنتر'],['exams','الامتحانات']];
   const effTab=allowedTabs.some(([k])=>k===tab)?tab:'videos';
   const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${effTab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
 
@@ -1549,6 +1792,7 @@ async function vAdmin(){
 
   if(effTab==='students')return tb+await vAdminStudents();
   if(effTab==='send_notification')return tb+vSendNotification();
+  if(effTab==='exams')return tb+await vAdminExams();
   if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية. ليس لها علاقة بالصور الشخصية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
   if(effTab==='bans')return tb+await renderBans();
   if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" style="max-height:200px;object-fit:contain">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
@@ -1567,25 +1811,417 @@ async function vAdmin(){
     <button onclick="addV()">حفظ وتوليد الأكواد</button></div>
     <h2>الفيديوهات</h2>${vidList.map(([id,v])=>`<div class="row"><div onclick="go('vid','${esc(id)}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${esc(id)}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${esc(id)}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
 }
-function addNews(){return once('news',doAddNews)}
-async function doAddNews(){
-  const text=$('#newText').value.trim();
-  const url=$('#newVid').value.trim();
-  const file=$('#newImg').files[0];
-  if(!text&&!file&&!url)return toast('يجب إضافة نص أو صورة أو فيديو على الأقل');
-  if(url&&!/^https?:\/\//i.test(url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
+
+// ═══════════════════════════════════════════════════════════════
+// إدارة الامتحانات (أدمن/مشرف)
+// ═══════════════════════════════════════════════════════════════
+async function vAdminExams(){
+  if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
+  const list=Object.entries(exams).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
+  let html=`<div class="box"><h2>➕ إنشاء امتحان جديد</h2>
+    <label for="exTitle">عنوان الامتحان</label><input id="exTitle" placeholder="مثال: امتحان الوحدة الأولى">
+    <label for="exGrade">الصف</label><select id="exGrade">${ALL_GRADES.map(g=>`<option>${g}</option>`).join('')}</select>
+    <label for="exDuration">مدة الامتحان (دقيقة)</label><input id="exDuration" type="number" min="1" max="180" value="30">
+    <label>الأسئلة</label>
+    <div id="questionsBuilder"></div>
+    <button class="s" onclick="addQuestion()" style="margin-top:8px">➕ إضافة سؤال</button>
+    <button onclick="createExam()" style="width:100%;margin-top:16px">حفظ الامتحان</button>
+  </div>
+  <h2>📋 الامتحانات (${list.length})</h2>`;
+  if(!list.length){
+    html+=`<div class="mut">لا توجد امتحانات بعد.</div>`;
+  }else{
+    html+=list.map(([id,e])=>{
+      const attempts=Object.values(e.attempts||{}).length;
+      return `<div class="exam-card">
+        <h3>${esc(e.title)}</h3>
+        <div class="exam-meta">
+          <span class="b">${esc(e.grade)}</span>
+          <span class="b y">⏱ ${e.duration} دقيقة</span>
+          <span class="b">${(e.questions||[]).length} سؤال</span>
+          <span class="b g">${attempts} محاولة</span>
+          ${e.disabled?'<span class="b r">موقوف</span>':''}
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="s" style="padding:6px 12px;font-size:12px" onclick="go('exam','${esc(id)}')">عرض النتائج</button>
+          <button class="s" style="padding:6px 12px;font-size:12px" onclick="toggleExamDisabled('${esc(id)}')">${e.disabled?'تفعيل':'إيقاف'}</button>
+          <button class="d" style="padding:6px 12px;font-size:12px" onclick="delExam('${esc(id)}')">حذف</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  // تهيئة المنشئ
+  setTimeout(()=>{if(!document.querySelector('.q-builder-item'))addQuestion()},50);
+  return html;
+}
+
+let qBuildCounter=0;
+function addQuestion(){
+  const box=document.getElementById('questionsBuilder');
+  if(!box)return;
+  qBuildCounter++;
+  const n=qBuildCounter;
+  const item=document.createElement('div');
+  item.className='q-builder-item';
+  item.style.cssText='background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px';
+  item.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <b style="color:var(--ac)">سؤال ${n}</b>
+      <button class="d" style="padding:4px 10px;font-size:11px" onclick="this.closest('.q-builder-item').remove()">حذف</button>
+    </div>
+    <label>نوع السؤال</label>
+    <select class="q-type" onchange="onQTypeChange(this)">
+      <option value="mcq">اختيار من متعدد</option>
+      <option value="tf">صح/خطأ</option>
+      <option value="short">إجابة قصيرة</option>
+    </select>
+    <label>نص السؤال</label>
+    <input class="q-text" placeholder="اكتب السؤال هنا...">
+    <div class="q-options-box">
+      <label>الخيارات (اختر الإجابة الصحيحة)</label>
+      <div class="q-opts">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+          <input type="radio" name="correct_${n}" value="0" style="width:auto;margin:0">
+          <input class="q-opt" placeholder="الخيار 1" style="margin-bottom:0">
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+          <input type="radio" name="correct_${n}" value="1" style="width:auto;margin:0">
+          <input class="q-opt" placeholder="الخيار 2" style="margin-bottom:0">
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+          <input type="radio" name="correct_${n}" value="2" style="width:auto;margin:0">
+          <input class="q-opt" placeholder="الخيار 3" style="margin-bottom:0">
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="radio" name="correct_${n}" value="3" style="width:auto;margin:0">
+          <input class="q-opt" placeholder="الخيار 4" style="margin-bottom:0">
+        </div>
+      </div>
+    </div>
+    <div class="q-tf-box" style="display:none">
+      <label>الإجابة الصحيحة</label>
+      <select class="q-tf-answer"><option value="true">صح</option><option value="false">خطأ</option></select>
+    </div>
+    <div class="q-short-box" style="display:none">
+      <label>الإجابة النموذجية (اختياري — للمراجعة اليدوية)</label>
+      <input class="q-short-answer" placeholder="اكتب الإجابة الصحيحة...">
+    </div>
+  `;
+  box.appendChild(item);
+}
+function onQTypeChange(sel){
+  const item=sel.closest('.q-builder-item');
+  const type=sel.value;
+  item.querySelector('.q-options-box').style.display=type==='mcq'?'':'none';
+  item.querySelector('.q-tf-box').style.display=type==='tf'?'':'none';
+  item.querySelector('.q-short-box').style.display=type==='short'?'':'none';
+}
+function createExam(){return once('createExam',doCreateExam)}
+async function doCreateExam(){
+  if(!A&&!IS_SUPERVISOR)return toast('غير مصرح');
+  const title=document.getElementById('exTitle')?.value.trim()||'';
+  const grade=document.getElementById('exGrade')?.value||'';
+  const duration=Math.min(180,Math.max(1,(+document.getElementById('exDuration')?.value)||30));
+  if(!title)return toast('اكتب عنوان الامتحان');
+  const questions=[];
+  const items=document.querySelectorAll('.q-builder-item');
+  if(!items.length)return toast('أضف سؤالاً واحداً على الأقل');
+  for(const item of items){
+    const type=item.querySelector('.q-type').value;
+    const text=item.querySelector('.q-text').value.trim();
+    if(!text)return toast('كل سؤال يحتاج نصاً');
+    if(type==='mcq'){
+      const opts=[...item.querySelectorAll('.q-opt')].map(i=>i.value.trim());
+      if(opts.some(o=>!o))return toast('كل خيارات MCQ يجب أن تُملأ');
+      const correct=item.querySelector('input[type=radio]:checked');
+      if(!correct)return toast('حدد الإجابة الصحيحة لكل سؤال MCQ');
+      questions.push({type:'mcq',text,options:opts,correct:parseInt(correct.value,10)});
+    }else if(type==='tf'){
+      const ans=item.querySelector('.q-tf-answer').value==='true';
+      questions.push({type:'tf',text,correct:ans});
+    }else{
+      const ans=item.querySelector('.q-short-answer').value.trim();
+      questions.push({type:'short',text,correct:ans});
+    }
+  }
   try{
-    let photo='';
-    if(file){photo=await img(file,1200);if(!photo)return toast('تم إلغاء الصورة')}
-    await set(R('news/n'+Date.now()),{text,url,photo,created:Date.now()});
-    toast('تم نشر الخبر بنجاح');
+    const id='ex'+Date.now();
+    await set(R('exams/'+id),{
+      title,grade,duration,questions,
+      created:Date.now(),createdBy:U.displayName||'',createdByUid:U.uid,
+      disabled:false
+    });
+    toast('تم إنشاء الامتحان بنجاح ✅');
+    qBuildCounter=0;
+    go('admin','','exams');
+  }catch(e){toast('تعذر الحفظ: '+(e.code||e.message))}
+}
+async function toggleExamDisabled(id){
+  const e=exams[id];if(!e)return;
+  try{await update(R('exams/'+id),{disabled:!e.disabled});toast(e.disabled?'تم التفعيل':'تم الإيقاف');render()}
+  catch(err){toast('تعذر التعديل')}
+}
+async function delExam(id){
+  if(!confirm('حذف الامتحان وكل محاولاته؟'))return;
+  try{
+    await remove(R('exams/'+id));
+    toast('تم الحذف');
     render();
-  }catch(e){toast('تعذر نشر الخبر: '+e.message)}
+  }catch(e){toast('تعذر الحذف')}
 }
-async function delNews(id){
-  if(!confirm('حذف هذا الخبر؟'))return;
-  try{await remove(R('news/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
+
+// صفحة نتائج الامتحان (أدمن)
+async function vExamDetail(){
+  if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
+  const e=exams[S.id];if(!e)return vAdmin();
+  const attempts=Object.values(e.attempts||{}).sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));
+  return `<button class="s" onclick="go('admin','','exams')" style="margin-bottom:16px">← رجوع</button>
+    <h2>${esc(e.title)}</h2>
+    <div class="box">
+      <div class="stats-summary">
+        <div class="stat-box"><div class="stat-num">${(e.questions||[]).length}</div><div class="stat-label">أسئلة</div></div>
+        <div class="stat-box ok"><div class="stat-num">${attempts.length}</div><div class="stat-label">محاولات</div></div>
+        <div class="stat-box warn"><div class="stat-num">${attempts.length?Math.round(attempts.reduce((s,a)=>s+(a.score||0),0)/attempts.length):0}%</div><div class="stat-label">متوسط الدرجة</div></div>
+      </div>
+      <p style="color:var(--mu);margin-bottom:14px">الصف: ${esc(e.grade)} — المدة: ${e.duration} دقيقة</p>
+      <div class="tw"><table>
+        <thead><tr><th>الطالب</th><th>الدرجة</th><th>الوقت المستغرق</th><th>المخالفات</th><th>وقت التسليم</th></tr></thead>
+        <tbody>${attempts.map(a=>`<tr>
+          <td>${esc(a.studentName||'-')}</td>
+          <td><b class="${a.score>=50?'g':'r'}">${a.score||0}%</b></td>
+          <td>${fmtClock(a.timeTaken||0)}</td>
+          <td>${a.violations?`<span class="b r">${a.violations}</span>`:'-'}</td>
+          <td>${fd(a.submittedAt)}</td>
+        </tr>`).join('')||'<tr><td colspan="5" class="mut">لا توجد محاولات بعد.</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// صفحة الامتحانات (طالب)
+// ═══════════════════════════════════════════════════════════════
+async function vExams(){
+  const userData=await G('users/'+U.uid);
+  const myGrade=userData?.grade||'';
+  const list=Object.entries(exams)
+    .filter(([,e])=>!e.disabled && (!myGrade || !e.grade || e.grade===myGrade || A || IS_SUPERVISOR))
+    .sort((a,b)=>(b[1].created||0)-(a[1].created||0));
+  if(!list.length){
+    return `<h2>📝 الامتحانات</h2>
+      <div class="mut">
+        <svg viewBox="0 0 24 24" style="width:70px;height:70px;fill:var(--bd);margin-bottom:16px"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+        <p>لا توجد امتحانات متاحة لصفك حالياً.</p>
+      </div>`;
+  }
+  return `<h2>📝 الامتحانات المتاحة</h2>` + list.map(([id,e])=>{
+    const att=examAttempts[id];
+    const status=att
+      ? `<span class="b g">✅ أكملت — ${att.score||0}%</span>`
+      : `<span class="b y">لم تُحل</span>`;
+    return `<div class="exam-card">
+      <h3>${esc(e.title)}</h3>
+      <div class="exam-meta">
+        <span class="b">${esc(e.grade)}</span>
+        <span class="b y">⏱ ${e.duration} دقيقة</span>
+        <span class="b">${(e.questions||[]).length} سؤال</span>
+        ${status}
+      </div>
+      <div style="margin-top:14px">
+        ${att
+          ? `<button class="s" onclick="go('examResult','${esc(id)}')">عرض النتيجة</button>`
+          : `<button onclick="go('takeExam','${esc(id)}')">🚀 ابدأ الامتحان</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// خوض الامتحان (طالب) + منع الغش + التوقيت
+// ═══════════════════════════════════════════════════════════════
+let activeExamTimer=null;
+let activeExamState=null;
+
+function vTakeExam(){
+  const e=exams[S.id];
+  if(!e)return vExams();
+  const att=examAttempts[S.id];
+  if(att)return vExamResult();
+  // تهيئة الحالة
+  activeExamState={
+    id:S.id,
+    startedAt:Date.now(),
+    violations:0,
+    answers:{},
+    submitted:false
+  };
+  const questions=e.questions||[];
+  // منع النسخ
+  const preventCopy=e=>{e.preventDefault();return false};
+  document.addEventListener('copy',preventCopy);
+  document.addEventListener('cut',preventCopy);
+  document.addEventListener('paste',preventCopy);
+  document.addEventListener('contextmenu',preventCopy);
+  // كشف الخروج من التبويب
+  const onVis=()=>{
+    if(document.hidden && activeExamState && !activeExamState.submitted){
+      activeExamState.violations++;
+      toast('⚠️ تم تسجيل خروجك من التبويب — المخالفة رقم '+activeExamState.violations);
+    }
+  };
+  document.addEventListener('visibilitychange',onVis);
+  activeExamState._cleanup=()=>{
+    document.removeEventListener('copy',preventCopy);
+    document.removeEventListener('cut',preventCopy);
+    document.removeEventListener('paste',preventCopy);
+    document.removeEventListener('contextmenu',preventCopy);
+    document.removeEventListener('visibilitychange',onVis);
+  };
+  // بدء المؤقّت
+  const startMs=Date.now();
+  const totalMs=e.duration*60*1000;
+  if(activeExamTimer)clearInterval(activeExamTimer);
+  activeExamTimer=setInterval(()=>{
+    if(!activeExamState||activeExamState.submitted){clearInterval(activeExamTimer);return}
+    const left=totalMs-(Date.now()-startMs);
+    const timerEl=document.getElementById('examTimer');
+    if(timerEl){
+      timerEl.querySelector('.time-big').textContent=fmtClock(Math.max(0,left/1000));
+      timerEl.classList.remove('warn','danger');
+      if(left<=30000)timerEl.classList.add('danger');
+      else if(left<=120000)timerEl.classList.add('warn');
+    }
+    if(left<=0){
+      clearInterval(activeExamTimer);
+      toast('⏰ انتهى وقت الامتحان — يتم التسليم تلقائياً');
+      submitExam(true);
+    }
+  },250);
+
+  const qHTML=questions.map((q,i)=>{
+    const num=i+1;
+    if(q.type==='mcq'){
+      return `<div class="exam-q">
+        <div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div>
+        ${q.options.map((opt,idx)=>`
+          <label class="exam-opt">
+            <input type="radio" name="q_${i}" value="${idx}" onchange="recordAnswer(${i},${idx})">
+            <span>${esc(opt)}</span>
+          </label>`).join('')}
+      </div>`;
+    }
+    if(q.type==='tf'){
+      return `<div class="exam-q">
+        <div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div>
+        <label class="exam-opt">
+          <input type="radio" name="q_${i}" value="true" onchange="recordAnswer(${i},true)">
+          <span>✔️ صح</span>
+        </label>
+        <label class="exam-opt">
+          <input type="radio" name="q_${i}" value="false" onchange="recordAnswer(${i},false)">
+          <span>❌ خطأ</span>
+        </label>
+      </div>`;
+    }
+    return `<div class="exam-q">
+      <div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div>
+      <textarea placeholder="اكتب إجابتك هنا..." oninput="recordAnswer(${i},this.value)" rows="3"></textarea>
+    </div>`;
+  }).join('');
+
+  return `<button class="s" onclick="confirmExitExam()" style="margin-bottom:16px">← خروج</button>
+    <h2>${esc(e.title)}</h2>
+    <div class="exam-timer" id="examTimer">
+      <span>⏱ الوقت المتبقي</span>
+      <span class="time-big">${fmtClock(e.duration*60)}</span>
+    </div>
+    <div class="exam-vio" style="display:none" id="examVioBox">⚠️ المخالفات: <span id="examVioCount">0</span></div>
+    ${qHTML}
+    <button onclick="submitExam(false)" style="width:100%;padding:16px;font-size:16px;margin-top:16px">📤 تسليم الامتحان</button>
+  `;
+}
+
+function recordAnswer(i,val){
+  if(!activeExamState)return;
+  activeExamState.answers[i]=val;
+  // تحديث عرض المخالفات
+  const box=document.getElementById('examVioBox');
+  const cnt=document.getElementById('examVioCount');
+  if(activeExamState.violations>0 && box){
+    box.style.display='block';
+    cnt.textContent=activeExamState.violations;
+  }
+  // تحديث المحدد بصرياً
+  document.querySelectorAll(`input[name="q_${i}"]`).forEach(inp=>{
+    inp.closest('.exam-opt').classList.toggle('selected',inp.checked);
+  });
+}
+
+function confirmExitExam(){
+  if(!activeExamState)return go('exams');
+  if(!confirm('هل تريد الخروج من الامتحان؟ سيتم اعتبار محاولتك ملغاة.'))return;
+  cleanupExam();
+  go('exams');
+}
+function cleanupExam(){
+  if(activeExamTimer){clearInterval(activeExamTimer);activeExamTimer=null}
+  if(activeExamState&&activeExamState._cleanup){try{activeExamState._cleanup()}catch(e){}}
+  activeExamState=null;
+}
+
+function submitExam(force){
+  if(!activeExamState||activeExamState.submitted)return;
+  if(!force && !confirm('هل أنت متأكد من تسليم الامتحان؟ لا يمكنك التعديل بعدها.'))return;
+  activeExamState.submitted=true;
+  const e=exams[activeExamState.id];
+  if(!e)return cleanupExam();
+  const questions=e.questions||[];
+  let correct=0;
+  const answers=[];
+  questions.forEach((q,i)=>{
+    const ans=activeExamState.answers[i];
+    let isCorrect=false;
+    if(q.type==='mcq')isCorrect=(ans===q.correct);
+    else if(q.type==='tf')isCorrect=(ans===q.correct);
+    else isCorrect=(String(ans||'').trim().toLowerCase()===String(q.correct||'').trim().toLowerCase() && !!q.correct);
+    if(isCorrect)correct++;
+    answers.push({q:i,ans:ans??null,correct:isCorrect});
+  });
+  const score=questions.length?Math.round(correct/questions.length*100):0;
+  const timeTaken=Math.round((Date.now()-activeExamState.startedAt)/1000);
+  const attempt={
+    studentUid:U.uid,
+    studentName:U.displayName||'',
+    score, answers, timeTaken,
+    violations:activeExamState.violations,
+    submittedAt:Date.now(),
+    autoSubmit:!!force
+  };
+  try{
+    update(R('exams/'+activeExamState.id+'/attempts/'+U.uid),attempt).catch(()=>{});
+  }catch(err){}
+  cleanupExam();
+  go('examResult',S.id);
+}
+
+async function vExamResult(){
+  const e=exams[S.id];if(!e)return vExams();
+  const att=examAttempts[S.id]||{};
+  const score=att.score||0;
+  const correct=att.answers?att.answers.filter(a=>a.correct).length:0;
+  const total=(e.questions||[]).length;
+  return `<button class="s" onclick="go('exams')" style="margin-bottom:16px">← رجوع للامتحانات</button>
+    <div class="exam-result box">
+      <h2 style="margin-bottom:8px">${esc(e.title)}</h2>
+      <div class="label">درجتك</div>
+      <div class="score">${score}%</div>
+      <div class="detail">${correct} من ${total} إجابة صحيحة</div>
+      <div class="detail">⏱ الوقت المستغرق: ${fmtClock(att.timeTaken||0)}</div>
+      ${att.violations?`<div class="detail" style="color:var(--warn)">⚠️ ${att.violations} مخالفة مسجلة</div>`:''}
+      <div class="detail">📅 ${fd(att.submittedAt)}</div>
+    </div>`;
+}
+
+// استئناف باقي الدوال (vAdminStudents، vStudentProfile، إلخ)
 async function vAdminStudents(){
   if(!A)return'<div class="mut">غير مصرح.</div>';
   const users=(await G('users'))||{};
@@ -1642,7 +2278,7 @@ async function vStudentProfile(){
 }
 async function toggleSupervisor(uid,isSup){
   if(!A)return toast('غير مصرح');
-  if(!confirm(isSup?'إلغاء صلاحية الإشراف؟':'تعيين هذا الطالب كمشرف؟ (سيتمكن من إضافة فيديوهات فقط)'))return;
+  if(!confirm(isSup?'إلغاء صلاحية الإشراف؟':'تعيين هذا الطالب كمشرف؟ (سيتمكن من إضافة فيديوهات وامتحانات فقط)'))return;
   try{await update(R('users/'+uid),{isSupervisor:!isSup});toast(isSup?'تم إلغاء الإشراف':'تم تعيين الطالب كمشرف');render()}
   catch(e){toast('تعذر التعديل')}
 }
@@ -1898,11 +2534,9 @@ async function copyFree(id){
     const a=[];
     s.forEach(c=>{if(!c.val().used)a.push(c.key)});
     if(!a.length)return toast('لا توجد أكواد متاحة');
-    
     const v = videos[id];
     const teacher = teachers[v?.teacherId]?.name || '-';
     const title = v?.title || '-';
-    
     let text = `📌 *بيانات الفيديو*\n`;
     text += `📚 العنوان: ${title}\n`;
     text += `👨‍🏫 المدرس: ${teacher}\n`;
@@ -1910,7 +2544,6 @@ async function copyFree(id){
     text += `---------------------------\n`;
     text += `🔑 *الأكواد المتاحة (${a.length})*:\n`;
     text += a.join('\n');
-    
     cp(text);
   }catch(e){toast('تعذر جلب الأكواد')}
 }
@@ -1924,7 +2557,7 @@ function exportPDF(vid){
   const headers=[...document.querySelectorAll('#pdf-src thead th')].map(th=>th.innerText.trim());
   const win=window.open('','_blank');
   if(!win)return toast('اسمح بالنوافذ المنبثقة لتصدير الملف');
-  win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(v.title)}</title><style>body{font-family:Cairo,sans-serif,Tahoma;padding:24px;color:#0f172a}h2{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}th,td{border:1px solid #cbd5e1;padding:8px;text-align:right}th{background:#2563eb;color:#fff}@media print{button{display:none}}</style></head><body><h2>${esc(v.title)}</h2><p>${esc(v.desc||'')}</p><p>عدد السجلات: ${rows.length}</p><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table><br><button onclick="window.print()">طباعة / حفظ PDF</button></body></html>`);
+  win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(v.title)}</title><style>body{font-family:Cairo,sans-serif,Tahoma;padding:24px}h2{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}th,td{border:1px solid #cbd5e1;padding:8px;text-align:right}th{background:#2563eb;color:#fff}@media print{button{display:none}}</style></head><body><h2>${esc(v.title)}</h2><p>${esc(v.desc||'')}</p><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table><br><button onclick="window.print()">طباعة / حفظ PDF</button></body></html>`);
   win.document.close();
   setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
 }
@@ -1932,60 +2565,32 @@ function exportPDF(vid){
 async function exportCodesPDF(vid) {
   const v = videos[vid];
   if (!v) return;
-  
   const s = await get(query(R('codes'), orderByChild('videoId'), equalTo(vid)));
   const codes = [];
   s.forEach(c => { if (!c.val().used) codes.push(c.key); });
-  
   if (!codes.length) return toast('لا توجد أكواد متاحة لتصديرها');
-  
   const teacher = teachers[v.teacherId]?.name || '-';
   const grade = v.grade || '-';
   const win = window.open('', '_blank');
   if (!win) return toast('اسمح بالنوافذ المنبثقة لتصدير الملف');
-  
   win.document.write(`
     <!DOCTYPE html><html dir="rtl" lang="ar">
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      <title>أكواد ${esc(v.title)}</title>
-      <style>
-        body { font-family: Cairo, sans-serif, Tahoma; padding: 24px; color: #0f172a; }
-        h2 { color: #2563eb; margin-bottom: 8px; }
-        .meta { background: #f1f5f9; padding: 14px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; line-height: 1.8; }
-        .meta b { color: #1d4ed8; }
-        table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
-        th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: center; }
-        th { background: #2563eb; color: #fff; }
-        td.code { font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; letter-spacing: 2px; }
-        @media print { button { display: none; } }
-      </style>
-    </head>
-    <body>
+    <head><meta charset="utf-8"><title>أكواد ${esc(v.title)}</title>
+      <style>body { font-family: Cairo, sans-serif, Tahoma; padding: 24px; color: #0f172a; }h2 { color: #2563eb; margin-bottom: 8px; }.meta { background: #f1f5f9; padding: 14px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; line-height: 1.8; }table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: center; }th { background: #2563eb; color: #fff; }td.code { font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; letter-spacing: 2px; }@media print { button { display: none; } }</style>
+    </head><body>
       <h2>أكواد: ${esc(v.title)}</h2>
-      <div class="meta">
-        <b>المدرس:</b> ${esc(teacher)} <br>
-        <b>الصف:</b> ${esc(grade)} <br>
-        <b>عدد الأكواد:</b> ${codes.length} كود
-      </div>
-      <table>
-        <thead>
-          <tr><th>الكود</th><th>الفيديو</th><th>المدرس</th></tr>
-        </thead>
-        <tbody>
-          ${codes.map(c => `<tr><td class="code">${esc(c)}</td><td>${esc(v.title)}</td><td>${esc(teacher)}</td></tr>`).join('')}
-        </tbody>
-      </table>
-      <br>
-      <button onclick="window.print()">طباعة / حفظ PDF</button>
-    </body>
-    </html>
-  `);
+      <div class="meta"><b>المدرس:</b> ${esc(teacher)} <br><b>الصف:</b> ${esc(grade)} <br><b>عدد الأكواد:</b> ${codes.length} كود</div>
+      <table><thead><tr><th>الكود</th><th>الفيديو</th><th>المدرس</th></tr></thead>
+        <tbody>${codes.map(c => `<tr><td class="code">${esc(c)}</td><td>${esc(v.title)}</td><td>${esc(teacher)}</td></tr>`).join('')}</tbody>
+      </table><br><button onclick="window.print()">طباعة / حفظ PDF</button>
+    </body></html>`);
   win.document.close();
   setTimeout(() => { try { win.focus(); win.print(); } catch(e) {} }, 600);
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ميزة 7: صفحة الفيديو (vVid) — إحصائيات المشاهدات
+// ═══════════════════════════════════════════════════════════════
 async function vVid(){
   const id=S.id,v=videos[id];if(!v)return vAdmin();
   const cs=[];
@@ -1994,9 +2599,20 @@ async function vVid(){
   cs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   const lg=Object.values((await G('logs/'+id))||{}).sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
   const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';
+  // ميزة 7: إحصائيات
+  const totalViews=lg.length;
+  const completedCount=lg.filter(x=>x.completed).length;
+  const completionRate=totalViews?Math.round(completedCount/totalViews*100):0;
+  const avgSeconds=totalViews?Math.round(lg.reduce((s,x)=>s+(x.seconds||0),0)/totalViews):0;
   return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2>
   <div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p>
-  <p style="margin-bottom:14px"><span class="b">${cs.length} كود</span> <span class="b g">${cs.filter(x=>!x.used).length} متاح</span> <span class="b">${lg.length} فتحوه</span> <span class="b g">${lg.filter(x=>x.completed).length} أكملوه</span></p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px">
+    <div class="stat-box"><div class="stat-num">${cs.length}</div><div class="stat-label">أكواد</div></div>
+    <div class="stat-box ok"><div class="stat-num">${cs.filter(x=>!x.used).length}</div><div class="stat-label">متاح</div></div>
+    <div class="stat-box"><div class="stat-num">${totalViews}</div><div class="stat-label">فتحوه</div></div>
+    <div class="stat-box ok"><div class="stat-num">${completionRate}%</div><div class="stat-label">نسبة الإكمال</div></div>
+    <div class="stat-box warn"><div class="stat-num">${Math.round(avgSeconds/60)} د</div><div class="stat-label">متوسط المشاهدة</div></div>
+  </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
     <div style="width:110px"><label for="gn">العدد</label><input id="gn" type="number" min="1" max="500" value="10" style="margin-bottom:0"></div>
     <button onclick="moreCodes('${esc(id)}')">توليد أكواد</button>
@@ -2018,10 +2634,13 @@ Object.assign(window,{
   addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,
   sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,
   updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,
-  filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword,setStatsFilter
+  filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword,setStatsFilter,
+  // ميزات جديدة
+  filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,
+  recordAnswer,submitExam,confirmExitExam
 });
 
 render();
 </script>
 </body>
-</html>
+  </html>
