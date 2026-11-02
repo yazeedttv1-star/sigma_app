@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="2.3.0">
+<meta name="application-version" content="2.4.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -313,9 +313,11 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
 .ban-screen p{color:var(--tx2);margin-bottom:24px;line-height:1.7}
 .news-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
   padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
-.news-card img.news-thumb{width:100%;max-height:220px;object-fit:cover;border-radius:var(--r-sm);
-  border:1px solid var(--bd);background:var(--surface2);cursor:zoom-in;transition:.2s}
-.news-card img.news-thumb:hover{opacity:.92;transform:scale(1.005)}
+/* صورة الخبر كاملة وواضحة */
+.news-card img.news-thumb{display:block;width:100%;height:auto;max-height:none;object-fit:contain;
+  border-radius:var(--r-sm);border:1px solid var(--bd);background:var(--surface2);
+  cursor:zoom-in;transition:.2s}
+.news-card img.news-thumb:hover{opacity:.94}
 .embed-box{position:relative;width:100%;height:0;padding-bottom:56.25%;border-radius:10px;overflow:hidden;
   background:#000;margin-bottom:10px}
 .embed-box iframe,.embed-box video{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;border:0}
@@ -421,6 +423,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
+const APP_VERSION='2.4.0';
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
 const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
@@ -624,18 +627,14 @@ function embed(u,full){
 
 /* ================== كشف لقطة الشاشة / فقد التركيز ================== */
 let screenshotArmed=false;
-let shieldTimer=null;
 function showShield(on){
   const el=document.getElementById('screenshotShield');
   if(!el)return;
   if(on){el.classList.add('on')}else{el.classList.remove('on')}
 }
-function armScreenshotGuard(){
-  screenshotArmed=true;
-}
+function armScreenshotGuard(){screenshotArmed=true}
 function disarmScreenshotGuard(){screenshotArmed=false;showShield(false)}
 function bindGlobalScreenshotGuard(){
-  // منع قائمة السياق والطباعة والنسخ داخل الامتحان فقط
   window.addEventListener('keydown',e=>{
     const k=(e.key||'').toLowerCase();
     if(k==='printscreen'||(e.metaKey&&e.shiftKey&&(k==='3'||k==='4'||k==='5'))||(e.ctrlKey&&e.shiftKey&&(k==='s'||k==='x'))){
@@ -650,10 +649,8 @@ function bindGlobalScreenshotGuard(){
   window.addEventListener('blur',()=>{
     if(activeExamState&&!activeExamState.submitted){
       activeExamState.violations++;
-      if(activeExamState.violations>=1){
-        toast('⚠️ خرجت من الامتحان — سيتم التسليم');
-        submitExam(true,'blur');
-      }
+      toast('⚠️ خرجت من الامتحان — سيتم التسليم');
+      submitExam(true,'blur');
     }
   });
 }
@@ -691,9 +688,10 @@ async function enforceSingleDevice(){
   }catch(e){return true}
 }
 
-let banListenerBound=false;
 function renderBanned(ban){
   if(showingBan)return;
+  // حماية: حسابات الإدارة لا تُحظر أبدًا
+  if(ban&&(isAdminPhone(ban.phone||'')||ADMIN_PHONES.includes(normPhone(ban.phone||''))))return;
   showingBan=true;
   try{stopHB();destroyPlayer();clearListeners();cleanupExam();disarmScreenshotGuard()}catch(e){}
   document.body.innerHTML=`<div class="ban-screen"><div class="box-max">
@@ -705,7 +703,6 @@ function renderBanned(ban){
     <p style="font-size:12px;color:var(--mu);margin-bottom:20px">الحساب: ${esc(ban.email||ban.phone||'')}</p>
     <button onclick="outBan()">خروج</button>
   </div></div>`;
-  // استماع حي لرفع الحظر — يبقى ثابتًا حتى يضغط خروج
   const target = ban.phone ? 'bansByPhone/'+normPhone(ban.phone) : 'bans/'+U.uid;
   try{
     const un=onValue(R(target),snap=>{
@@ -1061,7 +1058,6 @@ onAuthStateChanged(auth,async u=>{
     myPhone=userData?.phone||'';
     userGrade=userData?.grade||'';
     if(!A&&!IS_SUPERVISOR){
-      // حظر بالـ UID أو بالهاتف — ثابت حتى الخروج
       if(userData?.phone){
         unsubs.push(onValue(R('bansByPhone/'+normPhone(userData.phone)),snap=>{
           const liveBan=snap.val();
@@ -1123,7 +1119,7 @@ onAuthStateChanged(auth,async u=>{
           if(all[vid]&&all[vid][u.uid])next[vid]=all[vid][u.uid];
         }
         myLogs=next;
-        if(S.v==='teacher')render();
+        if(S.v==='teacher'||S.v==='myStats')render();
       },()=>{}));
     }
 
@@ -1218,7 +1214,7 @@ async function clearAllMyNotis(){
 function vAuth(){
   return `<div class="auth-container">
     <h1>Σ سيجما</h1>
-    <p>منصة سيجما التعليمية</p><span class="b">الإصدار 2.3.0</span>
+    <p>منصة سيجما التعليمية</p><span class="b">الإصدار ${APP_VERSION}</span>
     <div style="margin-top:30px;">
       <div class="auth-form" id="phone-register">
         <label for="reg-name">الاسم الرباعي</label>
@@ -1326,7 +1322,8 @@ function render(){
     admin:vAdmin,vid:vVid,edit:vEdit,settings:vSettings,
     library:vLibrary,editLib:vEditLib,students:vAdminStudents,
     news:vNews,studentProfile:vStudentProfile,
-    myCodes:vMyCodes,myFavs:vMyFavs,
+    myCodes:vMyCodes,myFavs:vMyFavs,myStats:vMyStats,
+    settingsGrade:vSettingsGrade,settingsPass:vSettingsPass,settingsSupport:vSettingsSupport,
     exams:vExams,exam:vExamDetail,takeExam:vTakeExam,examResult:vExamResult
   };
   const fn=views[S.v]||vHome;
@@ -1406,6 +1403,46 @@ function toggleTheme(){
   renderTopbar();
 }
 
+/* ================== صفحات الإعدادات الفرعية ================== */
+function vSettingsGrade(){
+  if(A||IS_SUPERVISOR)return vSettings();
+  return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <div class="box">
+      <h2>🎓 تغيير الصف</h2>
+      <p style="color:var(--tx2);margin-bottom:10px">اختر صفك الدراسي لتظهر لك المحتويات المناسبة.</p>
+      <select id="student-grade">
+        <option value="">اختر الصف</option>
+        ${ALL_GRADES.map(g=>`<option value="${esc(g)}" ${userGrade===g?'selected':''}>${esc(g)}</option>`).join('')}
+      </select>
+      <button onclick="saveStudentGrade()" style="width:100%">حفظ الصف</button>
+    </div>`;
+}
+function vSettingsPass(){
+  return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <div class="box">
+      <h2>🔐 تغيير كلمة المرور</h2>
+      <label for="current-pass">كلمة المرور الحالية</label>
+      <input type="password" id="current-pass" autocomplete="current-password" placeholder="كلمة المرور الحالية">
+      <label for="new-pass">كلمة المرور الجديدة</label>
+      <input type="password" id="new-pass" autocomplete="new-password" placeholder="••••••••">
+      <label for="confirm-pass">تأكيد كلمة المرور</label>
+      <input type="password" id="confirm-pass" autocomplete="new-password" placeholder="••••••••">
+      <button onclick="changePassword()" style="width:100%">حفظ كلمة المرور</button>
+    </div>`;
+}
+function vSettingsSupport(){
+  return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    <div class="box">
+      <h2>📩 تقديم شكوى / استفسار</h2>
+      <p style="color:var(--tx2);margin-bottom:12px">اكتب رسالتك وستصل مباشرة إلى إدارة المنصة.</p>
+      <label for="support-subject">عنوان الرسالة</label>
+      <input id="support-subject" maxlength="120" placeholder="مثال: مشكلة في الامتحان">
+      <label for="support-message">تفاصيل الرسالة</label>
+      <textarea id="support-message" rows="4" maxlength="3000" placeholder="اشرح المشكلة أو الاستفسار..."></textarea>
+      <button onclick="sendSupportTicket()" style="width:100%">إرسال للإدارة</button>
+    </div>`;
+}
+
 async function vMyCodes(){
   if(A||IS_SUPERVISOR)return vSettings();
   const entries=Object.entries(mineVideos);
@@ -1458,43 +1495,18 @@ function toggleFav(id){
   if(S.v==='myFavs'||S.v==='teacher')render();
 }
 
-/* ================== الإعدادات المختصرة ================== */
+async function vMyStats(){
+  if(A||IS_SUPERVISOR)return vSettings();
+  return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button>
+    ${await buildStudentStats()}`;
+}
+
+/* ================== الإعدادات (3 أزرار فقط) ================== */
 async function vSettings(){
   const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
   const canNotify=!!hasNotifApi()&&Notification.permission!=='granted';
   const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
   const favCount=Object.keys(favs.get()).length;
-  const gradeBlock=(!A&&!IS_SUPERVISOR)?`
-    <div class="box">
-      <h2>🎓 الصف الدراسي</h2>
-      <p style="color:var(--tx2);margin-bottom:10px">اختر صفك الدراسي لتظهر لك المحتويات المناسبة.</p>
-      <select id="student-grade">
-        <option value="">اختر الصف</option>
-        ${ALL_GRADES.map(g=>`<option value="${esc(g)}" ${userGrade===g?'selected':''}>${esc(g)}</option>`).join('')}
-      </select>
-      <button onclick="saveStudentGrade()" style="width:100%">حفظ الصف</button>
-    </div>`:'';
-  const passBlock=`
-    <div class="box">
-      <h2>🔐 تغيير كلمة المرور</h2>
-      <label for="current-pass">كلمة المرور الحالية</label>
-      <input type="password" id="current-pass" autocomplete="current-password" placeholder="كلمة المرور الحالية">
-      <label for="new-pass">كلمة المرور الجديدة</label>
-      <input type="password" id="new-pass" autocomplete="new-password" placeholder="••••••••">
-      <label for="confirm-pass">تأكيد كلمة المرور</label>
-      <input type="password" id="confirm-pass" autocomplete="new-password" placeholder="••••••••">
-      <button onclick="changePassword()" style="width:100%">حفظ كلمة المرور</button>
-    </div>`;
-  const supportBlock=`
-    <div class="box">
-      <h2>📩 تقديم شكوى / استفسار</h2>
-      <p style="color:var(--tx2);margin-bottom:12px">اكتب رسالتك وستصل مباشرة إلى إدارة المنصة.</p>
-      <label for="support-subject">عنوان الرسالة</label>
-      <input id="support-subject" maxlength="120" placeholder="مثال: مشكلة في الامتحان">
-      <label for="support-message">تفاصيل الرسالة</label>
-      <textarea id="support-message" rows="4" maxlength="3000" placeholder="اشرح المشكلة أو الاستفسار..."></textarea>
-      <button onclick="sendSupportTicket()" style="width:100%">إرسال للإدارة</button>
-    </div>`;
   return `<div class="box profile-card">
     <img src="${esc(photo)}" alt="صورة الملف الشخصي">
     <h2>${esc(U.displayName||'')}</h2>
@@ -1513,6 +1525,22 @@ async function vSettings(){
         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         <span>المفضلة (${favCount})</span>
       </div>
+      ${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myStats')">
+        <svg viewBox="0 0 24 24"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 3h2v11h-2zm4-6h2v17h-2zm4 9h2v8h-2z"/></svg>
+        <span>إحصائياتي</span>
+      </div>`:''}
+      ${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('settingsGrade')">
+        <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+        <span>تغيير الصف</span>
+      </div>`:''}
+      <div class="settings-btn" onclick="go('settingsPass')">
+        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        <span>كلمة المرور</span>
+      </div>
+      <div class="settings-btn" onclick="go('settingsSupport')">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+        <span>تقديم شكوى</span>
+      </div>
       ${canNotify?`<div class="settings-btn" onclick="enableNotifications()">
         <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
         <span>تفعيل الإشعارات</span>
@@ -1523,10 +1551,7 @@ async function vSettings(){
       </div>
     </div>
   </div>
-  <input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()" style="display:none">
-  ${gradeBlock}
-  ${passBlock}
-  ${supportBlock}`;
+  <input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()" style="display:none">`;
 }
 
 async function saveStudentGrade(){
@@ -1538,7 +1563,7 @@ async function saveStudentGrade(){
     await update(R('users/'+U.uid),{grade});
     userGrade=grade;
     toast('تم حفظ الصف الدراسي ✅');
-    render();
+    go('settings');
   }catch(e){
     toast('تعذر حفظ الصف: '+(e.message||''));
     if(btn){btn.disabled=false;btn.textContent='حفظ الصف'}
@@ -1723,6 +1748,7 @@ async function changePassword(){
     toast('تم تغيير كلمة المرور بنجاح');
     const np=$('#new-pass'),cp=$('#confirm-pass'),old=$('#current-pass');
     if(np)np.value='';if(cp)cp.value='';if(old)old.value='';
+    go('settings');
   }catch(e){
     if(e.code==='auth/requires-recent-login')toast('لأسباب أمنية، سجّل الخروج ثم الدخول مرة أخرى وأعد المحاولة.');
     else toast('تعذر تغيير كلمة المرور: '+(e.message||''));
@@ -2297,12 +2323,6 @@ function vTakeExam(){
   };
   const questions=e.questions||[];
   const preventCopy=ev=>{ev.preventDefault();return false};
-  const preventKeys=ev=>{
-    const k=(ev.key||'').toLowerCase();
-    if(k==='printscreen'||(ev.metaKey&&ev.shiftKey&&(k==='3'||k==='4'||k==='5'))||(ev.ctrlKey&&(k==='p'||k==='s'))){
-      ev.preventDefault();
-    }
-  };
   const onVis=()=>{
     if(document.hidden && activeExamState && !activeExamState.submitted){
       activeExamState.violations++;
@@ -2317,7 +2337,7 @@ function vTakeExam(){
       submitExam(true,'blur');
     }
   };
-  const onUnload=(ev)=>{
+  const onUnload=()=>{
     if(activeExamState && !activeExamState.submitted){
       activeExamState.violations++;
       try{submitExam(true,'unload')}catch(e){}
@@ -2539,7 +2559,6 @@ async function delNews(id){
   try{await remove(R('news/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
 }
 
-/* ================== الطلاب — أزرار مدمجة ================== */
 async function vAdminStudents(){
   if(!A)return'<div class="mut">غير مصرح.</div>';
   const users=(await G('users'))||{};
@@ -2562,12 +2581,12 @@ async function vAdminStudents(){
         <div style="position:relative;display:inline-block">
           <button class="s" style="padding:6px 12px;font-size:12px" onclick="toggleStudentMenu('${esc(u.id)}',event)">⋯ إجراءات</button>
           <div id="menu_${esc(u.id)}" style="display:none;position:absolute;top:100%;right:0;z-index:30;background:var(--surface);border:1px solid var(--bd);border-radius:10px;box-shadow:var(--shadow-lg);min-width:190px;padding:6px;margin-top:4px">
-            <button class="s" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="setGrade('${esc(u.id)}')">🎓 تحديد الصف</button>
+            ${!isAdmin?`<button class="s" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="setGrade('${esc(u.id)}')">🎓 تحديد الصف</button>
             <button class="s" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="toggleSupervisor('${esc(u.id)}',${isSup})">${isSup?'🚫 إلغاء الإشراف':'⭐ تعيين مشرف'}</button>
             ${isBanned
               ?`<button class="g" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="unbanStudent('${esc(u.id)}')">♻️ فك الحظر</button>`
               :`<button class="d" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="banStudent('${esc(u.id)}')">⛔ حظر كامل</button>`}
-            <button class="d" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px" onclick="delUser('${esc(u.id)}')">🗑️ حذف</button>
+            <button class="d" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px" onclick="delUser('${esc(u.id)}')">🗑️ حذف</button>`:`<div style="padding:8px 10px;font-size:12px;color:var(--mu)">حساب إدارة محمي</div>`}
           </div>
         </div>
       </td>
@@ -2605,7 +2624,9 @@ async function setGrade(uid){
 async function banStudent(uid){
   if(!A)return toast('غير مصرح');
   const u=await G('users/'+uid);if(!u||!u.phone)return toast('لا يوجد رقم هاتف لهذا الطالب');
-  if(isAdminPhone(u.phone))return toast('لا يمكن حظر حساب إدارة');
+  // حماية: حسابات الإدارة لا تُحظر أبدًا
+  if(isAdminPhone(u.phone))return toast('⛔ لا يمكن حظر حساب إدارة — الحساب محمي');
+  if(ADMIN_PHONES.includes(normPhone(u.phone)))return toast('⛔ لا يمكن حظر حساب إدارة — الحساب محمي');
   const reason=prompt('سبب الحظر (اختياري):','مخالفة قواعد المنصة')||'قرار إداري';
   if(!confirm('سيتم حظر الحساب بالكامل (UID + رقم الهاتف) ومنعه من الدخول. متابعة؟'))return;
   const rec={uid,phone:normPhone(u.phone),name:u.name||'',email:u.email||'',photo:u.photo||'',reason,bannedAt:Date.now(),by:U.uid};
@@ -2707,7 +2728,6 @@ async function clearAllNotifications(){
   if(!confirm('هل أنت متأكد من حذف جميع الإشعارات للجميع (من القاعدة ومن كل الطلاب)؟'))return;
   try{
     await remove(R('notifications/all'));
-    // مسح إشعارات كل طالب
     const users=(await G('users'))||{};
     const updates={};
     Object.keys(users).forEach(uid=>{updates['notifications/'+uid]=null});
@@ -2718,7 +2738,7 @@ async function clearAllNotifications(){
 
 async function renderBans(){
   const bans=(await G('bans'))||{};
-  const entries=Object.values(bans);
+  const entries=Object.values(bans).filter(b=>!isAdminPhone(b.phone||'')&&!ADMIN_PHONES.includes(normPhone(b.phone||'')));
   const note=`<div class="notice"><b>ملاحظة:</b> حسابات الإدارة محمية ولا تُحظر أبداً.</div>`;
   if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;
   return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box">
