@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="2.4.0">
+<meta name="application-version" content="2.5.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -313,7 +313,6 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
 .ban-screen p{color:var(--tx2);margin-bottom:24px;line-height:1.7}
 .news-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
   padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
-/* صورة الخبر كاملة وواضحة */
 .news-card img.news-thumb{display:block;width:100%;height:auto;max-height:none;object-fit:contain;
   border-radius:var(--r-sm);border:1px solid var(--bd);background:var(--surface2);
   cursor:zoom-in;transition:.2s}
@@ -423,7 +422,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-const APP_VERSION='2.4.0';
+const APP_VERSION='2.5.0';
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
 const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
@@ -527,6 +526,11 @@ let unsubs=[],showingBan=false,renderSeq=0,loadedTeachers=false,studentStatsFilt
 let pendingEmbed=null,pendingEmbedSnapshot=null;
 let authGeneration=0;
 let examGuardCleanup=null;
+
+/* === حظر: مستمعون === */
+let banUnsubs=[];        // مستمعو شاشة الحظر (للطالب المحظور)
+let bansLiveUnsub=null;  // مستمعو تبويب الحظر في لوحة الأدمن
+let bansLiveData={uid:{},phone:{}};
 
 const FAV_KEY='sigma-favs';
 const favs={
@@ -662,6 +666,7 @@ window.addEventListener('beforeprint',()=>{
   }
 });
 
+/* ================== حظر الجهازين ================== */
 async function enforceSingleDevice(){
   if(A||IS_SUPERVISOR||!U)return true;
   try{
@@ -673,12 +678,16 @@ async function enforceSingleDevice(){
     const existingDevice=cur.deviceId;
     const existingTs=cur.updatedAt||0;
     if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
-      await set(R('bans/'+U.uid),{
+      const rec={
         uid:U.uid,name:U.displayName||'',email:U.email||'',photo:'',
+        phone:normPhone(myPhone||''),
         oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',
         newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,
         reason:'تسجيل دخول من جهاز آخر'
-      });
+      };
+      const ops=[set(R('bans/'+U.uid),rec)];
+      if(rec.phone)ops.push(set(R('bansByPhone/'+rec.phone),rec));
+      await Promise.all(ops);
       return false;
     }
     await update(R('sessions/'+U.uid),{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});
@@ -688,9 +697,9 @@ async function enforceSingleDevice(){
   }catch(e){return true}
 }
 
+/* ================== شاشة الحظر الثابتة ================== */
 function renderBanned(ban){
   if(showingBan)return;
-  // حماية: حسابات الإدارة لا تُحظر أبدًا
   if(ban&&(isAdminPhone(ban.phone||'')||ADMIN_PHONES.includes(normPhone(ban.phone||''))))return;
   showingBan=true;
   try{stopHB();destroyPlayer();clearListeners();cleanupExam();disarmScreenshotGuard()}catch(e){}
@@ -703,15 +712,39 @@ function renderBanned(ban){
     <p style="font-size:12px;color:var(--mu);margin-bottom:20px">الحساب: ${esc(ban.email||ban.phone||'')}</p>
     <button onclick="outBan()">خروج</button>
   </div></div>`;
-  const target = ban.phone ? 'bansByPhone/'+normPhone(ban.phone) : 'bans/'+U.uid;
+  banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
+  banUnsubs=[];
+  const phone=normPhone(ban.phone||'');
+  let uidBanned=true,phoneBanned=true;
+  let checkCount=0;
+  const maybeReload=()=>{
+    checkCount++;
+    if(checkCount<=1)return; // تجاهل أول إشارة (الحالة الأولية)
+    if(!uidBanned&&!phoneBanned)location.reload();
+  };
   try{
-    const un=onValue(R(target),snap=>{
-      if(!snap.val()){try{un()}catch(e){};location.reload()}
+    const un1=onValue(R('bans/'+U.uid),snap=>{
+      uidBanned=!!snap.val();
+      maybeReload();
     },()=>{});
+    banUnsubs.push(un1);
   }catch(e){}
+  if(phone){
+    try{
+      const un2=onValue(R('bansByPhone/'+phone),snap=>{
+        phoneBanned=!!snap.val();
+        maybeReload();
+      },()=>{});
+      banUnsubs.push(un2);
+    }catch(e){}
+  }else{
+    phoneBanned=false;
+  }
 }
 function outBan(){
   if(!confirm('تسجيل الخروج من الحساب المحظور؟'))return;
+  banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
+  banUnsubs=[];
   try{signOut(auth).catch(()=>{});}catch(e){}
   setTimeout(()=>location.reload(),400);
 }
@@ -719,6 +752,9 @@ function outBan(){
 function clearListeners(){
   unsubs.forEach(fn=>{try{if(typeof fn==='function')fn()}catch(e){}});
   unsubs=[];
+  banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
+  banUnsubs=[];
+  if(typeof bansLiveUnsub==='function'){try{bansLiveUnsub()}catch(e){};bansLiveUnsub=null}
 }
 function stopHB(){
   if(hb){clearInterval(hb);hb=null}
@@ -1058,8 +1094,24 @@ onAuthStateChanged(auth,async u=>{
     myPhone=userData?.phone||'';
     userGrade=userData?.grade||'';
     if(!A&&!IS_SUPERVISOR){
-      if(userData?.phone){
-        unsubs.push(onValue(R('bansByPhone/'+normPhone(userData.phone)),snap=>{
+      const phoneKey=userData?.phone?normPhone(userData.phone):'';
+      // 1) فحص أولي لأي حظر
+      const phoneBan=phoneKey?await G('bansByPhone/'+phoneKey):null;
+      if(gen!==authGeneration)return;
+      if(phoneBan){renderBanned(phoneBan);hideOverlay();return}
+      const ban=await G('bans/'+u.uid);
+      if(gen!==authGeneration)return;
+      if(ban){renderBanned(ban);hideOverlay();return}
+      // 2) فرض جهاز واحد
+      const ok=await enforceSingleDevice();
+      if(gen!==authGeneration)return;
+      if(!ok){
+        const b=await G('bans/'+u.uid);
+        if(b){renderBanned(b);hideOverlay();return}
+      }
+      // 3) استماع حي على الحظرين — يظهر الحظر على الجهازين فورًا
+      if(phoneKey){
+        unsubs.push(onValue(R('bansByPhone/'+phoneKey),snap=>{
           const liveBan=snap.val();
           if(liveBan)renderBanned(liveBan);
         },()=>{}));
@@ -1068,17 +1120,6 @@ onAuthStateChanged(auth,async u=>{
         const liveBan=snap.val();
         if(liveBan)renderBanned(liveBan);
       },()=>{}));
-      const phoneBan=userData?.phone?await G('bansByPhone/'+normPhone(userData.phone)):null;
-      if(phoneBan){renderBanned(phoneBan);hideOverlay();return}
-      const ban=await G('bans/'+u.uid);
-      if(gen!==authGeneration)return;
-      if(ban){renderBanned(ban);hideOverlay();return}
-      const ok=await enforceSingleDevice();
-      if(gen!==authGeneration)return;
-      if(!ok){
-        const b=await G('bans/'+u.uid);
-        if(b){renderBanned(b);hideOverlay();return}
-      }
     }
     const mv=await G('users/'+u.uid+'/videos');
     if(gen!==authGeneration)return;
@@ -1501,7 +1542,7 @@ async function vMyStats(){
     ${await buildStudentStats()}`;
 }
 
-/* ================== الإعدادات (3 أزرار فقط) ================== */
+/* ================== الإعدادات ================== */
 async function vSettings(){
   const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
   const canNotify=!!hasNotifApi()&&Notification.permission!=='granted';
@@ -2043,7 +2084,7 @@ async function vAdmin(){
   if(effTab==='exams')return tb+await vAdminExams();
   if(effTab==='support')return tb+await vAdminSupport();
   if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية. ليس لها علاقة بالصور الشخصية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
-  if(effTab==='bans')return tb+await renderBans();
+  if(effTab==='bans')return tb+await vAdminBans();
   if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
 
   const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
@@ -2060,6 +2101,123 @@ async function vAdmin(){
     <button onclick="addV()">حفظ وتوليد الأكواد</button></div>
     <h2>الفيديوهات</h2>${vidList.map(([id,v])=>`<div class="row"><div onclick="go('vid','${esc(id)}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${esc(id)}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${esc(id)}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
 }
+
+/* ================== تبويب الحظر (استماع حي) ================== */
+async function vAdminBans(){
+  if(!A)return'<div class="mut">غير مصرح.</div>';
+  if(bansLiveUnsub){try{bansLiveUnsub()}catch(e){};bansLiveUnsub=null}
+  bansLiveData={uid:{},phone:{}};
+  const uidSnap=await G('bans');
+  const phoneSnap=await G('bansByPhone');
+  bansLiveData.uid=uidSnap||{};
+  bansLiveData.phone=phoneSnap||{};
+  const un1=onValue(R('bans'),snap=>{
+    bansLiveData.uid=snap.val()||{};
+    if(S.v==='admin'&&S.tab==='bans')renderBansLive();
+  },()=>{});
+  const un2=onValue(R('bansByPhone'),snap=>{
+    bansLiveData.phone=snap.val()||{};
+    if(S.v==='admin'&&S.tab==='bans')renderBansLive();
+  },()=>{});
+  bansLiveUnsub=()=>{try{un1()}catch(e){};try{un2()}catch(e){}};
+  return `<div id="bansLiveBox">${buildBansHTML()}</div>`;
+}
+function renderBansLive(){
+  const box=document.getElementById('bansLiveBox');
+  if(box)box.innerHTML=buildBansHTML();
+}
+function buildBansHTML(){
+  const map={};
+  Object.values(bansLiveData.uid||{}).forEach(b=>{
+    if(!b||!b.uid)return;
+    if(isAdminPhone(b.phone||'')||ADMIN_PHONES.includes(normPhone(b.phone||'')))return;
+    map[b.uid]={...b,_sources:['uid']};
+  });
+  Object.values(bansLiveData.phone||{}).forEach(b=>{
+    if(!b||!b.uid)return;
+    if(isAdminPhone(b.phone||'')||ADMIN_PHONES.includes(normPhone(b.phone||'')))return;
+    if(map[b.uid]){
+      map[b.uid]={...map[b.uid],...b,_sources:[...new Set([...map[b.uid]._sources,'phone'])]};
+    }else{
+      map[b.uid]={...b,_sources:['phone']};
+    }
+  });
+  const entries=Object.values(map);
+  const note=`<div class="notice"><b>ملاحظة:</b> حسابات الإدارة محمية ولا تُحظر أبداً.<br>هذه الصفحة تتحدث تلقائياً بدون تحديث.</div>`;
+  if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;
+  return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+      ${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}
+      <div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||b.phone||'')}</small></div>
+      <span class="b r">محظور</span>
+    </div>
+    <p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">
+      السبب: ${esc(b.reason||'قرار إداري')}<br>
+      وقت الحظر: ${fd(b.bannedAt)}<br>
+      الجهاز السابق: <b>${esc(b.oldDeviceLabel||'-')}</b> — الجهاز الجديد: <b>${esc(b.newDeviceLabel||'-')}</b><br>
+      مصدر الحظر: ${b._sources.includes('uid')?'UID':''}${b._sources.includes('uid')&&b._sources.includes('phone')?' + ':''}${b._sources.includes('phone')?'الهاتف':''}
+    </p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button>
+      <button class="s" onclick="keepBan()">تركه محظوراً</button>
+    </div>
+  </div>`).join('');
+}
+async function renderBans(){
+  const bans=(await G('bans'))||{};
+  const bansByPhone=(await G('bansByPhone'))||{};
+  const map={};
+  Object.values(bans).forEach(b=>{
+    if(!b||!b.uid)return;
+    if(isAdminPhone(b.phone||'')||ADMIN_PHONES.includes(normPhone(b.phone||'')))return;
+    map[b.uid]={...b,_sources:['uid']};
+  });
+  Object.values(bansByPhone).forEach(b=>{
+    if(!b||!b.uid)return;
+    if(isAdminPhone(b.phone||'')||ADMIN_PHONES.includes(normPhone(b.phone||'')))return;
+    if(map[b.uid]){
+      map[b.uid]={...map[b.uid],...b,_sources:[...new Set([...map[b.uid]._sources,'phone'])]};
+    }else{
+      map[b.uid]={...b,_sources:['phone']};
+    }
+  });
+  const entries=Object.values(map);
+  const note=`<div class="notice"><b>ملاحظة:</b> حسابات الإدارة محمية ولا تُحظر أبداً.</div>`;
+  if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;
+  return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+      ${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}
+      <div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||b.phone||'')}</small></div>
+      <span class="b r">محظور</span>
+    </div>
+    <p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">
+      السبب: ${esc(b.reason||'قرار إداري')}<br>
+      وقت الحظر: ${fd(b.bannedAt)}<br>
+      الجهاز السابق: <b>${esc(b.oldDeviceLabel||'-')}</b> — الجهاز الجديد: <b>${esc(b.newDeviceLabel||'-')}</b><br>
+      مصدر الحظر: ${b._sources.includes('uid')?'UID':''}${b._sources.includes('uid')&&b._sources.includes('phone')?' + ':''}${b._sources.includes('phone')?'الهاتف':''}
+    </p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button>
+      <button class="s" onclick="keepBan()">تركه محظوراً</button>
+    </div>
+  </div>`).join('');
+}
+async function unban(uid){
+  if(!A)return toast('غير مصرح');
+  try{
+    const u=await G('users/'+uid);
+    const phone=normPhone(u?.phone||'');
+    const ops=[
+      remove(R('bans/'+uid)).catch(()=>{}),
+      update(R('users/'+uid),{banned:false}).catch(()=>{})
+    ];
+    if(phone)ops.push(remove(R('bansByPhone/'+phone)).catch(()=>{}));
+    await Promise.all(ops);
+    toast('تم فك الحظر من الجهازين ✅');
+    if(S.v==='admin'&&S.tab==='bans')renderBansLive();
+  }catch(e){toast('تعذر فك الحظر')}
+}
+function keepBan(){toast('بقي محظوراً')}
 
 async function vAdminExams(){
   if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
@@ -2563,6 +2721,7 @@ async function vAdminStudents(){
   if(!A)return'<div class="mut">غير مصرح.</div>';
   const users=(await G('users'))||{};
   const bans=(await G('bans'))||{};
+  const bansByPhone=(await G('bansByPhone'))||{};
   const arr=Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   if(!arr.length)return'<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
   let html=`<div class="box"><label for="searchStudent">بحث سريع (بالاسم / الهاتف / الكود)</label><input id="searchStudent" placeholder="اكتب الاسم، الهاتف، أو الكود..." oninput="filterStudents(this.value)"></div>
@@ -2570,7 +2729,7 @@ async function vAdminStudents(){
   for(const u of arr){
     const isSup=u.isSupervisor===true;
     const isAdmin=isAdminPhone(u.phone||'');
-    const isBanned=!!(bans[u.id]||(u.phone&&(bans[u.phone])));
+    const isBanned=!!(bans[u.id]||(u.phone&&bansByPhone[normPhone(u.phone)]));
     const codesStr=Object.values(u.videos||{}).join(' ');
     html+=`<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)} ${esc(codesStr)}">
       <td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td>
@@ -2624,7 +2783,6 @@ async function setGrade(uid){
 async function banStudent(uid){
   if(!A)return toast('غير مصرح');
   const u=await G('users/'+uid);if(!u||!u.phone)return toast('لا يوجد رقم هاتف لهذا الطالب');
-  // حماية: حسابات الإدارة لا تُحظر أبدًا
   if(isAdminPhone(u.phone))return toast('⛔ لا يمكن حظر حساب إدارة — الحساب محمي');
   if(ADMIN_PHONES.includes(normPhone(u.phone)))return toast('⛔ لا يمكن حظر حساب إدارة — الحساب محمي');
   const reason=prompt('سبب الحظر (اختياري):','مخالفة قواعد المنصة')||'قرار إداري';
@@ -2736,32 +2894,6 @@ async function clearAllNotifications(){
   }catch(e){toast('تعذر حذف الإشعارات: '+(e.code||e.message))}
 }
 
-async function renderBans(){
-  const bans=(await G('bans'))||{};
-  const entries=Object.values(bans).filter(b=>!isAdminPhone(b.phone||'')&&!ADMIN_PHONES.includes(normPhone(b.phone||'')));
-  const note=`<div class="notice"><b>ملاحظة:</b> حسابات الإدارة محمية ولا تُحظر أبداً.</div>`;
-  if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;
-  return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box">
-    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-      ${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}
-      <div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||b.phone||'')}</small></div>
-      <span class="b r">محظور</span>
-    </div>
-    <p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">السبب: ${esc(b.reason||'قرار إداري')}<br>وقت الحظر: ${fd(b.bannedAt)}</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button><button class="s" onclick="keepBan()">تركه محظوراً</button></div>
-  </div>`).join('');
-}
-async function unban(uid){
-  if(!A)return toast('غير مصرح');
-  try{
-    const u=await G('users/'+uid);
-    const ops=[remove(R('bans/'+uid))];
-    if(u?.phone){ops.push(remove(R('bansByPhone/'+normPhone(u.phone))));ops.push(update(R('users/'+uid),{banned:false}))}
-    await Promise.all(ops);
-    toast('تم فك الحظر');render();
-  }catch(e){toast('تعذر فك الحظر')}
-}
-function keepBan(){toast('بقي محظوراً')}
 function addT(){return once('addT',doAddT)}
 async function doAddT(){
   if(!A)return toast('غير مصرح');
@@ -3101,4 +3233,4 @@ window.addEventListener('unhandledrejection',e=>{
 render();
 </script>
 </body>
-  </html>
+</html>
