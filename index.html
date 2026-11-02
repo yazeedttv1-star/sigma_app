@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="2.2.0">
+<meta name="application-version" content="2.3.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -313,8 +313,9 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
 .ban-screen p{color:var(--tx2);margin-bottom:24px;line-height:1.7}
 .news-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);
   padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
-.news-card img{width:100%;max-height:400px;object-fit:contain;border-radius:var(--r-sm);
-  border:1px solid var(--bd);background:var(--surface2)}
+.news-card img.news-thumb{width:100%;max-height:220px;object-fit:cover;border-radius:var(--r-sm);
+  border:1px solid var(--bd);background:var(--surface2);cursor:zoom-in;transition:.2s}
+.news-card img.news-thumb:hover{opacity:.92;transform:scale(1.005)}
 .embed-box{position:relative;width:100%;height:0;padding-bottom:56.25%;border-radius:10px;overflow:hidden;
   background:#000;margin-bottom:10px}
 .embed-box iframe,.embed-box video{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;border:0}
@@ -355,6 +356,16 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
 html.dark .exam-vio{background:#78350f;color:#fcd34d;border-color:#b45309}
 .exam-locked{text-align:center;padding:40px 20px;color:var(--mu)}
 .exam-locked svg{width:70px;height:70px;fill:var(--bd);margin-bottom:16px}
+@media print{
+  body *{visibility:hidden !important}
+  body::after{content:"🖼️ الطباعة ولقطات الشاشة ممنوعة داخل المنصة";visibility:visible;
+    position:fixed;top:40%;right:0;left:0;text-align:center;font-size:24px;color:#ef4444;font-weight:900}
+}
+.screenshot-shield{position:fixed;inset:0;z-index:99998;background:#0b1220;display:none;
+  align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#fff;text-align:center;padding:20px}
+.screenshot-shield.on{display:flex}
+.screenshot-shield h2{color:#fff;font-size:22px}
+.screenshot-shield p{opacity:.8;line-height:1.8;max-width:380px}
 @media(max-width:720px){
   main{padding:0 14px 40px}
   h2{font-size:18px}
@@ -378,6 +389,10 @@ html.dark .exam-vio{background:#78350f;color:#fcd34d;border-color:#b45309}
 <div id="loading-overlay">
   <div class="spinner"></div>
   <p style="font-family:Cairo,sans-serif;font-weight:700;color:var(--ac)">جارٍ التحميل...</p>
+</div>
+<div id="screenshotShield" class="screenshot-shield">
+  <h2>🛡️ تم إيقاف المحتوى مؤقتًا</h2>
+  <p>لأسباب أمنية، المحتوى مخفي أثناء فقدان تركيز النافذة لمنع لقطات الشاشة. عد إلى المنصة للمتابعة.</p>
 </div>
 <div id="app"></div>
 <div id="t" role="status" aria-live="polite"></div>
@@ -444,6 +459,7 @@ const normPhone=s=>normDigits(s).replace(/[\s\-()]/g,'');
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const avatarOf=name=>'https://ui-avatars.com/api/?name='+encodeURIComponent(name||'U')+'&background=2563eb&color=fff&size=200';
 const hasNotifApi=()=>typeof window!=='undefined'&&'Notification' in window;
+const isAdminPhone=p=>ADMIN_PHONES.includes(normPhone(p||''));
 const store={
   get(k){try{return localStorage.getItem(k)}catch(e){return null}},
   set(k,v){try{localStorage.setItem(k,v)}catch(e){}},
@@ -507,6 +523,7 @@ let badge='',myPhoto='',myPhone='',userGrade='',hb=null,hbGuard=0,ip=null;
 let unsubs=[],showingBan=false,renderSeq=0,loadedTeachers=false,studentStatsFilter='all';
 let pendingEmbed=null,pendingEmbedSnapshot=null;
 let authGeneration=0;
+let examGuardCleanup=null;
 
 const FAV_KEY='sigma-favs';
 const favs={
@@ -605,6 +622,49 @@ function embed(u,full){
   return{t:'f',s:u};
 }
 
+/* ================== كشف لقطة الشاشة / فقد التركيز ================== */
+let screenshotArmed=false;
+let shieldTimer=null;
+function showShield(on){
+  const el=document.getElementById('screenshotShield');
+  if(!el)return;
+  if(on){el.classList.add('on')}else{el.classList.remove('on')}
+}
+function armScreenshotGuard(){
+  screenshotArmed=true;
+}
+function disarmScreenshotGuard(){screenshotArmed=false;showShield(false)}
+function bindGlobalScreenshotGuard(){
+  // منع قائمة السياق والطباعة والنسخ داخل الامتحان فقط
+  window.addEventListener('keydown',e=>{
+    const k=(e.key||'').toLowerCase();
+    if(k==='printscreen'||(e.metaKey&&e.shiftKey&&(k==='3'||k==='4'||k==='5'))||(e.ctrlKey&&e.shiftKey&&(k==='s'||k==='x'))){
+      if(activeExamState && !activeExamState.submitted){
+        e.preventDefault();e.stopPropagation();
+        activeExamState.violations++;
+        toast('⚠️ تم كشف محاولة لقطة شاشة — سيتم التسليم');
+        submitExam(true,'screenshot');
+      }
+    }
+  },true);
+  window.addEventListener('blur',()=>{
+    if(activeExamState&&!activeExamState.submitted){
+      activeExamState.violations++;
+      if(activeExamState.violations>=1){
+        toast('⚠️ خرجت من الامتحان — سيتم التسليم');
+        submitExam(true,'blur');
+      }
+    }
+  });
+}
+bindGlobalScreenshotGuard();
+window.addEventListener('beforeprint',()=>{
+  if(activeExamState&&!activeExamState.submitted){
+    toast('⚠️ الطباعة ممنوعة أثناء الامتحان — سيتم التسليم');
+    submitExam(true,'print');
+  }
+});
+
 async function enforceSingleDevice(){
   if(A||IS_SUPERVISOR||!U)return true;
   try{
@@ -630,9 +690,33 @@ async function enforceSingleDevice(){
     return true;
   }catch(e){return true}
 }
+
+let banListenerBound=false;
 function renderBanned(ban){
+  if(showingBan)return;
   showingBan=true;
-  document.body.innerHTML=`<div class="ban-screen"><div class="box-max"><h1>⛔ تم حظر حسابك</h1><p>${esc(ban.reason||'تم إيقاف الحساب بقرار من إدارة المنصة.')}<br>حسابك مسجّل على: <b>${esc(ban.oldDeviceLabel||'جهاز سابق')}</b><br>حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>تواصل مع المدير لفك الحظر.</p><p style="font-size:12px;color:var(--mu)">الحساب: ${esc(ban.email||'')}</p><button onclick="out()">خروج</button></div></div>`;
+  try{stopHB();destroyPlayer();clearListeners();cleanupExam();disarmScreenshotGuard()}catch(e){}
+  document.body.innerHTML=`<div class="ban-screen"><div class="box-max">
+    <h1>⛔ تم حظر حسابك</h1>
+    <p>${esc(ban.reason||'تم إيقاف الحساب بقرار من إدارة المنصة.')}<br>
+    حسابك مسجّل على: <b>${esc(ban.oldDeviceLabel||'جهاز سابق')}</b><br>
+    حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>
+    تواصل مع المدير لفك الحظر.</p>
+    <p style="font-size:12px;color:var(--mu);margin-bottom:20px">الحساب: ${esc(ban.email||ban.phone||'')}</p>
+    <button onclick="outBan()">خروج</button>
+  </div></div>`;
+  // استماع حي لرفع الحظر — يبقى ثابتًا حتى يضغط خروج
+  const target = ban.phone ? 'bansByPhone/'+normPhone(ban.phone) : 'bans/'+U.uid;
+  try{
+    const un=onValue(R(target),snap=>{
+      if(!snap.val()){try{un()}catch(e){};location.reload()}
+    },()=>{});
+  }catch(e){}
+}
+function outBan(){
+  if(!confirm('تسجيل الخروج من الحساب المحظور؟'))return;
+  try{signOut(auth).catch(()=>{});}catch(e){}
+  setTimeout(()=>location.reload(),400);
 }
 
 function clearListeners(){
@@ -959,9 +1043,8 @@ onAuthStateChanged(auth,async u=>{
   const gen=++authGeneration;
   clearListeners();
   stopHB();
-  U=u;myPhoto='';myPhone='';userGrade='';
+  U=u;myPhoto='';myPhone='';userGrade='';showingBan=false;
   if(!u){
-    if(showingBan){location.reload();return}
     teachers={};videos={};library={};news={};badge='';mineVideos={};
     notifications={};ownNotifications={};broadcastNotifications={};adminNotifications={};supportTickets={};allExamAttempts={};
     IS_SUPERVISOR=false;A=false;S={v:'home'};myLogs={};exams={};examAttempts={};
@@ -972,26 +1055,28 @@ onAuthStateChanged(auth,async u=>{
   try{
     const userData=await G('users/'+u.uid);
     if(gen!==authGeneration)return;
-    A=ADMIN_PHONES.includes(userData?.phone||'');
-    IS_SUPERVISOR=userData?.isSupervisor===true;
+    A=isAdminPhone(userData?.phone||'');
+    IS_SUPERVISOR=userData?.isSupervisor===true && !A;
     myPhoto=userData?.photo||'';
     myPhone=userData?.phone||'';
     userGrade=userData?.grade||'';
     if(!A&&!IS_SUPERVISOR){
+      // حظر بالـ UID أو بالهاتف — ثابت حتى الخروج
       if(userData?.phone){
-        const phoneBanRef='bansByPhone/'+normPhone(userData.phone);
-        unsubs.push(onValue(R(phoneBanRef),snap=>{const liveBan=snap.val();if(liveBan&&!showingBan){renderBanned(liveBan);signOut(auth).catch(()=>{});}},()=>{}));
+        unsubs.push(onValue(R('bansByPhone/'+normPhone(userData.phone)),snap=>{
+          const liveBan=snap.val();
+          if(liveBan)renderBanned(liveBan);
+        },()=>{}));
       }
-      unsubs.push(onValue(R('bans/'+u.uid),snap=>{const liveBan=snap.val();if(liveBan&&!showingBan){renderBanned(liveBan);signOut(auth).catch(()=>{});}},()=>{}));
+      unsubs.push(onValue(R('bans/'+u.uid),snap=>{
+        const liveBan=snap.val();
+        if(liveBan)renderBanned(liveBan);
+      },()=>{}));
       const phoneBan=userData?.phone?await G('bansByPhone/'+normPhone(userData.phone)):null;
-      if(phoneBan){renderBanned(phoneBan);unsubs.push(onValue(R('bansByPhone/'+normPhone(userData.phone)),snap=>{if(!snap.val())location.reload()},()=>{}));hideOverlay();return}
+      if(phoneBan){renderBanned(phoneBan);hideOverlay();return}
       const ban=await G('bans/'+u.uid);
       if(gen!==authGeneration)return;
-      if(ban){
-        renderBanned(ban);
-        unsubs.push(onValue(R('bans/'+u.uid),snap=>{if(!snap.val())location.reload()},()=>{}));
-        hideOverlay();return;
-      }
+      if(ban){renderBanned(ban);hideOverlay();return}
       const ok=await enforceSingleDevice();
       if(gen!==authGeneration)return;
       if(!ok){
@@ -1118,7 +1203,7 @@ async function delNoti(key){
   }catch(e){toast('تعذر المسح')}
 }
 async function clearAllMyNotis(){
-  if(!confirm('مسح كل الإشعارات؟'))return;
+  if(!confirm('مسح كل الإشعارات من عندك؟ (لن تُحذف من قاعدة البيانات للجميع)'))return;
   try{
     if(A){await remove(R('adminNotifications'))}
     else{
@@ -1133,7 +1218,7 @@ async function clearAllMyNotis(){
 function vAuth(){
   return `<div class="auth-container">
     <h1>Σ سيجما</h1>
-    <p>منصة سيجما التعليمية</p><span class="b">الإصدار 2.2.0</span>
+    <p>منصة سيجما التعليمية</p><span class="b">الإصدار 2.3.0</span>
     <div style="margin-top:30px;">
       <div class="auth-form" id="phone-register">
         <label for="reg-name">الاسم الرباعي</label>
@@ -1373,14 +1458,43 @@ function toggleFav(id){
   if(S.v==='myFavs'||S.v==='teacher')render();
 }
 
+/* ================== الإعدادات المختصرة ================== */
 async function vSettings(){
   const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
   const canNotify=!!hasNotifApi()&&Notification.permission!=='granted';
   const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
   const favCount=Object.keys(favs.get()).length;
-  const statsBlock=(!A&&!IS_SUPERVISOR)?await buildStudentStats():'';
-  const gradeBlock=(!A&&!IS_SUPERVISOR)?`<div class="box"><h2>🎓 الصف الدراسي</h2><p style="color:var(--tx2);margin-bottom:10px">اختر صفك الدراسي لتظهر لك المحتويات المناسبة.</p><select id="student-grade"><option value="">اختر الصف</option>${ALL_GRADES.map(g=>`<option value="${esc(g)}" ${userGrade===g?'selected':''}>${esc(g)}</option>`).join('')}</select><button onclick="saveStudentGrade()">حفظ الصف</button></div>`:'';
-  const supportBlock=`<div class="box"><h2>📩 الشكاوى والاستفسارات</h2><p style="color:var(--tx2);margin-bottom:12px">اكتب رسالتك وستصل مباشرة إلى إدارة المنصة.</p><label for="support-subject">عنوان الرسالة</label><input id="support-subject" maxlength="120" placeholder="مثال: مشكلة في الامتحان"><label for="support-message">تفاصيل الرسالة</label><textarea id="support-message" rows="4" maxlength="3000" placeholder="اشرح المشكلة أو الاستفسار..."></textarea><button onclick="sendSupportTicket()">إرسال للإدارة</button></div>`;
+  const gradeBlock=(!A&&!IS_SUPERVISOR)?`
+    <div class="box">
+      <h2>🎓 الصف الدراسي</h2>
+      <p style="color:var(--tx2);margin-bottom:10px">اختر صفك الدراسي لتظهر لك المحتويات المناسبة.</p>
+      <select id="student-grade">
+        <option value="">اختر الصف</option>
+        ${ALL_GRADES.map(g=>`<option value="${esc(g)}" ${userGrade===g?'selected':''}>${esc(g)}</option>`).join('')}
+      </select>
+      <button onclick="saveStudentGrade()" style="width:100%">حفظ الصف</button>
+    </div>`:'';
+  const passBlock=`
+    <div class="box">
+      <h2>🔐 تغيير كلمة المرور</h2>
+      <label for="current-pass">كلمة المرور الحالية</label>
+      <input type="password" id="current-pass" autocomplete="current-password" placeholder="كلمة المرور الحالية">
+      <label for="new-pass">كلمة المرور الجديدة</label>
+      <input type="password" id="new-pass" autocomplete="new-password" placeholder="••••••••">
+      <label for="confirm-pass">تأكيد كلمة المرور</label>
+      <input type="password" id="confirm-pass" autocomplete="new-password" placeholder="••••••••">
+      <button onclick="changePassword()" style="width:100%">حفظ كلمة المرور</button>
+    </div>`;
+  const supportBlock=`
+    <div class="box">
+      <h2>📩 تقديم شكوى / استفسار</h2>
+      <p style="color:var(--tx2);margin-bottom:12px">اكتب رسالتك وستصل مباشرة إلى إدارة المنصة.</p>
+      <label for="support-subject">عنوان الرسالة</label>
+      <input id="support-subject" maxlength="120" placeholder="مثال: مشكلة في الامتحان">
+      <label for="support-message">تفاصيل الرسالة</label>
+      <textarea id="support-message" rows="4" maxlength="3000" placeholder="اشرح المشكلة أو الاستفسار..."></textarea>
+      <button onclick="sendSupportTicket()" style="width:100%">إرسال للإدارة</button>
+    </div>`;
   return `<div class="box profile-card">
     <img src="${esc(photo)}" alt="صورة الملف الشخصي">
     <h2>${esc(U.displayName||'')}</h2>
@@ -1390,10 +1504,6 @@ async function vSettings(){
       <div class="settings-btn" onclick="document.getElementById('profile-photo-input').click()">
         <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
         <span>تغيير الصورة</span>
-      </div>
-      <div class="settings-btn" onclick="document.getElementById('new-pass').focus()">
-        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-        <span>تغيير كلمة المرور</span>
       </div>
       ${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myCodes')">
         <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
@@ -1413,23 +1523,26 @@ async function vSettings(){
       </div>
     </div>
   </div>
-  <div class="box">
-    <input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()" style="display:none">
-    <h3>🔐 تغيير كلمة المرور</h3><label for="current-pass">كلمة المرور الحالية</label><input type="password" id="current-pass" autocomplete="current-password" placeholder="كلمة المرور الحالية">
-    <label for="new-pass">كلمة المرور الجديدة</label>
-    <input type="password" id="new-pass" placeholder="••••••••">
-    <input type="password" id="confirm-pass" placeholder="تأكيد كلمة المرور">
-    <button onclick="changePassword()">حفظ</button>
-  </div>
-  ${gradeBlock}\n  ${supportBlock}\n  ${statsBlock}`;
+  <input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()" style="display:none">
+  ${gradeBlock}
+  ${passBlock}
+  ${supportBlock}`;
 }
-
 
 async function saveStudentGrade(){
   if(!U||A||IS_SUPERVISOR)return toast('غير متاح لهذا الحساب');
   const grade=$('#student-grade')?.value||'';
   if(!ALL_GRADES.includes(grade))return toast('اختر صفاً صحيحاً');
-  try{await update(R('users/'+U.uid),{grade});userGrade=grade;toast('تم حفظ الصف الدراسي');render()}catch(e){toast('تعذر حفظ الصف: '+(e.message||''))}
+  const btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent='جارٍ الحفظ...'}
+  try{
+    await update(R('users/'+U.uid),{grade});
+    userGrade=grade;
+    toast('تم حفظ الصف الدراسي ✅');
+    render();
+  }catch(e){
+    toast('تعذر حفظ الصف: '+(e.message||''));
+    if(btn){btn.disabled=false;btn.textContent='حفظ الصف'}
+  }
 }
 
 async function sendSupportTicket(){
@@ -1439,6 +1552,7 @@ async function sendSupportTicket(){
   if(subject.length<3)return toast('اكتب عنواناً واضحاً (3 أحرف على الأقل)');
   if(message.length<10)return toast('اكتب تفاصيل أكثر (10 أحرف على الأقل)');
   if(subject.length>120||message.length>3000)return toast('الرسالة أطول من الحد المسموح');
+  const btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent='جارٍ الإرسال...'}
   const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   try{
     await set(R('supportTickets/'+id),{
@@ -1446,25 +1560,48 @@ async function sendSupportTicket(){
       phone:String(myPhone||'').slice(0,20),subject,message,
       status:'open',createdAt:Date.now()
     });
-    $('#support-subject').value='';$('#support-message').value='';
+    const sj=$('#support-subject'),ms=$('#support-message');
+    if(sj)sj.value='';if(ms)ms.value='';
     toast('تم إرسال رسالتك للإدارة بنجاح ✅');
-  }catch(e){toast('تعذر إرسال الرسالة. تحقق من الاتصال والصلاحيات.')}
+    if(btn){btn.disabled=false;btn.textContent='إرسال للإدارة'}
+  }catch(e){
+    toast('تعذر إرسال الرسالة. تحقق من الاتصال والصلاحيات.');
+    if(btn){btn.disabled=false;btn.textContent='إرسال للإدارة'}
+  }
 }
+
 async function vAdminSupport(){
   if(!A)return '<div class="mut">هذه الصفحة متاحة للإدارة فقط.</div>';
   const rows=Object.entries(supportTickets||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
   if(!rows.length)return '<h2>📩 الشكاوى والاستفسارات</h2><div class="mut">لا توجد رسائل حتى الآن.</div>';
-  return '<h2>📩 الشكاوى والاستفسارات ('+rows.length+')</h2>'+rows.map(([id,t])=>`<div class="box"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>${esc(t.subject||'بدون عنوان')}</b><span class="b ${t.status==='closed'?'g':'y'}">${t.status==='closed'?'مغلقة':'مفتوحة'}</span></div><p style="margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere">${esc(t.message||'')}</p><small style="color:var(--mu)">${esc(t.studentName||'طالب')} · ${esc(t.phone||'')} · ${fd(t.createdAt)}</small><div style="margin-top:12px"><button class="s" onclick="setSupportStatus('${esc(id)}','${t.status==='closed'?'open':'closed'}')">${t.status==='closed'?'إعادة فتح':'وضع كمغلقة'}</button><button class="d" onclick="deleteSupportTicket('${esc(id)}')">حذف نهائي</button></div></div>`).join('');
+  return '<h2>📩 الشكاوى والاستفسارات ('+rows.length+')</h2>'+rows.map(([id,t])=>`<div class="box">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <b>${esc(t.subject||'بدون عنوان')}</b>
+      <span class="b ${t.status==='closed'?'g':'y'}">${t.status==='closed'?'مغلقة':'مفتوحة'}</span>
+    </div>
+    <p style="margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere">${esc(t.message||'')}</p>
+    <small style="color:var(--mu)">${esc(t.studentName||'طالب')} · ${esc(t.phone||'')} · ${fd(t.createdAt)}</small>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="s" onclick="setSupportStatus('${esc(id)}','${t.status==='closed'?'open':'closed'}')">${t.status==='closed'?'إعادة فتح':'وضع كمغلقة'}</button>
+      <button class="d" onclick="deleteSupportTicket('${esc(id)}')">حذف نهائي</button>
+    </div>
+  </div>`).join('');
 }
 async function deleteSupportTicket(id){
   if(!A)return toast('غير مصرح');
   if(!confirm('حذف الشكوى نهائياً؟ لا يمكن التراجع عن ذلك.'))return;
-  try{await remove(R('supportTickets/'+id));toast('تم حذف الشكوى نهائياً');render()}catch(e){toast('تعذر حذف الشكوى')}
+  try{
+    await remove(R('supportTickets/'+id));
+    delete supportTickets[id];
+    toast('تم حذف الشكوى نهائياً');
+    if(S.v==='admin'&&S.tab==='support')render();
+  }catch(e){toast('تعذر حذف الشكوى')}
 }
 async function setSupportStatus(id,status){
   if(!A)return toast('غير مصرح');
-  try{await update(R('supportTickets/'+id),{status,updatedAt:Date.now()});toast('تم تحديث حالة الرسالة');}
-  catch(e){toast('تعذر تحديث الرسالة');}
+  if(!['open','closed'].includes(status))return toast('حالة غير صحيحة');
+  try{await update(R('supportTickets/'+id),{status,updatedAt:Date.now()});toast('تم تحديث حالة الرسالة')}
+  catch(e){toast('تعذر تحديث الرسالة')}
 }
 
 async function buildStudentStats(){
@@ -1565,7 +1702,9 @@ async function updateProfilePhoto(){
     toast('جارٍ رفع الصورة...');
     const data=await img(f,200);
     await update(R('users/'+U.uid),{photo:data});
-    myPhoto=data;await updateProfile(auth.currentUser,{photoURL:data}).catch(()=>{});if(input)input.value='';
+    myPhoto=data;
+    await updateProfile(auth.currentUser,{photoURL:data}).catch(()=>{});
+    if(input)input.value='';
     toast('تم تحديث الصورة بنجاح');
     render();
   }catch(e){toast('تعذر تحديث الصورة: '+e.message)}
@@ -1829,7 +1968,14 @@ function vLibrary(){
 function previewNewsImage(src){
   if(!src)return;
   let m=document.getElementById('news-image-preview');
-  if(!m){m=document.createElement('div');m.id='news-image-preview';m.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:18px;';m.onclick=(e)=>{if(e.target===m||e.target.tagName==='BUTTON')m.remove()};m.innerHTML='<button aria-label="إغلاق" style="position:absolute;top:16px;right:16px;font-size:28px;background:#fff;color:#111;border:0;border-radius:50%;width:44px;height:44px">×</button><img alt="معاينة الصورة" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain">';document.body.appendChild(m)}
+  if(!m){
+    m=document.createElement('div');
+    m.id='news-image-preview';
+    m.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:18px;';
+    m.onclick=(e)=>{if(e.target===m||e.target.tagName==='BUTTON')m.remove()};
+    m.innerHTML='<button aria-label="إغلاق" style="position:absolute;top:16px;right:16px;font-size:28px;background:#fff;color:#111;border:0;border-radius:50%;width:44px;height:44px">×</button><img alt="معاينة الصورة" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain">';
+    document.body.appendChild(m);
+  }
   m.querySelector('img').src=src;
 }
 
@@ -1844,7 +1990,7 @@ function vNews(){
       else if(e.t==='v')embedHTML=`<div class="embed-box"><video src="${esc(e.s)}" controls playsinline preload="metadata"></video></div>`;
     }
     return`<div class="news-card">
-      ${item.photo?`<img src="${esc(item.photo)}" alt="صورة الخبر" onclick="previewNewsImage(this.src)" style="cursor:zoom-in;max-width:100%;height:auto;max-height:none;object-fit:contain">`:''}
+      ${item.photo?`<img src="${esc(item.photo)}" alt="صورة الخبر" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}
       ${embedHTML}
       ${item.text?`<div class="news-text">${esc(item.text)}</div>`:''}
       <div class="news-date">${fd(item.created)}</div>
@@ -1872,7 +2018,7 @@ async function vAdmin(){
   if(effTab==='support')return tb+await vAdminSupport();
   if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية. ليس لها علاقة بالصور الشخصية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
   if(effTab==='bans')return tb+await renderBans();
-  if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" onclick="previewNewsImage(this.src)" style="cursor:zoom-in;max-width:100%;height:auto;max-height:320px;object-fit:contain">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
+  if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
 
   const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
   const vidList=Object.entries(videos).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
@@ -1906,7 +2052,7 @@ async function vAdminExams(){
     html+=`<div class="mut">لا توجد امتحانات بعد.</div>`;
   }else{
     html+=list.map(([id,e])=>{
-      const attempts=Math.max(Object.values(e.attempts||{}).length,Object.values(allExamAttempts||{}).filter(byExam=>!!byExam?.[id]).length);
+      const attempts=Object.values(e.attempts||{}).length;
       return `<div class="exam-card">
         <h3>${esc(e.title)}</h3>
         <div class="exam-meta">
@@ -1924,7 +2070,7 @@ async function vAdminExams(){
       </div>`;
     }).join('');
   }
-  setTimeout(()=>{if(!document.querySelector('.q-builder-item'))addQuestion()},50);
+  setTimeout(()=>{if(!document.querySelector('.q-builder-item'))addQuestion()},60);
   return html;
 }
 
@@ -1997,6 +2143,7 @@ async function doCreateExam(){
   const grade=document.getElementById('exGrade')?.value||'';
   const duration=Math.min(180,Math.max(1,(+document.getElementById('exDuration')?.value)||30));
   if(!title)return toast('اكتب عنوان الامتحان');
+  if(!ALL_GRADES.includes(grade))return toast('الصف غير صحيح');
   const questions=[];
   const items=document.querySelectorAll('.q-builder-item');
   if(!items.length)return toast('أضف سؤالاً واحداً على الأقل');
@@ -2032,16 +2179,17 @@ async function doCreateExam(){
   }catch(e){toast('تعذر الحفظ: '+(e.code||e.message))}
 }
 async function toggleExamDisabled(id){
+  if(!A&&!IS_SUPERVISOR)return toast('غير مصرح');
   const e=exams[id];if(!e)return;
   try{await update(R('exams/'+id),{disabled:!e.disabled});toast(e.disabled?'تم التفعيل':'تم الإيقاف');render()}
   catch(err){toast('تعذر التعديل')}
 }
 async function delExam(id){
+  if(!A&&!IS_SUPERVISOR)return toast('غير مصرح');
   if(!confirm('حذف الامتحان وكل محاولاته؟'))return;
   try{await remove(R('exams/'+id));toast('تم الحذف');render()}
   catch(e){toast('تعذر الحذف')}
 }
-
 
 async function reopenStudentExam(examId,uid){
   if(!A){toast('إعادة فتح المحاولة متاحة للإدارة فقط');return}
@@ -2105,7 +2253,7 @@ async function vExams(){
       <div class="mut">
         <svg viewBox="0 0 24 24" style="width:70px;height:70px;fill:var(--bd);margin-bottom:16px"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
         <p>لا توجد امتحانات متاحة لصفك حالياً.</p>
-        ${!myGrade?'<p style="font-size:12px;margin-top:8px">(لم يتم تحديد صفك بعد — تواصل مع الإدارة)</p>':''}
+        ${!myGrade?'<p style="font-size:12px;margin-top:8px">(لم يتم تحديد صفك بعد — حدد صفك من الإعدادات)</p>':''}
       </div>`;
   }
   return `<h2>📝 الامتحانات المتاحة</h2>` + list.map(([id,e])=>{
@@ -2139,6 +2287,7 @@ function vTakeExam(){
   const att=examAttempts[S.id];
   if(att)return vExamResult();
   cleanupExam();
+  armScreenshotGuard();
   activeExamState={
     id:S.id,
     startedAt:Date.now(),
@@ -2148,17 +2297,62 @@ function vTakeExam(){
   };
   const questions=e.questions||[];
   const preventCopy=ev=>{ev.preventDefault();return false};
+  const preventKeys=ev=>{
+    const k=(ev.key||'').toLowerCase();
+    if(k==='printscreen'||(ev.metaKey&&ev.shiftKey&&(k==='3'||k==='4'||k==='5'))||(ev.ctrlKey&&(k==='p'||k==='s'))){
+      ev.preventDefault();
+    }
+  };
+  const onVis=()=>{
+    if(document.hidden && activeExamState && !activeExamState.submitted){
+      activeExamState.violations++;
+      toast('⚠️ تم تسجيل خروجك من التبويب — سيتم التسليم تلقائياً');
+      submitExam(true,'visibility');
+    }
+  };
+  const onBlur=()=>{
+    if(activeExamState && !activeExamState.submitted){
+      activeExamState.violations++;
+      toast('⚠️ فقدت التركيز — سيتم التسليم تلقائياً');
+      submitExam(true,'blur');
+    }
+  };
+  const onUnload=(ev)=>{
+    if(activeExamState && !activeExamState.submitted){
+      activeExamState.violations++;
+      try{submitExam(true,'unload')}catch(e){}
+    }
+  };
+  const onScreenshotKey=(ev)=>{
+    const k=(ev.key||'').toLowerCase();
+    if(k==='printscreen'){
+      ev.preventDefault();
+      if(activeExamState && !activeExamState.submitted){
+        activeExamState.violations++;
+        toast('⚠️ محاولة لقطة شاشة — سيتم التسليم');
+        submitExam(true,'screenshot');
+      }
+    }
+  };
   document.addEventListener('copy',preventCopy);
   document.addEventListener('cut',preventCopy);
   document.addEventListener('paste',preventCopy);
   document.addEventListener('contextmenu',preventCopy);
-  const onVis=()=>{
-    if(document.hidden && activeExamState && !activeExamState.submitted){
-      activeExamState.violations++;
-      toast('⚠️ تم تسجيل خروجك من التبويب — المخالفة رقم '+activeExamState.violations);
-    }
-  };
   document.addEventListener('visibilitychange',onVis);
+  window.addEventListener('blur',onBlur);
+  window.addEventListener('pagehide',onUnload);
+  window.addEventListener('keydown',onScreenshotKey,true);
+  examGuardCleanup=()=>{
+    try{document.removeEventListener('copy',preventCopy)}catch(e){}
+    try{document.removeEventListener('cut',preventCopy)}catch(e){}
+    try{document.removeEventListener('paste',preventCopy)}catch(e){}
+    try{document.removeEventListener('contextmenu',preventCopy)}catch(e){}
+    try{document.removeEventListener('visibilitychange',onVis)}catch(e){}
+    try{window.removeEventListener('blur',onBlur)}catch(e){}
+    try{window.removeEventListener('pagehide',onUnload)}catch(e){}
+    try{window.removeEventListener('keydown',onScreenshotKey,true)}catch(e){}
+    disarmScreenshotGuard();
+  };
   const startMs=Date.now();
   const totalMs=e.duration*60*1000;
   activeExamTimer=setInterval(()=>{
@@ -2175,7 +2369,7 @@ function vTakeExam(){
     if(left<=0){
       clearInterval(activeExamTimer);
       toast('⏰ انتهى وقت الامتحان — يتم التسليم تلقائياً');
-      submitExam(true);
+      submitExam(true,'timeout');
     }
   },250);
 
@@ -2239,12 +2433,12 @@ function recordAnswer(i,val){
 
 function confirmExitExam(){
   if(!activeExamState)return go('exams');
-  if(!confirm('هل تريد الخروج من الامتحان؟ سيتم اعتبار محاولتك ملغاة.'))return;
-  cleanupExam();
-  go('exams');
+  if(!confirm('هل تريد الخروج من الامتحان؟ سيتم تسليم محاولتك تلقائياً.'))return;
+  submitExam(true,'exit');
 }
 function cleanupExam(){
   if(activeExamTimer){clearInterval(activeExamTimer);activeExamTimer=null}
+  if(examGuardCleanup){try{examGuardCleanup()}catch(e){};examGuardCleanup=null}
   if(activeExamState){
     const st=activeExamState;
     activeExamState=null;
@@ -2252,13 +2446,15 @@ function cleanupExam(){
   }
 }
 
-async function submitExam(force){
+let submitLock=false;
+async function submitExam(force,reason){
   const st=activeExamState;
-  if(!st||st.submitted)return;
+  if(!st||st.submitted||submitLock)return;
   if(!force && !confirm('هل أنت متأكد من تسليم الامتحان؟ لا يمكنك التعديل بعدها.'))return;
+  submitLock=true;
   st.submitted=true;
   const e=exams[st.id];
-  if(!e){cleanupExam();return}
+  if(!e){cleanupExam();submitLock=false;return}
   const questions=e.questions||[];
   let correct=0;
   const answers=[];
@@ -2279,17 +2475,19 @@ async function submitExam(force){
     score, answers, timeTaken,
     violations:st.violations,
     submittedAt:Date.now(),
-    autoSubmit:!!force
+    autoSubmit:!!force,
+    reason:reason||''
   };
   const examId=st.id;
   try{
     await set(R('examAttempts/'+U.uid+'/'+examId),attempt);
   }catch(err){
-    st.submitted=false;
-    toast('تعذر حفظ الإجابة بسبب الاتصال أو صلاحيات قاعدة البيانات. لا تغلق الصفحة وحاول التسليم مرة أخرى.');
+    st.submitted=false;submitLock=false;
+    toast('تعذر حفظ الإجابة بسبب الاتصال أو صلاحيات قاعدة البيانات. حاول مرة أخرى.');
     return;
   }
   cleanupExam();
+  submitLock=false;
   examAttempts[examId]=attempt;
   go('examResult',examId);
 }
@@ -2336,29 +2534,60 @@ async function doAddNews(){
   }catch(e){toast('تعذر نشر الخبر: '+e.message)}
 }
 async function delNews(id){
+  if(!A&&!IS_SUPERVISOR)return toast('غير مصرح');
   if(!confirm('حذف هذا الخبر؟'))return;
   try{await remove(R('news/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
 }
+
+/* ================== الطلاب — أزرار مدمجة ================== */
 async function vAdminStudents(){
   if(!A)return'<div class="mut">غير مصرح.</div>';
   const users=(await G('users'))||{};
+  const bans=(await G('bans'))||{};
   const arr=Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   if(!arr.length)return'<div class="mut">لا يوجد طلاب مسجلون بعد.</div>';
   let html=`<div class="box"><label for="searchStudent">بحث سريع (بالاسم / الهاتف / الكود)</label><input id="searchStudent" placeholder="اكتب الاسم، الهاتف، أو الكود..." oninput="filterStudents(this.value)"></div>
-  <h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الصف</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>`;
+  <h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الصف</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>`;
   for(const u of arr){
     const isSup=u.isSupervisor===true;
-    const isAdmin=ADMIN_PHONES.includes(u.phone||'');
+    const isAdmin=isAdminPhone(u.phone||'');
+    const isBanned=!!(bans[u.id]||(u.phone&&(bans[u.phone])));
     const codesStr=Object.values(u.videos||{}).join(' ');
     html+=`<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)} ${esc(codesStr)}">
       <td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td>
       <td dir="ltr">${esc(u.phone||'-')}</td>
       <td>${u.grade?`<span class="b">${esc(u.grade)}</span>`:'<span class="b y">غير محدد</span>'}</td>
-      <td>${isAdmin?'<span class="b r">أدمن</span>':isSup?'<span class="b y">مشرف</span>':u.banned?'<span class="b r">محظور</span>':'<span class="b">طالب</span>'}</td>
-      <td>${!isAdmin?`<button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="setGrade('${esc(u.id)}')">تحديد الصف</button><button class="s" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="toggleSupervisor('${esc(u.id)}', ${isSup})">${isSup?'إلغاء الإشراف':'تعيين مشرف'}</button><button class="${u.banned?'g':'d'}" style="padding:4px 8px;font-size:12px;margin-left:4px" onclick="${u.banned?`unbanStudent('${esc(u.id)}')`:`banStudent('${esc(u.id)}')`}">${u.banned?'فك الحظر':'حظر بالرقم'}</button><button class="d" style="padding:4px 8px;font-size:12px" onclick="delUser('${esc(u.id)}')">حذف</button>`:''}</td>
+      <td>${isAdmin?'<span class="b r">أدمن</span>':isSup?'<span class="b y">مشرف</span>':isBanned?'<span class="b r">محظور</span>':'<span class="b">طالب</span>'}</td>
+      <td>
+        <div style="position:relative;display:inline-block">
+          <button class="s" style="padding:6px 12px;font-size:12px" onclick="toggleStudentMenu('${esc(u.id)}',event)">⋯ إجراءات</button>
+          <div id="menu_${esc(u.id)}" style="display:none;position:absolute;top:100%;right:0;z-index:30;background:var(--surface);border:1px solid var(--bd);border-radius:10px;box-shadow:var(--shadow-lg);min-width:190px;padding:6px;margin-top:4px">
+            <button class="s" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="setGrade('${esc(u.id)}')">🎓 تحديد الصف</button>
+            <button class="s" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="toggleSupervisor('${esc(u.id)}',${isSup})">${isSup?'🚫 إلغاء الإشراف':'⭐ تعيين مشرف'}</button>
+            ${isBanned
+              ?`<button class="g" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="unbanStudent('${esc(u.id)}')">♻️ فك الحظر</button>`
+              :`<button class="d" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="banStudent('${esc(u.id)}')">⛔ حظر كامل</button>`}
+            <button class="d" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px" onclick="delUser('${esc(u.id)}')">🗑️ حذف</button>
+          </div>
+        </div>
+      </td>
     </tr>`;
   }
   return html+`</tbody></table></div>`;
+}
+function toggleStudentMenu(uid,ev){
+  if(ev)ev.stopPropagation();
+  const m=document.getElementById('menu_'+uid);
+  if(!m)return;
+  const open=m.style.display==='block';
+  document.querySelectorAll('[id^="menu_"]').forEach(x=>{x.style.display='none'});
+  m.style.display=open?'none':'block';
+  if(!open){
+    const close=(e)=>{
+      if(!m.contains(e.target)){m.style.display='none';document.removeEventListener('click',close,true)}
+    };
+    setTimeout(()=>document.addEventListener('click',close,true),0);
+  }
 }
 function filterStudents(q){
   const query=String(q||'').toLowerCase();
@@ -2368,7 +2597,7 @@ function filterStudents(q){
 }
 async function setGrade(uid){
   if(!A)return toast('غير مصرح');
-  const grade=prompt('اكتب صف الطالب (مثلاً: الصف الأول الثانوي):');
+  const grade=prompt('اكتب صف الطالب (مثال: الصف الأول الثانوي):');
   if(!grade)return;
   if(!ALL_GRADES.includes(grade))return toast('الصف غير صحيح. اختر من: '+ALL_GRADES.join(' / '));
   try{await update(R('users/'+uid),{grade});toast('تم تحديد الصف');render()}catch(e){toast('تعذر الحفظ')}
@@ -2376,17 +2605,34 @@ async function setGrade(uid){
 async function banStudent(uid){
   if(!A)return toast('غير مصرح');
   const u=await G('users/'+uid);if(!u||!u.phone)return toast('لا يوجد رقم هاتف لهذا الطالب');
-  if(ADMIN_PHONES.includes(normPhone(u.phone)))return toast('لا يمكن حظر حساب إدارة');
+  if(isAdminPhone(u.phone))return toast('لا يمكن حظر حساب إدارة');
   const reason=prompt('سبب الحظر (اختياري):','مخالفة قواعد المنصة')||'قرار إداري';
-  if(!confirm('سيتم حظر الحساب المرتبط برقم '+u.phone+' ومنعه من الدخول. متابعة؟'))return;
-  const rec={uid,phone:normPhone(u.phone),name:u.name||'',reason,bannedAt:Date.now(),by:U.uid};
-  try{await Promise.all([set(R('bans/'+uid),rec),set(R('bansByPhone/'+normPhone(u.phone)),rec),update(R('users/'+uid),{banned:true})]);toast('تم حظر الطالب بالرقم');render()}catch(e){toast('تعذر الحظر: '+(e.message||''))}
+  if(!confirm('سيتم حظر الحساب بالكامل (UID + رقم الهاتف) ومنعه من الدخول. متابعة؟'))return;
+  const rec={uid,phone:normPhone(u.phone),name:u.name||'',email:u.email||'',photo:u.photo||'',reason,bannedAt:Date.now(),by:U.uid};
+  try{
+    await Promise.all([
+      set(R('bans/'+uid),rec),
+      set(R('bansByPhone/'+normPhone(u.phone)),rec),
+      update(R('users/'+uid),{banned:true})
+    ]);
+    toast('تم حظر الطالب بالكامل ✅');
+    if(S.v==='admin'&&S.tab==='students')render();
+  }catch(e){toast('تعذر الحظر: '+(e.message||''))}
 }
 async function unbanStudent(uid){
   if(!A)return toast('غير مصرح');
   const u=await G('users/'+uid);if(!u)return toast('الطالب غير موجود');
   if(!confirm('فك الحظر عن هذا الطالب؟'))return;
-  try{await Promise.all([remove(R('bans/'+uid)),remove(R('bansByPhone/'+normPhone(u.phone||''))),update(R('users/'+uid),{banned:false})]);toast('تم فك الحظر');render()}catch(e){toast('تعذر فك الحظر')}
+  try{
+    const phone=normPhone(u.phone||'');
+    await Promise.all([
+      remove(R('bans/'+uid)).catch(()=>{}),
+      phone?remove(R('bansByPhone/'+phone)).catch(()=>{}):Promise.resolve(),
+      update(R('users/'+uid),{banned:false})
+    ]);
+    toast('تم فك الحظر بنجاح ✅');
+    if(S.v==='admin'&&S.tab==='students')render();
+  }catch(e){toast('تعذر فك الحظر: '+(e.message||''))}
 }
 
 async function vStudentProfile(){
@@ -2429,25 +2675,47 @@ async function delUser(uid){
   if(!confirm('هل أنت متأكد من حذف هذا المستخدم نهائياً؟'))return;
   try{
     const u=await G('users/'+uid);
-    if(u&&ADMIN_PHONES.includes(u.phone||''))return toast('لا يمكن حذف حساب الإدارة');
-    await remove(R('users/'+uid));toast('تم حذف المستخدم بنجاح');render();
+    if(u&&isAdminPhone(u.phone||''))return toast('لا يمكن حذف حساب الإدارة');
+    await remove(R('users/'+uid));
+    toast('تم حذف المستخدم بنجاح');
+    render();
   }catch(e){toast('تعذر حذف المستخدم')}
 }
+
 function vSendNotification(){
-  return`<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label for="notiText">نص الإشعار</label><textarea id="notiText" rows="3" placeholder="اكتب رسالتك هنا..."></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات</button></div></div>`;
+  return`<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p>
+    <label for="notiText">نص الإشعار</label>
+    <textarea id="notiText" rows="3" placeholder="اكتب رسالتك هنا..."></textarea>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button onclick="sendAdminNotification()">إرسال الإشعار</button>
+      <button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات (من القاعدة ومن الطلاب)</button>
+    </div>
+  </div>`;
 }
 function sendAdminNotification(){return once('notify',doSendNotification)}
 async function doSendNotification(){
   const text=$('#notiText')?.value.trim()||'';
   if(!text)return toast('اكتب نص الإشعار');
-  try{await set(R('notifications/all/'+Date.now()),{text,created:Date.now()});const el=$('#notiText');if(el)el.value='';toast('تم إرسال الإشعار بنجاح')}
-  catch(e){toast('تعذر إرسال الإشعار: '+(e.code||e.message))}
+  try{
+    await set(R('notifications/all/'+Date.now()),{text,created:Date.now()});
+    const el=$('#notiText');if(el)el.value='';
+    toast('تم إرسال الإشعار بنجاح');
+  }catch(e){toast('تعذر إرسال الإشعار: '+(e.code||e.message))}
 }
 async function clearAllNotifications(){
-  if(!confirm('هل أنت متأكد من حذف جميع الإشعارات للجميع؟'))return;
-  try{await remove(R('notifications/all'));toast('تم حذف جميع الإشعارات')}
-  catch(e){toast('تعذر حذف الإشعارات: '+(e.code||e.message))}
+  if(!A)return toast('غير مصرح');
+  if(!confirm('هل أنت متأكد من حذف جميع الإشعارات للجميع (من القاعدة ومن كل الطلاب)؟'))return;
+  try{
+    await remove(R('notifications/all'));
+    // مسح إشعارات كل طالب
+    const users=(await G('users'))||{};
+    const updates={};
+    Object.keys(users).forEach(uid=>{updates['notifications/'+uid]=null});
+    if(Object.keys(updates).length)await update(ref(db),updates).catch(()=>{});
+    toast('تم حذف جميع الإشعارات من القاعدة ومن الطلاب ✅');
+  }catch(e){toast('تعذر حذف الإشعارات: '+(e.code||e.message))}
 }
+
 async function renderBans(){
   const bans=(await G('bans'))||{};
   const entries=Object.values(bans);
@@ -2456,20 +2724,27 @@ async function renderBans(){
   return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box">
     <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
       ${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}
-      <div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||'')}</small></div>
+      <div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||b.phone||'')}</small></div>
       <span class="b r">محظور</span>
     </div>
-    <p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">الجهاز السابق: <b>${esc(b.oldDeviceLabel||'-')}</b><br>الجهاز الجديد: <b>${esc(b.newDeviceLabel||'-')}</b><br>وقت الحظر: ${fd(b.bannedAt)}</p>
+    <p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">السبب: ${esc(b.reason||'قرار إداري')}<br>وقت الحظر: ${fd(b.bannedAt)}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button><button class="s" onclick="keepBan()">تركه محظوراً</button></div>
   </div>`).join('');
 }
 async function unban(uid){
   if(!A)return toast('غير مصرح');
-  try{const u=await G('users/'+uid);const ops=[remove(R('bans/'+uid))];if(u?.phone){ops.push(remove(R('bansByPhone/'+normPhone(u.phone))));ops.push(update(R('users/'+uid),{banned:false}))}await Promise.all(ops);toast('تم فك الحظر');render()}catch(e){toast('تعذر فك الحظر')}
+  try{
+    const u=await G('users/'+uid);
+    const ops=[remove(R('bans/'+uid))];
+    if(u?.phone){ops.push(remove(R('bansByPhone/'+normPhone(u.phone))));ops.push(update(R('users/'+uid),{banned:false}))}
+    await Promise.all(ops);
+    toast('تم فك الحظر');render();
+  }catch(e){toast('تعذر فك الحظر')}
 }
 function keepBan(){toast('بقي محظوراً')}
 function addT(){return once('addT',doAddT)}
 async function doAddT(){
+  if(!A)return toast('غير مصرح');
   const n=$('#tn')?.value.trim()||'',f=$('#tp')?.files?.[0];
   if(!n)return toast('اكتب اسم المدرس');
   try{
@@ -2480,10 +2755,12 @@ async function doAddT(){
   }catch(e){toast('تعذر الإضافة: '+e.message)}
 }
 async function delT(id){
+  if(!A)return toast('غير مصرح');
   if(!confirm('حذف المدرس؟'))return;
   try{await remove(R('teachers/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
 }
 async function setB(){
+  if(!A)return toast('غير مصرح');
   const f=$('#bp')?.files?.[0];
   if(!f)return toast('اختر صورة');
   try{
@@ -2495,6 +2772,7 @@ async function setB(){
 }
 function addV(){return once('addV',doAddV)}
 async function doAddV(){
+  if(!A&&!IS_SUPERVISOR)return toast('غير مصرح');
   const v={
     teacherId:$('#vt')?.value||'',stage:$('#vs')?.value||'prep',grade:$('#vg')?.value||'',
     title:$('#vn')?.value.trim()||'',desc:$('#vd')?.value.trim()||'',url:$('#vu')?.value.trim()||'',
@@ -2502,6 +2780,7 @@ async function doAddV(){
   };
   if(!v.teacherId||!v.title||!v.url)return toast('أكمل الحقول');
   if(!/^https?:\/\//i.test(v.url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
+  if(!ALL_GRADES.includes(v.grade))return toast('الصف غير صحيح');
   const k='v'+Date.now();
   try{
     await set(R('videos/'+k),v);
@@ -2558,6 +2837,7 @@ function vEditLib(){
 }
 function saveEditT(id){return once('editT_'+id,()=>doSaveEditT(id))}
 async function doSaveEditT(id){
+  if(!A)return toast('غير مصرح');
   const n=$('#etn')?.value.trim()||'',f=$('#etp')?.files?.[0];
   if(!n)return toast('اكتب الاسم');
   try{
@@ -2569,6 +2849,7 @@ async function doSaveEditT(id){
 }
 function saveEditV(id){return once('editV_'+id,()=>doSaveEditV(id))}
 async function doSaveEditV(id){
+  if(!A)return toast('غير مصرح');
   const v=videos[id];if(!v)return;
   const nv={
     teacherId:$('#evt')?.value||'',stage:$('#evs')?.value||'prep',grade:$('#evg')?.value||'',
@@ -2577,6 +2858,7 @@ async function doSaveEditV(id){
   };
   if(!nv.teacherId||!nv.title||!nv.url)return toast('أكمل الحقول');
   if(!/^https?:\/\//i.test(nv.url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
+  if(!ALL_GRADES.includes(nv.grade))return toast('الصف غير صحيح');
   try{
     await update(R('videos/'+id),nv);
     try{
@@ -2610,6 +2892,7 @@ async function delLib(id){
 }
 function saveEditLib(id){return once('editLib_'+id,()=>doSaveEditLib(id))}
 async function doSaveEditLib(id){
+  if(!A)return toast('غير مصرح');
   const n=$('#eltn')?.value.trim()||'',d=$('#eltd')?.value.trim()||'',
     u=$('#eltu')?.value.trim()||'',f=$('#eltp')?.files?.[0];
   if(!n||!u)return toast('أكمل الحقول');
@@ -2642,6 +2925,7 @@ async function gen(vid,n,video){
 }
 function moreCodes(vid,one){return once('moreCodes_'+vid,()=>doMoreCodes(vid,one))}
 async function doMoreCodes(vid,one){
+  if(!A)return toast('غير مصرح');
   const n=one?1:Math.min((+($('#gn')?.value))||0,500);
   if(!n)return toast('اكتب العدد');
   toast('جارٍ التوليد...');
@@ -2649,11 +2933,13 @@ async function doMoreCodes(vid,one){
   catch(e){toast('تعذر التوليد')}
 }
 async function delV(id){
+  if(!A)return toast('غير مصرح');
   if(!confirm('حذف الفيديو؟'))return;
   try{await remove(R('videos/'+id));toast('تم الحذف');go('admin','','videos')}
   catch(e){toast('تعذر الحذف')}
 }
 async function toggleVid(id){
+  if(!A)return toast('غير مصرح');
   const v=videos[id];if(!v)return;
   const next=!v.disabled;
   if(!confirm(next?'إيقاف الأكواد؟':'إعادة التفعيل؟'))return;
@@ -2674,6 +2960,7 @@ const cp=async t=>{
   }catch(e){toast('تعذر النسخ تلقائياً؛ حاول تحديد النص ونسخه')}
 };
 async function copyFree(id){
+  if(!A)return toast('غير مصرح');
   try{
     const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
     const a=[];
@@ -2693,6 +2980,7 @@ async function copyFree(id){
   }catch(e){toast('تعذر جلب الأكواد')}
 }
 function exportPDF(vid){
+  if(!A)return toast('غير مصرح');
   const v=videos[vid];if(!v)return;
   const rows=[];
   document.querySelectorAll('#pdf-src tbody tr').forEach(tr=>{
@@ -2707,6 +2995,7 @@ function exportPDF(vid){
   setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
 }
 async function exportCodesPDF(vid) {
+  if(!A)return toast('غير مصرح');
   const v = videos[vid];
   if (!v) return;
   const s = await get(query(R('codes'), orderByChild('videoId'), equalTo(vid)));
@@ -2733,6 +3022,7 @@ async function exportCodesPDF(vid) {
 }
 
 async function vVid(){
+  if(!A)return'<div class="mut">غير مصرح.</div>';
   const id=S.id,v=videos[id];if(!v)return vAdmin();
   const cs=[];
   const snap=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
@@ -2772,11 +3062,13 @@ Object.assign(window,{
   go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,exportCodesPDF,
   toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,
   addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,
-  sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,sendSupportTicket,setSupportStatus,reopenStudentExam,
+  sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,sendSupportTicket,
+  setSupportStatus,deleteSupportTicket,reopenStudentExam,
   updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,
   filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword,setStatsFilter,
   filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,
-  recordAnswer,submitExam,confirmExitExam,setGrade
+  recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,
+  banStudent,unbanStudent,outBan,toggleStudentMenu
 });
 
 window.addEventListener('error',e=>{
