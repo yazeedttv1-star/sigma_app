@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="2.5.0">
+<meta name="application-version" content="2.6.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -422,7 +422,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-const APP_VERSION='2.5.0';
+const APP_VERSION='2.6.0';
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
 const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
@@ -528,8 +528,8 @@ let authGeneration=0;
 let examGuardCleanup=null;
 
 /* === حظر: مستمعون === */
-let banUnsubs=[];        // مستمعو شاشة الحظر (للطالب المحظور)
-let bansLiveUnsub=null;  // مستمعو تبويب الحظر في لوحة الأدمن
+let banUnsubs=[];
+let bansLiveUnsub=null;
 let bansLiveData={uid:{},phone:{}};
 
 const FAV_KEY='sigma-favs';
@@ -666,7 +666,7 @@ window.addEventListener('beforeprint',()=>{
   }
 });
 
-/* ================== حظر الجهازين ================== */
+/* ================== حظر الجهازين — نهائي ================== */
 async function enforceSingleDevice(){
   if(A||IS_SUPERVISOR||!U)return true;
   try{
@@ -677,13 +677,14 @@ async function enforceSingleDevice(){
     const now=Date.now();
     const existingDevice=cur.deviceId;
     const existingTs=cur.updatedAt||0;
+    // جهاز مختلف خلال 10 دقائق → حظر نهائي على الجهازين
     if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
       const rec={
         uid:U.uid,name:U.displayName||'',email:U.email||'',photo:'',
         phone:normPhone(myPhone||''),
         oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',
         newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,
-        reason:'تسجيل دخول من جهاز آخر'
+        reason:'تسجيل دخول من جهاز آخر — حظر نهائي'
       };
       const ops=[set(R('bans/'+U.uid),rec)];
       if(rec.phone)ops.push(set(R('bansByPhone/'+rec.phone),rec));
@@ -691,18 +692,17 @@ async function enforceSingleDevice(){
       return false;
     }
     await update(R('sessions/'+U.uid),{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});
-    const ban=await G('bans/'+U.uid);
-    if(ban&&ban.newDevice===devId)await remove(R('bans/'+U.uid));
     return true;
   }catch(e){return true}
 }
 
-/* ================== شاشة الحظر الثابتة ================== */
+/* ================== شاشة الحظر الثابتة 100% ================== */
 function renderBanned(ban){
   if(showingBan)return;
   if(ban&&(isAdminPhone(ban.phone||'')||ADMIN_PHONES.includes(normPhone(ban.phone||''))))return;
   showingBan=true;
   try{stopHB();destroyPlayer();clearListeners();cleanupExam();disarmScreenshotGuard()}catch(e){}
+  // شاشة ثابتة — بدون أي تحميل أو إعادة توجيه تلقائية
   document.body.innerHTML=`<div class="ban-screen"><div class="box-max">
     <h1>⛔ تم حظر حسابك</h1>
     <p>${esc(ban.reason||'تم إيقاف الحساب بقرار من إدارة المنصة.')}<br>
@@ -710,22 +710,28 @@ function renderBanned(ban){
     حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>
     تواصل مع المدير لفك الحظر.</p>
     <p style="font-size:12px;color:var(--mu);margin-bottom:20px">الحساب: ${esc(ban.email||ban.phone||'')}</p>
-    <button onclick="outBan()">خروج</button>
+    <button onclick="outBan()">تسجيل الخروج</button>
   </div></div>`;
   banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
   banUnsubs=[];
   const phone=normPhone(ban.phone||'');
+  // استماع حي: عند فك الحظر من الأدمن → إعادة تحميل مرة واحدة فقط
   let uidBanned=true,phoneBanned=true;
   let checkCount=0;
-  const maybeReload=()=>{
+  const tryUnlock=()=>{
     checkCount++;
-    if(checkCount<=1)return; // تجاهل أول إشارة (الحالة الأولية)
-    if(!uidBanned&&!phoneBanned)location.reload();
+    if(checkCount<=1)return;
+    if(!uidBanned&&!phoneBanned){
+      showingBan=false;
+      banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
+      banUnsubs=[];
+      location.reload();
+    }
   };
   try{
     const un1=onValue(R('bans/'+U.uid),snap=>{
       uidBanned=!!snap.val();
-      maybeReload();
+      tryUnlock();
     },()=>{});
     banUnsubs.push(un1);
   }catch(e){}
@@ -733,7 +739,7 @@ function renderBanned(ban){
     try{
       const un2=onValue(R('bansByPhone/'+phone),snap=>{
         phoneBanned=!!snap.val();
-        maybeReload();
+        tryUnlock();
       },()=>{});
       banUnsubs.push(un2);
     }catch(e){}
@@ -742,7 +748,7 @@ function renderBanned(ban){
   }
 }
 function outBan(){
-  if(!confirm('تسجيل الخروج من الحساب المحظور؟'))return;
+  if(!confirm('هل تريد تسجيل الخروج من الحساب المحظور؟'))return;
   banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
   banUnsubs=[];
   try{signOut(auth).catch(()=>{});}catch(e){}
@@ -1095,21 +1101,23 @@ onAuthStateChanged(auth,async u=>{
     userGrade=userData?.grade||'';
     if(!A&&!IS_SUPERVISOR){
       const phoneKey=userData?.phone?normPhone(userData.phone):'';
-      // 1) فحص أولي لأي حظر
+      // 1) فحص أولي: هل الطالب محظور بالفعل؟
       const phoneBan=phoneKey?await G('bansByPhone/'+phoneKey):null;
       if(gen!==authGeneration)return;
       if(phoneBan){renderBanned(phoneBan);hideOverlay();return}
       const ban=await G('bans/'+u.uid);
       if(gen!==authGeneration)return;
       if(ban){renderBanned(ban);hideOverlay();return}
-      // 2) فرض جهاز واحد
+      // 2) فرض جهاز واحد (قد يُحظر إذا كان جهازًا ثانيًا)
       const ok=await enforceSingleDevice();
       if(gen!==authGeneration)return;
       if(!ok){
         const b=await G('bans/'+u.uid);
         if(b){renderBanned(b);hideOverlay();return}
+        const pb=phoneKey?await G('bansByPhone/'+phoneKey):null;
+        if(pb){renderBanned(pb);hideOverlay();return}
       }
-      // 3) استماع حي على الحظرين — يظهر الحظر على الجهازين فورًا
+      // 3) استماع حي على الحظرين — إذا حُظر من جهاز آخر تظهر الشاشة فورًا
       if(phoneKey){
         unsubs.push(onValue(R('bansByPhone/'+phoneKey),snap=>{
           const liveBan=snap.val();
@@ -2213,7 +2221,7 @@ async function unban(uid){
     ];
     if(phone)ops.push(remove(R('bansByPhone/'+phone)).catch(()=>{}));
     await Promise.all(ops);
-    toast('تم فك الحظر من الجهازين ✅');
+    toast('تم فك الحظر من الجهازين ✅ — سيتمكن الطالب من الدخول');
     if(S.v==='admin'&&S.tab==='bans')renderBansLive();
   }catch(e){toast('تعذر فك الحظر')}
 }
