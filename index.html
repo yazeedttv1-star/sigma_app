@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="2.6.0">
+<meta name="application-version" content="2.7.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -422,7 +422,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-const APP_VERSION='2.6.0';
+const APP_VERSION='2.7.0';
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
 const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
@@ -531,6 +531,14 @@ let examGuardCleanup=null;
 let banUnsubs=[];
 let bansLiveUnsub=null;
 let bansLiveData={uid:{},phone:{}};
+
+/* === نشاط الطلاب === */
+let presenceUnsubs=[];
+let presenceData={};
+let presenceLiveUnsub=null;
+let presenceHeartbeat=null;
+let presenceSessionId=null;
+const PRESENCE_TTL=2*60*1000;
 
 const FAV_KEY='sigma-favs';
 const favs={
@@ -677,7 +685,6 @@ async function enforceSingleDevice(){
     const now=Date.now();
     const existingDevice=cur.deviceId;
     const existingTs=cur.updatedAt||0;
-    // جهاز مختلف خلال 10 دقائق → حظر نهائي على الجهازين
     if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
       const rec={
         uid:U.uid,name:U.displayName||'',email:U.email||'',photo:'',
@@ -702,7 +709,6 @@ function renderBanned(ban){
   if(ban&&(isAdminPhone(ban.phone||'')||ADMIN_PHONES.includes(normPhone(ban.phone||''))))return;
   showingBan=true;
   try{stopHB();destroyPlayer();clearListeners();cleanupExam();disarmScreenshotGuard()}catch(e){}
-  // شاشة ثابتة — بدون أي تحميل أو إعادة توجيه تلقائية
   document.body.innerHTML=`<div class="ban-screen"><div class="box-max">
     <h1>⛔ تم حظر حسابك</h1>
     <p>${esc(ban.reason||'تم إيقاف الحساب بقرار من إدارة المنصة.')}<br>
@@ -715,17 +721,18 @@ function renderBanned(ban){
   banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
   banUnsubs=[];
   const phone=normPhone(ban.phone||'');
-  // استماع حي: عند فك الحظر من الأدمن → إعادة تحميل مرة واحدة فقط
   let uidBanned=true,phoneBanned=true;
   let checkCount=0;
+  let handled=false;
   const tryUnlock=()=>{
     checkCount++;
     if(checkCount<=1)return;
-    if(!uidBanned&&!phoneBanned){
+    if(!uidBanned&&!phoneBanned&&!handled){
+      handled=true;
       showingBan=false;
       banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
       banUnsubs=[];
-      location.reload();
+      if(typeof window.__bootAfterUnban==='function')window.__bootAfterUnban();
     }
   };
   try{
@@ -751,8 +758,12 @@ function outBan(){
   if(!confirm('هل تريد تسجيل الخروج من الحساب المحظور؟'))return;
   banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
   banUnsubs=[];
+  try{clearPresence()}catch(e){}
   try{signOut(auth).catch(()=>{});}catch(e){}
-  setTimeout(()=>location.reload(),400);
+  setTimeout(()=>{
+    showingBan=false;
+    if(typeof window.__bootAfterUnban==='function')window.__bootAfterUnban();
+  },400);
 }
 
 function clearListeners(){
@@ -760,7 +771,11 @@ function clearListeners(){
   unsubs=[];
   banUnsubs.forEach(fn=>{try{fn()}catch(e){}});
   banUnsubs=[];
+  presenceUnsubs.forEach(fn=>{try{if(typeof fn==='function')fn()}catch(e){}});
+  presenceUnsubs=[];
   if(typeof bansLiveUnsub==='function'){try{bansLiveUnsub()}catch(e){};bansLiveUnsub=null}
+  if(typeof presenceLiveUnsub==='function'){try{presenceLiveUnsub()}catch(e){};presenceLiveUnsub=null}
+  stopPresenceHeartbeat();
 }
 function stopHB(){
   if(hb){clearInterval(hb);hb=null}
@@ -1058,6 +1073,7 @@ const go=(v,id,tab,filter)=>{
 const out=()=>{
   if(!confirm('هل تريد تسجيل الخروج من حسابك؟'))return;
   stopHB();destroyPlayer();clearListeners();cleanupExam();
+  try{clearPresence()}catch(e){}
   signOut(auth).catch(()=>{});
 };
 const inst=async()=>{if(!ip)return;ip.prompt();await ip.userChoice;ip=null;renderTopbar()};
@@ -1077,6 +1093,100 @@ function refreshNotifications(){
   if(dot){dot.textContent=unread>99?'99+':String(unread);dot.style.display=unread?'flex':'none'}
 }
 function hideOverlay(){setTimeout(()=>{const ov=$('#loading-overlay');if(ov)ov.classList.add('hide')},300)}
+
+/* ================== نشاط الطلاب (Presence) ================== */
+function ensureSessionId(){
+  if(!presenceSessionId){
+    presenceSessionId='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  }
+  return presenceSessionId;
+}
+async function sendPresenceBeat(){
+  if(!U||A||IS_SUPERVISOR)return;
+  try{
+    const sid=ensureSessionId();
+    await set(R('presence/'+U.uid),{
+      uid:U.uid,
+      name:U.displayName||'طالب',
+      phone:normPhone(myPhone||''),
+      grade:userGrade||'',
+      device:deviceLabel(),
+      sessionId:sid,
+      lastSeen:Date.now()
+    });
+  }catch(e){}
+}
+function startPresenceHeartbeat(){
+  stopPresenceHeartbeat();
+  if(!U||A||IS_SUPERVISOR)return;
+  sendPresenceBeat();
+  presenceHeartbeat=setInterval(()=>{
+    if(document.hidden)return;
+    sendPresenceBeat();
+  },45000);
+}
+function stopPresenceHeartbeat(){
+  if(presenceHeartbeat){clearInterval(presenceHeartbeat);presenceHeartbeat=null}
+}
+async function clearPresence(){
+  if(!U)return;
+  try{await remove(R('presence/'+U.uid))}catch(e){}
+}
+window.addEventListener('beforeunload',()=>{
+  try{clearPresence()}catch(e){}
+});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){/* لا نحذف فورًا — TTL يتكفل */}
+  else{if(U&&!A&&!IS_SUPERVISOR)sendPresenceBeat();}
+});
+
+/* ================== تبويب "الطلاب النشطون الآن" ================== */
+async function vAdminActive(){
+  if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
+  if(presenceLiveUnsub){try{presenceLiveUnsub()}catch(e){};presenceLiveUnsub=null}
+  const snap=await G('presence');
+  presenceData=snap||{};
+  const un=onValue(R('presence'),s=>{
+    presenceData=s.val()||{};
+    if(S.v==='admin'&&S.tab==='active')renderActiveLive();
+  },()=>{});
+  presenceLiveUnsub=()=>{try{un()}catch(e){}};
+  return `<div id="activeLiveBox">${buildActiveHTML()}</div>`;
+}
+function renderActiveLive(){
+  const box=document.getElementById('activeLiveBox');
+  if(box)box.innerHTML=buildActiveHTML();
+}
+function buildActiveHTML(){
+  const now=Date.now();
+  const list=Object.values(presenceData||{})
+    .filter(p=>p&&p.uid&&(now-(p.lastSeen||0))<=PRESENCE_TTL)
+    .sort((a,b)=>(b.lastSeen||0)-(a.lastSeen||0));
+  const note=`<div class="notice"><b>ملاحظة:</b> تُحدَّث هذه القائمة تلقائيًا بدون تحديث.<br>يُعتبر الطالب "نشطًا" إذا كانت آخر نبضة له خلال دقيقتين. تُحدَّث النبضة كل 45 ثانية.</div>`;
+  if(!list.length){
+    return note+`<div class="mut">لا يوجد طلاب نشطون الآن.</div>`;
+  }
+  const rows=list.map(p=>{
+    const secs=Math.max(0,Math.round((now-(p.lastSeen||0))/1000));
+    const since=secs<60?`${secs} ثانية`:`${Math.round(secs/60)} دقيقة`;
+    return `<tr>
+      <td><b>${esc(p.name||'-')}</b></td>
+      <td dir="ltr">${esc(p.phone||'-')}</td>
+      <td>${p.grade?`<span class="b">${esc(p.grade)}</span>`:'-'}</td>
+      <td><span class="b g">${esc(p.device||'-')}</span></td>
+      <td><span class="b y">${since}</span></td>
+    </tr>`;
+  }).join('');
+  return note+`
+    <div class="stats-summary">
+      <div class="stat-box ok"><div class="stat-num">${list.length}</div><div class="stat-label">طالب نشط الآن</div></div>
+    </div>
+    <h2>الطلاب النشطون الآن (${list.length})</h2>
+    <div class="tw"><table>
+      <thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>الجهاز</th><th>آخر نشاط</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
 
 onAuthStateChanged(auth,async u=>{
   const gen=++authGeneration;
@@ -1101,14 +1211,12 @@ onAuthStateChanged(auth,async u=>{
     userGrade=userData?.grade||'';
     if(!A&&!IS_SUPERVISOR){
       const phoneKey=userData?.phone?normPhone(userData.phone):'';
-      // 1) فحص أولي: هل الطالب محظور بالفعل؟
       const phoneBan=phoneKey?await G('bansByPhone/'+phoneKey):null;
       if(gen!==authGeneration)return;
       if(phoneBan){renderBanned(phoneBan);hideOverlay();return}
       const ban=await G('bans/'+u.uid);
       if(gen!==authGeneration)return;
       if(ban){renderBanned(ban);hideOverlay();return}
-      // 2) فرض جهاز واحد (قد يُحظر إذا كان جهازًا ثانيًا)
       const ok=await enforceSingleDevice();
       if(gen!==authGeneration)return;
       if(!ok){
@@ -1117,7 +1225,7 @@ onAuthStateChanged(auth,async u=>{
         const pb=phoneKey?await G('bansByPhone/'+phoneKey):null;
         if(pb){renderBanned(pb);hideOverlay();return}
       }
-      // 3) استماع حي على الحظرين — إذا حُظر من جهاز آخر تظهر الشاشة فورًا
+      startPresenceHeartbeat();
       if(phoneKey){
         unsubs.push(onValue(R('bansByPhone/'+phoneKey),snap=>{
           const liveBan=snap.val();
@@ -1611,6 +1719,7 @@ async function saveStudentGrade(){
   try{
     await update(R('users/'+U.uid),{grade});
     userGrade=grade;
+    sendPresenceBeat();
     toast('تم حفظ الصف الدراسي ✅');
     go('settings');
   }catch(e){
@@ -2078,7 +2187,7 @@ async function vAdmin(){
   if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
   const allowedTabs=A
-    ?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['support','الشكاوى والاستفسارات'],['send_notification','إرسال إشعار'],['bans','الحظر'],['badge','صورة التعريف']]
+    ?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['support','الشكاوى والاستفسارات'],['send_notification','إرسال إشعار'],['bans','الحظر'],['active','النشطون الآن'],['badge','صورة التعريف']]
     :[['videos','الفيديوهات'],['news','أخبار السنتر'],['exams','الامتحانات']];
   const effTab=allowedTabs.some(([k])=>k===tab)?tab:'videos';
   const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${effTab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
@@ -2093,6 +2202,7 @@ async function vAdmin(){
   if(effTab==='support')return tb+await vAdminSupport();
   if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية. ليس لها علاقة بالصور الشخصية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
   if(effTab==='bans')return tb+await vAdminBans();
+  if(effTab==='active')return tb+await vAdminActive();
   if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3" placeholder="اكتب تفاصيل الخبر هنا..."></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
 
   const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
@@ -3228,8 +3338,30 @@ Object.assign(window,{
   filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword,setStatsFilter,
   filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,
   recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,
-  banStudent,unbanStudent,outBan,toggleStudentMenu
+  banStudent,unbanStudent,outBan,toggleStudentMenu,
+  sendPresenceBeat,clearPresence
 });
+
+/* ================== إعادة تهيئة بعد فك الحظر (بدون reload) ================== */
+window.__bootAfterUnban=async function(){
+  try{
+    showingBan=false;
+    if(U){
+      if(!A&&!IS_SUPERVISOR){
+        const phoneKey=normPhone(myPhone||'');
+        const pb=phoneKey?await G('bansByPhone/'+phoneKey):null;
+        const b=await G('bans/'+U.uid);
+        if(pb){renderBanned(pb);return}
+        if(b){renderBanned(b);return}
+      }
+      render();
+      startPresenceHeartbeat();
+    }else{
+      render();
+    }
+    hideOverlay();
+  }catch(e){try{render()}catch(_){}}
+};
 
 window.addEventListener('error',e=>{
   try{console.warn('Global error caught:',e.message)}catch(_){}
@@ -3241,4 +3373,4 @@ window.addEventListener('unhandledrejection',e=>{
 render();
 </script>
 </body>
-</html>
+  </html>
