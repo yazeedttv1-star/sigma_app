@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="3.3.0">
+<meta name="application-version" content="3.4.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -371,12 +371,14 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile,updatePassword,EmailAuthProvider,reauthenticateWithCredential} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+import {getFunctions,httpsCallable} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
-const APP_VERSION='3.3.0';
+const APP_VERSION='3.4.0';
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
 const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
-const ADMIN_PHONES=["01147975962","01123543649","01147758295"];
+// أرقام محجوزة للإدارة: تمنع التسجيل بها. صلاحية الإدارة الفعلية تأتي من admins/{uid} فقط
+const RESERVED_PHONES=["01147975962","01123543649","01147758295"];
 const VAPID_KEY='BL3dfL6xBF8jnLy87cWLRwsoLAclt5HIWzkwa4R84L_GJ41vT2y2nBpFwgxPItJ2BmQej6_iZsegmidN6IVTREs';
 const PLAY_PATH='M8 5v14l11-7z';
 const PAUSE_PATH='M6 5h4v14H6zM14 5h4v14h-4z';
@@ -387,11 +389,16 @@ const FS_EXIT_PATH='M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-
 
 const app=initializeApp({apiKey:"AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",authDomain:"sigma-6f162.firebaseapp.com",databaseURL:"https://sigma-6f162-default-rtdb.firebaseio.com",projectId:"sigma-6f162",storageBucket:"sigma-6f162.firebasestorage.app",messagingSenderId:"420365348074",appId:"1:420365348074:web:0aaecb71ec613bb32abb93"});
 const auth=getAuth(app),db=getDatabase(app);
+const fx=getFunctions(app,"us-central1");
+const callFn=(name,data)=>httpsCallable(fx,name)(data).then(r=>r.data);
 let messaging=null;
 try{messaging=getMessaging(app)}catch(e){}
 setPersistence(auth,browserLocalPersistence).catch(()=>{});
 
 const R=p=>ref(db,p);
+// قراءة صارمة: ترمي خطأ عند الفشل بدل إرجاع null (فشل مغلق)
+const GS=async p=>(await get(R(p))).val();
+// قراءة متساهلة للبيانات غير الحساسة فقط
 const G=async p=>{try{return (await get(R(p))).val()}catch(e){return null}};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -401,7 +408,7 @@ const normPhone=s=>normDigits(s).replace(/[\s\-()]/g,'');
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const avatarOf=name=>'https://ui-avatars.com/api/?name='+encodeURIComponent(name||'U')+'&background=2563eb&color=fff&size=200';
 const hasNotifApi=()=>typeof window!=='undefined'&&'Notification' in window;
-const isAdminPhone=p=>ADMIN_PHONES.includes(normPhone(p||''));
+const isReservedPhone=p=>RESERVED_PHONES.includes(normPhone(p||''));
 const canPlayNow=()=>!A&&!IS_SUPERVISOR;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 const pendingOps=new Set();
@@ -616,29 +623,20 @@ window.addEventListener('blur',()=>{if(activeExamState&&!activeExamState.submitt
 bindGlobalScreenshotGuard();
 window.addEventListener('beforeprint',()=>{if(activeExamState&&!activeExamState.submitted){toast('الطباعة ممنوعة');submitExam(true,'print')}});
 
+// فحص الجهاز صار على الخادم (Cloud Function). فشل الاتصال = رفض الدخول
 async function enforceSingleDevice(){
-if(A||IS_SUPERVISOR||!U)return true;
-try{
-const devId=getDeviceId();
-const snap=await get(R('sessions/'+U.uid));
-const cur=snap.val()||{};
-const now=Date.now();
-const existingDevice=cur.deviceId,existingTs=cur.updatedAt||0;
-if(existingDevice&&existingDevice!==devId&&now-existingTs<10*60*1000){
-const rec={uid:U.uid,name:U.displayName||'',email:U.email||'',photo:'',phone:normPhone(myPhone||''),oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر — حظر نهائي'};
-const ops=[set(R('bans/'+U.uid),rec)];
-if(rec.phone)ops.push(set(R('bansByPhone/'+rec.phone),rec));
-await Promise.all(ops);
-return false;
-}
-await update(R('sessions/'+U.uid),{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});
-return true;
-}catch(e){return true}
+  try{
+    const res = await callFn('reportDeviceConflict', {action:'login', deviceId:getDeviceId(), deviceLabel:deviceLabel()});
+    if(res.banned) return {ok:false, ban:res.ban};
+    return {ok:true};
+  }catch(e){
+    return {ok:false, error:'تعذر التحقق من الجهاز، حاول مرة أخرى'};
+  }
 }
 
 function renderBanned(ban){
 if(showingBan)return;
-if(ban&&isAdminPhone(ban.phone||''))return;
+if(ban&&isReservedPhone(ban.phone||''))return;
 showingBan=true;
 try{stopHB();destroyPlayer();clearListeners();cleanupExam();disarmScreenshotGuard()}catch(e){}
 document.body.innerHTML=`<div class="ban-screen"><div class="box-max"><h1>تم حظر حسابك</h1><p>${esc(ban.reason||'تم إيقاف الحساب بقرار من إدارة المنصة.')}<br>حسابك مسجّل على: <b>${esc(ban.oldDeviceLabel||'جهاز سابق')}</b><br>حاول الدخول من: <b>${esc(ban.newDeviceLabel||'جهاز جديد')}</b><br><br>تواصل مع المدير لفك الحظر.</p><p style="font-size:12px;color:var(--mu);margin-bottom:20px">الحساب: ${esc(ban.email||ban.phone||'')}</p><button onclick="outBan()">تسجيل الخروج</button></div></div>`;
@@ -657,10 +655,10 @@ if(typeof window.__bootAfterUnban==='function')window.__bootAfterUnban();
 try{const un1=onValue(R('bans/'+U.uid),snap=>{uidBanned=!!snap.val();tryUnlock()},()=>{});banUnsubs.push(un1)}catch(e){}
 if(phone){try{const un2=onValue(R('bansByPhone/'+phone),snap=>{phoneBanned=!!snap.val();tryUnlock()},()=>{});banUnsubs.push(un2)}catch(e){}}else{phoneBanned=false}
 }
-function outBan(){
+async function outBan(){
 if(!confirm('هل تريد تسجيل الخروج من الحساب المحظور؟'))return;
 banUnsubs.forEach(fn=>{try{fn()}catch(e){}});banUnsubs=[];
-try{signOut(auth).catch(()=>{})}catch(e){}
+try{await signOut(auth)}catch(e){}
 setTimeout(()=>{showingBan=false;if(typeof window.__bootAfterUnban==='function')window.__bootAfterUnban()},400);
 }
 function clearListeners(){
@@ -832,16 +830,24 @@ document.addEventListener('webkitfullscreenchange',onFsChange);
 function isPlayingForTracking(){if(P.type==='embed')return !document.hidden;if(P.type)return pIsPlaying();return false}
 
 const go=(v,id,tab,filter)=>{
+const prev=S.v;
 stopHB();destroyPlayer();cleanupExam();
 S={v,id,tab:tab!==undefined?tab:S.tab,filter:filter!==undefined?filter:S.filter};
 document.body.classList.toggle('is-watching',v==='watch');
 window.scrollTo({top:0,behavior:'auto'});
 render();
+// بعد مغادرة صفحة المشاهدة نحدّث سجلات الطالب (لا نقرأ كل السجلات)
+if(prev==='watch'&&U&&!A&&!IS_SUPERVISOR){
+  loadMyLogs().then(()=>{if(S.v!=='watch')render()}).catch(()=>{});
+}
 };
-const out=()=>{
+const out=async()=>{
 if(!confirm('هل تريد تسجيل الخروج من حسابك؟'))return;
 stopHB();destroyPlayer();clearListeners();cleanupExam();
-signOut(auth).catch(()=>{});
+if(U&&!A&&!IS_SUPERVISOR){
+  try{await callFn('reportDeviceConflict',{action:'logout',deviceId:getDeviceId()})}catch(e){}
+}
+try{await signOut(auth)}catch(e){}
 };
 const inst=async()=>{if(!ip)return;ip.prompt();await ip.userChoice;ip=null;renderTopbar()};
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;if(U)renderTopbar()});
@@ -861,6 +867,14 @@ if(dot){dot.textContent=unread>99?'99+':String(unread);dot.style.display=unread?
 }
 function hideOverlay(){setTimeout(()=>{const ov=$('#loading-overlay');if(ov)ov.classList.add('hide')},300)}
 
+// سجلات الطالب: نقرأ فقط سجله في كل فيديو (القواعد تسمح بذلك)
+async function loadMyLogs(){
+  if(!U||A||IS_SUPERVISOR) return;
+  const vs=(await G('videos'))||{};
+  const entries=await Promise.all(Object.keys(vs).map(async vid=>[vid,await G(`logs/${vid}/${U.uid}`)]));
+  myLogs=Object.fromEntries(entries.filter(([,l])=>l));
+}
+
 onAuthStateChanged(auth,async u=>{
 const gen=++authGeneration;
 clearListeners();stopHB();
@@ -872,29 +886,29 @@ document.body.classList.remove('is-watching');
 loadedTeachers=false;render();hideOverlay();return;
 }
 try{
-const userData=await G('users/'+u.uid);
+const userData=await GS('users/'+u.uid);
 if(gen!==authGeneration)return;
-A=isAdminPhone(userData?.phone||'');
+A=(await GS('admins/'+u.uid))===true;
 IS_SUPERVISOR=userData?.isSupervisor===true&&!A;
 myPhoto=userData?.photo||'';myPhone=userData?.phone||'';userGrade=userData?.grade||'';
 if(!A&&!IS_SUPERVISOR){
 const phoneKey=userData?.phone?normPhone(userData.phone):'';
-const phoneBan=phoneKey?await G('bansByPhone/'+phoneKey):null;
+const phoneBan=phoneKey?await GS('bansByPhone/'+phoneKey):null;
+const uidBan=await GS('bans/'+u.uid);
 if(gen!==authGeneration)return;
-if(phoneBan){renderBanned(phoneBan);hideOverlay();return}
-const ban=await G('bans/'+u.uid);
-if(gen!==authGeneration)return;
+const ban=uidBan||phoneBan;
 if(ban){renderBanned(ban);hideOverlay();return}
-const ok=await enforceSingleDevice();
+const dev=await enforceSingleDevice();
 if(gen!==authGeneration)return;
-if(!ok){
-const b=await G('bans/'+u.uid);if(b){renderBanned(b);hideOverlay();return}
-const pb=phoneKey?await G('bansByPhone/'+phoneKey):null;if(pb){renderBanned(pb);hideOverlay();return}
+if(!dev.ok){
+  if(dev.ban)renderBanned(dev.ban);
+  else{toast(dev.error||'تعذر التحقق من الجهاز');await signOut(auth).catch(()=>{})}
+  hideOverlay();return;
 }
 if(phoneKey)unsubs.push(onValue(R('bansByPhone/'+phoneKey),snap=>{const liveBan=snap.val();if(liveBan)renderBanned(liveBan)},()=>{}));
 unsubs.push(onValue(R('bans/'+u.uid),snap=>{const liveBan=snap.val();if(liveBan)renderBanned(liveBan)},()=>{}));
 }
-const mv=await G('users/'+u.uid+'/videos');
+const mv=await GS('users/'+u.uid+'/videos');
 if(gen!==authGeneration)return;
 mineVideos=mv||{};
 const labSnap=await G('labGame/'+u.uid);
@@ -911,12 +925,7 @@ unsubs.push(onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()},()=
 unsubs.push(onValue(R('exams'),s=>{exams=s.val()||{};if(['exams','exam','takeExam','admin'].includes(S.v))render()},()=>{}));
 unsubs.push(onValue(R('examAttempts/'+u.uid),s=>{examAttempts=s.val()||{};if(['exams','exam','examResult'].includes(S.v))render()},()=>{}));
 if(A)unsubs.push(onValue(R('examAttempts'),s=>{allExamAttempts=s.val()||{};if(S.v==='exam')render()},()=>{}));
-if(!A&&!IS_SUPERVISOR)unsubs.push(onValue(R('logs'),snap=>{
-const all=snap.val()||{};const next={};
-for(const vid in all){if(all[vid]&&all[vid][u.uid])next[vid]=all[vid][u.uid]}
-myLogs=next;
-if(S.v==='teacher'||S.v==='myStats')render();
-},()=>{}));
+if(!A&&!IS_SUPERVISOR)await loadMyLogs();
 unsubs.push(onValue(R('labGame/'+u.uid),snap=>{labUserData=snap.val()||{labs:{},discoveries:0};if(S.v==='games')render()},()=>{}));
 unsubs.push(onValue(R('quizGame'),snap=>{quizLeaderData=snap.val()||{};if(S.v==='games')render()},()=>{}));
 unsubs.push(onValue(R('arcade'),snap=>{arcadeData=snap.val()||{};if(S.v==='games')render()},()=>{}));
@@ -928,7 +937,14 @@ unsubs.push(onValue(R('adminNotifications'),snap=>{adminNotifications=snap.val()
 }
 badge=(await G('settings/badge'))||'';
 if(hasNotifApi()&&Notification.permission==='granted')enableNotifications(true);
-}catch(e){}
+}catch(e){
+  // فشل مغلق: لا نسمح بالدخول عند أي خطأ في التحقق
+  if(gen===authGeneration){
+    try{await signOut(auth)}catch(_){}
+    toast('تعذر التحقق من حسابك، حاول مرة أخرى');
+  }
+  hideOverlay();return;
+}
 if(gen!==authGeneration)return;
 render();hideOverlay();
 });
@@ -1016,6 +1032,7 @@ const pass2=$('#reg-pass2')?.value||'';
 const err=$('#reg-error');if(err)err.style.display='none';
 if(name.split(' ').filter(Boolean).length<4)return showErr('reg-error','يجب كتابة الاسم الرباعي كاملاً (4 مقاطع)');
 if(!/^01[0-9]{9}$/.test(phone))return showErr('reg-error','رقم الهاتف يجب أن يكون 11 رقم ويبدأ بـ 01');
+if(isReservedPhone(phone))return showErr('reg-error','هذا الرقم محجوز');
 if(pass.length<6)return showErr('reg-error','كلمة المرور يجب أن تكون 6 أحرف على الأقل');
 if(pass!==pass2)return showErr('reg-error','كلمتا المرور غير متطابقتين');
 try{
@@ -1227,9 +1244,9 @@ catch(e){toast('تعذر تحديث الرسالة')}
 }
 async function buildStudentStats(){
 const myVids=mineVideos||{};
-const allLogs=(await G('logs'))||{};
+await loadMyLogs();
 const mine={};
-for(const vid in allLogs){const rec=allLogs[vid]&&allLogs[vid][U.uid];if(rec)mine[vid]=rec}
+for(const vid in myLogs)mine[vid]=myLogs[vid];
 const totalVideos=Object.keys(videos).length;
 const watchedCount=Object.keys(mine).length;
 const openedCount=Object.keys(myVids).length;
@@ -1365,35 +1382,25 @@ const cd=$('#cd');if(!cd)return;
 const c=normDigits(cd.value).replace(/\D/g,'');
 if(!/^\d{6}$/.test(c))return toast('الكود يجب أن يكون 6 أرقام');
 try{
-const r=await runTransaction(R('codes/'+c),cur=>{
-if(cur===null)return cur;
-if(cur.videoId!==vid)return cur;
-if(cur.used&&cur.usedBy!==U.uid)return cur;
-if(!cur.used){cur.used=true;cur.usedBy=U.uid;cur.usedByName=U.displayName||'';cur.usedByEmail=U.email||'';cur.usedAt=Date.now()}
-return cur;
-});
-const vv=r.snapshot.val();
-if(!vv||vv.usedBy!==U.uid||vv.videoId!==vid)return toast('الكود غير صحيح أو مستخدم من قبل');
-await set(R(`users/${U.uid}/videos/${vid}`),c);
+await callFn('redeemCode',{code:c,videoId:vid});
 mineVideos={...mineVideos,[vid]:c};
 go('watch',vid);
-}catch(e){toast('حدث خطأ أثناء التحقق من الكود')}
+}catch(e){toast(e.message||'الكود غير صحيح أو مستخدم من قبل')}
 }
 async function vWatch(){
 const v=videos[S.id];if(!v)return vHome();
 const isStaff=A||IS_SUPERVISOR;
 if(v.disabled&&!isStaff)return `<div class="mut">هذا الفيديو موقوف حالياً.</div>`;
-let c,rec;
+let url;
 try{
-if(isStaff){c='admin';rec={url:v.url}}
-else{
-c=mineVideos[S.id]||(await G(`users/${U.uid}/videos/${S.id}`));
-if(!c)return vCode();
-rec=await G('codes/'+c);
-if(!rec||rec.usedBy!==U.uid||rec.videoId!==S.id){delete mineVideos[S.id];return vCode()}
+url=(await callFn('getVideoUrl',{videoId:S.id})).url;
+}catch(err){
+const denied=String(err?.code||'').includes('permission-denied')||String(err?.message||'').includes('أدخل الكود');
+if(denied&&!isStaff)return vCode();
+return `<div class="mut">ليس لديك صلاحية لمشاهدة هذا الفيديو.</div>`;
 }
-}catch(e){return `<div class="mut">ليس لديك صلاحية لمشاهدة هذا الفيديو.</div>`}
-const e=embed(rec.url);
+const code=isStaff?'admin':(mineVideos[S.id]||'');
+const e=embed(url);
 if(!e.s)return `<div class="mut">رابط الفيديو غير صالح.</div>`;
 const lp=`logs/${S.id}/${U.uid}`;
 const old=isStaff?{}:((await G(lp))||{});
@@ -1403,7 +1410,7 @@ const completed=!!old.completed;
 stopHB();
 const hbToken=++hbGuard;
 if(!isStaff){
-try{await update(R(lp),{name:U.displayName||'',email:U.email||'',code:c,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed})}catch(err){}
+try{await update(R(lp),{name:U.displayName||'',email:U.email||'',code,openedAt:old.openedAt||Date.now(),lastAt:Date.now(),seconds:sec,completed})}catch(err){}
 hb=setInterval(()=>{
 if(hbToken!==hbGuard)return;
 if(document.hidden||!isPlayingForTracking())return;
@@ -1524,11 +1531,11 @@ function renderBansLive(){const box=document.getElementById('bansLiveBox');if(bo
 function buildBansHTML(){
 const map={};
 Object.values(bansLiveData.uid||{}).forEach(b=>{
-if(!b||!b.uid||isAdminPhone(b.phone||''))return;
+if(!b||!b.uid||isReservedPhone(b.phone||''))return;
 map[b.uid]={...b,_sources:['uid']};
 });
 Object.values(bansLiveData.phone||{}).forEach(b=>{
-if(!b||!b.uid||isAdminPhone(b.phone||''))return;
+if(!b||!b.uid||isReservedPhone(b.phone||''))return;
 if(map[b.uid])map[b.uid]={...map[b.uid],...b,_sources:[...new Set([...map[b.uid]._sources,'phone'])]};
 else map[b.uid]={...b,_sources:['phone']};
 });
@@ -1542,7 +1549,11 @@ if(!A)return toast('غير مصرح');
 try{
 const u=await G('users/'+uid);
 const phone=normPhone(u?.phone||'');
-const ops=[remove(R('bans/'+uid)).catch(()=>{}),update(R('users/'+uid),{banned:false}).catch(()=>{})];
+const ops=[
+remove(R('bans/'+uid)).catch(()=>{}),
+update(R('users/'+uid),{banned:false}).catch(()=>{}),
+remove(R('sessions/'+uid)).catch(()=>{})
+];
 if(phone)ops.push(remove(R('bansByPhone/'+phone)).catch(()=>{}));
 await Promise.all(ops);
 toast('تم فك الحظر');
@@ -1613,7 +1624,11 @@ questions.push({type:'short',text,correct:item.querySelector('.q-short-answer').
 }
 try{
 const id='ex'+Date.now();
-await set(R('exams/'+id),{title,grade,duration,questions,created:Date.now(),createdBy:U.displayName||'',createdByUid:U.uid,disabled:false});
+// الإجابات الصحيحة تُحفظ في examKeys (للقراءة من الخادم فقط)، والأسئلة العامة في exams
+const pubQuestions=questions.map(({correct,...q})=>q);
+const keys=questions.map(q=>q.correct ?? '');
+await set(R('exams/'+id),{title,grade,duration,questions:pubQuestions,created:Date.now(),createdBy:U.displayName||'',createdByUid:U.uid,disabled:false});
+await set(R('examKeys/'+id),{correct:keys});
 toast('تم إنشاء الامتحان');qBuildCounter=0;go('admin','','exams');
 }catch(e){toast('تعذر الحفظ: '+(e.code||e.message))}
 }
@@ -1626,19 +1641,25 @@ catch(err){toast('تعذر التعديل')}
 async function delExam(id){
 if(!A&&!IS_SUPERVISOR)return toast('غير مصرح');
 if(!confirm('حذف الامتحان وكل محاولاته؟'))return;
-try{await remove(R('exams/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
+try{
+await Promise.all([remove(R('exams/'+id)),remove(R('examKeys/'+id))]);
+toast('تم الحذف');render();
+}catch(e){toast('تعذر الحذف')}
 }
 async function reopenStudentExam(examId,uid){
 if(!A){toast('إعادة فتح المحاولة متاحة للإدارة فقط');return}
 if(!examId||!uid)return;
 if(!confirm('إعادة فتح الامتحان لهذا الطالب؟'))return;
 try{
-const current=await G('exams/'+examId+'/attempts/'+uid)||await G('examAttempts/'+uid+'/'+examId);
+const current=await G('examAttempts/'+uid+'/'+examId);
 if(current){
 const historyId='h'+Date.now().toString(36);
 await set(R('examAttemptHistory/'+examId+'/'+uid+'/'+historyId),{...current,archivedAt:Date.now(),archivedBy:U.uid});
 }
-await Promise.all([remove(R('exams/'+examId+'/attempts/'+uid)).catch(()=>{}),remove(R('examAttempts/'+uid+'/'+examId))]);
+await Promise.all([
+remove(R('examAttempts/'+uid+'/'+examId)),
+remove(R('examStarts/'+uid+'/'+examId)).catch(()=>{})
+]);
 toast('تم فتح الامتحان للطالب');render();
 }catch(e){toast('تعذر فتح الامتحان')}
 }
@@ -1646,7 +1667,6 @@ async function vExamDetail(){
 if(!A&&!IS_SUPERVISOR)return '<div class="mut">غير مصرح.</div>';
 const e=exams[S.id];if(!e)return vAdmin();
 const mergedAttempts={};
-Object.values(e.attempts||{}).forEach((a,i)=>{mergedAttempts[a.studentUid||('legacy_'+i)]=a});
 if(A)Object.values(allExamAttempts||{}).forEach(byExam=>{
 const a=byExam?.[S.id];
 if(a)mergedAttempts[a.studentUid||('attempt_'+a.submittedAt)]=a;
@@ -1671,13 +1691,32 @@ return `<div class="exam-card"><h3>${esc(e.title)}</h3><div class="exam-meta"><s
 }
 
 let activeExamTimer=null,activeExamState=null;
-function vTakeExam(){
-const e=exams[S.id];if(!e)return vExams();
-const att=examAttempts[S.id];if(att)return vExamResult();
-cleanupExam();
-armScreenshotGuard();
-activeExamState={id:S.id,startedAt:Date.now(),violations:0,answers:{},submitted:false};
+
+function buildExamHTML(e){
 const questions=e.questions||[];
+const left=Math.max(0,e.duration*60000-(Date.now()-activeExamState.startedAt));
+const qHTML=questions.map((q,i)=>{
+const num=i+1;
+if(q.type==='mcq')return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div>${q.options.map((opt,idx)=>`<label class="exam-opt"><input type="radio" name="q_${i}" value="${idx}" onchange="recordAnswer(${i},${idx})"><span>${esc(opt)}</span></label>`).join('')}</div>`;
+if(q.type==='tf')return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div><label class="exam-opt"><input type="radio" name="q_${i}" value="true" onchange="recordAnswer(${i},true)"><span>صح</span></label><label class="exam-opt"><input type="radio" name="q_${i}" value="false" onchange="recordAnswer(${i},false)"><span>خطأ</span></label></div>`;
+return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div><textarea placeholder="اكتب إجابتك هنا..." oninput="recordAnswer(${i},this.value)" rows="3"></textarea></div>`;
+}).join('');
+return `<button class="s" onclick="confirmExitExam()" style="margin-bottom:16px">← خروج</button><h2>${esc(e.title)}</h2><div class="exam-timer" id="examTimer"><span>الوقت المتبقي</span><span class="time-big">${fmtClock(left/1000)}</span></div><div class="exam-vio" style="display:${activeExamState.violations>0?'block':'none'}" id="examVioBox">المخالفات: <span id="examVioCount">${activeExamState.violations}</span></div>${qHTML}<button onclick="submitExam(false)" style="width:100%;padding:16px;font-size:16px;margin-top:16px">تسليم الامتحان</button>`;
+}
+
+async function vTakeExam(){
+const e=exams[S.id];if(!e)return vExams();
+if(examAttempts[S.id])return vExamResult();
+// إعادة الرسم لا تعيد تهيئة الامتحان ولا تضيّع الإجابات
+if(activeExamState&&activeExamState.id===S.id&&!activeExamState.submitted)return buildExamHTML(e);
+cleanupExam();
+const examId=S.id;
+let startedAt;
+try{({startedAt}=await callFn('startExam',{examId}))}
+catch(err){return `${backBtn("go('exams')")}<div class="mut">${esc(err.message||'تعذر بدء الامتحان')}</div>`}
+if(S.v!=='takeExam'||S.id!==examId)return '';
+armScreenshotGuard();
+activeExamState={id:examId,startedAt,violations:0,answers:{},submitted:false};
 const preventCopy=ev=>{ev.preventDefault();return false};
 const onVis=()=>{if(document.hidden&&activeExamState&&!activeExamState.submitted){activeExamState.violations++;toast('تم تسجيل خروجك من التبويب');submitExam(true,'visibility')}};
 const onBlur=()=>{if(activeExamState&&!activeExamState.submitted){activeExamState.violations++;toast('فقدت التركيز');submitExam(true,'blur')}};
@@ -1708,11 +1747,10 @@ window.removeEventListener('pagehide',onUnload);
 window.removeEventListener('keydown',onScreenshotKey,true);
 disarmScreenshotGuard();
 };
-const startMs=Date.now();
 const totalMs=e.duration*60*1000;
 activeExamTimer=setInterval(()=>{
 if(!activeExamState||activeExamState.submitted){clearInterval(activeExamTimer);return}
-const left=totalMs-(Date.now()-startMs);
+const left=totalMs-(Date.now()-activeExamState.startedAt);
 const timerEl=document.getElementById('examTimer');
 if(timerEl){
 const big=timerEl.querySelector('.time-big');
@@ -1723,13 +1761,7 @@ else if(left<=120000)timerEl.classList.add('warn');
 }
 if(left<=0){clearInterval(activeExamTimer);toast('انتهى وقت الامتحان');submitExam(true,'timeout')}
 },250);
-const qHTML=questions.map((q,i)=>{
-const num=i+1;
-if(q.type==='mcq')return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div>${q.options.map((opt,idx)=>`<label class="exam-opt"><input type="radio" name="q_${i}" value="${idx}" onchange="recordAnswer(${i},${idx})"><span>${esc(opt)}</span></label>`).join('')}</div>`;
-if(q.type==='tf')return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div><label class="exam-opt"><input type="radio" name="q_${i}" value="true" onchange="recordAnswer(${i},true)"><span>صح</span></label><label class="exam-opt"><input type="radio" name="q_${i}" value="false" onchange="recordAnswer(${i},false)"><span>خطأ</span></label></div>`;
-return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div><textarea placeholder="اكتب إجابتك هنا..." oninput="recordAnswer(${i},this.value)" rows="3"></textarea></div>`;
-}).join('');
-return `<button class="s" onclick="confirmExitExam()" style="margin-bottom:16px">← خروج</button><h2>${esc(e.title)}</h2><div class="exam-timer" id="examTimer"><span>الوقت المتبقي</span><span class="time-big">${fmtClock(e.duration*60)}</span></div><div class="exam-vio" style="display:none" id="examVioBox">المخالفات: <span id="examVioCount">0</span></div>${qHTML}<button onclick="submitExam(false)" style="width:100%;padding:16px;font-size:16px;margin-top:16px">تسليم الامتحان</button>`;
+return buildExamHTML(e);
 }
 function recordAnswer(i,val){
 if(!activeExamState)return;
@@ -1750,37 +1782,26 @@ submitExam(true,'exit');
 function cleanupExam(){
 if(activeExamTimer){clearInterval(activeExamTimer);activeExamTimer=null}
 if(examGuardCleanup){try{examGuardCleanup()}catch(e){}examGuardCleanup=null}
-if(activeExamState){const st=activeExamState;activeExamState=null;if(st._cleanup){try{st._cleanup()}catch(e){}}}
+if(activeExamState){activeExamState=null}
 }
 let submitLock=false;
+// التصحيح يتم على الخادم. المتصفح يرسل الإجابات فقط
 async function submitExam(force,reason){
 const st=activeExamState;
 if(!st||st.submitted||submitLock)return;
 if(!force&&!confirm('هل أنت متأكد من تسليم الامتحان؟'))return;
 submitLock=true;st.submitted=true;
-const e=exams[st.id];
-if(!e){cleanupExam();submitLock=false;return}
-const questions=e.questions||[];
-let correct=0;
-const answers=[];
-questions.forEach((q,i)=>{
-const ans=st.answers[i];
-let isCorrect=false;
-if(q.type==='mcq')isCorrect=(ans===q.correct);
-else if(q.type==='tf')isCorrect=(ans===q.correct);
-else isCorrect=(String(ans||'').trim().toLowerCase()===String(q.correct||'').trim().toLowerCase()&&!!q.correct);
-if(isCorrect)correct++;
-answers.push({q:i,ans:ans??null,correct:isCorrect});
+try{
+const {attempt}=await callFn('submitExam',{
+examId:st.id,answers:st.answers,violations:st.violations,reason:reason||'',auto:!!force
 });
-const score=questions.length?Math.round(correct/questions.length*100):0;
-const timeTaken=Math.round((Date.now()-st.startedAt)/1000);
-const attempt={studentUid:U.uid,studentName:U.displayName||'',score,answers,timeTaken,violations:st.violations,submittedAt:Date.now(),autoSubmit:!!force,reason:reason||''};
-const examId=st.id;
-try{await set(R('examAttempts/'+U.uid+'/'+examId),attempt)}
-catch(err){st.submitted=false;submitLock=false;toast('تعذر حفظ الإجابة');return}
 cleanupExam();submitLock=false;
-examAttempts[examId]=attempt;
-go('examResult',examId);
+examAttempts[st.id]=attempt;
+go('examResult',st.id);
+}catch(err){
+st.submitted=false;submitLock=false;
+toast(err.message||'تعذر حفظ الإجابة');
+}
 }
 function vExamResult(){
 const e=exams[S.id];if(!e)return vExams();
@@ -1788,9 +1809,11 @@ const att=examAttempts[S.id]||{};
 const score=att.score||0;
 const correct=att.answers?att.answers.filter(a=>a.correct).length:0;
 const total=(e.questions||[]).length;
+const keys=att.correctKey||[];
 const review=(e.questions||[]).map((q,i)=>{
 const a=(att.answers||[]).find(x=>x.q===i)||{};
-const correctText=q.type==='mcq'?(q.options?.[q.correct]??'غير محددة'):q.type==='tf'?(q.correct?'صح':'خطأ'):(q.correct||'لم تُحدد إجابة نموذجية');
+const qc=keys[i];
+const correctText=q.type==='mcq'?(q.options?.[qc]??'غير محددة'):q.type==='tf'?(qc===true||qc==='true'?'صح':'خطأ'):(qc||'لم تُحدد إجابة نموذجية');
 const answerText=a.ans===null||a.ans===undefined||a.ans===''?'لم تجب':q.type==='mcq'?(q.options?.[Number(a.ans)]??'إجابة غير معروفة'):q.type==='tf'?(a.ans===true||a.ans==='true'?'صح':a.ans===false||a.ans==='false'?'خطأ':'لم تجب'):String(a.ans);
 const ok=!!a.correct;
 return `<div class="exam-q"><div class="q-text"><span class="q-num">${i+1}</span>${esc(q.text)}</div><p style="margin-bottom:8px"><b>إجابتك:</b> ${esc(answerText)}</p><p style="margin-bottom:8px;color:${ok?'var(--ok)':'var(--er)'}"><b>${ok?'إجابة صحيحة':'إجابة غير صحيحة'}</b></p><p><b>الإجابة الصحيحة:</b> ${esc(correctText)}</p></div>`;
@@ -1833,17 +1856,17 @@ if(!arr.length)return '<div class="mut">لا يوجد طلاب مسجلون بع
 let html=`<div class="box"><label for="searchStudent">بحث سريع</label><input id="searchStudent" placeholder="اكتب الاسم، الهاتف، أو الكود..." oninput="filterStudents(this.value)"></div><h2>الطلاب المسجلون (${arr.length})</h2><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الصف</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>`;
 for(const u of arr){
 const isSup=u.isSupervisor===true;
-const isAdmin=isAdminPhone(u.phone||'');
+const isReserved=isReservedPhone(u.phone||'');
 const isBanned=!!(bans[u.id]||(u.phone&&bansByPhone[normPhone(u.phone)]));
 const codesStr=Object.values(u.videos||{}).join(' ');
 const menuBtn=(cls,onclick,label)=>`<button class="${cls}" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="${onclick}">${label}</button>`;
-const menu=!isAdmin
+const menu=!isReserved
 ?menuBtn('s',`setGrade('${esc(u.id)}')`,'تحديد الصف')
  +menuBtn('s',`toggleSupervisor('${esc(u.id)}',${isSup})`,isSup?'إلغاء الإشراف':'تعيين مشرف')
  +(isBanned?menuBtn('g',`unbanStudent('${esc(u.id)}')`,'فك الحظر'):menuBtn('d',`banStudent('${esc(u.id)}')`,'حظر كامل'))
  +menuBtn('d',`delUser('${esc(u.id)}')`,'حذف')
 :`<div style="padding:8px 10px;font-size:12px;color:var(--mu)">حساب إدارة محمي</div>`;
-html+=`<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)} ${esc(codesStr)}"><td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td><td dir="ltr">${esc(u.phone||'-')}</td><td>${u.grade?`<span class="b">${esc(u.grade)}</span>`:'<span class="b y">غير محدد</span>'}</td><td>${isAdmin?'<span class="b r">أدمن</span>':isSup?'<span class="b y">مشرف</span>':isBanned?'<span class="b r">محظور</span>':'<span class="b">طالب</span>'}</td><td><div style="position:relative;display:inline-block"><button class="s" style="padding:6px 12px;font-size:12px" onclick="toggleStudentMenu('${esc(u.id)}',event)">⋯ إجراءات</button><div id="menu_${esc(u.id)}" style="display:none;position:absolute;top:100%;right:0;z-index:30;background:var(--surface);border:1px solid var(--bd);border-radius:10px;box-shadow:var(--shadow-lg);min-width:190px;padding:6px;margin-top:4px">${menu}</div></div></td></tr>`;
+html+=`<tr class="student-row" data-search="${esc(u.name)} ${esc(u.phone)} ${esc(u.email)} ${esc(codesStr)}"><td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--ac)">${esc(u.name||'-')}</b></td><td dir="ltr">${esc(u.phone||'-')}</td><td>${u.grade?`<span class="b">${esc(u.grade)}</span>`:'<span class="b y">غير محدد</span>'}</td><td>${isReserved?'<span class="b r">إدارة</span>':isSup?'<span class="b y">مشرف</span>':isBanned?'<span class="b r">محظور</span>':'<span class="b">طالب</span>'}</td><td><div style="position:relative;display:inline-block"><button class="s" style="padding:6px 12px;font-size:12px" onclick="toggleStudentMenu('${esc(u.id)}',event)">⋯ إجراءات</button><div id="menu_${esc(u.id)}" style="display:none;position:absolute;top:100%;right:0;z-index:30;background:var(--surface);border:1px solid var(--bd);border-radius:10px;box-shadow:var(--shadow-lg);min-width:190px;padding:6px;margin-top:4px">${menu}</div></div></td></tr>`;
 }
 return html+`</tbody></table></div>`;
 }
@@ -1876,7 +1899,7 @@ async function banStudent(uid){
 if(!A)return toast('غير مصرح');
 const u=await G('users/'+uid);
 if(!u||!u.phone)return toast('لا يوجد رقم هاتف لهذا الطالب');
-if(isAdminPhone(u.phone))return toast('لا يمكن حظر حساب إدارة');
+if(isReservedPhone(u.phone))return toast('لا يمكن حظر حساب إدارة');
 const reason=prompt('سبب الحظر:','مخالفة قواعد المنصة')||'قرار إداري';
 if(!confirm('سيتم حظر الحساب بالكامل. متابعة؟'))return;
 const phone=normPhone(u.phone);
@@ -1897,6 +1920,7 @@ const phone=normPhone(u.phone||'');
 await Promise.all([
 remove(R('bans/'+uid)).catch(()=>{}),
 phone?remove(R('bansByPhone/'+phone)).catch(()=>{}):Promise.resolve(),
+remove(R('sessions/'+uid)).catch(()=>{}),
 update(R('users/'+uid),{banned:false})
 ]);
 toast('تم فك الحظر');
@@ -1925,7 +1949,7 @@ if(!A)return toast('غير مصرح');
 if(!confirm('هل أنت متأكد من حذف هذا المستخدم نهائياً؟'))return;
 try{
 const u=await G('users/'+uid);
-if(u&&isAdminPhone(u.phone||''))return toast('لا يمكن حذف حساب الإدارة');
+if(u&&isReservedPhone(u.phone||''))return toast('لا يمكن حذف حساب الإدارة');
 await remove(R('users/'+uid));
 toast('تم حذف المستخدم');render();
 }catch(e){toast('تعذر حذف المستخدم')}
@@ -2003,7 +2027,9 @@ if(!/^https?:\/\//i.test(v.url))return toast('رابط الفيديو يجب أ�
 if(!ALL_GRADES.includes(v.grade))return toast('الصف غير صحيح');
 const k='v'+Date.now();
 try{
-await set(R('videos/'+k),v);
+const {url,...pub}=v;
+await set(R('videos/'+k),pub);
+await set(R('videoSecrets/'+k),url);
 const n=Math.min((+($('#vc')?.value))||0,500);
 if(n>0){toast('جارٍ توليد الأكواد...');await gen(k,n,v);toast('تم الحفظ وتوليد الأكواد')}
 else toast('تم الحفظ');
@@ -2024,7 +2050,7 @@ const previous=grade.value;
 grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
 if(vals.includes(previous))grade.value=previous;
 }
-function vEdit(){
+async function vEdit(){
 if(!A)return '<div class="mut">غير مصرح.</div>';
 const isT=S.tab==='teacher';
 const data=isT?teachers[S.id]:videos[S.id];
@@ -2032,10 +2058,11 @@ if(!data)return vAdmin();
 if(isT){
 return `${backBtn("go('admin','','teachers')")}<h2 style="margin-top:14px">تعديل المدرس</h2><div class="box"><label for="etn">الاسم</label><input id="etn" value="${esc(data.name)}"><label for="etp">الصورة (اختياري)</label><input id="etp" type="file" accept="image/*"><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditT('${esc(S.id)}')">حفظ</button><button class="s" onclick="go('admin','','teachers')">إلغاء</button></div></div>`;
 }
+const secretUrl=(await GS('videoSecrets/'+S.id).catch(()=>null))||'';
 const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}" ${id===data.teacherId?'selected':''}>${esc(x.name)}</option>`).join('');
 const stage=data.stage||(GRADES_SEC.includes(data.grade)?'sec':'prep');
 const gradeOpts=(stage==='prep'?GRADES_PREP:GRADES_SEC).map(g=>`<option ${data.grade===g?'selected':''}>${g}</option>`).join('');
-return `${backBtn("go('admin','','videos')")}<h2 style="margin-top:14px">تعديل الفيديو</h2><div class="box"><label for="evt">المدرس</label><select id="evt">${tOpts}</select><label for="evs">المرحلة</label><select id="evs" onchange="syncEditGradeOptions()"><option value="prep" ${stage==='prep'?'selected':''}>إعدادي</option><option value="sec" ${stage==='sec'?'selected':''}>ثانوي</option></select><label for="evg">الصف</label><select id="evg">${gradeOpts}</select><label for="evn">العنوان</label><input id="evn" value="${esc(data.title)}"><label for="evd">الوصف</label><textarea id="evd" rows="2">${esc(data.desc||'')}</textarea><label for="evu">رابط الفيديو</label><input id="evu" dir="ltr" value="${esc(data.url)}"><label for="evm">مدة الفيديو بالدقائق</label><input id="evm" type="number" min="0" value="${data.duration||0}"><label for="evst">الحالة</label><select id="evst"><option value="0" ${!data.disabled?'selected':''}>نشط</option><option value="1" ${data.disabled?'selected':''}>موقوف</option></select><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditV('${esc(S.id)}')">حفظ</button><button class="s" onclick="go('admin','','videos')">إلغاء</button></div></div>`;
+return `${backBtn("go('admin','','videos')")}<h2 style="margin-top:14px">تعديل الفيديو</h2><div class="box"><label for="evt">المدرس</label><select id="evt">${tOpts}</select><label for="evs">المرحلة</label><select id="evs" onchange="syncEditGradeOptions()"><option value="prep" ${stage==='prep'?'selected':''}>إعدادي</option><option value="sec" ${stage==='sec'?'selected':''}>ثانوي</option></select><label for="evg">الصف</label><select id="evg">${gradeOpts}</select><label for="evn">العنوان</label><input id="evn" value="${esc(data.title)}"><label for="evd">الوصف</label><textarea id="evd" rows="2">${esc(data.desc||'')}</textarea><label for="evu">رابط الفيديو</label><input id="evu" dir="ltr" value="${esc(secretUrl)}"><label for="evm">مدة الفيديو بالدقائق</label><input id="evm" type="number" min="0" value="${data.duration||0}"><label for="evst">الحالة</label><select id="evst"><option value="0" ${!data.disabled?'selected':''}>نشط</option><option value="1" ${data.disabled?'selected':''}>موقوف</option></select><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditV('${esc(S.id)}')">حفظ</button><button class="s" onclick="go('admin','','videos')">إلغاء</button></div></div>`;
 }
 function vEditLib(){
 if(!A)return '<div class="mut">غير مصرح.</div>';
@@ -2072,13 +2099,9 @@ if(!nv.teacherId||!nv.title||!nv.url)return toast('أكمل الحقول');
 if(!/^https?:\/\//i.test(nv.url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
 if(!ALL_GRADES.includes(nv.grade))return toast('الصف غير صحيح');
 try{
-await update(R('videos/'+id),nv);
-try{
-const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
-const updates={};
-s.forEach(c=>{updates['codes/'+c.key+'/url']=nv.url;updates['codes/'+c.key+'/title']=nv.title});
-if(Object.keys(updates).length)await update(ref(db),updates);
-}catch(e){}
+const {url,...pubNv}=nv;
+await update(R('videos/'+id),pubNv);
+await set(R('videoSecrets/'+id),url);
 toast('تم التعديل');go('admin','','videos');
 }catch(e){toast('تعذر الحفظ: '+(e.code||e.message))}
 }
@@ -2124,7 +2147,7 @@ const c=String(crypto.getRandomValues(new Uint32Array(1))[0]%900000+100000);
 try{
 const r=await runTransaction(R('codes/'+c),cur=>{
 if(cur!==null)return cur;
-return{videoId:vid,url:v.url,title:v.title||'',used:false,createdAt:Date.now()};
+return{videoId:vid,used:false,createdAt:Date.now()};
 });
 if(r.committed)ok++;
 }catch(e){}
@@ -2144,7 +2167,7 @@ catch(e){toast('تعذر التوليد')}
 async function delV(id){
 if(!A)return toast('غير مصرح');
 if(!confirm('حذف الفيديو؟'))return;
-try{await remove(R('videos/'+id));toast('تم الحذف');go('admin','','videos')}
+try{await Promise.all([remove(R('videos/'+id)),remove(R('videoSecrets/'+id))]);toast('تم الحذف');go('admin','','videos')}
 catch(e){toast('تعذر الحذف')}
 }
 async function toggleVid(id){
@@ -2601,7 +2624,7 @@ go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,expo
 toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,
 addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,
 sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,sendSupportTicket,
-setSupportStatus,deleteSupportTicket,reopenStudentExam,
+setSupportStatus,deleteSupportTicket,reopenStudentExam,previewNewsImage,
 updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,
 filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword,setStatsFilter,
 filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,
@@ -2633,4 +2656,4 @@ window.addEventListener('unhandledrejection',e=>{try{console.warn('Unhandled rej
 render();
 </script>
 </body>
-  </html>
+ </html>
