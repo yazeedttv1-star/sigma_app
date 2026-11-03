@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="3.4.1">
+<meta name="application-version" content="3.5.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -276,6 +276,7 @@ button.game-card,.game-card{background:var(--surface);border:2px solid var(--bd)
 .game-card .gc-meta{font-size:12px;font-weight:700;color:var(--ac2)}
 .game-card.special{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-color:#8b5cf6}
 html.dark .game-card.special{background:rgba(76,29,149,.4);border-color:#a78bfa}
+.game-card.disabled{opacity:.45;cursor:not-allowed;filter:grayscale(1)}
 .game-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
 .game-done{text-align:center;padding:24px 16px}
 .gd-icon{font-size:56px}
@@ -372,10 +373,11 @@ import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistenc
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-const APP_VERSION='3.4.1';
+const APP_VERSION='3.5.0';
+const GRADES_PRIMARY=['الصف الأول الابتدائي','الصف الثاني الابتدائي','الصف الثالث الابتدائي','الصف الرابع الابتدائي','الصف الخامس الابتدائي','الصف السادس الابتدائي'];
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
-const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
+const ALL_GRADES=[...GRADES_PRIMARY,...GRADES_PREP,...GRADES_SEC];
 const ADMIN_PHONES=["01147975962","01123543649","01147758295"];
 const VAPID_KEY='BL3dfL6xBF8jnLy87cWLRwsoLAclt5HIWzkwa4R84L_GJ41vT2y2nBpFwgxPItJ2BmQej6_iZsegmidN6IVTREs';
 const PLAY_PATH='M8 5v14l11-7z';
@@ -447,9 +449,14 @@ let banUnsubs=[],bansLiveUnsub=null,bansLiveData={uid:{},phone:{}};
 let labUserData={labs:{},discoveries:0};
 let quizActiveLevel=null,quizCurrentIndex=0,quizAnswered=false,quizTimer=null,quizLeaderData={};
 let arcadeData={};
+let labEnabled={};
 let labActiveLab=null,labCurrentExpIdx=0,labSelectedEls=[],labSelectedTool=null,labShowingResult=false,labLastResult=null;
 let memState=null,huntState=null,orderState=null,balState=null;
 let freeLab={els:[],tool:null,result:null};
+let adminUsersList={};
+
+const LAB_KEYS=[['quiz','اختر الناتج'],['memory','مطابقة الرموز'],['hunt','صيد الرموز'],['order','رتّب العناصر'],['balance','موازنة المعادلات'],['lab','المختبر الافتراضي'],['free','طلع الكيميائي اللي جواك']];
+const isLabOn=k=>labEnabled?.[k]!==false;
 
 const QUIZ_QUESTIONS={
 easy:[
@@ -616,16 +623,14 @@ window.addEventListener('blur',()=>{if(activeExamState&&!activeExamState.submitt
 bindGlobalScreenshotGuard();
 window.addEventListener('beforeprint',()=>{if(activeExamState&&!activeExamState.submitted){toast('الطباعة ممنوعة');submitExam(true,'print')}});
 
-/* ================== الحظر: الإشعار للأدمن ================== */
 async function notifyAdmins(text,targetUid){
-  if(!text)return;
-  const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-  const payload={text:String(text).slice(0,500),created:Date.now(),read:false};
-  if(targetUid)payload.userId=targetUid;
-  try{await set(R('adminNotifications/'+id),payload)}catch(e){}
+if(!text)return;
+const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const payload={text:String(text).slice(0,500),created:Date.now(),read:false};
+if(targetUid)payload.userId=targetUid;
+try{await set(R('adminNotifications/'+id),payload)}catch(e){}
 }
 
-/* الحظر التلقائي: يمنع الدخول من جهاز آخر لنفس الحساب */
 async function enforceSingleDevice(){
 if(A||IS_SUPERVISOR||!U)return true;
 try{
@@ -634,17 +639,16 @@ const snap=await get(R('sessions/'+U.uid));
 const cur=snap.val()||{};
 const now=Date.now();
 const existingDevice=cur.deviceId,existingTs=cur.updatedAt||0;
-// نافذة 24 ساعة بدل 10 دقائق: حتى لا يفلت الطالب
 if(existingDevice&&existingDevice!==devId&&now-existingTs<24*60*60*1000){
-const rec={uid:U.uid,name:U.displayName||'',email:U.email||'',photo:myPhoto||'',phone:normPhone(myPhone||''),oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر — حظر نهائي'};
+const rec={uid:U.uid,name:U.displayName||'',email:U.email||'',photo:myPhoto||'',phone:normPhone(myPhone||''),oldDevice:existingDevice,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر — حظر تلقائي'};
 const ops=[
-  set(R('bans/'+U.uid),rec),
-  update(R('users/'+U.uid),{banned:true}),         // ← يعكس الحظر على الملف
-  remove(R('sessions/'+U.uid)).catch(()=>{})      // ← يطرد الجلسة القديمة
+set(R('bans/'+U.uid),rec),
+update(R('users/'+U.uid),{banned:true}),
+remove(R('sessions/'+U.uid)).catch(()=>{})
 ];
 if(rec.phone)ops.push(set(R('bansByPhone/'+rec.phone),rec));
 await Promise.all(ops);
-await notifyAdmins('تم حظر الحساب تلقائياً: '+rec.name+' — '+rec.reason+' (الجهاز الجديد: '+rec.newDeviceLabel+')',U.uid).catch(()=>{});
+await notifyAdmins('🚨 حظر تلقائي: '+rec.name+' سجّل من جهاز آخر ('+rec.newDeviceLabel+'). الحساب: '+(rec.phone||rec.uid),U.uid).catch(()=>{});
 return false;
 }
 await update(R('sessions/'+U.uid),{deviceId:devId,deviceLabel:deviceLabel(),updatedAt:now,name:U.displayName||'',email:U.email||''});
@@ -883,31 +887,24 @@ const gen=++authGeneration;
 clearListeners();stopHB();
 U=u;myPhoto='';myPhone='';userGrade='';showingBan=false;
 if(!u){
-teachers={};videos={};library={};news={};badge='';mineVideos={};notifications={};ownNotifications={};broadcastNotifications={};adminNotifications={};supportTickets={};allExamAttempts={};
+teachers={};videos={};library={};news={};badge='';mineVideos={};notifications={};ownNotifications={};broadcastNotifications={};adminNotifications={};supportTickets={};allExamAttempts={};adminUsersList={};labEnabled={};
 IS_SUPERVISOR=false;A=false;S={v:'home'};myLogs={};exams={};examAttempts={};
 document.body.classList.remove('is-watching');
 loadedTeachers=false;render();hideOverlay();return;
 }
 try{
-const userData=await G('users/'+u.uid);
+const userData=await GS('users/'+u.uid);
 if(gen!==authGeneration)return;
 A=isAdminPhone(userData?.phone||'');
 IS_SUPERVISOR=userData?.isSupervisor===true&&!A;
 myPhoto=userData?.photo||'';myPhone=userData?.phone||'';userGrade=userData?.grade||'';
 if(!A&&!IS_SUPERVISOR){
 const phoneKey=userData?.phone?normPhone(userData.phone):'';
-const phoneBan=phoneKey?await G('bansByPhone/'+phoneKey):null;
+const phoneBan=phoneKey?await GS('bansByPhone/'+phoneKey):null;
+const uidBan=await GS('bans/'+u.uid);
 if(gen!==authGeneration)return;
-if(phoneBan){renderBanned(phoneBan);hideOverlay();return}
-const ban=await G('bans/'+u.uid);
-if(gen!==authGeneration)return;
+const ban=uidBan||phoneBan;
 if(ban){renderBanned(ban);hideOverlay();return}
-const ok=await enforceSingleDevice();
-if(gen!==authGeneration)return;
-if(!ok){
-const b=await G('bans/'+u.uid);if(b){renderBanned(b);hideOverlay();return}
-const pb=phoneKey?await G('bansByPhone/'+phoneKey):null;if(pb){renderBanned(pb);hideOverlay();return}
-}
 if(phoneKey)unsubs.push(onValue(R('bansByPhone/'+phoneKey),snap=>{const liveBan=snap.val();if(liveBan)renderBanned(liveBan)},()=>{}));
 unsubs.push(onValue(R('bans/'+u.uid),snap=>{const liveBan=snap.val();if(liveBan)renderBanned(liveBan)},()=>{}));
 }
@@ -936,7 +933,8 @@ if(S.v==='teacher'||S.v==='myStats')render();
 },()=>{}));
 unsubs.push(onValue(R('labGame/'+u.uid),snap=>{labUserData=snap.val()||{labs:{},discoveries:0};if(S.v==='games')render()},()=>{}));
 unsubs.push(onValue(R('quizGame'),snap=>{quizLeaderData=snap.val()||{};if(S.v==='games')render()},()=>{}));
-unsubs.push(onValue(R('arcade'),snap=>{arcadeData=snap.val()||{};if(S.v==='games')render()},()=>{}));
+unsubs.push(onValue(R('arcade'),snap=>{arcadeData=snap.val()||{};if(S.v==='games'||S.v==='admin')render()},()=>{}));
+unsubs.push(onValue(R('settings/labEnabled'),snap=>{labEnabled=snap.val()||{};if(S.v==='games'||S.v==='admin')render()},()=>{}));
 unsubs.push(onValue(R('notifications/'+u.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()},()=>{}));
 unsubs.push(onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()},()=>{}));
 if(A){
@@ -945,7 +943,24 @@ unsubs.push(onValue(R('adminNotifications'),snap=>{adminNotifications=snap.val()
 }
 badge=(await G('settings/badge'))||'';
 if(hasNotifApi()&&Notification.permission==='granted')enableNotifications(true);
-}catch(e){}
+// فحص الجهاز في الخلفية حتى لا يتأخر الرسم
+if(!A&&!IS_SUPERVISOR){
+const gen2=gen;
+enforceSingleDevice().then(ok=>{
+if(gen2!==authGeneration)return;
+if(!ok){
+toast('تم حظر الحساب: تسجيل دخول من جهاز آخر');
+G('bans/'+U.uid).then(b=>{if(b&&gen2===authGeneration)renderBanned(b)}).catch(()=>{});
+}
+}).catch(()=>{});
+}
+}catch(e){
+if(gen===authGeneration){
+try{await signOut(auth)}catch(_){}
+toast('تعذر التحقق من حسابك، حاول مرة أخرى');
+}
+hideOverlay();return;
+}
 if(gen!==authGeneration)return;
 render();hideOverlay();
 });
@@ -988,20 +1003,18 @@ if(!confirm('مسح هذا الإشعار؟'))return;
 const n=notifications[key]||{};
 try{
 if(A)await remove(R('adminNotifications/'+key));
-else await set(R('notifications/'+U.uid+'/'+key),{text:n.text||'',created:n.created||Date.now(),read:true,dismissed:true});
+else await remove(R('notifications/'+U.uid+'/'+key));
 toast('تم المسح');renderNoti();
 }catch(e){toast('تعذر المسح')}
 }
 async function clearAllMyNotis(){
-if(!confirm('مسح كل الإشعارات من عندك؟'))return;
+if(!confirm('مسح كل الإشعارات نهائياً؟'))return;
 try{
 if(A){await remove(R('adminNotifications'))}
 else{
-const ups={};
-Object.values(notifications).forEach(n=>{ups[n._key]={text:n.text||'',created:n.created||Date.now(),read:true,dismissed:true}});
-if(Object.keys(ups).length)await update(R('notifications/'+U.uid),ups);
+await remove(R('notifications/'+U.uid));
 }
-toast('تم مسح الإشعارات');renderNoti();
+toast('تم مسح الإشعارات نهائياً');renderNoti();
 }catch(e){toast('تعذر المسح')}
 }
 
@@ -1490,7 +1503,7 @@ async function vAdmin(){
 if(!A&&!IS_SUPERVISOR)return '<div class="mut">غير مصرح.</div>';
 const tab=S.tab||'videos';
 const allowedTabs=A
-?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['support','الشكاوى والاستفسارات'],['send_notification','إرسال إشعار'],['bans','الحظر'],['lab','المختبر'],['badge','صورة التعريف']]
+?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['support','الشكاوى'],['send_notification','إرسال إشعار'],['bans','الحظر'],['lab','المختبر'],['badge','صورة التعريف']]
 :[['videos','الفيديوهات'],['news','أخبار السنتر'],['exams','الامتحانات']];
 const effTab=allowedTabs.some(([k])=>k===tab)?tab:'videos';
 const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${effTab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
@@ -1502,7 +1515,7 @@ if(effTab==='exams')return tb+await vAdminExams();
 if(effTab==='support')return tb+await vAdminSupport();
 if(effTab==='badge')return tb+vAdminBadge();
 if(effTab==='bans')return tb+await vAdminBans();
-if(effTab==='lab')return tb+vAdminLab();
+if(effTab==='lab')return tb+await vAdminLab();
 if(effTab==='news')return tb+vAdminNews();
 return tb+vAdminVideos();
 }
@@ -1521,13 +1534,38 @@ return `<div class="box"><h2>إضافة خبر جديد</h2><label for="newText"
 function vAdminVideos(){
 const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
 const vidList=Object.entries(videos).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
-return `<div class="box"><h2>إضافة فيديو</h2><label for="vt">المدرس</label><select id="vt">${tOpts||'<option value="">— أضف مدرساً أولاً —</option>'}</select><label for="vs">المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label for="vg">الصف</label><select id="vg">${GRADES_PREP.map(g=>`<option>${g}</option>`).join('')}</select><label for="vn">العنوان</label><input id="vn"><label for="vd">الوصف</label><textarea id="vd" rows="2"></textarea><label for="vu">رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label for="vm">مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label for="vc">عدد الأكواد</label><input id="vc" type="number" min="1" max="500" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${vidList.map(([id,v])=>`<div class="row"><div onclick="go('vid','${esc(id)}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${esc(id)}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${esc(id)}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
-}
-function vAdminLab(){
-return `<div class="box"><h2>مختبر سيجما</h2><p style="color:var(--tx2);line-height:1.8">المختبر يحتوي على 3 مختبرات تجريبية ومختبر حر للتفاعلات، إضافة إلى الألعاب التفاعلية. المحتوى مدمج في الكود ولا يحتاج إدارة.</p><div class="stats-summary"><div class="stat-box"><div class="stat-num">3</div><div class="stat-label">مختبرات</div></div><div class="stat-box ok"><div class="stat-num">${Object.values(LAB_EXPERIMENTS).reduce((s,a)=>s+a.length,0)}</div><div class="stat-label">تجربة موجّهة</div></div><div class="stat-box warn"><div class="stat-num">${FREE_LAB_REACTIONS.length}</div><div class="stat-label">تفاعل حر</div></div></div></div>`;
+return `<div class="box"><h2>إضافة فيديو</h2><label for="vt">المدرس</label><select id="vt">${tOpts||'<option value="">— أضف مدرساً أولاً —</option>'}</select><label for="vs">المرحلة</label><select id="vs" onchange="syncGradeOptions()"><option value="pri">ابتدائي</option><option value="prep">إعدادي</option><option value="sec">ثانوي</option></select><label for="vg">الصف</label><select id="vg">${GRADES_PRIMARY.map(g=>`<option>${g}</option>`).join('')}</select><label for="vn">العنوان</label><input id="vn"><label for="vd">الوصف</label><textarea id="vd" rows="2"></textarea><label for="vu">رابط الفيديو</label><input id="vu" dir="ltr" placeholder="https://..."><label for="vm">مدة الفيديو بالدقائق</label><input id="vm" type="number" min="0"><label for="vc">عدد الأكواد</label><input id="vc" type="number" min="1" max="500" value="1"><button onclick="addV()">حفظ وتوليد الأكواد</button></div><h2>الفيديوهات</h2>${vidList.map(([id,v])=>`<div class="row"><div onclick="go('vid','${esc(id)}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'-')} | ${esc(v.grade||'-')}${v.disabled?' — موقوف':''}</small></div><button class="s" onclick="go('edit','${esc(id)}','video')" style="padding:8px 14px;font-size:13px">تعديل</button><button class="s" onclick="go('vid','${esc(id)}')" style="padding:8px 14px;font-size:13px">السجل</button></div>`).join('')||'<div class="mut">لا توجد فيديوهات.</div>'}`;
 }
 
-/* ================== صفحة الحظر (المُحدّثة) ================== */
+async function vAdminLab(){
+if(!A)return '<div class="mut">غير مصرح.</div>';
+const users=(await G('users'))||{};
+adminUsersList=users;
+const scores=Object.entries(arcadeData||{}).map(([uid,d])=>({uid,name:d.name||users[uid]?.name||'طالب',points:d.points||0,best:d.best||{}})).filter(x=>x.points>0).sort((a,b)=>b.points-a.points);
+const quizScores=Object.entries(quizLeaderData||{}).map(([uid,d])=>({uid,name:d.name||users[uid]?.name||'طالب',points:d.points||0})).filter(x=>x.points>0);
+return `<div class="box"><h2>التحكم في المختبر</h2><p style="color:var(--tx2);line-height:1.7;margin-bottom:14px">يمكنك تفعيل أو إيقاف أي لعبة أو مختبر. عند الإيقاف لن يظهر للطلاب كخيار متاح.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">${LAB_KEYS.map(([k,n])=>`<div style="background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="font-size:14px">${n}</b><button class="${isLabOn(k)?'g':'d'}" style="padding:6px 12px;font-size:12px" onclick="toggleLab('${k}')">${isLabOn(k)?'مفعّل':'موقوف'}</button></div>`).join('')}</div></div>
+<div class="box"><h2>المتصدرون</h2><p style="color:var(--tx2);margin-bottom:12px">يمكنك إزالة أي طالب من المتصدرين (سيُمسح سجل نقاطه فقط، وليس حسابه).</p>${!scores.length?'<div class="mut">لا يوجد متصدرون بعد.</div>':`<div class="tw"><table><thead><tr><th>#</th><th>الطالب</th><th>النقاط</th><th>إجراء</th></tr></thead><tbody>${scores.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td><b>${s.points}</b></td><td><button class="d" style="padding:4px 10px;font-size:12px" onclick="removeFromLeaderboard('${esc(s.uid)}')">إزالة</button></td></tr>`).join('')}</tbody></table></div>`}</div>
+<div class="box"><h2>متصدرو الاختبار</h2>${!quizScores.length?'<div class="mut">لا يوجد متصدرون بعد.</div>':`<div class="tw"><table><thead><tr><th>#</th><th>الطالب</th><th>النقاط</th><th>إجراء</th></tr></thead><tbody>${quizScores.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td><b>${s.points}</b></td><td><button class="d" style="padding:4px 10px;font-size:12px" onclick="removeFromQuizLeader('${esc(s.uid)}')">إزالة</button></td></tr>`).join('')}</tbody></table></div>`}</div>`;
+}
+async function toggleLab(k){
+if(!A)return toast('غير مصرح');
+const cur=labEnabled?.[k]!==false;
+try{await set(R('settings/labEnabled/'+k),!cur);toast(cur?'تم الإيقاف':'تم التفعيل')}
+catch(e){toast('تعذر التعديل')}
+}
+async function removeFromLeaderboard(uid){
+if(!A)return toast('غير مصرح');
+if(!confirm('إزالة هذا الطالب من المتصدرين؟ سيُمسح سجل نقاطه فقط.'))return;
+try{await remove(R('arcade/'+uid));toast('تمت الإزالة');render()}
+catch(e){toast('تعذر الإزالة')}
+}
+async function removeFromQuizLeader(uid){
+if(!A)return toast('غير مصرح');
+if(!confirm('إزالة هذا الطالب من متصدري الاختبار؟'))return;
+try{await remove(R('quizGame/'+uid));toast('تمت الإزالة');render()}
+catch(e){toast('تعذر الإزالة')}
+}
+
 async function vAdminBans(){
 if(!A)return '<div class="mut">غير مصرح.</div>';
 if(bansLiveUnsub){try{bansLiveUnsub()}catch(e){}bansLiveUnsub=null}
@@ -1535,20 +1573,8 @@ bansLiveData={uid:{},phone:{}};
 bansLiveData.uid=(await G('bans'))||{};
 bansLiveData.phone=(await G('bansByPhone'))||{};
 let lastCount=Object.keys(bansLiveData.uid).length+Object.keys(bansLiveData.phone).length;
-const un1=onValue(R('bans'),snap=>{
-  bansLiveData.uid=snap.val()||{};
-  const c=Object.keys(bansLiveData.uid).length+Object.keys(bansLiveData.phone||{}).length;
-  if(c>lastCount){try{toast('🚨 حظر جديد وصل');}catch(e){}}
-  lastCount=c;
-  if(S.v==='admin'&&S.tab==='bans')renderBansLive();
-},()=>{});
-const un2=onValue(R('bansByPhone'),snap=>{
-  bansLiveData.phone=snap.val()||{};
-  const c=Object.keys(bansLiveData.uid||{}).length+Object.keys(bansLiveData.phone).length;
-  if(c>lastCount){try{toast('🚨 حظر جديد وصل');}catch(e){}}
-  lastCount=c;
-  if(S.v==='admin'&&S.tab==='bans')renderBansLive();
-},()=>{});
+const un1=onValue(R('bans'),snap=>{bansLiveData.uid=snap.val()||{};const c=Object.keys(bansLiveData.uid).length+Object.keys(bansLiveData.phone||{}).length;if(c>lastCount){try{toast('🚨 حظر جديد وصل');}catch(e){}}lastCount=c;if(S.v==='admin'&&S.tab==='bans')renderBansLive()},()=>{});
+const un2=onValue(R('bansByPhone'),snap=>{bansLiveData.phone=snap.val()||{};const c=Object.keys(bansLiveData.uid||{}).length+Object.keys(bansLiveData.phone).length;if(c>lastCount){try{toast('🚨 حظر جديد وصل');}catch(e){}}lastCount=c;if(S.v==='admin'&&S.tab==='bans')renderBansLive()},()=>{});
 bansLiveUnsub=()=>{try{un1()}catch(e){}try{un2()}catch(e){}};
 return `<div id="bansLiveBox">${buildBansHTML()}</div>`;
 }
@@ -1574,14 +1600,10 @@ if(!A)return toast('غير مصرح');
 try{
 const u=await G('users/'+uid);
 const phone=normPhone(u?.phone||'');
-const ops=[
-  remove(R('bans/'+uid)).catch(()=>{}),
-  update(R('users/'+uid),{banned:false}).catch(()=>{}),
-  remove(R('sessions/'+uid)).catch(()=>{})
-];
+const ops=[remove(R('bans/'+uid)).catch(()=>{}),update(R('users/'+uid),{banned:false}).catch(()=>{}),remove(R('sessions/'+uid)).catch(()=>{})];
 if(phone)ops.push(remove(R('bansByPhone/'+phone)).catch(()=>{}));
 await Promise.all(ops);
-await notifyAdmins('تم فك الحظر عن الحساب: '+(u?.name||uid),uid).catch(()=>{});
+await notifyAdmins('تم فك الحظر عن: '+(u?.name||uid),uid).catch(()=>{});
 toast('تم فك الحظر');
 if(S.v==='admin'&&S.tab==='bans')renderBansLive();
 }catch(e){toast('تعذر فك الحظر')}
@@ -1863,6 +1885,7 @@ try{await remove(R('news/'+id));toast('تم الحذف');render()}catch(e){toast
 async function vAdminStudents(){
 if(!A)return '<div class="mut">غير مصرح.</div>';
 const users=(await G('users'))||{};
+adminUsersList=users;
 const bans=(await G('bans'))||{};
 const bansByPhone=(await G('bansByPhone'))||{};
 const arr=Object.entries(users).map(([id,u])=>({id,...u})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
@@ -1910,7 +1933,6 @@ try{await update(R('users/'+uid),{grade});toast('تم تحديد الصف');rend
 catch(e){toast('تعذر الحفظ')}
 }
 
-/* ================== الحظر اليدوي (المُحدّث) ================== */
 async function banStudent(uid){
 if(!A)return toast('غير مصرح');
 const u=await G('users/'+uid);
@@ -1922,10 +1944,10 @@ const phone=normPhone(u.phone);
 const rec={uid,phone,name:u.name||'',email:u.email||'',photo:u.photo||'',reason,bannedAt:Date.now(),by:U.uid};
 try{
 await Promise.all([
-  set(R('bans/'+uid),rec),
-  set(R('bansByPhone/'+phone),rec),
-  update(R('users/'+uid),{banned:true}),
-  remove(R('sessions/'+uid)).catch(()=>{})
+set(R('bans/'+uid),rec),
+set(R('bansByPhone/'+phone),rec),
+update(R('users/'+uid),{banned:true}),
+remove(R('sessions/'+uid)).catch(()=>{})
 ]);
 await notifyAdmins('تم حظر الطالب: '+(u.name||uid)+' — السبب: '+reason,uid).catch(()=>{});
 toast('تم حظر الطالب');
@@ -1950,16 +1972,32 @@ toast('تم فك الحظر');
 if(S.v==='admin'&&S.tab==='students')render();
 }catch(e){toast('تعذر فك الحظر')}
 }
+
 async function vStudentProfile(){
 if(!A)return '<div class="mut">غير مصرح.</div>';
 const uid=S.id;
-const user=await G('users/'+uid);
+const user=(adminUsersList&&adminUsersList[uid])||(await G('users/'+uid));
 if(!user)return '<div class="mut">الطالب غير موجود.</div>';
 const allLogs=(await G('logs'))||{};
 const studentVideos=[];
 for(const vid in allLogs){if(allLogs[vid]&&allLogs[vid][uid])studentVideos.push({vid,title:videos[vid]?.title||'محذوف',...allLogs[vid][uid]})}
 studentVideos.sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
-return `${backBtn("go('admin','','students')")}<div class="box"><div style="display:flex;gap:16px;align-items:center;margin-bottom:20px;flex-wrap:wrap"><img src="${esc(user.photo||avatarOf(user.name))}" alt="" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac);object-fit:cover"><div><h2 style="margin:0">${esc(user.name)}</h2><p style="margin:4px 0;color:var(--mu);direction:ltr">${esc(user.phone)}</p><span class="b ${user.isSupervisor?'y':'g'}">${user.isSupervisor?'مشرف':'طالب'}</span>${user.grade?`<span class="b">${esc(user.grade)}</span>`:''}</div></div><h3>سجل المشاهدة (${studentVideos.length} فيديو)</h3><div class="tw"><table><tr><th>الفيديو</th><th>الكود</th><th>آخر مشاهدة</th><th>الحالة</th></tr>${studentVideos.map(v=>`<tr><td>${esc(v.title)}</td><td><span class="code">${esc(v.code||'-')}</span></td><td>${fd(v.lastAt)}</td><td>${v.completed?'<span class="g">أكمل</span>':'<span class="y">لم يكمل</span>'}</td></tr>`).join('')||'<tr><td colspan="4" class="mut">لا يوجد سجل مشاهدة.</td></tr>'}</table></div></div>`;
+return `${backBtn("go('admin','','students')")}<div class="box"><div style="display:flex;gap:16px;align-items:center;margin-bottom:20px;flex-wrap:wrap"><img src="${esc(user.photo||avatarOf(user.name))}" alt="" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--ac);object-fit:cover"><div style="flex:1;min-width:200px"><h2 style="margin:0">${esc(user.name)}</h2><p style="margin:4px 0;color:var(--mu);direction:ltr">${esc(user.phone)}</p><span class="b ${user.isSupervisor?'y':'g'}">${user.isSupervisor?'مشرف':'طالب'}</span>${user.grade?`<span class="b">${esc(user.grade)}</span>`:''}</div></div>
+<div style="background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:16px"><label for="edit-name-${esc(uid)}">تعديل اسم الطالب</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="edit-name-${esc(uid)}" value="${esc(user.name||'')}" style="margin-bottom:0;flex:1;min-width:200px"><button onclick="saveStudentName('${esc(uid)}')">حفظ الاسم</button></div></div>
+<h3>سجل المشاهدة (${studentVideos.length} فيديو)</h3><div class="tw"><table><tr><th>الفيديو</th><th>الكود</th><th>آخر مشاهدة</th><th>الحالة</th></tr>${studentVideos.map(v=>`<tr><td>${esc(v.title)}</td><td><span class="code">${esc(v.code||'-')}</span></td><td>${fd(v.lastAt)}</td><td>${v.completed?'<span class="g">أكمل</span>':'<span class="y">لم يكمل</span>'}</td></tr>`).join('')||'<tr><td colspan="4" class="mut">لا يوجد سجل مشاهدة.</td></tr>'}</table></div></div>`;
+}
+async function saveStudentName(uid){
+if(!A)return toast('غير مصرح');
+const el=document.getElementById('edit-name-'+uid);
+const name=(el?.value||'').trim().replace(/\s+/g,' ');
+if(name.split(' ').filter(Boolean).length<4)return toast('الاسم يجب أن يكون رباعياً (4 مقاطع)');
+if(name.length>100)return toast('الاسم طويل جداً');
+try{
+await update(R('users/'+uid),{name});
+if(adminUsersList[uid])adminUsersList[uid].name=name;
+toast('تم حفظ الاسم في القاعدة والملف الشخصي');
+if(U&&U.uid===uid){try{await updateProfile(auth.currentUser,{displayName:name})}catch(e){}}
+}catch(e){toast('تعذر حفظ الاسم: '+(e.message||''))}
 }
 async function toggleSupervisor(uid,isSup){
 if(!A)return toast('غير مصرح');
@@ -1974,11 +2012,12 @@ try{
 const u=await G('users/'+uid);
 if(u&&isAdminPhone(u.phone||''))return toast('لا يمكن حذف حساب الإدارة');
 await remove(R('users/'+uid));
+if(adminUsersList[uid])delete adminUsersList[uid];
 toast('تم حذف المستخدم');render();
 }catch(e){toast('تعذر حذف المستخدم')}
 }
 function vSendNotification(){
-return `<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label for="notiText">نص الإشعار</label><textarea id="notiText" rows="3"></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات</button></div></div>`;
+return `<div class="box"><h2>إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label for="notiText">نص الإشعار</label><textarea id="notiText" rows="3"></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات نهائياً</button></div></div>`;
 }
 function sendAdminNotification(){return once('notify',doSendNotification)}
 async function doSendNotification(){
@@ -1992,14 +2031,13 @@ toast('تم إرسال الإشعار');
 }
 async function clearAllNotifications(){
 if(!A)return toast('غير مصرح');
-if(!confirm('هل أنت متأكد من حذف جميع الإشعارات للجميع؟'))return;
+if(!confirm('هل أنت متأكد من حذف جميع الإشعارات نهائياً للجميع؟'))return;
 try{
-await remove(R('notifications/all'));
+await remove(R('notifications/all')).catch(()=>{});
+await remove(R('adminNotifications')).catch(()=>{});
 const users=(await G('users'))||{};
-const updates={};
-Object.keys(users).forEach(uid=>{updates['notifications/'+uid]=null});
-if(Object.keys(updates).length)await update(ref(db),updates).catch(()=>{});
-toast('تم حذف جميع الإشعارات');
+for(const uid of Object.keys(users)){await remove(R('notifications/'+uid)).catch(()=>{})}
+toast('تم حذف جميع الإشعارات نهائياً');
 }catch(e){toast('تعذر حذف الإشعارات')}
 }
 
@@ -2059,14 +2097,14 @@ go('vid',k);
 }
 function syncGradeOptions(){
 const stage=$('#vs')?.value||'prep',grade=$('#vg');if(!grade)return;
-const vals=stage==='prep'?GRADES_PREP:GRADES_SEC;
+const vals=stage==='pri'?GRADES_PRIMARY:stage==='prep'?GRADES_PREP:GRADES_SEC;
 const previous=grade.value;
 grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
 if(vals.includes(previous))grade.value=previous;
 }
 function syncEditGradeOptions(){
 const stage=$('#evs')?.value||'prep',grade=$('#evg');if(!grade)return;
-const vals=stage==='prep'?GRADES_PREP:GRADES_SEC;
+const vals=stage==='pri'?GRADES_PRIMARY:stage==='prep'?GRADES_PREP:GRADES_SEC;
 const previous=grade.value;
 grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
 if(vals.includes(previous))grade.value=previous;
@@ -2080,9 +2118,9 @@ if(isT){
 return `${backBtn("go('admin','','teachers')")}<h2 style="margin-top:14px">تعديل المدرس</h2><div class="box"><label for="etn">الاسم</label><input id="etn" value="${esc(data.name)}"><label for="etp">الصورة (اختياري)</label><input id="etp" type="file" accept="image/*"><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditT('${esc(S.id)}')">حفظ</button><button class="s" onclick="go('admin','','teachers')">إلغاء</button></div></div>`;
 }
 const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}" ${id===data.teacherId?'selected':''}>${esc(x.name)}</option>`).join('');
-const stage=data.stage||(GRADES_SEC.includes(data.grade)?'sec':'prep');
-const gradeOpts=(stage==='prep'?GRADES_PREP:GRADES_SEC).map(g=>`<option ${data.grade===g?'selected':''}>${g}</option>`).join('');
-return `${backBtn("go('admin','','videos')")}<h2 style="margin-top:14px">تعديل الفيديو</h2><div class="box"><label for="evt">المدرس</label><select id="evt">${tOpts}</select><label for="evs">المرحلة</label><select id="evs" onchange="syncEditGradeOptions()"><option value="prep" ${stage==='prep'?'selected':''}>إعدادي</option><option value="sec" ${stage==='sec'?'selected':''}>ثانوي</option></select><label for="evg">الصف</label><select id="evg">${gradeOpts}</select><label for="evn">العنوان</label><input id="evn" value="${esc(data.title)}"><label for="evd">الوصف</label><textarea id="evd" rows="2">${esc(data.desc||'')}</textarea><label for="evu">رابط الفيديو</label><input id="evu" dir="ltr" value="${esc(data.url)}"><label for="evm">مدة الفيديو بالدقائق</label><input id="evm" type="number" min="0" value="${data.duration||0}"><label for="evst">الحالة</label><select id="evst"><option value="0" ${!data.disabled?'selected':''}>نشط</option><option value="1" ${data.disabled?'selected':''}>موقوف</option></select><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditV('${esc(S.id)}')">حفظ</button><button class="s" onclick="go('admin','','videos')">إلغاء</button></div></div>`;
+const stage=data.stage||(GRADES_SEC.includes(data.grade)?'sec':GRADES_PREP.includes(data.grade)?'prep':'pri');
+const gradeOpts=(stage==='pri'?GRADES_PRIMARY:stage==='prep'?GRADES_PREP:GRADES_SEC).map(g=>`<option ${data.grade===g?'selected':''}>${g}</option>`).join('');
+return `${backBtn("go('admin','','videos')")}<h2 style="margin-top:14px">تعديل الفيديو</h2><div class="box"><label for="evt">المدرس</label><select id="evt">${tOpts}</select><label for="evs">المرحلة</label><select id="evs" onchange="syncEditGradeOptions()"><option value="pri" ${stage==='pri'?'selected':''}>ابتدائي</option><option value="prep" ${stage==='prep'?'selected':''}>إعدادي</option><option value="sec" ${stage==='sec'?'selected':''}>ثانوي</option></select><label for="evg">الصف</label><select id="evg">${gradeOpts}</select><label for="evn">العنوان</label><input id="evn" value="${esc(data.title)}"><label for="evd">الوصف</label><textarea id="evd" rows="2">${esc(data.desc||'')}</textarea><label for="evu">رابط الفيديو</label><input id="evu" dir="ltr" value="${esc(data.url)}"><label for="evm">مدة الفيديو بالدقائق</label><input id="evm" type="number" min="0" value="${data.duration||0}"><label for="evst">الحالة</label><select id="evst"><option value="0" ${!data.disabled?'selected':''}>نشط</option><option value="1" ${data.disabled?'selected':''}>موقوف</option></select><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEditV('${esc(S.id)}')">حفظ</button><button class="s" onclick="go('admin','','videos')">إلغاء</button></div></div>`;
 }
 function vEditLib(){
 if(!A)return '<div class="mut">غير مصرح.</div>';
@@ -2294,6 +2332,7 @@ freeLab={els:[],tool:null,result:null};
 memState=null;huntState=null;orderState=null;balState=null;
 }
 function openGame(key){
+if(!isLabOn(key))return toast('هذه اللعبة موقوفة حالياً');
 resetGames();
 if(key==='memory')memStart();
 else if(key==='hunt')huntStart();
@@ -2302,16 +2341,17 @@ else if(key==='balance')balStart();
 go('games','',key);
 }
 function gameBack(){resetGames();go('games','','hub')}
-function openLabHub(){resetGames();go('games','','lab')}
+function openLabHub(){if(!isLabOn('lab'))return toast('المختبر موقوف حالياً');resetGames();go('games','','lab')}
 function openLab(lab){
 if(!LAB_EXPERIMENTS[lab])return;
+if(!isLabOn('lab'))return toast('المختبر موقوف حالياً');
 resetGames();
 const d=labDone(lab);
 labActiveLab=lab;
 labCurrentExpIdx=d>=LAB_EXPERIMENTS[lab].length?0:d;
 go('games','','lab');
 }
-function openFree(){resetGames();go('games','','free')}
+function openFree(){if(!isLabOn('free'))return toast('هذه اللعبة موقوفة حالياً');resetGames();go('games','','free')}
 function gameTop(action,label,badges=''){return `<div class="game-top"><button class="s" onclick="${action}">← ${label}</button><div class="game-badges">${badges}</div></div>`}
 function gameHeader(title,sub){
 const pts=U?arcadePoints(U.uid):0;
@@ -2403,6 +2443,7 @@ render();
 function freeReset(){freeLab={els:[],tool:null,result:null};render()}
 
 function quizStart(level){
+if(!isLabOn('quiz'))return toast('اللعبة موقوفة حالياً');
 if(!QUIZ_QUESTIONS[level])return;
 quizActiveLevel=level;quizCurrentIndex=0;quizAnswered=false;render();
 }
@@ -2436,10 +2477,7 @@ render();
 },1500);
 }
 
-function memStart(){
-const cards=shuffle(MEM_PAIRS.flatMap((p,i)=>[{pid:i,t:p.s},{pid:i,t:p.n}]));
-memState={cards,open:[],matched:[],moves:0,busy:false,done:false,score:0};
-}
+function memStart(){if(!isLabOn('memory'))return;const cards=shuffle(MEM_PAIRS.flatMap((p,i)=>[{pid:i,t:p.s},{pid:i,t:p.n}]));memState={cards,open:[],matched:[],moves:0,busy:false,done:false,score:0}}
 function memFlip(i){
 const st=memState;
 if(!st||st.busy||st.done||st.open.includes(i)||st.matched.includes(i))return;
@@ -2461,6 +2499,7 @@ render();
 }
 function vMemory(){
 const st=memState;
+if(!st)return '<div class="mut">اللعبة موقوفة حالياً</div>';
 if(st.done)return resultCard('مطابقة الرموز',st.score,'memory');
 const cells=st.cards.map((c,i)=>{
 const up=st.open.includes(i)||st.matched.includes(i);
@@ -2469,10 +2508,7 @@ return `<button class="mem-card ${up?'show':''} ${st.matched.includes(i)?'matche
 return `<div class="game-wrap">${gameTop('gameBack()','الألعاب',`<span class="b">المحاولات: ${st.moves}</span><span class="b g">${st.matched.length/2}/${MEM_PAIRS.length}</span>`)}<p class="game-sub" style="text-align:center">اربط الرمز الكيميائي باسم العنصر</p><div class="mem-grid">${cells}</div></div>`;
 }
 
-function huntStart(){
-const picks=shuffle(ELEMENTS_DATA).slice(0,8);
-huntState={rounds:picks.map(t=>({target:t,opts:shuffle([t,...shuffle(ELEMENTS_DATA.filter(e=>e.s!==t.s)).slice(0,3)])})),i:0,score:0,picked:null,done:false};
-}
+function huntStart(){if(!isLabOn('hunt'))return;const picks=shuffle(ELEMENTS_DATA).slice(0,8);huntState={rounds:picks.map(t=>({target:t,opts:shuffle([t,...shuffle(ELEMENTS_DATA.filter(e=>e.s!==t.s)).slice(0,3)])})),i:0,score:0,picked:null,done:false}}
 function huntAnswer(sym){
 const st=huntState;
 if(!st||st.done||st.picked!==null)return;
@@ -2489,6 +2525,7 @@ render();
 }
 function vHunt(){
 const st=huntState;
+if(!st)return '<div class="mut">اللعبة موقوفة حالياً</div>';
 if(st.done)return resultCard('صيد الرموز',st.score,'hunt');
 const r=st.rounds[st.i];
 const opts=r.opts.map(e=>{
@@ -2498,10 +2535,7 @@ return `<button class="quiz-opt ${cls}" ${st.picked!==null?'disabled':''} onclic
 return `<div class="game-wrap">${gameTop('gameBack()','الألعاب',`<span class="b g">النقاط: ${st.score}</span><span class="b y">${st.i+1}/${st.rounds.length}</span>`)}<div class="quiz-arena"><div class="quiz-question" style="direction:rtl">ما رمز عنصر <b>${esc(r.target.n)}</b>؟</div><div class="quiz-options">${opts}</div></div></div>`;
 }
 
-function orderStart(){
-const rounds=[0,1,2].map(()=>shuffle(ELEMENTS_DATA).slice(0,5));
-orderState={rounds,r:0,picked:[],mistakes:0,wrong:null,roundDone:false,score:0,done:false};
-}
+function orderStart(){if(!isLabOn('order'))return;const rounds=[0,1,2].map(()=>shuffle(ELEMENTS_DATA).slice(0,5));orderState={rounds,r:0,picked:[],mistakes:0,wrong:null,roundDone:false,score:0,done:false}}
 function orderPick(sym){
 const st=orderState;
 if(!st||st.done||st.wrong||st.roundDone||st.picked.includes(sym))return;
@@ -2526,6 +2560,7 @@ render();
 }
 function vOrder(){
 const st=orderState;
+if(!st)return '<div class="mut">اللعبة موقوفة حالياً</div>';
 if(st.done)return resultCard('رتّب العناصر',st.score,'order');
 const items=st.rounds[st.r];
 const chain=st.picked.map(s=>{
@@ -2541,7 +2576,7 @@ return `<div class="game-wrap">${gameTop('gameBack()','الألعاب',`<span cl
 }
 
 function balCoefsFor(idx){const eq=BAL_EQUATIONS[idx];return Array(eq.left.length+eq.right.length).fill(1)}
-function balStart(){balState={idx:0,coefs:balCoefsFor(0),wrong:0,score:0,msg:'',done:false}}
+function balStart(){if(!isLabOn('balance'))return;balState={idx:0,coefs:balCoefsFor(0),wrong:0,score:0,msg:'',done:false}}
 function balStep(k,d){
 const st=balState;
 if(!st||st.done)return;
@@ -2574,6 +2609,7 @@ render();
 }
 function vBalance(){
 const st=balState;
+if(!st)return '<div class="mut">اللعبة موقوفة حالياً</div>';
 if(st.done)return resultCard('موازنة المعادلات',st.score,'balance');
 const eq=BAL_EQUATIONS[st.idx];
 const off=eq.left.length;
@@ -2586,7 +2622,7 @@ return `<div class="game-wrap">${gameTop('gameBack()','الألعاب',`<span cl
 function vLabHub(){
 const cards=Object.entries(LAB_INFO).map(([k,info])=>{
 const d=labDone(k),n=LAB_EXPERIMENTS[k].length,pct=Math.round(d/n*100);
-return `<button class="game-card" onclick="openLab('${k}')"><span class="gc-icon">${info.icon}</span><span class="gc-name">${esc(info.name)}</span><span class="gc-desc">${esc(info.desc)}</span><span class="gc-bar"><span style="width:${pct}%"></span></span><span class="gc-meta">${d}/${n} تجربة${d>=n?' ✓':''}</span></button>`;
+return `<button class="game-card ${!isLabOn('lab')?'disabled':''}" onclick="openLab('${k}')"><span class="gc-icon">${info.icon}</span><span class="gc-name">${esc(info.name)}</span><span class="gc-desc">${esc(info.desc)}</span><span class="gc-bar"><span style="width:${pct}%"></span></span><span class="gc-meta">${d}/${n} تجربة${d>=n?' ✓':''}${!isLabOn('lab')?' — موقوف':''}</span></button>`;
 }).join('');
 return `<div class="game-wrap">${gameTop('gameBack()','الألعاب')}<h2 class="game-sub">المختبر الافتراضي</h2><div class="game-grid">${cards}</div></div>`;
 }
@@ -2615,7 +2651,7 @@ return `<div class="game-wrap">${gameTop('gameBack()','الألعاب',`<span cl
 function vQuizHome(){
 const p=quizLeaderData[U.uid]||{};
 const levels=[['easy','🥉','المستوى السهل','تفاعلات أساسية — إعدادي'],['medium','🥈','المستوى المتوسط','إحلال وترسيب'],['hard','🥇','المستوى الصعب','أكسدة واختزال']];
-const cards=levels.map(([k,ic,n,d])=>`<button class="game-card" onclick="quizStart('${k}')"><span class="gc-icon">${ic}</span><span class="gc-name">${n}${p.levels?.[k]?' ✓':''}</span><span class="gc-desc">${d}</span></button>`).join('');
+const cards=levels.map(([k,ic,n,d])=>`<button class="game-card ${!isLabOn('quiz')?'disabled':''}" onclick="quizStart('${k}')"><span class="gc-icon">${ic}</span><span class="gc-name">${n}${p.levels?.[k]?' ✓':''}</span><span class="gc-desc">${d}${!isLabOn('quiz')?' — موقوف':''}</span></button>`).join('');
 return `<div class="game-wrap">${gameTop('gameBack()','الألعاب',`<span class="b">${canPlayNow()?'نقاطك: '+(p.points||0):'وضع المشاهدة'}</span>`)}<h2 class="game-sub">اختر الناتج</h2><div class="game-grid">${cards}</div></div>`;
 }
 function vQuizScreen(){
@@ -2626,9 +2662,9 @@ return `<div class="game-wrap">${gameTop('quizExit()','المستويات',`<spa
 function vGamesHub(){
 const labsProg=Object.keys(LAB_INFO).reduce((s,k)=>s+labDone(k),0);
 const total=Object.values(LAB_EXPERIMENTS).reduce((s,a)=>s+a.length,0);
-const labCard=`<button class="game-card" onclick="openLabHub()"><span class="gc-icon">🔬</span><span class="gc-name">المختبر الافتراضي</span><span class="gc-desc">3 مختبرات بتجارب تفاعلية</span><span class="gc-meta">${labsProg}/${total} تجربة</span></button>`;
-const freeCard=`<button class="game-card special" onclick="openFree()"><span class="gc-icon">🧑‍🔬</span><span class="gc-name">طلع الكيميائي اللي جواك</span><span class="gc-desc">اختر أي عنصرين وشوف التفاعل الناتج</span></button>`;
-const games=GAME_CARDS.map(g=>`<button class="game-card" onclick="openGame('${g.k}')"><span class="gc-icon">${g.i}</span><span class="gc-name">${g.n}</span><span class="gc-desc">${g.d}</span></button>`).join('');
+const labCard=`<button class="game-card ${!isLabOn('lab')?'disabled':''}" onclick="openLabHub()"><span class="gc-icon">🔬</span><span class="gc-name">المختبر الافتراضي</span><span class="gc-desc">3 مختبرات بتجارب تفاعلية${!isLabOn('lab')?' — موقوف':''}</span><span class="gc-meta">${labsProg}/${total} تجربة</span></button>`;
+const freeCard=`<button class="game-card special ${!isLabOn('free')?'disabled':''}" onclick="openFree()"><span class="gc-icon">🧑‍🔬</span><span class="gc-name">طلع الكيميائي اللي جواك</span><span class="gc-desc">اختر أي عنصرين وشوف التفاعل الناتج${!isLabOn('free')?' — موقوف':''}</span></button>`;
+const games=GAME_CARDS.map(g=>`<button class="game-card ${!isLabOn(g.k)?'disabled':''}" onclick="openGame('${g.k}')"><span class="gc-icon">${g.i}</span><span class="gc-name">${g.n}</span><span class="gc-desc">${g.d}${!isLabOn(g.k)?' — موقوف':''}</span></button>`).join('');
 return `<div class="game-wrap">${gameHeader('مختبر سيجما','اختر لعبة وابدأ التحدي')}<div class="game-section">المختبر</div><div class="game-grid">${labCard}${freeCard}</div><div class="game-section">الألعاب</div><div class="game-grid">${games}</div>${arcadeBoard()}</div>`;
 }
 function vGames(){
@@ -2656,7 +2692,8 @@ recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,
 banStudent,unbanStudent,outBan,toggleStudentMenu,
 openGame,openLabHub,openLab,openFree,gameBack,labBack,labPick,labUndo,labClear,labTool,labRun,labNext,
 freePick,freeTool,freeRun,freeReset,quizStart,quizExit,quizAnswer,memFlip,huntAnswer,orderPick,orderNext,balStep,balCheck,
-vGames
+vGames,
+toggleLab,removeFromLeaderboard,removeFromQuizLeader,saveStudentName
 });
 
 window.__bootAfterUnban=async function(){
@@ -2680,4 +2717,4 @@ window.addEventListener('unhandledrejection',e=>{try{console.warn('Unhandled rej
 render();
 </script>
 </body>
-  </html>
+</html>
