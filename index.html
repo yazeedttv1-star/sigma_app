@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="3.1.0">
+<meta name="application-version" content="3.2.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -258,18 +258,17 @@ h2{font-size:18px}
 .lab-header{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;padding:20px;border-radius:var(--r-lg);margin-bottom:16px;box-shadow:var(--shadow)}
 .lab-header h2{color:#fff;margin-bottom:6px;font-size:22px}
 .lab-header p{opacity:.9;font-size:13px;line-height:1.7}
-.lab-labs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px}
-.lab-lab{background:var(--surface);border:2px solid var(--bd);border-radius:var(--r-lg);padding:20px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
-.lab-lab:hover{border-color:var(--ac);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.lab-lab.done{border-color:var(--ok);background:linear-gradient(135deg,#ecfdf5,#d1fae5)}
-html.dark .lab-lab.done{background:rgba(6,78,59,.4)}
-.lab-lab.special{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-color:#8b5cf6}
-html.dark .lab-lab.special{background:rgba(76,29,149,.4);border-color:#a78bfa}
-.lab-lab .ll-icon{font-size:50px;margin-bottom:10px;display:block}
-.lab-lab .ll-name{font-size:16px;font-weight:800;color:var(--tx);margin-bottom:6px}
-.lab-lab .ll-desc{font-size:12px;color:var(--mu);line-height:1.6}
-.lab-lab .ll-prog{font-size:11px;color:var(--ac2);font-weight:700;margin-top:8px}
-.lab-lab .ll-check{position:absolute;top:12px;left:12px;font-size:26px}
+.lab-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:16px}
+.lab-card{background:var(--surface);border:2px solid var(--bd);border-radius:var(--r-lg);padding:24px 20px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.lab-card:hover{border-color:var(--ac);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.lab-card.special{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-color:#8b5cf6}
+html.dark .lab-card.special{background:rgba(76,29,149,.4);border-color:#a78bfa}
+.lab-card .lc-icon{font-size:56px;margin-bottom:12px;display:block}
+.lab-card .lc-name{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:8px}
+.lab-card .lc-desc{font-size:13px;color:var(--mu);line-height:1.7;margin-bottom:12px}
+.lab-card .lc-btn{display:inline-block;background:var(--ac);color:#fff;padding:8px 20px;border-radius:99px;font-size:13px;font-weight:700}
+.lab-card.special .lc-btn{background:#7c3aed}
+.lab-card .lc-badge{position:absolute;top:12px;left:12px;font-size:22px}
 .lab-arena{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
 .lab-top{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;justify-content:space-between;align-items:center}
 .lab-top .info{display:flex;gap:8px;flex-wrap:wrap}
@@ -337,16 +336,24 @@ html.dark .lab-scenario .sc-text{color:#fcd34d}
 .free-lab .free-result .eq{font-size:24px;font-weight:900;color:var(--ac2);direction:ltr;margin-bottom:12px;background:var(--surface2);padding:14px;border-radius:10px}
 .free-lab .free-result .explain{font-size:14px;color:var(--tx2);line-height:1.8}
 .free-lab .free-actions{display:flex;gap:8px;justify-content:center;margin-top:14px}
-.lab-leader{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
-.lab-leader h3{margin-bottom:14px;font-size:17px}
-.lab-leader ol{list-style:none;counter-reset:rank}
-.lab-leader li{counter-increment:rank;padding:10px 14px;margin-bottom:8px;background:var(--surface2);border-radius:10px;display:flex;align-items:center;gap:10px;font-weight:700}
-.lab-leader li::before{content:counter(rank);background:var(--ac);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
-.lab-leader li:nth-child(1)::before{background:linear-gradient(135deg,#fbbf24,#d97706)}
-.lab-leader li:nth-child(2)::before{background:linear-gradient(135deg,#94a3b8,#64748b)}
-.lab-leader li:nth-child(3)::before{background:linear-gradient(135deg,#cd7f32,#92400e)}
-.lab-leader li .lname{flex:1;color:var(--tx)}
-.lab-leader li .lpoints{color:var(--ac2);font-weight:800}
+.quiz-header{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;padding:20px;border-radius:var(--r-lg);margin-bottom:16px;box-shadow:var(--shadow)}
+.quiz-header h2{color:#fff;margin-bottom:6px;font-size:22px}
+.quiz-header p{opacity:.9;font-size:13px;line-height:1.7}
+.quiz-progress{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,#7c3aed,var(--ok));transition:width .4s;border-radius:99px}
+.quiz-arena{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
+.quiz-question{font-size:20px;font-weight:900;color:var(--tx);margin-bottom:20px;line-height:1.7;text-align:center;padding:20px;background:var(--surface2);border-radius:14px;direction:ltr}
+.quiz-options{display:grid;gap:10px}
+.quiz-opt{background:var(--surface);border:2px solid var(--bd);border-radius:12px;padding:14px 18px;font-size:16px;font-weight:700;color:var(--tx);cursor:pointer;transition:.15s;text-align:center;direction:ltr}
+.quiz-opt:hover{border-color:var(--ac);background:var(--ac-soft);transform:translateY(-1px)}
+.quiz-opt.correct{border-color:var(--ok);background:#d1fae5;color:#065f46}
+.quiz-opt.wrong{border-color:var(--er);background:#fee2e2;color:#991b1b}
+.quiz-opt:disabled{cursor:not-allowed;opacity:.7}
+.quiz-feedback{text-align:center;padding:14px;border-radius:12px;margin-top:14px;font-weight:800;font-size:16px;animation:pop .3s}
+.quiz-feedback.ok{background:#d1fae5;color:#065f46}
+.quiz-feedback.no{background:#fee2e2;color:#991b1b}
+.quiz-top{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.quiz-top .info{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -360,7 +367,7 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile,updatePassword,EmailAuthProvider,reauthenticateWithCredential} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
-const APP_VERSION='3.1.0';
+const APP_VERSION='3.2.0';
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
 const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
@@ -430,6 +437,45 @@ let pendingEmbed=null,pendingEmbedSnapshot=null,authGeneration=0,examGuardCleanu
 let banUnsubs=[],bansLiveUnsub=null,bansLiveData={uid:{},phone:{}};
 let labUserData={labs:{},experimentsDone:0,discoveries:0},labActiveLab=null,labCurrentExpIdx=0,labSelectedEls=[],labSelectedTool=null,labShowingResult=false,labLastResult=null;
 let freeLabSelectedEls=[],freeLabSelectedTool=null,freeLabResult=null;
+let quizActiveLevel=null,quizCurrentIndex=0,quizAnswered=false,quizTimer=null,quizLeaderData={};
+const QUIZ_QUESTIONS={
+easy:[
+{q:'2H₂ + O₂ → ?',opts:['2H₂O','H₂O₂','HO','OH'],correct:0},
+{q:'C + O₂ → ?',opts:['CO','CO₂','C₂O','O₂C'],correct:1},
+{q:'Na + Cl₂ → ?',opts:['NaCl₂','Na₂Cl','2NaCl','NaCl'],correct:2},
+{q:'4Fe + 3O₂ → ?',opts:['Fe₂O₃','2Fe₂O₃','FeO','Fe₃O₄'],correct:1},
+{q:'2Mg + O₂ → ?',opts:['MgO','2MgO','MgO₂','Mg₂O'],correct:1},
+{q:'S + O₂ → ?',opts:['SO₂','SO₃','S₂O','SO'],correct:0},
+{q:'2Ca + O₂ → ?',opts:['CaO','CaO₂','2CaO','Ca₂O'],correct:2},
+{q:'N₂ + 3H₂ → ?',opts:['NH₃','2NH₃','N₂H₄','HNO₃'],correct:1},
+{q:'Zn + Cl₂ → ?',opts:['ZnCl','ZnCl₂','Zn₂Cl','ZnCl₃'],correct:1},
+{q:'2Cu + O₂ → ?',opts:['CuO','2CuO','Cu₂O','CuO₂'],correct:1}
+],
+medium:[
+{q:'Zn + CuSO₄ → ?',opts:['ZnS + CuO','ZnSO₄ + Cu','ZnCu + SO₄','ZnO + CuS'],correct:1},
+{q:'AgNO₃ + NaCl → ?',opts:['AgCl + NaNO₃','AgNa + ClNO₃','AgNO₃ + NaCl','AgCl₂ + NaNO₃'],correct:0},
+{q:'BaCl₂ + Na₂SO₄ → ?',opts:['BaSO₄ + 2NaCl','BaNa₂ + ClSO₄','BaS + NaCl','BaO + SO₂ + NaCl'],correct:0},
+{q:'Pb(NO₃)₂ + 2KI → ?',opts:['PbI₂ + 2KNO₃','PbK₂ + I(NO₃)₂','PbI + KNO₃','Pb(NO₃)₂ + KI'],correct:0},
+{q:'CaCl₂ + Na₂CO₃ → ?',opts:['CaCO₃ + 2NaCl','CaNa₂ + ClCO₃','CaO + CO₂ + 2NaCl','CaC + Na₂CO₃'],correct:0},
+{q:'Fe + 2HCl → ?',opts:['FeCl₂ + H₂','FeCl₃ + H₂','FeCl + H','FeH₂ + Cl₂'],correct:0},
+{q:'Mg + 2HCl → ?',opts:['MgCl₂ + H₂','MgCl + H','MgH₂ + Cl₂','MgCl₃ + H₂'],correct:0},
+{q:'Cu + 2AgNO₃ → ?',opts:['Cu(NO₃)₂ + 2Ag','CuAg + NO₃','CuO + AgNO₃','Cu(NO₃) + Ag'],correct:0},
+{q:'CaO + H₂O → ?',opts:['Ca(OH)₂','CaH₂O₂','CaO₂ + H₂','CaOH'],correct:0},
+{q:'2Na + 2H₂O → ?',opts:['2NaOH + H₂','Na₂O + H₂','NaH + H₂O','2NaOH + H₂O'],correct:0}
+],
+hard:[
+{q:'MnO₂ + H₂O₂ → ?',opts:['Mn + H₂O + O₂','Mn₃O₄ + H₂O + O₂','MnO₃ + H₂O','Mn(OH)₄'],correct:1},
+{q:'Cr₂O₇²⁻ + 6Fe²⁺ + 14H⁺ → ?',opts:['2Cr³⁺ + 6Fe³⁺ + 7H₂O','2Cr⁶⁺ + 6Fe³⁺ + 7H₂O','Cr³⁺ + Fe³⁺ + H₂O','CrO₃ + Fe₂O₃ + H₂O'],correct:0},
+{q:'MnO₄⁻ + 5Fe²⁺ + 8H⁺ → ?',opts:['Mn²⁺ + 5Fe³⁺ + 4H₂O','Mn⁴⁺ + 5Fe³⁺ + 4H₂O','Mn⁷⁺ + 5Fe²⁺ + 4H₂O','MnO₂ + Fe₂O₃ + H₂O'],correct:0},
+{q:'Cl₂ + 2KI → ?',opts:['2KCl + I₂','KCl + ICl','KClO + I','KClO₃ + I₂'],correct:0},
+{q:'Cu + 2AgNO₃ → ?',opts:['Cu(NO₃)₂ + 2Ag','CuAg + NO₃','CuO + AgNO₃','Cu(NO₃) + Ag'],correct:0},
+{q:'Na₂S₂O₃ + I₂ → ?',opts:['Na₂S₄O₆ + 2NaI','Na₂SO₄ + I₂','NaS + IO₃','NaI + S + O₂'],correct:0},
+{q:'H₂O₂ + 2KI → ?',opts:['I₂ + 2KOH','KI₂ + H₂O','KOH + I₂O','KI + H₂O₂'],correct:0},
+{q:'K₂CrO₄ + Pb(NO₃)₂ → ?',opts:['PbCrO₄ + 2KNO₃','PbK₂ + Cr(NO₃)₂','PbO + CrO₃ + KNO₃','PbCr₂O₇ + KNO₃'],correct:0},
+{q:'Zn + 2NaOH → ?',opts:['Na₂ZnO₂ + H₂','ZnNa₂ + OH','Zn(OH)₂ + Na','ZnO + NaH'],correct:0},
+{q:'2Fe + 3H₂O → ?',opts:['Fe₂O₃ + 3H₂','Fe(OH)₃ + H₂','Fe₃O₄ + 3H₂','FeH₂ + O₂'],correct:0}
+]
+};
 const LAB_EXPERIMENTS={
 chemistry:[
 {elements:['mg'],tool:'flame',formula:'2Mg + O₂ → 2MgO',result:'ضوء أبيض ساطع + مسحوق أبيض (أكسيد المغنيسيوم)',desc:'احتراق شريط المغنيسيوم في الهواء',scenario:'جرب احتراق المغنيسيوم في الهواء'},
@@ -459,25 +505,8 @@ biology:[
 ]
 };
 const LAB_ELEMENT_LABELS={h:'H₂',o:'O₂',na:'Na',cl:'Cl₂',c:'C',fe:'Fe',mg:'Mg',zn:'Zn',cu:'Cu',s:'S',n:'N₂',ca:'Ca',hcl:'HCl',battery:'بطارية',lamp:'مصباح',wire:'سلك',magnet:'مغناطيس',mirror:'مرآة',light:'ضوء',pea_purple:'بذرة بنفسجية',pea_white:'بذرة بيضاء',adrenaline:'أدرينالين',neuron:'عصبون',stimulus:'مؤثر',flower:'زهرة',bee:'نحلة',dna:'DNA',rna:'RNA'};
-const LAB_TOOLS={
-flame:{label:'لهب',icon:'🔥'},
-water:{label:'ماء',icon:'💧'},
-spark:{label:'شرارة',icon:'⚡'},
-heat:{label:'تسخين',icon:'🔥'},
-mix:{label:'خلط',icon:'🧪'},
-connect:{label:'توصيل',icon:'🔌'},
-reflect:{label:'انعكاس',icon:'🔦'},
-cross:{label:'تهجين',icon:'🌱'},
-inject:{label:'حقن',icon:'💉'},
-trigger:{label:'تحفيز',icon:'⚡'},
-pollinate:{label:'تلقيح',icon:'🐝'},
-transcribe:{label:'نسخ',icon:'🧬'}
-};
-const LAB_INFO={
-chemistry:{name:'مختبر الكيمياء',icon:'⚗️',desc:'تفاعلات الاحتراق والأكسدة',badge:'bronze'},
-physics:{name:'مختبر الفيزياء',icon:'⚡',desc:'الكهرباء والدوائر والطاقة',badge:'silver'},
-biology:{name:'مختبر الأحياء',icon:'🧬',desc:'الوراثة والهرمونات',badge:'gold'}
-};
+const LAB_TOOLS={flame:{label:'لهب',icon:'🔥'},water:{label:'ماء',icon:'💧'},spark:{label:'شرارة',icon:'⚡'},heat:{label:'تسخين',icon:'🔥'},mix:{label:'خلط',icon:'🧪'},connect:{label:'توصيل',icon:'🔌'},reflect:{label:'انعكاس',icon:'🔦'},cross:{label:'تهجين',icon:'🌱'},inject:{label:'حقن',icon:'💉'},trigger:{label:'تحفيز',icon:'⚡'},pollinate:{label:'تلقيح',icon:'🐝'},transcribe:{label:'نسخ',icon:'🧬'}};
+const LAB_INFO={chemistry:{name:'مختبر الكيمياء',icon:'⚗️',desc:'تفاعلات الاحتراق والأكسدة',badge:'bronze'},physics:{name:'مختبر الفيزياء',icon:'⚡',desc:'الكهرباء والدوائر والطاقة',badge:'silver'},biology:{name:'مختبر الأحياء',icon:'🧬',desc:'الوراثة والهرمونات',badge:'gold'}};
 const FREE_LAB_ELEMENTS=['h','o','na','cl','c','fe','mg','zn','cu','s','n','ca','hcl'];
 const FREE_LAB_REACTIONS=[
 {el1:'mg',el2:'o',tool:'flame',formula:'2Mg + O₂ → 2MgO',explain:'احتراق المغنيسيوم ينتج ضوء أبيض ساطع ومسحوق أبيض (أكسيد المغنيسيوم)'},
@@ -629,11 +658,12 @@ unsubs.push(onValue(R('bans/'+u.uid),snap=>{const liveBan=snap.val();if(liveBan)
 const mv=await G('users/'+u.uid+'/videos');
 if(gen!==authGeneration)return;
 mineVideos=mv||{};
-if(!A&&!IS_SUPERVISOR){
 const labSnap=await G('labGame/'+u.uid);
 if(gen!==authGeneration)return;
 labUserData=labSnap||{labs:{},experimentsDone:0,discoveries:0};
-}
+const quizSnap=await G('quizGame/'+u.uid);
+if(gen!==authGeneration)return;
+if(quizSnap&&quizSnap.progress){}
 if(cache.isOffline()){const cached=cache.load();if(cached){teachers=cached.teachers||{};videos=cached.videos||{};library=cached.library||{};news=cached.news||{};loadedTeachers=true;toast('وضع عدم الاتصال')}}
 unsubs.push(onValue(R('teachers'),s=>{teachers=s.val()||{};loadedTeachers=true;cache.save({teachers,videos,library,news});if(S.v!=='watch'&&S.v!=='exam'&&S.v!=='takeExam'&&S.v!=='games')render()},()=>{loadedTeachers=true}));
 unsubs.push(onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch'&&S.v!=='games')render()},()=>{}));
@@ -643,7 +673,8 @@ unsubs.push(onValue(R('exams'),s=>{exams=s.val()||{};if(['exams','exam','takeExa
 unsubs.push(onValue(R('examAttempts/'+u.uid),s=>{examAttempts=s.val()||{};if(['exams','exam','examResult'].includes(S.v))render()},()=>{}));
 if(A){unsubs.push(onValue(R('examAttempts'),s=>{allExamAttempts=s.val()||{};if(S.v==='exam')render()},()=>{}))}
 if(!A&&!IS_SUPERVISOR){unsubs.push(onValue(R('logs'),snap=>{const all=snap.val()||{};const next={};for(const vid in all){if(all[vid]&&all[vid][u.uid])next[vid]=all[vid][u.uid]}myLogs=next;if(S.v==='teacher'||S.v==='myStats')render()},()=>{}))}
-if(!A&&!IS_SUPERVISOR){unsubs.push(onValue(R('labGame/'+u.uid),snap=>{labUserData=snap.val()||{labs:{},experimentsDone:0,discoveries:0};if(S.v==='games')render()},()=>{}))}
+unsubs.push(onValue(R('labGame/'+u.uid),snap=>{labUserData=snap.val()||{labs:{},experimentsDone:0,discoveries:0};if(S.v==='games')render()},()=>{}));
+unsubs.push(onValue(R('quizGame'),snap=>{quizLeaderData=snap.val()||{};if(S.v==='games'&&S.tab==='quiz')render()},()=>{}));
 unsubs.push(onValue(R('notifications/'+u.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()},()=>{}));
 unsubs.push(onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()},()=>{}));
 if(A){unsubs.push(onValue(R('supportTickets'),snap=>{supportTickets=snap.val()||{};if(S.v==='admin'&&S.tab==='support')render()},()=>{}));unsubs.push(onValue(R('adminNotifications'),snap=>{adminNotifications=snap.val()||{};refreshNotifications()},()=>{}))}
@@ -921,7 +952,7 @@ async function unban(uid){if(!A)return toast('غير مصرح');try{const u=awai
 function keepBan(){toast('بقي محظوراً')}
 async function vAdminLab(){
 if(!A)return'<div class="mut">غير مصرح.</div>';
-return `<div class="box"><h2>مختبر سيجما</h2><p style="color:var(--tx2);line-height:1.8">المختبر يحتوي على 3 مختبرات (كيمياء / فيزياء / أحياء) + "طلع الكيميائي اللي جواك" للتجارب الحرة. المحتوى مدمج في الكود ولا يحتاج إدارة.</p><div class="stats-summary"><div class="stat-box"><div class="stat-num">3</div><div class="stat-label">مختبرات</div></div><div class="stat-box ok"><div class="stat-num">20</div><div class="stat-label">تجربة موجّهة</div></div><div class="stat-box warn"><div class="stat-num">15</div><div class="stat-label">تفاعل حر</div></div></div></div>`;
+return `<div class="box"><h2>مختبر سيجما</h2><p style="color:var(--tx2);line-height:1.8">المختبر يحتوي على 4 أقسام: مختبر الكيمياء، مختبر الفيزياء، مختبر الأحياء، و"طلع الكيميائي اللي جواك" (تجارب حرة). المحتوى مدمج في الكود ولا يحتاج إدارة.</p><div class="stats-summary"><div class="stat-box"><div class="stat-num">4</div><div class="stat-label">أقسام</div></div><div class="stat-box ok"><div class="stat-num">20</div><div class="stat-label">تجربة موجّهة</div></div><div class="stat-box warn"><div class="stat-num">15</div><div class="stat-label">تفاعل حر</div></div></div></div>`;
 }
 async function vAdminExams(){
 if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
@@ -1129,11 +1160,77 @@ const avgSeconds=totalViews?Math.round(lg.reduce((s,x)=>s+(x.seconds||0),0)/tota
 return`<button class="s" onclick="go('admin','','videos')">← رجوع</button><h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}</h2><div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px"><div class="stat-box"><div class="stat-num">${cs.length}</div><div class="stat-label">أكواد</div></div><div class="stat-box ok"><div class="stat-num">${cs.filter(x=>!x.used).length}</div><div class="stat-label">متاح</div></div><div class="stat-box"><div class="stat-num">${totalViews}</div><div class="stat-label">فتحوه</div></div><div class="stat-box ok"><div class="stat-num">${completionRate}%</div><div class="stat-label">نسبة الإكمال</div></div><div class="stat-box warn"><div class="stat-num">${Math.round(avgSeconds/60)} د</div><div class="stat-label">متوسط المشاهدة</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end"><div style="width:110px"><label for="gn">العدد</label><input id="gn" type="number" min="1" max="500" value="10" style="margin-bottom:0"></div><button onclick="moreCodes('${esc(id)}')">توليد أكواد</button><button class="s" onclick="moreCodes('${esc(id)}',1)">كود لطالب</button><button class="s" onclick="copyFree('${esc(id)}')">نسخ المتاح</button><button class="s" onclick="exportCodesPDF('${esc(id)}')">تصدير الأكواد PDF</button><button class="s" onclick="go('edit','${esc(id)}','video')">تعديل</button><button class="${v.disabled?'g':'d'}" onclick="toggleVid('${esc(id)}')">${v.disabled?'تفعيل':'إيقاف'}</button><button class="s" onclick="exportPDF('${esc(id)}')">تصدير سجل الطلاب PDF</button><button class="d" onclick="delV('${esc(id)}')">حذف</button></div></div><h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الهاتف</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div><h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th></th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${esc(x.c)}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${esc(x.c)}')">نسخ</button>`}</td></tr>`).join('')}</tbody></table></div>`;
 }
 async function vGames(){
-if(A||IS_SUPERVISOR)return vSettings();
+const canPlay=!A&&!IS_SUPERVISOR;
 if(labActiveLab)return vLabScreen();
 if(freeLabSelectedEls.length||freeLabSelectedTool||freeLabResult)return vFreeLabScreen();
+if(S.tab==='quiz'&&quizActiveLevel)return vQuizScreen();
+if(S.tab==='quiz')return vQuizHome();
 const labs=labUserData?.labs||{};
-return `<div class="lab-wrap"><div class="lab-header"><h2>مختبر سيجما الافتراضي</h2><p>ادخل المختبر، اختر العناصر، واستخدم الأدوات لاكتشاف النتائج بنفسك</p></div><div class="lab-labs">${Object.entries(LAB_INFO).map(([key,info])=>`<div class="lab-lab ${labs[key]?'done':''}" onclick="startLab('${key}')">${labs[key]?'<span class="ll-check">✓</span>':''}<span class="ll-icon">${info.icon}</span><div class="ll-name">${info.name}</div><div class="ll-desc">${info.desc}</div><div class="ll-prog">${(labUserData.labs?.[key]?LAB_EXPERIMENTS[key].length:0)}/${LAB_EXPERIMENTS[key].length} تجربة</div></div>`).join('')}<div class="lab-lab special" onclick="startFreeLab()"><span class="ll-icon">🧑‍🔬</span><div class="ll-name">طلع الكيميائي اللي جواك</div><div class="ll-desc">اعمل أي معادلة بنفسك وشوف نتيجتها</div><div class="ll-prog">${FREE_LAB_REACTIONS.length} تفاعل</div></div></div></div>`;
+return `<div class="lab-wrap"><div class="lab-header"><h2>مختبر سيجما الافتراضي</h2><p>اختر اللعبة التي تريدها</p>${!canPlay?'<p style="background:rgba(255,255,255,.2);padding:8px 14px;border-radius:99px;font-size:12px;margin-top:8px;display:inline-block">أنت الآن في وضع المشاهدة (أدمن/مشرف) — يمكنك تجربة الألعاب لكن لن تُحفظ نتائجك</p>':''}</div><div class="lab-cards"><div class="lab-card" onclick="go('games','','lab')"><span class="lc-icon">🔬</span><div class="lc-name">المختبر الافتراضي</div><div class="lc-desc">3 مختبرات: كيمياء، فيزياء، أحياء + مختبر حر</div><div class="lc-btn">دخول المختبر</div></div><div class="lab-card special" onclick="go('games','','quiz')"><span class="lc-icon">🧪</span><div class="lc-name">اختر الناتج</div><div class="lc-desc">30 سؤالاً على التفاعلات الكيميائية — 3 مستويات</div><div class="lc-btn">ابدأ اللعبة</div></div></div>${S.tab==='lab'||!S.tab?`<div class="lab-labs" style="margin-top:16px">${Object.entries(LAB_INFO).map(([key,info])=>`<div class="lab-lab ${labs[key]?'done':''}" onclick="startLab('${key}')">${labs[key]?'<span class="ll-check">✓</span>':''}<span class="ll-icon">${info.icon}</span><div class="ll-name">${info.name}</div><div class="ll-desc">${info.desc}</div><div class="ll-prog">${(labUserData.labs?.[key]?LAB_EXPERIMENTS[key].length:0)}/${LAB_EXPERIMENTS[key].length} تجربة</div></div>`).join('')}<div class="lab-lab special" onclick="startFreeLab()"><span class="ll-icon">🧑‍🔬</span><div class="ll-name">طلع الكيميائي اللي جواك</div><div class="ll-desc">اعمل أي معادلة بنفسك وشوف نتيجتها</div><div class="ll-prog">${FREE_LAB_REACTIONS.length} تفاعل</div></div></div>`:''}</div>`;
+}
+function vQuizHome(){
+const canPlay=!A&&!IS_SUPERVISOR;
+const progress=quizLeaderData[U.uid]||{};
+const levels=progress.levels||{};
+const topList=Object.entries(quizLeaderData||{}).map(([uid,d])=>({uid,...d})).sort((a,b)=>(b.points||0)-(a.points||0)).slice(0,10);
+return `<div class="lab-wrap"><div class="quiz-header"><h2>اختر الناتج</h2><p>اختبر معرفتك بالتفاعلات الكيميائية</p>${!canPlay?'<p style="background:rgba(255,255,255,.2);padding:8px 14px;border-radius:99px;font-size:12px;margin-top:8px;display:inline-block">أنت الآن في وضع المشاهدة — لن تُحفظ نتائجك</p>':''}</div><div class="lab-top"><button class="s" onclick="go('games','','lab')">← رجوع</button><span class="b">${canPlay?'نقاطك: '+(progress.points||0):'وضع المشاهدة'}</span></div><div class="lab-labs"><div class="lab-lab ${levels.easy?'done':''}" onclick="startQuizLevel('easy')">${levels.easy?'<span class="ll-check">✓</span>':''}<span class="ll-icon">🥉</span><div class="ll-name">المستوى السهل</div><div class="ll-desc">تفاعلات أساسية — إعدادي</div></div><div class="lab-lab ${levels.medium?'done':''}" onclick="startQuizLevel('medium')">${levels.medium?'<span class="ll-check">✓</span>':''}<span class="ll-icon">🥈</span><div class="ll-name">المستوى المتوسط</div><div class="ll-desc">إحلال وترسيب</div></div><div class="lab-lab ${levels.hard?'done':''}" onclick="startQuizLevel('hard')">${levels.hard?'<span class="ll-check">✓</span>':''}<span class="ll-icon">🥇</span><div class="ll-name">المستوى الصعب</div><div class="ll-desc">أكسدة واختزال</div></div></div>${topList.length?`<div class="lab-leader"><h3>المتصدرون</h3><ol>${topList.map(d=>`<li><span class="lname">${esc(d.name||'طالب')}</span><span class="lpoints">${d.points||0} نقطة</span></li>`).join('')}</ol></div>`:''}</div>`;
+}
+function vQuizScreen(){
+const level=quizActiveLevel;
+const name={easy:'السهل',medium:'المتوسط',hard:'الصعب'}[level]||'';
+const allQuestions=QUIZ_QUESTIONS[level]||[];
+const total=allQuestions.length;
+const idx=quizCurrentIndex;
+const q=allQuestions[idx];
+if(!q)return `<div class="box"><div class="mut">اكتملت جميع أسئلة هذا المستوى!</div><button onclick="exitQuizLevel()" style="width:100%;margin-top:14px">العودة للمستويات</button></div>`;
+return `<div class="lab-wrap"><div class="quiz-top"><button class="s" onclick="exitQuizLevel()">← رجوع</button><div class="info"><span class="b g">${name}</span><span class="b y">${idx+1}/${total}</span></div></div><div class="quiz-progress"><div class="quiz-progress-fill" style="width:${(idx/total)*100}%"></div></div><div class="quiz-arena"><div class="quiz-question">${esc(q.q)}</div><div class="quiz-options" id="quizOpts">${q.opts.map((opt,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})" id="quizOpt${i}">${esc(opt)}</button>`).join('')}</div><div id="quizFeedback"></div></div></div>`;
+}
+function startQuizLevel(level){if(!QUIZ_QUESTIONS[level])return;quizActiveLevel=level;quizCurrentIndex=0;quizAnswered=false;S.tab='quiz';render()}
+function exitQuizLevel(){if(quizTimer){clearTimeout(quizTimer);quizTimer=null}quizActiveLevel=null;quizCurrentIndex=0;quizAnswered=false;S.tab='quiz';render()}
+async function answerQuiz(choice){
+if(quizAnswered||!quizActiveLevel)return;
+quizAnswered=true;
+const level=quizActiveLevel;
+const q=QUIZ_QUESTIONS[level][quizCurrentIndex];
+if(!q)return;
+const correctIdx=q.correct;
+const isCorrect=choice===correctIdx;
+document.querySelectorAll('.quiz-opt').forEach((btn,i)=>{btn.disabled=true;if(i===correctIdx)btn.classList.add('correct');else if(i===choice&&!isCorrect)btn.classList.add('wrong')});
+if(!A&&!IS_SUPERVISOR){
+try{
+const ref=R('quizGame/'+U.uid);
+const snap=await get(ref);
+const cur=snap.val()||{};
+cur.points=(cur.points||0)+(isCorrect?10:0);
+cur.correct=(cur.correct||0)+(isCorrect?1:0);
+cur.wrong=(cur.wrong||0)+(isCorrect?0:1);
+cur.name=U.displayName||'طالب';
+cur.lastPlayed=Date.now();
+await set(ref,cur);
+}catch(e){}
+}
+const fb=document.getElementById('quizFeedback');
+if(fb)fb.innerHTML=`<div class="quiz-feedback ${isCorrect?'ok':'no'}">${isCorrect?'إجابة صحيحة! +10 نقاط':'إجابة خاطئة — الإجابة الصحيحة: '+esc(q.opts[correctIdx])}</div>`;
+quizTimer=setTimeout(async()=>{
+const allQ=QUIZ_QUESTIONS[level];
+quizCurrentIndex++;
+if(quizCurrentIndex>=allQ.length){
+if(!A&&!IS_SUPERVISOR){
+try{
+const ref=R('quizGame/'+U.uid);
+const snap=await get(ref);
+const cur=snap.val()||{};
+cur.levels=cur.levels||{};
+if(!cur.levels[level]){cur.levels[level]=true;cur.points=(cur.points||0)+50}
+cur.name=U.displayName||'طالب';
+cur.lastPlayed=Date.now();
+await set(ref,cur);
+}catch(e){}
+}
+quizActiveLevel=null;quizCurrentIndex=0;
+render();
+}else{quizAnswered=false;render()}
+},1600);
 }
 function vFreeLabScreen(){
 const result=freeLabResult;
@@ -1170,7 +1267,7 @@ if(labActiveLab){
 const lab=labActiveLab;
 const experiments=LAB_EXPERIMENTS[lab]||[];
 const done=labCurrentExpIdx>=experiments.length;
-if(done){labUserData.labs=labUserData.labs||{};if(!labUserData.labs[lab]){labUserData.labs[lab]=true;saveLabData()}}
+if(done&&!A&&!IS_SUPERVISOR){labUserData.labs=labUserData.labs||{};if(!labUserData.labs[lab]){labUserData.labs[lab]=true;saveLabData()}}
 }
 labActiveLab=null;labCurrentExpIdx=0;labSelectedEls=[];labSelectedTool=null;labShowingResult=false;labLastResult=null;render();
 }
@@ -1185,7 +1282,7 @@ const exp=experiments[labCurrentExpIdx];
 if(!exp)return;
 if(!labSelectedEls.length||!labSelectedTool)return toast('اختر العناصر والأداة أولاً');
 const isCorrect=exp.elements.every(el=>labSelectedEls.includes(el))&&labSelectedEls.length===exp.elements.length&&labSelectedTool===exp.tool;
-if(isCorrect){labUserData.discoveries=(labUserData.discoveries||0)+1;saveLabData();labShowingResult=true;labLastResult={correct:true,formula:exp.formula,result:exp.result,desc:exp.desc}}
+if(isCorrect){if(!A&&!IS_SUPERVISOR){labUserData.discoveries=(labUserData.discoveries||0)+1;saveLabData()}labShowingResult=true;labLastResult={correct:true,formula:exp.formula,result:exp.result,desc:exp.desc}}
 else{labShowingResult=true;labLastResult={correct:false,formula:'لا يحدث تفاعل متوقع',result:'العناصر أو الأداة غير صحيحة لهذه التجربة',desc:'حاول مرة أخرى بالعناصر والأداة الصحيحة'}}
 render();
 }
@@ -1213,7 +1310,8 @@ filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDis
 recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,
 banStudent,unbanStudent,outBan,toggleStudentMenu,
 startLab,exitLab,selectLabEl,selectLabTool,runLabExp,resetLabExp,nextLabExp,
-startFreeLab,exitFreeLab,selectFreeLabEl,selectFreeLabTool,runFreeLab,resetFreeLab
+startFreeLab,exitFreeLab,selectFreeLabEl,selectFreeLabTool,runFreeLab,resetFreeLab,
+startQuizLevel,exitQuizLevel,answerQuiz
 });
 window.__bootAfterUnban=async function(){
 try{
@@ -1233,6 +1331,7 @@ hideOverlay();
 };
 window.addEventListener('error',e=>{try{console.warn('Global error caught:',e.message)}catch(_){}});
 window.addEventListener('unhandledrejection',e=>{try{console.warn('Unhandled rejection:',e.reason)}catch(_){}});
+onValue(R('quizGame'),snap=>{quizLeaderData=snap.val()||{};if(S.v==='games'&&S.tab==='quiz')render()},()=>{});
 render();
 </script>
 </body>
