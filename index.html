@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="3.5.0">
+<meta name="application-version" content="3.5.1">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -373,7 +373,7 @@ import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistenc
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-const APP_VERSION='3.5.0';
+const APP_VERSION='3.5.1';
 const GRADES_PRIMARY=['الصف الأول الابتدائي','الصف الثاني الابتدائي','الصف الثالث الابتدائي','الصف الرابع الابتدائي','الصف الخامس الابتدائي','الصف السادس الابتدائي'];
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
@@ -395,6 +395,7 @@ setPersistence(auth,browserLocalPersistence).catch(()=>{});
 
 const R=p=>ref(db,p);
 const G=async p=>{try{return (await get(R(p))).val()}catch(e){return null}};
+const GS=async p=>(await get(R(p))).val();
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fd=t=>t?new Date(t).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'-';
@@ -943,7 +944,6 @@ unsubs.push(onValue(R('adminNotifications'),snap=>{adminNotifications=snap.val()
 }
 badge=(await G('settings/badge'))||'';
 if(hasNotifApi()&&Notification.permission==='granted')enableNotifications(true);
-// فحص الجهاز في الخلفية حتى لا يتأخر الرسم
 if(!A&&!IS_SUPERVISOR){
 const gen2=gen;
 enforceSingleDevice().then(ok=>{
@@ -955,10 +955,6 @@ G('bans/'+U.uid).then(b=>{if(b&&gen2===authGeneration)renderBanned(b)}).catch(()
 }).catch(()=>{});
 }
 }catch(e){
-if(gen===authGeneration){
-try{await signOut(auth)}catch(_){}
-toast('تعذر التحقق من حسابك، حاول مرة أخرى');
-}
 hideOverlay();return;
 }
 if(gen!==authGeneration)return;
@@ -2074,7 +2070,7 @@ async function doAddV(){
 if(!A&&!IS_SUPERVISOR)return toast('غير مصرح');
 const v={
 teacherId:$('#vt')?.value||'',
-stage:$('#vs')?.value||'prep',
+stage:$('#vs')?.value||'pri',
 grade:$('#vg')?.value||'',
 title:$('#vn')?.value.trim()||'',
 desc:$('#vd')?.value.trim()||'',
@@ -2096,14 +2092,14 @@ go('vid',k);
 }catch(e){toast('تعذر الحفظ: '+(e.code||e.message))}
 }
 function syncGradeOptions(){
-const stage=$('#vs')?.value||'prep',grade=$('#vg');if(!grade)return;
+const stage=$('#vs')?.value||'pri',grade=$('#vg');if(!grade)return;
 const vals=stage==='pri'?GRADES_PRIMARY:stage==='prep'?GRADES_PREP:GRADES_SEC;
 const previous=grade.value;
 grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
 if(vals.includes(previous))grade.value=previous;
 }
 function syncEditGradeOptions(){
-const stage=$('#evs')?.value||'prep',grade=$('#evg');if(!grade)return;
+const stage=$('#evs')?.value||'pri',grade=$('#evg');if(!grade)return;
 const vals=stage==='pri'?GRADES_PRIMARY:stage==='prep'?GRADES_PREP:GRADES_SEC;
 const previous=grade.value;
 grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
@@ -2145,7 +2141,7 @@ if(!A)return toast('غير مصرح');
 const v=videos[id];if(!v)return;
 const nv={
 teacherId:$('#evt')?.value||'',
-stage:$('#evs')?.value||'prep',
+stage:$('#evs')?.value||'pri',
 grade:$('#evg')?.value||'',
 title:$('#evn')?.value.trim()||'',
 desc:$('#evd')?.value.trim()||'',
