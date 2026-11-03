@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="3.0.0">
+<meta name="application-version" content="3.1.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -258,15 +258,15 @@ h2{font-size:18px}
 .lab-header{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;padding:20px;border-radius:var(--r-lg);margin-bottom:16px;box-shadow:var(--shadow)}
 .lab-header h2{color:#fff;margin-bottom:6px;font-size:22px}
 .lab-header p{opacity:.9;font-size:13px;line-height:1.7}
-.lab-stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.lab-stat{background:rgba(255,255,255,.2);padding:8px 14px;border-radius:99px;font-size:13px;font-weight:700}
-.lab-labs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+.lab-labs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px}
 .lab-lab{background:var(--surface);border:2px solid var(--bd);border-radius:var(--r-lg);padding:20px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
 .lab-lab:hover{border-color:var(--ac);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
 .lab-lab.done{border-color:var(--ok);background:linear-gradient(135deg,#ecfdf5,#d1fae5)}
 html.dark .lab-lab.done{background:rgba(6,78,59,.4)}
+.lab-lab.special{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-color:#8b5cf6}
+html.dark .lab-lab.special{background:rgba(76,29,149,.4);border-color:#a78bfa}
 .lab-lab .ll-icon{font-size:50px;margin-bottom:10px;display:block}
-.lab-lab .ll-name{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:6px}
+.lab-lab .ll-name{font-size:16px;font-weight:800;color:var(--tx);margin-bottom:6px}
 .lab-lab .ll-desc{font-size:12px;color:var(--mu);line-height:1.6}
 .lab-lab .ll-prog{font-size:11px;color:var(--ac2);font-weight:700;margin-top:8px}
 .lab-lab .ll-check{position:absolute;top:12px;left:12px;font-size:26px}
@@ -289,14 +289,12 @@ html.dark .lab-scenario .sc-text{color:#fcd34d}
 .lab-result{background:var(--surface2);border:2px solid var(--ok);border-radius:14px;padding:16px;margin-top:14px;text-align:center;animation:pop .3s}
 .lab-result .res-formula{font-size:20px;font-weight:900;color:var(--ac2);direction:ltr;margin-bottom:10px;background:var(--surface);padding:10px 16px;border-radius:10px;display:inline-block}
 .lab-result .res-desc{font-size:14px;color:var(--tx2);line-height:1.8;max-width:500px;margin:0 auto 10px}
-.lab-result .res-points{display:inline-block;background:var(--ok);color:#fff;padding:6px 18px;border-radius:99px;font-weight:800}
 .lab-result.fail{border-color:var(--er)}
 .lab-result.fail .res-desc{color:var(--er)}
 .lab-elements{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:14px}
 .lab-el{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;cursor:pointer;transition:.15s;box-shadow:0 3px 10px rgba(0,0,0,.2);direction:ltr;position:relative}
 .lab-el:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 6px 16px rgba(0,0,0,.3)}
 .lab-el.selected{outline:4px solid var(--ac);outline-offset:3px;transform:scale(1.1)}
-.lab-el.used{opacity:.3;pointer-events:none}
 .lab-el.h{background:linear-gradient(135deg,#3b82f6,#2563eb)}
 .lab-el.o{background:linear-gradient(135deg,#ef4444,#dc2626)}
 .lab-el.na{background:linear-gradient(135deg,#a855f7,#9333ea)}
@@ -315,6 +313,30 @@ html.dark .lab-scenario .sc-text{color:#fcd34d}
 .lab-tool:hover{border-color:var(--ac);background:var(--ac-soft)}
 .lab-tool.selected{border-color:var(--ac);background:var(--ac-soft);box-shadow:0 0 0 3px var(--ac-soft)}
 .lab-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.free-lab{max-width:900px;margin:0 auto}
+.free-lab .free-input{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
+.free-lab .free-input h3{font-size:16px;margin-bottom:12px;color:var(--tx)}
+.free-lab .free-elements{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.free-lab .free-el{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;cursor:pointer;transition:.15s;direction:ltr}
+.free-lab .free-el:hover{transform:translateY(-2px) scale(1.05)}
+.free-lab .free-el.selected{outline:4px solid var(--ac);outline-offset:2px}
+.free-lab .free-el.h{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.free-lab .free-el.o{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.free-lab .free-el.na{background:linear-gradient(135deg,#a855f7,#9333ea)}
+.free-lab .free-el.cl{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.free-lab .free-el.c{background:linear-gradient(135deg,#64748b,#475569)}
+.free-lab .free-el.fe{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.free-lab .free-el.mg{background:linear-gradient(135deg,#14b8a6,#0d9488)}
+.free-lab .free-el.zn{background:linear-gradient(135deg,#6366f1,#4f46e5)}
+.free-lab .free-el.cu{background:linear-gradient(135deg,#f97316,#ea580c)}
+.free-lab .free-el.s{background:linear-gradient(135deg,#eab308,#ca8a04)}
+.free-lab .free-el.n{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.free-lab .free-el.ca{background:linear-gradient(135deg,#06b6d4,#0891b2)}
+.free-lab .free-result{background:var(--surface);border:2px solid var(--ok);border-radius:var(--r-lg);padding:20px;text-align:center;animation:pop .3s}
+.free-lab .free-result.empty{border-color:var(--bd);color:var(--mu)}
+.free-lab .free-result .eq{font-size:24px;font-weight:900;color:var(--ac2);direction:ltr;margin-bottom:12px;background:var(--surface2);padding:14px;border-radius:10px}
+.free-lab .free-result .explain{font-size:14px;color:var(--tx2);line-height:1.8}
+.free-lab .free-actions{display:flex;gap:8px;justify-content:center;margin-top:14px}
 .lab-leader{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
 .lab-leader h3{margin-bottom:14px;font-size:17px}
 .lab-leader ol{list-style:none;counter-reset:rank}
@@ -325,8 +347,6 @@ html.dark .lab-scenario .sc-text{color:#fcd34d}
 .lab-leader li:nth-child(3)::before{background:linear-gradient(135deg,#cd7f32,#92400e)}
 .lab-leader li .lname{flex:1;color:var(--tx)}
 .lab-leader li .lpoints{color:var(--ac2);font-weight:800}
-.lab-vio{background:#fef3c7;color:#92400e;border:1px solid #fbbf24;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:13px;font-weight:700}
-html.dark .lab-vio{background:#78350f;color:#fcd34d;border-color:#b45309}
 </style>
 </head>
 <body>
@@ -340,7 +360,7 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile,updatePassword,EmailAuthProvider,reauthenticateWithCredential} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
-const APP_VERSION='3.0.0';
+const APP_VERSION='3.1.0';
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
 const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
@@ -408,9 +428,8 @@ let badge='',myPhoto='',myPhone='',userGrade='',hb=null,hbGuard=0,ip=null;
 let unsubs=[],showingBan=false,renderSeq=0,loadedTeachers=false,studentStatsFilter='all';
 let pendingEmbed=null,pendingEmbedSnapshot=null,authGeneration=0,examGuardCleanup=null;
 let banUnsubs=[],bansLiveUnsub=null,bansLiveData={uid:{},phone:{}};
-let presenceUnsubs=[],presenceData={},presenceLiveUnsub=null,presenceHeartbeat=null,presenceSessionId=null;
-const PRESENCE_TTL=2*60*1000;
-let labUserData={points:0,badges:[],labs:{},experimentsDone:0,discoveries:0},labLeaderData={},labActiveLab=null,labCurrentExpIdx=0,labSelectedEls=[],labSelectedTool=null,labShowingResult=false,labLastResult=null;
+let labUserData={labs:{},experimentsDone:0,discoveries:0},labActiveLab=null,labCurrentExpIdx=0,labSelectedEls=[],labSelectedTool=null,labShowingResult=false,labLastResult=null;
+let freeLabSelectedEls=[],freeLabSelectedTool=null,freeLabResult=null;
 const LAB_EXPERIMENTS={
 chemistry:[
 {elements:['mg'],tool:'flame',formula:'2Mg + O₂ → 2MgO',result:'ضوء أبيض ساطع + مسحوق أبيض (أكسيد المغنيسيوم)',desc:'احتراق شريط المغنيسيوم في الهواء',scenario:'جرب احتراق المغنيسيوم في الهواء'},
@@ -436,7 +455,7 @@ biology:[
 {elements:['adrenaline'],tool:'inject',formula:'هرمون الأدرينالين',result:'زيادة سرعة ضربات القلب + اتساع حدقة العين',desc:'تأثير هرمون الأدرينالين',scenario:'جرب تأثير الأدرينالين'},
 {elements:['neuron','stimulus'],tool:'trigger',formula:'الجهاز العصبي',result:'استجابة سريعة للفعل المنعكس',desc:'رد الفعل المنعكس',scenario:'اثبت أن رد الفعل لا إرادي'},
 {elements:['flower','bee'],tool:'pollinate',formula:'التلقيح',result:'تكوين بذور جديدة',desc:'التلقيح في النبات',scenario:'ساعد النحلة في التلقيح'},
-{elements:['dna','rna'],tool:'transcribe',formula:'DNA → RNA → بروتين',desc:'عملية الترجمة الوراثية',result:'تصنيع بروتين جديد',scenario:'جرب نسخ DNA'}
+{elements:['dna','rna'],tool:'transcribe',formula:'DNA → RNA → بروتين',result:'تصنيع بروتين جديد',desc:'عملية الترجمة الوراثية',scenario:'جرب نسخ DNA'}
 ]
 };
 const LAB_ELEMENT_LABELS={h:'H₂',o:'O₂',na:'Na',cl:'Cl₂',c:'C',fe:'Fe',mg:'Mg',zn:'Zn',cu:'Cu',s:'S',n:'N₂',ca:'Ca',hcl:'HCl',battery:'بطارية',lamp:'مصباح',wire:'سلك',magnet:'مغناطيس',mirror:'مرآة',light:'ضوء',pea_purple:'بذرة بنفسجية',pea_white:'بذرة بيضاء',adrenaline:'أدرينالين',neuron:'عصبون',stimulus:'مؤثر',flower:'زهرة',bee:'نحلة',dna:'DNA',rna:'RNA'};
@@ -455,10 +474,28 @@ pollinate:{label:'تلقيح',icon:'🐝'},
 transcribe:{label:'نسخ',icon:'🧬'}
 };
 const LAB_INFO={
-chemistry:{name:'مختبر الكيمياء',icon:'⚗️',desc:'تفاعلات الاحتراق والأكسدة',badge:'bronze',color:'#7c3aed'},
-physics:{name:'مختبر الفيزياء',icon:'⚡',desc:'الكهرباء والدوائر والطاقة',badge:'silver',color:'#0891b2'},
-biology:{name:'مختبر الأحياء',icon:'🧬',desc:'الوراثة والهرمونات',badge:'gold',color:'#16a34a'}
+chemistry:{name:'مختبر الكيمياء',icon:'⚗️',desc:'تفاعلات الاحتراق والأكسدة',badge:'bronze'},
+physics:{name:'مختبر الفيزياء',icon:'⚡',desc:'الكهرباء والدوائر والطاقة',badge:'silver'},
+biology:{name:'مختبر الأحياء',icon:'🧬',desc:'الوراثة والهرمونات',badge:'gold'}
 };
+const FREE_LAB_ELEMENTS=['h','o','na','cl','c','fe','mg','zn','cu','s','n','ca','hcl'];
+const FREE_LAB_REACTIONS=[
+{el1:'mg',el2:'o',tool:'flame',formula:'2Mg + O₂ → 2MgO',explain:'احتراق المغنيسيوم ينتج ضوء أبيض ساطع ومسحوق أبيض (أكسيد المغنيسيوم)'},
+{el1:'na',el2:'o',tool:'flame',formula:'4Na + O₂ → 2Na₂O',explain:'احتراق الصوديوم ينتج لهب أصفر وأكسيد الصوديوم'},
+{el1:'s',el2:'o',tool:'flame',formula:'S + O₂ → SO₂',explain:'احتراق الكبريت بلهب أزرق ينتج ثاني أكسيد الكبريت'},
+{el1:'c',el2:'o',tool:'flame',formula:'C + O₂ → CO₂',explain:'احتراق الكربون ينتج ثاني أكسيد الكربون'},
+{el1:'cu',el2:'o',tool:'flame',formula:'2Cu + O₂ → 2CuO',explain:'أكسدة النحاس تنتج طبقة سوداء من أكسيد النحاس'},
+{el1:'ca',el2:'o',tool:'flame',formula:'2Ca + O₂ → 2CaO',explain:'احتراق الكالسيوم ينتج أكسيد الكالسيوم'},
+{el1:'fe',el2:'o',tool:'water',formula:'4Fe + 3O₂ + H₂O → 2Fe₂O₃·H₂O',explain:'صدأ الحديد في وجود الماء والأكسجين'},
+{el1:'zn',el2:'hcl',tool:'mix',formula:'Zn + 2HCl → ZnCl₂ + H₂',explain:'الزنك مع حمض HCl ينتج غاز الهيدروجين'},
+{el1:'h',el2:'o',tool:'spark',formula:'2H₂ + O₂ → 2H₂O',explain:'احتراق الهيدروجين في الأكسجين ينتج ماء'},
+{el1:'n',el2:'h',tool:'heat',formula:'N₂ + 3H₂ → 2NH₃',explain:'تحضير الأمونيا بالضغط والحرارة'},
+{el1:'na',el2:'cl',tool:'mix',formula:'2Na + Cl₂ → 2NaCl',explain:'احتراق الصوديوم في الكلور ينتج ملح الطعام'},
+{el1:'fe',el2:'hcl',tool:'mix',formula:'Fe + 2HCl → FeCl₂ + H₂',explain:'الحديد مع الحمض ينتج كلوريد الحديدوز وهيدروجين'},
+{el1:'mg',el2:'hcl',tool:'mix',formula:'Mg + 2HCl → MgCl₂ + H₂',explain:'المغنيسيوم مع الحمض ينتج كلوريد المغنيسيوم وهيدروجين'},
+{el1:'cu',el2:'cl',tool:'mix',formula:'Cu + Cl₂ → CuCl₂',explain:'النحاس مع الكلور ينتج كلوريد النحاس'},
+{el1:'zn',el2:'o',tool:'flame',formula:'2Zn + O₂ → 2ZnO',explain:'احتراق الزنك ينتج أكسيد الزنك'}
+];
 const FAV_KEY='sigma-favs';
 const favs={get(){try{return JSON.parse(store.get(FAV_KEY)||'{}')}catch(e){return{}}},has(id){return !!this.get()[id]},toggle(id){const f=this.get();if(f[id])delete f[id];else f[id]=Date.now();store.set(FAV_KEY,JSON.stringify(f));return !!f[id]}};
 const DEVICE_KEY='sigma-device-id';
@@ -515,14 +552,11 @@ const tryUnlock=()=>{checkCount++;if(checkCount<=1)return;if(!uidBanned&&!phoneB
 try{const un1=onValue(R('bans/'+U.uid),snap=>{uidBanned=!!snap.val();tryUnlock()},()=>{});banUnsubs.push(un1)}catch(e){}
 if(phone){try{const un2=onValue(R('bansByPhone/'+phone),snap=>{phoneBanned=!!snap.val();tryUnlock()},()=>{});banUnsubs.push(un2)}catch(e){}}else{phoneBanned=false}
 }
-function outBan(){if(!confirm('هل تريد تسجيل الخروج من الحساب المحظور؟'))return;banUnsubs.forEach(fn=>{try{fn()}catch(e){}});banUnsubs=[];try{clearPresence()}catch(e){}try{signOut(auth).catch(()=>{})}catch(e){}setTimeout(()=>{showingBan=false;if(typeof window.__bootAfterUnban==='function')window.__bootAfterUnban()},400)}
+function outBan(){if(!confirm('هل تريد تسجيل الخروج من الحساب المحظور؟'))return;banUnsubs.forEach(fn=>{try{fn()}catch(e){}});banUnsubs=[];try{signOut(auth).catch(()=>{})}catch(e){}setTimeout(()=>{showingBan=false;if(typeof window.__bootAfterUnban==='function')window.__bootAfterUnban()},400)}
 function clearListeners(){
 unsubs.forEach(fn=>{try{if(typeof fn==='function')fn()}catch(e){}});unsubs=[];
 banUnsubs.forEach(fn=>{try{fn()}catch(e){}});banUnsubs=[];
-presenceUnsubs.forEach(fn=>{try{if(typeof fn==='function')fn()}catch(e){}});presenceUnsubs=[];
 if(typeof bansLiveUnsub==='function'){try{bansLiveUnsub()}catch(e){};bansLiveUnsub=null}
-if(typeof presenceLiveUnsub==='function'){try{presenceLiveUnsub()}catch(e){};presenceLiveUnsub=null}
-stopPresenceHeartbeat();
 }
 function stopHB(){if(hb){clearInterval(hb);hb=null}hbGuard=0}
 const P={type:null,el:null,yt:null,ytTimer:null,seeking:false,token:0};
@@ -562,35 +596,11 @@ document.addEventListener('fullscreenchange',onFsChange);
 document.addEventListener('webkitfullscreenchange',onFsChange);
 function isPlayingForTracking(){if(P.type==='embed')return !document.hidden;if(P.type)return pIsPlaying();return false}
 const go=(v,id,tab,filter)=>{stopHB();destroyPlayer();cleanupExam();S={v,id,tab:tab!==undefined?tab:S.tab,filter:filter!==undefined?filter:S.filter};if(v==='watch'){document.body.classList.add('is-watching')}else{document.body.classList.remove('is-watching')}window.scrollTo({top:0,behavior:'auto'});render()};
-const out=()=>{if(!confirm('هل تريد تسجيل الخروج من حسابك؟'))return;stopHB();destroyPlayer();clearListeners();cleanupExam();try{clearPresence()}catch(e){}signOut(auth).catch(()=>{})};
+const out=()=>{if(!confirm('هل تريد تسجيل الخروج من حسابك؟'))return;stopHB();destroyPlayer();clearListeners();cleanupExam();signOut(auth).catch(()=>{})};
 const inst=async()=>{if(!ip)return;ip.prompt();await ip.userChoice;ip=null;renderTopbar()};
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;if(U)renderTopbar()});
 function refreshNotifications(){const merged={};if(A){Object.entries(adminNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}})}else{Object.entries(broadcastNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}});Object.entries(ownNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...(merged[id]||{}),...n,_key:id}})}notifications=Object.fromEntries(Object.entries(merged).filter(([,n])=>!n.dismissed));const unread=Object.values(notifications).filter(n=>!n.read).length;const dot=document.getElementById('notiBadge');if(dot){dot.textContent=unread>99?'99+':String(unread);dot.style.display=unread?'flex':'none'}}
 function hideOverlay(){setTimeout(()=>{const ov=$('#loading-overlay');if(ov)ov.classList.add('hide')},300)}
-function ensureSessionId(){if(!presenceSessionId){presenceSessionId='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}return presenceSessionId}
-async function sendPresenceBeat(){if(!U||A||IS_SUPERVISOR)return;try{const sid=ensureSessionId();await set(R('presence/'+U.uid),{uid:U.uid,name:U.displayName||'طالب',phone:normPhone(myPhone||''),grade:userGrade||'',device:deviceLabel(),sessionId:sid,lastSeen:Date.now()})}catch(e){}}
-function startPresenceHeartbeat(){stopPresenceHeartbeat();if(!U||A||IS_SUPERVISOR)return;sendPresenceBeat();presenceHeartbeat=setInterval(()=>{if(document.hidden)return;sendPresenceBeat()},45000)}
-function stopPresenceHeartbeat(){if(presenceHeartbeat){clearInterval(presenceHeartbeat);presenceHeartbeat=null}}
-async function clearPresence(){if(!U)return;try{await remove(R('presence/'+U.uid))}catch(e){}}
-window.addEventListener('beforeunload',()=>{try{clearPresence()}catch(e){}});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){}else{if(U&&!A&&!IS_SUPERVISOR)sendPresenceBeat()}});
-async function vAdminActive(){
-if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
-if(presenceLiveUnsub){try{presenceLiveUnsub()}catch(e){};presenceLiveUnsub=null}
-const snap=await G('presence');presenceData=snap||{};
-const un=onValue(R('presence'),s=>{presenceData=s.val()||{};if(S.v==='admin'&&S.tab==='active')renderActiveLive()},()=>{});
-presenceLiveUnsub=()=>{try{un()}catch(e){}};
-return `<div id="activeLiveBox">${buildActiveHTML()}</div>`;
-}
-function renderActiveLive(){const box=document.getElementById('activeLiveBox');if(box)box.innerHTML=buildActiveHTML()}
-function buildActiveHTML(){
-const now=Date.now();
-const list=Object.values(presenceData||{}).filter(p=>p&&p.uid&&(now-(p.lastSeen||0))<=PRESENCE_TTL).sort((a,b)=>(b.lastSeen||0)-(a.lastSeen||0));
-const note=`<div class="notice"><b>ملاحظة:</b> تُحدَّث هذه القائمة تلقائيًا. يُعتبر الطالب نشطًا إذا كانت آخر نبضة له خلال دقيقتين.</div>`;
-if(!list.length)return note+`<div class="mut">لا يوجد طلاب نشطون الآن.</div>`;
-const rows=list.map(p=>{const secs=Math.max(0,Math.round((now-(p.lastSeen||0))/1000));const since=secs<60?`${secs} ثانية`:`${Math.round(secs/60)} دقيقة`;return `<tr><td><b>${esc(p.name||'-')}</b></td><td dir="ltr">${esc(p.phone||'-')}</td><td>${p.grade?`<span class="b">${esc(p.grade)}</span>`:'-'}</td><td><span class="b g">${esc(p.device||'-')}</span></td><td><span class="b y">${since}</span></td></tr>`}).join('');
-return note+`<div class="stats-summary"><div class="stat-box ok"><div class="stat-num">${list.length}</div><div class="stat-label">طالب نشط الآن</div></div></div><h2>الطلاب النشطون الآن (${list.length})</h2><div class="tw"><table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>الجهاز</th><th>آخر نشاط</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
 onAuthStateChanged(auth,async u=>{
 const gen=++authGeneration;
 clearListeners();stopHB();
@@ -613,7 +623,6 @@ if(ban){renderBanned(ban);hideOverlay();return}
 const ok=await enforceSingleDevice();
 if(gen!==authGeneration)return;
 if(!ok){const b=await G('bans/'+u.uid);if(b){renderBanned(b);hideOverlay();return}const pb=phoneKey?await G('bansByPhone/'+phoneKey):null;if(pb){renderBanned(pb);hideOverlay();return}}
-startPresenceHeartbeat();
 if(phoneKey){unsubs.push(onValue(R('bansByPhone/'+phoneKey),snap=>{const liveBan=snap.val();if(liveBan)renderBanned(liveBan)},()=>{}))}
 unsubs.push(onValue(R('bans/'+u.uid),snap=>{const liveBan=snap.val();if(liveBan)renderBanned(liveBan)},()=>{}));
 }
@@ -623,7 +632,7 @@ mineVideos=mv||{};
 if(!A&&!IS_SUPERVISOR){
 const labSnap=await G('labGame/'+u.uid);
 if(gen!==authGeneration)return;
-labUserData=labSnap||{points:0,badges:[],labs:{},experimentsDone:0,discoveries:0};
+labUserData=labSnap||{labs:{},experimentsDone:0,discoveries:0};
 }
 if(cache.isOffline()){const cached=cache.load();if(cached){teachers=cached.teachers||{};videos=cached.videos||{};library=cached.library||{};news=cached.news||{};loadedTeachers=true;toast('وضع عدم الاتصال')}}
 unsubs.push(onValue(R('teachers'),s=>{teachers=s.val()||{};loadedTeachers=true;cache.save({teachers,videos,library,news});if(S.v!=='watch'&&S.v!=='exam'&&S.v!=='takeExam'&&S.v!=='games')render()},()=>{loadedTeachers=true}));
@@ -634,7 +643,7 @@ unsubs.push(onValue(R('exams'),s=>{exams=s.val()||{};if(['exams','exam','takeExa
 unsubs.push(onValue(R('examAttempts/'+u.uid),s=>{examAttempts=s.val()||{};if(['exams','exam','examResult'].includes(S.v))render()},()=>{}));
 if(A){unsubs.push(onValue(R('examAttempts'),s=>{allExamAttempts=s.val()||{};if(S.v==='exam')render()},()=>{}))}
 if(!A&&!IS_SUPERVISOR){unsubs.push(onValue(R('logs'),snap=>{const all=snap.val()||{};const next={};for(const vid in all){if(all[vid]&&all[vid][u.uid])next[vid]=all[vid][u.uid]}myLogs=next;if(S.v==='teacher'||S.v==='myStats')render()},()=>{}))}
-if(!A&&!IS_SUPERVISOR){unsubs.push(onValue(R('labGame/'+u.uid),snap=>{labUserData=snap.val()||{points:0,badges:[],labs:{},experimentsDone:0,discoveries:0};if(S.v==='games')render()},()=>{}))}
+if(!A&&!IS_SUPERVISOR){unsubs.push(onValue(R('labGame/'+u.uid),snap=>{labUserData=snap.val()||{labs:{},experimentsDone:0,discoveries:0};if(S.v==='games')render()},()=>{}))}
 unsubs.push(onValue(R('notifications/'+u.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()},()=>{}));
 unsubs.push(onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()},()=>{}));
 if(A){unsubs.push(onValue(R('supportTickets'),snap=>{supportTickets=snap.val()||{};if(S.v==='admin'&&S.tab==='support')render()},()=>{}));unsubs.push(onValue(R('adminNotifications'),snap=>{adminNotifications=snap.val()||{};refreshNotifications()},()=>{}))}
@@ -752,10 +761,9 @@ const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
 const canNotify=!!hasNotifApi()&&Notification.permission!=='granted';
 const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
 const favCount=Object.keys(favs.get()).length;
-const labPoints=labUserData?.points||0;
-return `<div class="box profile-card"><img src="${esc(photo)}" alt="صورة الملف الشخصي"><h2>${esc(U.displayName||'')}</h2><p dir="ltr">${esc(myPhone||'')}</p>${role}<div class="settings-grid"><div class="settings-btn" onclick="document.getElementById('profile-photo-input').click()"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>تغيير الصورة</span></div>${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myCodes')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>أكوادي (${Object.keys(mineVideos).length})</span></div>`:''}<div class="settings-btn" onclick="go('myFavs')"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>المفضلة (${favCount})</span></div>${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myStats')"><svg viewBox="0 0 24 24"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 3h2v11h-2zm4-6h2v17h-2zm4 9h2v8h-2z"/></svg><span>إحصائياتي</span></div>`:''}${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('games')"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg><span>المختبر (${labPoints})</span></div>`:''}${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('settingsGrade')"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg><span>تغيير الصف</span></div>`:''}<div class="settings-btn" onclick="go('settingsPass')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>كلمة المرور</span></div><div class="settings-btn" onclick="go('settingsSupport')"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg><span>تقديم شكوى</span></div>${canNotify?`<div class="settings-btn" onclick="enableNotifications()"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><span>تفعيل الإشعارات</span></div>`:''}<div class="settings-btn" onclick="out()"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>تسجيل الخروج</span></div></div></div><input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()" style="display:none">`;
+return `<div class="box profile-card"><img src="${esc(photo)}" alt="صورة الملف الشخصي"><h2>${esc(U.displayName||'')}</h2><p dir="ltr">${esc(myPhone||'')}</p>${role}<div class="settings-grid"><div class="settings-btn" onclick="document.getElementById('profile-photo-input').click()"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>تغيير الصورة</span></div>${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myCodes')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>أكوادي (${Object.keys(mineVideos).length})</span></div>`:''}<div class="settings-btn" onclick="go('myFavs')"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>المفضلة (${favCount})</span></div>${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myStats')"><svg viewBox="0 0 24 24"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 3h2v11h-2zm4-6h2v17h-2zm4 9h2v8h-2z"/></svg><span>إحصائياتي</span></div>`:''}${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('games')"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg><span>المختبر</span></div>`:''}${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('settingsGrade')"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg><span>تغيير الصف</span></div>`:''}<div class="settings-btn" onclick="go('settingsPass')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>كلمة المرور</span></div><div class="settings-btn" onclick="go('settingsSupport')"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg><span>تقديم شكوى</span></div>${canNotify?`<div class="settings-btn" onclick="enableNotifications()"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><span>تفعيل الإشعارات</span></div>`:''}<div class="settings-btn" onclick="out()"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>تسجيل الخروج</span></div></div></div><input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()" style="display:none">`;
 }
-async function saveStudentGrade(){if(!U||A||IS_SUPERVISOR)return toast('غير متاح');const grade=$('#student-grade')?.value||'';if(!ALL_GRADES.includes(grade))return toast('اختر صفاً صحيحاً');const btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent='جارٍ الحفظ...'}try{await update(R('users/'+U.uid),{grade});userGrade=grade;sendPresenceBeat();toast('تم حفظ الصف');go('settings')}catch(e){toast('تعذر حفظ الصف');if(btn){btn.disabled=false;btn.textContent='حفظ الصف'}}}
+async function saveStudentGrade(){if(!U||A||IS_SUPERVISOR)return toast('غير متاح');const grade=$('#student-grade')?.value||'';if(!ALL_GRADES.includes(grade))return toast('اختر صفاً صحيحاً');const btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent='جارٍ الحفظ...'}try{await update(R('users/'+U.uid),{grade});userGrade=grade;toast('تم حفظ الصف');go('settings')}catch(e){toast('تعذر حفظ الصف');if(btn){btn.disabled=false;btn.textContent='حفظ الصف'}}}
 async function sendSupportTicket(){if(!U)return toast('سجّل الدخول أولاً');const subject=$('#support-subject')?.value.trim()||'';const message=$('#support-message')?.value.trim()||'';if(subject.length<3)return toast('اكتب عنواناً واضحاً');if(message.length<10)return toast('اكتب تفاصيل أكثر');if(subject.length>120||message.length>3000)return toast('الرسالة أطول من الحد');const btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent='جارٍ الإرسال...'}const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);try{await set(R('supportTickets/'+id),{uid:U.uid,studentName:String(U.displayName||'طالب').slice(0,100),phone:String(myPhone||'').slice(0,20),subject,message,status:'open',createdAt:Date.now()});const sj=$('#support-subject'),ms=$('#support-message');if(sj)sj.value='';if(ms)ms.value='';toast('تم إرسال رسالتك');if(btn){btn.disabled=false;btn.textContent='إرسال للإدارة'}}catch(e){toast('تعذر إرسال الرسالة');if(btn){btn.disabled=false;btn.textContent='إرسال للإدارة'}}}
 async function vAdminSupport(){if(!A)return '<div class="mut">غير مصرح.</div>';const rows=Object.entries(supportTickets||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));if(!rows.length)return '<h2>الشكاوى والاستفسارات</h2><div class="mut">لا توجد رسائل حتى الآن.</div>';return '<h2>الشكاوى والاستفسارات ('+rows.length+')</h2>'+rows.map(([id,t])=>`<div class="box"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>${esc(t.subject||'بدون عنوان')}</b><span class="b ${t.status==='closed'?'g':'y'}">${t.status==='closed'?'مغلقة':'مفتوحة'}</span></div><p style="margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere">${esc(t.message||'')}</p><small style="color:var(--mu)">${esc(t.studentName||'طالب')} · ${esc(t.phone||'')} · ${fd(t.createdAt)}</small><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="s" onclick="setSupportStatus('${esc(id)}','${t.status==='closed'?'open':'closed'}')">${t.status==='closed'?'إعادة فتح':'وضع كمغلقة'}</button><button class="d" onclick="deleteSupportTicket('${esc(id)}')">حذف نهائي</button></div></div>`).join('')}
 async function deleteSupportTicket(id){if(!A)return toast('غير مصرح');if(!confirm('حذف الشكوى نهائياً؟'))return;try{await remove(R('supportTickets/'+id));delete supportTickets[id];toast('تم حذف الشكوى');if(S.v==='admin'&&S.tab==='support')render()}catch(e){toast('تعذر حذف الشكوى')}}
@@ -871,7 +879,7 @@ return`<div class="news-card">${item.photo?`<img src="${esc(item.photo)}" alt="�
 async function vAdmin(){
 if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
 const tab=S.tab||'videos';
-const allowedTabs=A?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['support','الشكاوى والاستفسارات'],['send_notification','إرسال إشعار'],['bans','الحظر'],['active','النشطون الآن'],['lab','المختبر'],['badge','صورة التعريف']]:[['videos','الفيديوهات'],['news','أخبار السنتر'],['exams','الامتحانات']];
+const allowedTabs=A?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['support','الشكاوى والاستفسارات'],['send_notification','إرسال إشعار'],['bans','الحظر'],['lab','المختبر'],['badge','صورة التعريف']]:[['videos','الفيديوهات'],['news','أخبار السنتر'],['exams','الامتحانات']];
 const effTab=allowedTabs.some(([k])=>k===tab)?tab:'videos';
 const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${effTab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
 if(effTab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label for="tn">الاسم</label><input id="tn"><label for="tp">الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><div class="card-img-wrap"><img src="${esc(x.photo||avatarOf(x.name))}" alt=""></div><div class="card-body"><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${esc(id)}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${esc(id)}')">حذف</button></div></div></div>`).join('')}</div>`;
@@ -882,7 +890,6 @@ if(effTab==='exams')return tb+await vAdminExams();
 if(effTab==='support')return tb+await vAdminSupport();
 if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
 if(effTab==='bans')return tb+await vAdminBans();
-if(effTab==='active')return tb+await vAdminActive();
 if(effTab==='lab')return tb+await vAdminLab();
 if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3"></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
 const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
@@ -914,12 +921,7 @@ async function unban(uid){if(!A)return toast('غير مصرح');try{const u=awai
 function keepBan(){toast('بقي محظوراً')}
 async function vAdminLab(){
 if(!A)return'<div class="mut">غير مصرح.</div>';
-const labSnap=await G('labGame');
-const allData=labSnap||{};
-const sorted=Object.entries(allData).map(([uid,d])=>({uid,...d})).sort((a,b)=>(b.points||0)-(a.points||0));
-const users=await G('users')||{};
-const rows=sorted.map((d,i)=>{const u=users[d.uid]||{};return `<tr><td>${i+1}</td><td><b>${esc(u.name||d.name||d.uid.slice(0,8))}</b></td><td>${esc(u.phone||'-')}</td><td>${esc(u.grade||'-')}</td><td><b class="g">${d.points||0}</b></td><td>${(d.badges||[]).length}</td><td>${d.experimentsDone||0}</td><td>${d.discoveries||0}</td></tr>`}).join('');
-return `<div class="box"><h2>إحصائيات مختبر سيجما</h2><div class="stats-summary"><div class="stat-box"><div class="stat-num">${sorted.length}</div><div class="stat-label">طالب جرب</div></div><div class="stat-box ok"><div class="stat-num">${sorted.reduce((s,d)=>s+(d.points||0),0)}</div><div class="stat-label">إجمالي النقاط</div></div><div class="stat-box warn"><div class="stat-num">${sorted.reduce((s,d)=>s+(d.experimentsDone||0),0)}</div><div class="stat-label">تجارب مكتملة</div></div></div></div><div class="box"><h2>ترتيب الطلاب</h2>${!rows?`<div class="mut">لا يوجد لاعبون بعد.</div>`:`<div class="tw"><table><thead><tr><th>#</th><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>النقاط</th><th>الشارات</th><th>تجارب</th><th>اكتشافات</th></tr></thead><tbody>${rows}</tbody></table></div>`}</div><div class="box"><h2>محتوى المختبر</h2><p style="color:var(--tx2);line-height:1.8">المختبر يحتوي على <b>20 تجربة</b> موزعة على 3 مختبرات (كيمياء / فيزياء / أحياء). المحتوى مدمج في الكود.</p></div>`;
+return `<div class="box"><h2>مختبر سيجما</h2><p style="color:var(--tx2);line-height:1.8">المختبر يحتوي على 3 مختبرات (كيمياء / فيزياء / أحياء) + "طلع الكيميائي اللي جواك" للتجارب الحرة. المحتوى مدمج في الكود ولا يحتاج إدارة.</p><div class="stats-summary"><div class="stat-box"><div class="stat-num">3</div><div class="stat-label">مختبرات</div></div><div class="stat-box ok"><div class="stat-num">20</div><div class="stat-label">تجربة موجّهة</div></div><div class="stat-box warn"><div class="stat-num">15</div><div class="stat-label">تفاعل حر</div></div></div></div>`;
 }
 async function vAdminExams(){
 if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
@@ -1129,11 +1131,28 @@ return`<button class="s" onclick="go('admin','','videos')">← رجوع</button>
 async function vGames(){
 if(A||IS_SUPERVISOR)return vSettings();
 if(labActiveLab)return vLabScreen();
-const totalPoints=labUserData?.points||0;
-const badges=labUserData?.badges||[];
+if(freeLabSelectedEls.length||freeLabSelectedTool||freeLabResult)return vFreeLabScreen();
 const labs=labUserData?.labs||{};
-const topList=Object.entries(labLeaderData||{}).map(([uid,d])=>({uid,...d})).sort((a,b)=>(b.points||0)-(a.points||0)).slice(0,10);
-return `<div class="lab-wrap"><div class="lab-header"><h2>مختبر سيجما الافتراضي</h2><p>ادخل المختبر، اختر العناصر، واستخدم الأدوات لاكتشاف النتائج بنفسك</p><div class="lab-stats"><span class="lab-stat">النقاط: ${totalPoints}</span><span class="lab-stat">المختبرات المكتملة: ${Object.keys(labs).length}/3</span>${badges.length?`<span class="lab-stat">الشارات: ${badges.map(b=>({bronze:'🥉',silver:'🥈',gold:'🥇',legend:'🏆'}[b]||'')).join(' ')}</span>`:''}</div></div><div class="lab-labs">${Object.entries(LAB_INFO).map(([key,info])=>`<div class="lab-lab ${labs[key]?'done':''}" onclick="startLab('${key}')">${labs[key]?'<span class="ll-check">✓</span>':''}<span class="ll-icon">${info.icon}</span><div class="ll-name">${info.name}</div><div class="ll-desc">${info.desc}</div><div class="ll-prog">${(labUserData.labs?.[key]?LAB_EXPERIMENTS[key].length:0)}/${LAB_EXPERIMENTS[key].length} تجربة</div></div>`).join('')}</div><div class="lab-leader"><h3>المتصدرون</h3>${topList.length?`<ol>${topList.map((d,i)=>`<li><span class="lname">${esc(d.name||'طالب')}</span><span class="lpoints">${d.points||0} نقطة</span></li>`).join('')}</ol>`:'<div class="mut">لا يوجد لاعبون بعد.</div>'}</div></div>`;
+return `<div class="lab-wrap"><div class="lab-header"><h2>مختبر سيجما الافتراضي</h2><p>ادخل المختبر، اختر العناصر، واستخدم الأدوات لاكتشاف النتائج بنفسك</p></div><div class="lab-labs">${Object.entries(LAB_INFO).map(([key,info])=>`<div class="lab-lab ${labs[key]?'done':''}" onclick="startLab('${key}')">${labs[key]?'<span class="ll-check">✓</span>':''}<span class="ll-icon">${info.icon}</span><div class="ll-name">${info.name}</div><div class="ll-desc">${info.desc}</div><div class="ll-prog">${(labUserData.labs?.[key]?LAB_EXPERIMENTS[key].length:0)}/${LAB_EXPERIMENTS[key].length} تجربة</div></div>`).join('')}<div class="lab-lab special" onclick="startFreeLab()"><span class="ll-icon">🧑‍🔬</span><div class="ll-name">طلع الكيميائي اللي جواك</div><div class="ll-desc">اعمل أي معادلة بنفسك وشوف نتيجتها</div><div class="ll-prog">${FREE_LAB_REACTIONS.length} تفاعل</div></div></div></div>`;
+}
+function vFreeLabScreen(){
+const result=freeLabResult;
+return `<div class="free-lab"><div class="lab-top"><button class="s" onclick="exitFreeLab()">← رجوع</button><div class="info"><span class="b g">🧑‍🔬 طلع الكيميائي اللي جواك</span></div></div><div class="free-lab-input"><h3>اختر عنصرين كيميائيين وجرب التفاعل</h3><div class="free-elements">${FREE_LAB_ELEMENTS.map(el=>`<div class="free-el ${el} ${freeLabSelectedEls.includes(el)?'selected':''}" onclick="selectFreeLabEl('${el}')">${LAB_ELEMENT_LABELS[el]||el}</div>`).join('')}</div></div>${freeLabSelectedEls.length===2?`<div class="free-lab-input"><h3>اختر الأداة (اختياري)</h3><div class="lab-tools">${Object.entries(LAB_TOOLS).map(([key,tool])=>`<div class="lab-tool ${freeLabSelectedTool===key?'selected':''}" onclick="selectFreeLabTool('${key}')">${tool.icon} ${tool.label}</div>`).join('')}</div><div class="free-actions"><button onclick="runFreeLab()">▶ نفذ التفاعل</button><button class="s" onclick="resetFreeLab()">إعادة</button></div></div>`:''}${result?`<div class="free-result"><div class="eq">${esc(result.formula)}</div><div class="explain">${esc(result.explain)}</div><div class="free-actions"><button class="s" onclick="resetFreeLab()">جرب تفاعل آخر</button><button class="s" onclick="exitFreeLab()">العودة للمختبر</button></div></div>`:`<div class="free-result empty"><p>اختر عنصرين لعرض النتيجة</p></div>`}</div>`;
+}
+function startFreeLab(){freeLabSelectedEls=[];freeLabSelectedTool=null;freeLabResult=null;render()}
+function exitFreeLab(){freeLabSelectedEls=[];freeLabSelectedTool=null;freeLabResult=null;render()}
+function selectFreeLabEl(el){if(freeLabResult)return;const idx=freeLabSelectedEls.indexOf(el);if(idx>=0){freeLabSelectedEls.splice(idx,1)}else{if(freeLabSelectedEls.length<2)freeLabSelectedEls.push(el)}freeLabSelectedTool=null;render()}
+function selectFreeLabTool(tool){if(freeLabResult)return;freeLabSelectedTool=tool;render()}
+function resetFreeLab(){freeLabSelectedEls=[];freeLabSelectedTool=null;freeLabResult=null;render()}
+function runFreeLab(){
+if(freeLabSelectedEls.length!==2)return toast('اختر عنصرين');
+const [a,b]=freeLabSelectedEls;
+const reactions=FREE_LAB_REACTIONS.filter(r=>(r.el1===a&&r.el2===b)||(r.el1===b&&r.el2===a));
+if(!reactions.length){freeLabResult={formula:a+' + '+b+' → لا يحدث تفاعل',explain:'هذان العنصران لا يتفاعلان معًا في الظروف العادية. جرب عنصرين آخرين.'};render();return}
+let reaction=reactions[0];
+if(freeLabSelectedTool){const match=reactions.find(r=>r.tool===freeLabSelectedTool);if(match)reaction=match}
+freeLabResult={formula:reaction.formula,explain:reaction.explain};
+render();
 }
 function vLabScreen(){
 const lab=labActiveLab;
@@ -1143,66 +1162,21 @@ const exp=experiments[labCurrentExpIdx];
 if(!exp)return `<div class="box"><div class="mut">اكتملت جميع تجارب هذا المختبر!</div><button onclick="exitLab()" style="width:100%;margin-top:14px">العودة للمختبرات</button></div>`;
 const allEls=[];
 experiments.forEach(e=>e.elements.forEach(el=>{if(!allEls.includes(el))allEls.push(el)}));
-return `<div class="lab-wrap"><div class="lab-top"><button class="s" onclick="exitLab()">← رجوع</button><div class="info"><span class="b g">${info.name}</span><span class="b y">${labCurrentExpIdx+1}/${experiments.length}</span><span class="b">${labUserData.points||0} نقطة</span></div></div><div class="lab-progress"><div class="lab-progress-fill" style="width:${(labCurrentExpIdx/experiments.length)*100}%"></div></div><div class="lab-arena"><div class="lab-scenario"><div class="sc-icon">🎯</div><div class="sc-text">${esc(exp.scenario||'جرب التجربة')}</div></div><div class="lab-tube ${labSelectedEls.length?'has-liquid':''}" id="labTube">${labShowingResult?'':(labSelectedEls.length?`<div class="tube-elements">${labSelectedEls.map((el,i)=>`${i>0?'<span class="tube-plus">+</span>':''}<div class="tube-el lab-el ${el}" style="cursor:default;width:60px;height:60px;font-size:18px">${LAB_ELEMENT_LABELS[el]||el}</div>`).join('')}</div>`:'<div class="tube-hint">اختر العناصر الكيميائية من الأسفل</div>')}${labShowingResult&&labLastResult?`<div class="lab-result ${labLastResult.correct?'':'fail'}"><div class="res-formula">${esc(labLastResult.formula)}</div><div class="res-desc">${esc(labLastResult.result)}</div>${labLastResult.correct?`<div class="res-points">+${labLastResult.points} نقاط</div>`:`<div class="res-desc" style="margin-top:8px">${esc(labLastResult.desc)}</div>`}</div>`:''}</div>${labShowingResult?`<div class="lab-actions"><button onclick="nextLabExp()">${labCurrentExpIdx+1>=experiments.length?'إنهاء المختبر':'التجربة التالية'}</button></div>`:`<div class="lab-elements">${allEls.map(el=>`<div class="lab-el ${el} ${labSelectedEls.includes(el)?'selected':''}" onclick="selectLabEl('${el}')">${LAB_ELEMENT_LABELS[el]||el}</div>`).join('')}</div><div class="lab-tools">${Object.entries(LAB_TOOLS).map(([key,tool])=>`<div class="lab-tool ${labSelectedTool===key?'selected':''}" onclick="selectLabTool('${key}')">${tool.icon} ${tool.label}</div>`).join('')}</div><div class="lab-actions"><button onclick="runLabExp()" ${(!labSelectedEls.length||!labSelectedTool)?'disabled':''}>▶ تنفيذ التجربة</button><button class="s" onclick="resetLabExp()">إعادة</button></div>`}</div></div>`;
+return `<div class="lab-wrap"><div class="lab-top"><button class="s" onclick="exitLab()">← رجوع</button><div class="info"><span class="b g">${info.name}</span><span class="b y">${labCurrentExpIdx+1}/${experiments.length}</span></div></div><div class="lab-progress"><div class="lab-progress-fill" style="width:${(labCurrentExpIdx/experiments.length)*100}%"></div></div><div class="lab-arena"><div class="lab-scenario"><div class="sc-icon">🎯</div><div class="sc-text">${esc(exp.scenario||'جرب التجربة')}</div></div><div class="lab-tube ${labSelectedEls.length?'has-liquid':''}" id="labTube">${labShowingResult?'':(labSelectedEls.length?`<div class="tube-elements">${labSelectedEls.map((el,i)=>`${i>0?'<span class="tube-plus">+</span>':''}<div class="tube-el lab-el ${el}" style="cursor:default;width:60px;height:60px;font-size:18px">${LAB_ELEMENT_LABELS[el]||el}</div>`).join('')}</div>`:'<div class="tube-hint">اختر العناصر الكيميائية من الأسفل</div>')}${labShowingResult&&labLastResult?`<div class="lab-result ${labLastResult.correct?'':'fail'}"><div class="res-formula">${esc(labLastResult.formula)}</div><div class="res-desc">${esc(labLastResult.result)}</div>${labLastResult.correct?`<div class="res-desc" style="color:var(--ok);font-weight:800">${esc(labLastResult.desc)}</div>`:`<div class="res-desc" style="margin-top:8px">${esc(labLastResult.desc)}</div>`}</div>`:''}</div>${labShowingResult?`<div class="lab-actions"><button onclick="nextLabExp()">${labCurrentExpIdx+1>=experiments.length?'إنهاء المختبر':'التجربة التالية'}</button></div>`:`<div class="lab-elements">${allEls.map(el=>`<div class="lab-el ${el} ${labSelectedEls.includes(el)?'selected':''}" onclick="selectLabEl('${el}')">${LAB_ELEMENT_LABELS[el]||el}</div>`).join('')}</div><div class="lab-tools">${Object.entries(LAB_TOOLS).map(([key,tool])=>`<div class="lab-tool ${labSelectedTool===key?'selected':''}" onclick="selectLabTool('${key}')">${tool.icon} ${tool.label}</div>`).join('')}</div><div class="lab-actions"><button onclick="runLabExp()" ${(!labSelectedEls.length||!labSelectedTool)?'disabled':''}>▶ تنفيذ التجربة</button><button class="s" onclick="resetLabExp()">إعادة</button></div>`}</div></div>`;
 }
-function startLab(lab){
-if(!LAB_EXPERIMENTS[lab])return;
-labActiveLab=lab;
-labCurrentExpIdx=0;
-labSelectedEls=[];
-labSelectedTool=null;
-labShowingResult=false;
-labLastResult=null;
-render();
-}
+function startLab(lab){if(!LAB_EXPERIMENTS[lab])return;labActiveLab=lab;labCurrentExpIdx=0;labSelectedEls=[];labSelectedTool=null;labShowingResult=false;labLastResult=null;render()}
 function exitLab(){
 if(labActiveLab){
 const lab=labActiveLab;
 const experiments=LAB_EXPERIMENTS[lab]||[];
 const done=labCurrentExpIdx>=experiments.length;
-if(done){
-labUserData.labs=labUserData.labs||{};
-if(!labUserData.labs[lab]){
-labUserData.labs[lab]=true;
-labUserData.points=(labUserData.points||0)+50;
-const badgeName=LAB_INFO[lab].badge;
-labUserData.badges=labUserData.badges||[];
-if(!labUserData.badges.includes(badgeName))labUserData.badges.push(badgeName);
-if(Object.keys(labUserData.labs).length===3){
-if(!labUserData.badges.includes('legend'))labUserData.badges.push('legend');
-labUserData.points+=200;
+if(done){labUserData.labs=labUserData.labs||{};if(!labUserData.labs[lab]){labUserData.labs[lab]=true;saveLabData()}}
 }
-saveLabData();
+labActiveLab=null;labCurrentExpIdx=0;labSelectedEls=[];labSelectedTool=null;labShowingResult=false;labLastResult=null;render();
 }
-}
-}
-labActiveLab=null;
-labCurrentExpIdx=0;
-labSelectedEls=[];
-labSelectedTool=null;
-labShowingResult=false;
-labLastResult=null;
-render();
-}
-function selectLabEl(el){
-if(labShowingResult)return;
-const idx=labSelectedEls.indexOf(el);
-if(idx>=0){labSelectedEls.splice(idx,1)}
-else{if(labSelectedEls.length<2)labSelectedEls.push(el)}
-render();
-}
-function selectLabTool(tool){
-if(labShowingResult)return;
-labSelectedTool=tool;
-render();
-}
-function resetLabExp(){
-labSelectedEls=[];
-labSelectedTool=null;
-labShowingResult=false;
-labLastResult=null;
-render();
-}
+function selectLabEl(el){if(labShowingResult)return;const idx=labSelectedEls.indexOf(el);if(idx>=0){labSelectedEls.splice(idx,1)}else{if(labSelectedEls.length<2)labSelectedEls.push(el)}render()}
+function selectLabTool(tool){if(labShowingResult)return;labSelectedTool=tool;render()}
+function resetLabExp(){labSelectedEls=[];labSelectedTool=null;labShowingResult=false;labLastResult=null;render()}
 async function runLabExp(){
 const lab=labActiveLab;
 if(!lab)return;
@@ -1211,18 +1185,8 @@ const exp=experiments[labCurrentExpIdx];
 if(!exp)return;
 if(!labSelectedEls.length||!labSelectedTool)return toast('اختر العناصر والأداة أولاً');
 const isCorrect=exp.elements.every(el=>labSelectedEls.includes(el))&&labSelectedEls.length===exp.elements.length&&labSelectedTool===exp.tool;
-labUserData.experimentsDone=(labUserData.experimentsDone||0)+1;
-if(isCorrect){
-labUserData.points=(labUserData.points||0)+10;
-labUserData.discoveries=(labUserData.discoveries||0)+1;
-await saveLabData();
-labShowingResult=true;
-labLastResult={correct:true,formula:exp.formula,result:exp.result,desc:exp.desc,points:10};
-}else{
-await saveLabData();
-labShowingResult=true;
-labLastResult={correct:false,formula:'لا يحدث تفاعل متوقع',result:'العناصر أو الأداة غير صحيحة لهذه التجربة',desc:'حاول مرة أخرى بالعناصر والأداة الصحيحة',points:0};
-}
+if(isCorrect){labUserData.discoveries=(labUserData.discoveries||0)+1;saveLabData();labShowingResult=true;labLastResult={correct:true,formula:exp.formula,result:exp.result,desc:exp.desc}}
+else{labShowingResult=true;labLastResult={correct:false,formula:'لا يحدث تفاعل متوقع',result:'العناصر أو الأداة غير صحيحة لهذه التجربة',desc:'حاول مرة أخرى بالعناصر والأداة الصحيحة'}}
 render();
 }
 function nextLabExp(){
@@ -1236,20 +1200,7 @@ const experiments=LAB_EXPERIMENTS[lab]||[];
 if(labCurrentExpIdx>=experiments.length){exitLab();return}
 render();
 }
-async function saveLabData(){
-if(!U||A||IS_SUPERVISOR)return;
-try{
-await set(R('labGame/'+U.uid),{
-name:U.displayName||'طالب',
-points:labUserData.points||0,
-badges:labUserData.badges||[],
-labs:labUserData.labs||{},
-experimentsDone:labUserData.experimentsDone||0,
-discoveries:labUserData.discoveries||0,
-lastPlayed:Date.now()
-});
-}catch(e){}
-}
+async function saveLabData(){if(!U||A||IS_SUPERVISOR)return;try{await set(R('labGame/'+U.uid),{name:U.displayName||'طالب',labs:labUserData.labs||{},experimentsDone:labUserData.experimentsDone||0,discoveries:labUserData.discoveries||0,lastPlayed:Date.now()})}catch(e){}}
 Object.assign(window,{
 go,out,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,exportCodesPDF,
 toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,
@@ -1261,8 +1212,8 @@ filterStudents,delNoti,clearAllMyNotis,enableNotifications,changePassword,setSta
 filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,
 recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,
 banStudent,unbanStudent,outBan,toggleStudentMenu,
-sendPresenceBeat,clearPresence,
-startLab,exitLab,selectLabEl,selectLabTool,runLabExp,resetLabExp,nextLabExp
+startLab,exitLab,selectLabEl,selectLabTool,runLabExp,resetLabExp,nextLabExp,
+startFreeLab,exitFreeLab,selectFreeLabEl,selectFreeLabTool,runFreeLab,resetFreeLab
 });
 window.__bootAfterUnban=async function(){
 try{
@@ -1276,14 +1227,12 @@ if(pb){renderBanned(pb);return}
 if(b){renderBanned(b);return}
 }
 render();
-startPresenceHeartbeat();
 }else{render()}
 hideOverlay();
 }catch(e){try{render()}catch(_){}}
 };
 window.addEventListener('error',e=>{try{console.warn('Global error caught:',e.message)}catch(_){}});
 window.addEventListener('unhandledrejection',e=>{try{console.warn('Unhandled rejection:',e.reason)}catch(_){}});
-onValue(R('labGame'),snap=>{labLeaderData=snap.val()||{};if(S.v==='games')render()},()=>{});
 render();
 </script>
 </body>
