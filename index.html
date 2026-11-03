@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="2.9.0">
+<meta name="application-version" content="3.0.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -254,46 +254,79 @@ h2{font-size:18px}
 .stats-table{font-size:11px}
 .stats-table th,.stats-table td{padding:8px 6px}
 }
-.quiz-wrap{max-width:800px;margin:0 auto}
-.quiz-header{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;padding:18px 20px;border-radius:var(--r-lg);margin-bottom:16px;box-shadow:var(--shadow)}
-.quiz-header h2{color:#fff;margin-bottom:6px;font-size:20px}
-.quiz-header p{opacity:.9;font-size:13px}
-.quiz-stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.quiz-stat{background:rgba(255,255,255,.2);padding:8px 14px;border-radius:99px;font-size:13px;font-weight:700}
-.quiz-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
-.quiz-level{background:var(--surface);border:2px solid var(--bd);border-radius:var(--r-lg);padding:18px;text-align:center;cursor:pointer;transition:.2s;position:relative}
-.quiz-level:hover{border-color:var(--ac);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.quiz-level.done{border-color:var(--ok);background:linear-gradient(135deg,#ecfdf5,#d1fae5)}
-html.dark .quiz-level.done{background:rgba(6,78,59,.4)}
-.quiz-level .lv-icon{font-size:40px;margin-bottom:8px}
-.quiz-level .lv-name{font-size:16px;font-weight:800;color:var(--tx);margin-bottom:4px}
-.quiz-level .lv-desc{font-size:12px;color:var(--mu)}
-.quiz-level .lv-check{position:absolute;top:10px;left:10px;font-size:24px}
-.quiz-arena{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
-.quiz-progress{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:16px}
-.quiz-progress-fill{height:100%;background:linear-gradient(90deg,#7c3aed,var(--ok));transition:width .4s;border-radius:99px}
-.quiz-question{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:16px;line-height:1.7;text-align:center;padding:16px;background:var(--surface2);border-radius:12px;direction:ltr}
-.quiz-options{display:grid;gap:10px}
-.quiz-opt{background:var(--surface);border:2px solid var(--bd);border-radius:12px;padding:14px 18px;font-size:16px;font-weight:700;color:var(--tx);cursor:pointer;transition:.15s;text-align:center;direction:ltr}
-.quiz-opt:hover{border-color:var(--ac);background:var(--ac-soft);transform:translateY(-1px)}
-.quiz-opt.correct{border-color:var(--ok);background:#d1fae5;color:#065f46}
-.quiz-opt.wrong{border-color:var(--er);background:#fee2e2;color:#991b1b}
-.quiz-opt:disabled{cursor:not-allowed;opacity:.7}
-.quiz-feedback{text-align:center;padding:14px;border-radius:12px;margin-top:14px;font-weight:800;font-size:16px}
-.quiz-feedback.ok{background:#d1fae5;color:#065f46}
-.quiz-feedback.no{background:#fee2e2;color:#991b1b}
-.quiz-top{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:space-between;align-items:center}
-.quiz-top .info{display:flex;gap:8px;flex-wrap:wrap}
-.quiz-leader{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
-.quiz-leader h3{margin-bottom:14px;font-size:17px}
-.quiz-leader ol{list-style:none;counter-reset:rank}
-.quiz-leader li{counter-increment:rank;padding:10px 14px;margin-bottom:8px;background:var(--surface2);border-radius:10px;display:flex;align-items:center;gap:10px;font-weight:700}
-.quiz-leader li::before{content:counter(rank);background:var(--ac);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
-.quiz-leader li:nth-child(1)::before{background:linear-gradient(135deg,#fbbf24,#d97706)}
-.quiz-leader li:nth-child(2)::before{background:linear-gradient(135deg,#94a3b8,#64748b)}
-.quiz-leader li:nth-child(3)::before{background:linear-gradient(135deg,#cd7f32,#92400e)}
-.quiz-leader li .lname{flex:1;color:var(--tx)}
-.quiz-leader li .lpoints{color:var(--ac2);font-weight:800}
+.lab-wrap{max-width:900px;margin:0 auto}
+.lab-header{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;padding:20px;border-radius:var(--r-lg);margin-bottom:16px;box-shadow:var(--shadow)}
+.lab-header h2{color:#fff;margin-bottom:6px;font-size:22px}
+.lab-header p{opacity:.9;font-size:13px;line-height:1.7}
+.lab-stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.lab-stat{background:rgba(255,255,255,.2);padding:8px 14px;border-radius:99px;font-size:13px;font-weight:700}
+.lab-labs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+.lab-lab{background:var(--surface);border:2px solid var(--bd);border-radius:var(--r-lg);padding:20px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.lab-lab:hover{border-color:var(--ac);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.lab-lab.done{border-color:var(--ok);background:linear-gradient(135deg,#ecfdf5,#d1fae5)}
+html.dark .lab-lab.done{background:rgba(6,78,59,.4)}
+.lab-lab .ll-icon{font-size:50px;margin-bottom:10px;display:block}
+.lab-lab .ll-name{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:6px}
+.lab-lab .ll-desc{font-size:12px;color:var(--mu);line-height:1.6}
+.lab-lab .ll-prog{font-size:11px;color:var(--ac2);font-weight:700;margin-top:8px}
+.lab-lab .ll-check{position:absolute;top:12px;left:12px;font-size:26px}
+.lab-arena{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
+.lab-top{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.lab-top .info{display:flex;gap:8px;flex-wrap:wrap}
+.lab-progress{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.lab-progress-fill{height:100%;background:linear-gradient(90deg,#0891b2,var(--ok));transition:width .4s;border-radius:99px}
+.lab-scenario{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #f59e0b;border-radius:14px;padding:16px;margin-bottom:16px;text-align:center}
+html.dark .lab-scenario{background:rgba(120,53,15,.4);border-color:#b45309}
+.lab-scenario .sc-icon{font-size:32px;margin-bottom:8px}
+.lab-scenario .sc-text{font-size:15px;font-weight:800;color:#78350f;line-height:1.7}
+html.dark .lab-scenario .sc-text{color:#fcd34d}
+.lab-tube{background:linear-gradient(180deg,rgba(224,242,254,.3),rgba(186,230,253,.5));border:3px solid var(--bd);border-radius:0 0 50px 50px;min-height:200px;margin-bottom:16px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.lab-tube.has-liquid{background:linear-gradient(180deg,rgba(224,242,254,.3),rgba(96,165,250,.4))}
+.lab-tube .tube-hint{font-size:14px;color:var(--mu);font-weight:700}
+.lab-tube .tube-elements{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.lab-tube .tube-el{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.25);direction:ltr}
+.lab-tube .tube-plus{font-size:32px;font-weight:900;color:var(--mu)}
+.lab-result{background:var(--surface2);border:2px solid var(--ok);border-radius:14px;padding:16px;margin-top:14px;text-align:center;animation:pop .3s}
+.lab-result .res-formula{font-size:20px;font-weight:900;color:var(--ac2);direction:ltr;margin-bottom:10px;background:var(--surface);padding:10px 16px;border-radius:10px;display:inline-block}
+.lab-result .res-desc{font-size:14px;color:var(--tx2);line-height:1.8;max-width:500px;margin:0 auto 10px}
+.lab-result .res-points{display:inline-block;background:var(--ok);color:#fff;padding:6px 18px;border-radius:99px;font-weight:800}
+.lab-result.fail{border-color:var(--er)}
+.lab-result.fail .res-desc{color:var(--er)}
+.lab-elements{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:14px}
+.lab-el{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;cursor:pointer;transition:.15s;box-shadow:0 3px 10px rgba(0,0,0,.2);direction:ltr;position:relative}
+.lab-el:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.lab-el.selected{outline:4px solid var(--ac);outline-offset:3px;transform:scale(1.1)}
+.lab-el.used{opacity:.3;pointer-events:none}
+.lab-el.h{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.lab-el.o{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.lab-el.na{background:linear-gradient(135deg,#a855f7,#9333ea)}
+.lab-el.cl{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.lab-el.c{background:linear-gradient(135deg,#64748b,#475569)}
+.lab-el.fe{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.lab-el.mg{background:linear-gradient(135deg,#14b8a6,#0d9488)}
+.lab-el.zn{background:linear-gradient(135deg,#6366f1,#4f46e5)}
+.lab-el.cu{background:linear-gradient(135deg,#f97316,#ea580c)}
+.lab-el.s{background:linear-gradient(135deg,#eab308,#ca8a04)}
+.lab-el.n{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.lab-el.ca{background:linear-gradient(135deg,#06b6d4,#0891b2)}
+.lab-el.hcl{background:linear-gradient(135deg,#ec4899,#db2777)}
+.lab-tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px}
+.lab-tool{background:var(--surface);border:2px solid var(--bd);border-radius:12px;padding:10px 18px;font-size:14px;font-weight:700;color:var(--tx);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px}
+.lab-tool:hover{border-color:var(--ac);background:var(--ac-soft)}
+.lab-tool.selected{border-color:var(--ac);background:var(--ac-soft);box-shadow:0 0 0 3px var(--ac-soft)}
+.lab-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.lab-leader{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;margin-bottom:16px}
+.lab-leader h3{margin-bottom:14px;font-size:17px}
+.lab-leader ol{list-style:none;counter-reset:rank}
+.lab-leader li{counter-increment:rank;padding:10px 14px;margin-bottom:8px;background:var(--surface2);border-radius:10px;display:flex;align-items:center;gap:10px;font-weight:700}
+.lab-leader li::before{content:counter(rank);background:var(--ac);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.lab-leader li:nth-child(1)::before{background:linear-gradient(135deg,#fbbf24,#d97706)}
+.lab-leader li:nth-child(2)::before{background:linear-gradient(135deg,#94a3b8,#64748b)}
+.lab-leader li:nth-child(3)::before{background:linear-gradient(135deg,#cd7f32,#92400e)}
+.lab-leader li .lname{flex:1;color:var(--tx)}
+.lab-leader li .lpoints{color:var(--ac2);font-weight:800}
+.lab-vio{background:#fef3c7;color:#92400e;border:1px solid #fbbf24;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:13px;font-weight:700}
+html.dark .lab-vio{background:#78350f;color:#fcd34d;border-color:#b45309}
 </style>
 </head>
 <body>
@@ -307,7 +340,7 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile,updatePassword,EmailAuthProvider,reauthenticateWithCredential} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
-const APP_VERSION='2.9.0';
+const APP_VERSION='3.0.0';
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
 const ALL_GRADES=[...GRADES_PREP,...GRADES_SEC];
@@ -377,44 +410,54 @@ let pendingEmbed=null,pendingEmbedSnapshot=null,authGeneration=0,examGuardCleanu
 let banUnsubs=[],bansLiveUnsub=null,bansLiveData={uid:{},phone:{}};
 let presenceUnsubs=[],presenceData={},presenceLiveUnsub=null,presenceHeartbeat=null,presenceSessionId=null;
 const PRESENCE_TTL=2*60*1000;
-let gamesUserData={points:0,badges:[],levels:{},attempts:0,correct:0,wrong:0},gamesLeaderData={},quizActiveLevel=null,quizCurrentIndex=0,quizAnswered=false,quizTimer=null,quizStartTime=0;
-const QUIZ_QUESTIONS={
-easy:[
-{q:'2H₂ + O₂ → ?',opts:['2H₂O','H₂O₂','HO','OH'],correct:0},
-{q:'C + O₂ → ?',opts:['CO','CO₂','C₂O','O₂C'],correct:1},
-{q:'Na + Cl₂ → ?',opts:['NaCl₂','Na₂Cl','2NaCl','NaCl'],correct:2},
-{q:'4Fe + 3O₂ → ?',opts:['Fe₂O₃','2Fe₂O₃','FeO','Fe₃O₄'],correct:1},
-{q:'2Mg + O₂ → ?',opts:['MgO','2MgO','MgO₂','Mg₂O'],correct:1},
-{q:'S + O₂ → ?',opts:['SO₂','SO₃','S₂O','SO'],correct:0},
-{q:'2Ca + O₂ → ?',opts:['CaO','CaO₂','2CaO','Ca₂O'],correct:2},
-{q:'N₂ + 3H₂ → ?',opts:['NH₃','2NH₃','N₂H₄','HNO₃'],correct:1},
-{q:'Zn + Cl₂ → ?',opts:['ZnCl','ZnCl₂','Zn₂Cl','ZnCl₃'],correct:1},
-{q:'2Cu + O₂ → ?',opts:['CuO','2CuO','Cu₂O','CuO₂'],correct:1}
+let labUserData={points:0,badges:[],labs:{},experimentsDone:0,discoveries:0},labLeaderData={},labActiveLab=null,labCurrentExpIdx=0,labSelectedEls=[],labSelectedTool=null,labShowingResult=false,labLastResult=null;
+const LAB_EXPERIMENTS={
+chemistry:[
+{elements:['mg'],tool:'flame',formula:'2Mg + O₂ → 2MgO',result:'ضوء أبيض ساطع + مسحوق أبيض (أكسيد المغنيسيوم)',desc:'احتراق شريط المغنيسيوم في الهواء',scenario:'جرب احتراق المغنيسيوم في الهواء'},
+{elements:['na'],tool:'flame',formula:'4Na + O₂ → 2Na₂O',result:'لهب أصفر + مسحوق أبيض (أكسيد الصوديوم)',desc:'احتراق الصوديوم في الهواء',scenario:'جرب احتراق الصوديوم'},
+{elements:['s'],tool:'flame',formula:'S + O₂ → SO₂',result:'لهب أزرق + غاز ثاني أكسيد الكبريت',desc:'احتراق الكبريت في الهواء',scenario:'جرب احتراق الكبريت'},
+{elements:['c'],tool:'flame',formula:'C + O₂ → CO₂',result:'لهب أحمر + غاز ثاني أكسيد الكربون',desc:'احتراق الكربون في الهواء',scenario:'جرب احتراق الكربون'},
+{elements:['cu'],tool:'flame',formula:'2Cu + O₂ → 2CuO',result:'طبقة سوداء على سطح النحاس (أكسيد النحاس)',desc:'احتراق النحاس في الهواء',scenario:'جرب احتراق النحاس'},
+{elements:['ca'],tool:'flame',formula:'2Ca + O₂ → 2CaO',result:'لهب أحمر برتقالي + مسحوق أبيض (أكسيد الكالسيوم)',desc:'احتراق الكالسيوم في الهواء',scenario:'جرب احتراق الكالسيوم'},
+{elements:['fe'],tool:'water',formula:'4Fe + 3O₂ + H₂O → 2Fe₂O₃·H₂O',result:'طبقة بنية (صدأ الحديد)',desc:'صدأ الحديد في وجود الهواء والماء',scenario:'اترك الحديد في الماء والهواء'},
+{elements:['zn','hcl'],tool:'mix',formula:'Zn + 2HCl → ZnCl₂ + H₂',result:'فقاعات غاز الهيدروجين + كلوريد الزنك',desc:'تفاعل الزنك مع حمض الهيدروكلوريك',scenario:'أضف الزنك إلى حمض HCl'},
+{elements:['h','o'],tool:'spark',formula:'2H₂ + O₂ → 2H₂O',result:'انفجار خفيف + ماء',desc:'احتراق الهيدروجين في الأكسجين',scenario:'أضف شرارة لخليط الهيدروجين والأكسجين'},
+{elements:['n','h'],tool:'heat',formula:'N₂ + 3H₂ → 2NH₃',result:'غاز الأمونيا (رائحة نفاذة)',desc:'تحضير الأمونيا بضغط وحرارة',scenario:'اضغط الهيدروجين والنيتروجين'}
 ],
-medium:[
-{q:'Zn + CuSO₄ → ?',opts:['ZnS + CuO','ZnSO₄ + Cu','ZnCu + SO₄','ZnO + CuS'],correct:1},
-{q:'AgNO₃ + NaCl → ?',opts:['AgCl + NaNO₃','AgNa + ClNO₃','AgNO₃ + NaCl','AgCl₂ + NaNO₃'],correct:0},
-{q:'BaCl₂ + Na₂SO₄ → ?',opts:['BaSO₄ + 2NaCl','BaNa₂ + ClSO₄','BaS + NaCl','BaO + SO₂ + NaCl'],correct:0},
-{q:'Pb(NO₃)₂ + 2KI → ?',opts:['PbI₂ + 2KNO₃','PbK₂ + I(NO₃)₂','PbI + KNO₃','Pb(NO₃)₂ + KI'],correct:0},
-{q:'CaCl₂ + Na₂CO₃ → ?',opts:['CaCO₃ + 2NaCl','CaNa₂ + ClCO₃','CaO + CO₂ + 2NaCl','CaC + Na₂CO₃'],correct:0},
-{q:'Fe + 2HCl → ?',opts:['FeCl₂ + H₂','FeCl₃ + H₂','FeCl + H','FeH₂ + Cl₂'],correct:0},
-{q:'Mg + 2HCl → ?',opts:['MgCl₂ + H₂','MgCl + H','MgH₂ + Cl₂','MgCl₃ + H₂'],correct:0},
-{q:'Cu + 2AgNO₃ → ?',opts:['Cu(NO₃)₂ + 2Ag','CuAg + NO₃','CuO + AgNO₃','Cu(NO₃) + Ag'],correct:0},
-{q:'CaO + H₂O → ?',opts:['Ca(OH)₂','CaH₂O₂','CaO₂ + H₂','CaOH'],correct:0},
-{q:'2Na + 2H₂O → ?',opts:['2NaOH + H₂','Na₂O + H₂','NaH + H₂O','2NaOH + H₂O'],correct:0}
+physics:[
+{elements:['battery','lamp','wire'],tool:'connect',formula:'دائرة كهربائية بسيطة',result:'يضيء المصباح!',desc:'توصيل البطارية بالمصباح بالسلك',scenario:'صلح الدائرة الكهربائية'},
+{elements:['battery','lamp','wire','wire'],tool:'connect',formula:'توصيل على التوازي',result:'المصباحان يضيئان بنفس السطوع',desc:'توصيل مصباحين على التوازي',scenario:'صلح دائرة على التوازي'},
+{elements:['magnet','wire','battery'],tool:'connect',formula:'مغناطيس كهربائي',result:'مجال مغناطيسي حول السلك',desc:'صناعة مغناطيس كهربائي',scenario:'اصنع مغناطيساً كهربائياً'},
+{elements:['mirror','light'],tool:'reflect',formula:'انعكاس الضوء',result:'الضوء يرتد بنفس الزاوية',desc:'قانون الانعكاس',scenario:'جرب انعكاس الضوء على المرآة'},
+{elements:['battery','lamp'],tool:'connect',formula:'تحويل الطاقة',result:'طاقة كيميائية → كهربائية → ضوئية',desc:'تحويلات الطاقة في الدائرة',scenario:'تتبع تحويلات الطاقة'}
 ],
-hard:[
-{q:'MnO₂ + H₂O₂ → ?',opts:['Mn + H₂O + O₂','Mn₃O₄ + H₂O + O₂','MnO₃ + H₂O','Mn(OH)₄'],correct:1},
-{q:'Cr₂O₇²⁻ + 6Fe²⁺ + 14H⁺ → ?',opts:['2Cr³⁺ + 6Fe³⁺ + 7H₂O','2Cr⁶⁺ + 6Fe³⁺ + 7H₂O','Cr³⁺ + Fe³⁺ + H₂O','CrO₃ + Fe₂O₃ + H₂O'],correct:0},
-{q:'MnO₄⁻ + 5Fe²⁺ + 8H⁺ → ?',opts:['Mn²⁺ + 5Fe³⁺ + 4H₂O','Mn⁴⁺ + 5Fe³⁺ + 4H₂O','Mn⁷⁺ + 5Fe²⁺ + 4H₂O','MnO₂ + Fe₂O₃ + H₂O'],correct:0},
-{q:'Cl₂ + 2KI → ?',opts:['2KCl + I₂','KCl + ICl','KClO + I','KClO₃ + I₂'],correct:0},
-{q:'Cu + 2AgNO₃ → ?',opts:['Cu(NO₃)₂ + 2Ag','CuAg + NO₃','CuO + AgNO₃','Cu(NO₃) + Ag'],correct:0},
-{q:'Na₂S₂O₃ + I₂ → ?',opts:['Na₂S₄O₆ + 2NaI','Na₂SO₄ + I₂','NaS + IO₃','NaI + S + O₂'],correct:0},
-{q:'H₂O₂ + 2KI → ?',opts:['I₂ + 2KOH','KI₂ + H₂O','KOH + I₂O','KI + H₂O₂'],correct:0},
-{q:'K₂CrO₄ + Pb(NO₃)₂ → ?',opts:['PbCrO₄ + 2KNO₃','PbK₂ + Cr(NO₃)₂','PbO + CrO₃ + KNO₃','PbCr₂O₇ + KNO₃'],correct:0},
-{q:'Zn + 2NaOH → ?',opts:['Na₂ZnO₂ + H₂','ZnNa₂ + OH','Zn(OH)₂ + Na','ZnO + NaH'],correct:0},
-{q:'2Fe + 3H₂O → ?',opts:['Fe₂O₃ + 3H₂','Fe(OH)₃ + H₂','Fe₃O₄ + 3H₂','FeH₂ + O₂'],correct:0}
+biology:[
+{elements:['pea_purple','pea_white'],tool:'cross',formula:'A × a → Aa',result:'نباتات بنفسجية (صفة سائدة)',desc:'قانون مندل الأول',scenario:'ازرع بذور مندل'},
+{elements:['adrenaline'],tool:'inject',formula:'هرمون الأدرينالين',result:'زيادة سرعة ضربات القلب + اتساع حدقة العين',desc:'تأثير هرمون الأدرينالين',scenario:'جرب تأثير الأدرينالين'},
+{elements:['neuron','stimulus'],tool:'trigger',formula:'الجهاز العصبي',result:'استجابة سريعة للفعل المنعكس',desc:'رد الفعل المنعكس',scenario:'اثبت أن رد الفعل لا إرادي'},
+{elements:['flower','bee'],tool:'pollinate',formula:'التلقيح',result:'تكوين بذور جديدة',desc:'التلقيح في النبات',scenario:'ساعد النحلة في التلقيح'},
+{elements:['dna','rna'],tool:'transcribe',formula:'DNA → RNA → بروتين',desc:'عملية الترجمة الوراثية',result:'تصنيع بروتين جديد',scenario:'جرب نسخ DNA'}
 ]
+};
+const LAB_ELEMENT_LABELS={h:'H₂',o:'O₂',na:'Na',cl:'Cl₂',c:'C',fe:'Fe',mg:'Mg',zn:'Zn',cu:'Cu',s:'S',n:'N₂',ca:'Ca',hcl:'HCl',battery:'بطارية',lamp:'مصباح',wire:'سلك',magnet:'مغناطيس',mirror:'مرآة',light:'ضوء',pea_purple:'بذرة بنفسجية',pea_white:'بذرة بيضاء',adrenaline:'أدرينالين',neuron:'عصبون',stimulus:'مؤثر',flower:'زهرة',bee:'نحلة',dna:'DNA',rna:'RNA'};
+const LAB_TOOLS={
+flame:{label:'لهب',icon:'🔥'},
+water:{label:'ماء',icon:'💧'},
+spark:{label:'شرارة',icon:'⚡'},
+heat:{label:'تسخين',icon:'🔥'},
+mix:{label:'خلط',icon:'🧪'},
+connect:{label:'توصيل',icon:'🔌'},
+reflect:{label:'انعكاس',icon:'🔦'},
+cross:{label:'تهجين',icon:'🌱'},
+inject:{label:'حقن',icon:'💉'},
+trigger:{label:'تحفيز',icon:'⚡'},
+pollinate:{label:'تلقيح',icon:'🐝'},
+transcribe:{label:'نسخ',icon:'🧬'}
+};
+const LAB_INFO={
+chemistry:{name:'مختبر الكيمياء',icon:'⚗️',desc:'تفاعلات الاحتراق والأكسدة',badge:'bronze',color:'#7c3aed'},
+physics:{name:'مختبر الفيزياء',icon:'⚡',desc:'الكهرباء والدوائر والطاقة',badge:'silver',color:'#0891b2'},
+biology:{name:'مختبر الأحياء',icon:'🧬',desc:'الوراثة والهرمونات',badge:'gold',color:'#16a34a'}
 };
 const FAV_KEY='sigma-favs';
 const favs={get(){try{return JSON.parse(store.get(FAV_KEY)||'{}')}catch(e){return{}}},has(id){return !!this.get()[id]},toggle(id){const f=this.get();if(f[id])delete f[id];else f[id]=Date.now();store.set(FAV_KEY,JSON.stringify(f));return !!f[id]}};
@@ -435,11 +478,11 @@ function showShield(on){const el=document.getElementById('screenshotShield');if(
 function armScreenshotGuard(){screenshotArmed=true}
 function disarmScreenshotGuard(){screenshotArmed=false;showShield(false)}
 function bindGlobalScreenshotGuard(){
-window.addEventListener('keydown',e=>{const k=(e.key||'').toLowerCase();if(k==='printscreen'||(e.metaKey&&e.shiftKey&&(k==='3'||k==='4'||k==='5'))||(e.ctrlKey&&e.shiftKey&&(k==='s'||k==='x'))){if(activeExamState && !activeExamState.submitted){e.preventDefault();e.stopPropagation();activeExamState.violations++;toast('تم كشف محاولة لقطة شاشة — سيتم التسليم');submitExam(true,'screenshot')}}},true);
-window.addEventListener('blur',()=>{if(activeExamState&&!activeExamState.submitted){activeExamState.violations++;toast('خرجت من الامتحان — سيتم التسليم');submitExam(true,'blur')}});
+window.addEventListener('keydown',e=>{const k=(e.key||'').toLowerCase();if(k==='printscreen'||(e.metaKey&&e.shiftKey&&(k==='3'||k==='4'||k==='5'))||(e.ctrlKey&&e.shiftKey&&(k==='s'||k==='x'))){if(activeExamState && !activeExamState.submitted){e.preventDefault();e.stopPropagation();activeExamState.violations++;toast('تم كشف محاولة لقطة شاشة');submitExam(true,'screenshot')}}},true);
+window.addEventListener('blur',()=>{if(activeExamState&&!activeExamState.submitted){activeExamState.violations++;toast('خرجت من الامتحان');submitExam(true,'blur')}});
 }
 bindGlobalScreenshotGuard();
-window.addEventListener('beforeprint',()=>{if(activeExamState&&!activeExamState.submitted){toast('الطباعة ممنوعة أثناء الامتحان — سيتم التسليم');submitExam(true,'print')}});
+window.addEventListener('beforeprint',()=>{if(activeExamState&&!activeExamState.submitted){toast('الطباعة ممنوعة');submitExam(true,'print')}});
 async function enforceSingleDevice(){
 if(A||IS_SUPERVISOR||!U)return true;
 try{
@@ -578,9 +621,9 @@ const mv=await G('users/'+u.uid+'/videos');
 if(gen!==authGeneration)return;
 mineVideos=mv||{};
 if(!A&&!IS_SUPERVISOR){
-const gamesSnap=await G('games/'+u.uid);
+const labSnap=await G('labGame/'+u.uid);
 if(gen!==authGeneration)return;
-gamesUserData=gamesSnap||{points:0,badges:[],levels:{},attempts:0,correct:0,wrong:0};
+labUserData=labSnap||{points:0,badges:[],labs:{},experimentsDone:0,discoveries:0};
 }
 if(cache.isOffline()){const cached=cache.load();if(cached){teachers=cached.teachers||{};videos=cached.videos||{};library=cached.library||{};news=cached.news||{};loadedTeachers=true;toast('وضع عدم الاتصال')}}
 unsubs.push(onValue(R('teachers'),s=>{teachers=s.val()||{};loadedTeachers=true;cache.save({teachers,videos,library,news});if(S.v!=='watch'&&S.v!=='exam'&&S.v!=='takeExam'&&S.v!=='games')render()},()=>{loadedTeachers=true}));
@@ -591,7 +634,7 @@ unsubs.push(onValue(R('exams'),s=>{exams=s.val()||{};if(['exams','exam','takeExa
 unsubs.push(onValue(R('examAttempts/'+u.uid),s=>{examAttempts=s.val()||{};if(['exams','exam','examResult'].includes(S.v))render()},()=>{}));
 if(A){unsubs.push(onValue(R('examAttempts'),s=>{allExamAttempts=s.val()||{};if(S.v==='exam')render()},()=>{}))}
 if(!A&&!IS_SUPERVISOR){unsubs.push(onValue(R('logs'),snap=>{const all=snap.val()||{};const next={};for(const vid in all){if(all[vid]&&all[vid][u.uid])next[vid]=all[vid][u.uid]}myLogs=next;if(S.v==='teacher'||S.v==='myStats')render()},()=>{}))}
-if(!A&&!IS_SUPERVISOR){unsubs.push(onValue(R('games/'+u.uid),snap=>{gamesUserData=snap.val()||{points:0,badges:[],levels:{},attempts:0,correct:0,wrong:0};if(S.v==='games')render()},()=>{}))}
+if(!A&&!IS_SUPERVISOR){unsubs.push(onValue(R('labGame/'+u.uid),snap=>{labUserData=snap.val()||{points:0,badges:[],labs:{},experimentsDone:0,discoveries:0};if(S.v==='games')render()},()=>{}))}
 unsubs.push(onValue(R('notifications/'+u.uid),snap=>{ownNotifications=snap.val()||{};refreshNotifications()},()=>{}));
 unsubs.push(onValue(R('notifications/all'),snap=>{broadcastNotifications=snap.val()||{};refreshNotifications()},()=>{}));
 if(A){unsubs.push(onValue(R('supportTickets'),snap=>{supportTickets=snap.val()||{};if(S.v==='admin'&&S.tab==='support')render()},()=>{}));unsubs.push(onValue(R('adminNotifications'),snap=>{adminNotifications=snap.val()||{};refreshNotifications()},()=>{}))}
@@ -682,7 +725,7 @@ const svgSettings=`<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-
 const svgAdmin=`<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`;
 const adminOn=['admin','vid','edit','editLib','students','studentProfile'].includes(S.v);
 const isStaff=A||IS_SUPERVISOR;
-return `<nav class="bottombar" aria-label="التنقل"><button class="${on('home')?'on':''}" onclick="go('home')">${svgHome}<span>الرئيسية</span></button><button class="${on('news')?'on':''}" onclick="go('news')">${svgNews}<span>الأخبار</span></button><button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary}<span>المكتبة</span></button><button class="${['exams','exam','takeExam','examResult'].includes(S.v)?'on':''}" onclick="go('exams')">${svgExams}<span>الامتحانات</span></button><button class="${on('games')?'on':''}" onclick="go('games')">${svgGames}<span>الألعاب</span></button><button class="${on('settings')?'on':''}" onclick="go('settings')">${svgSettings}<span>الإعدادات</span></button>${isStaff?`<button class="${adminOn?'on':''}" onclick="go('admin','','videos')">${svgAdmin}<span>التحكم</span></button>`:''}</nav>`;
+return `<nav class="bottombar" aria-label="التنقل"><button class="${on('home')?'on':''}" onclick="go('home')">${svgHome}<span>الرئيسية</span></button><button class="${on('news')?'on':''}" onclick="go('news')">${svgNews}<span>الأخبار</span></button><button class="${on('library')?'on':''}" onclick="go('library')">${svgLibrary}<span>المكتبة</span></button><button class="${['exams','exam','takeExam','examResult'].includes(S.v)?'on':''}" onclick="go('exams')">${svgExams}<span>الامتحانات</span></button><button class="${on('games')?'on':''}" onclick="go('games')">${svgGames}<span>المختبر</span></button><button class="${on('settings')?'on':''}" onclick="go('settings')">${svgSettings}<span>الإعدادات</span></button>${isStaff?`<button class="${adminOn?'on':''}" onclick="go('admin','','videos')">${svgAdmin}<span>التحكم</span></button>`:''}</nav>`;
 }
 function toggleTheme(){document.documentElement.classList.toggle('dark');store.set(THEME_KEY,document.documentElement.classList.contains('dark')?'dark':'light');renderTopbar()}
 function vSettingsGrade(){if(A||IS_SUPERVISOR)return vSettings();return `<button class="s" onclick="go('settings')" style="margin-bottom:16px">← رجوع</button><div class="box"><h2>تغيير الصف</h2><p style="color:var(--tx2);margin-bottom:10px">اختر صفك الدراسي.</p><select id="student-grade"><option value="">اختر الصف</option>${ALL_GRADES.map(g=>`<option value="${esc(g)}" ${userGrade===g?'selected':''}>${esc(g)}</option>`).join('')}</select><button onclick="saveStudentGrade()" style="width:100%">حفظ الصف</button></div>`}
@@ -709,8 +752,8 @@ const photo=myPhoto||U.photoURL||avatarOf(U.displayName);
 const canNotify=!!hasNotifApi()&&Notification.permission!=='granted';
 const role=A?'<span class="b g">إدارة</span>':IS_SUPERVISOR?'<span class="b y">مشرف</span>':'<span class="b">طالب</span>';
 const favCount=Object.keys(favs.get()).length;
-const gamesPoints=gamesUserData?.points||0;
-return `<div class="box profile-card"><img src="${esc(photo)}" alt="صورة الملف الشخصي"><h2>${esc(U.displayName||'')}</h2><p dir="ltr">${esc(myPhone||'')}</p>${role}<div class="settings-grid"><div class="settings-btn" onclick="document.getElementById('profile-photo-input').click()"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>تغيير الصورة</span></div>${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myCodes')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>أكوادي (${Object.keys(mineVideos).length})</span></div>`:''}<div class="settings-btn" onclick="go('myFavs')"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>المفضلة (${favCount})</span></div>${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myStats')"><svg viewBox="0 0 24 24"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 3h2v11h-2zm4-6h2v17h-2zm4 9h2v8h-2z"/></svg><span>إحصائياتي</span></div>`:''}${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('games')"><svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5-3c-.83 0-1.5-.67-1.5-1.5S19.67 9 20.5 9s1.5.67 1.5 1.5S21.33 12 20.5 12z"/></svg><span>الألعاب (${gamesPoints})</span></div>`:''}${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('settingsGrade')"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg><span>تغيير الصف</span></div>`:''}<div class="settings-btn" onclick="go('settingsPass')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>كلمة المرور</span></div><div class="settings-btn" onclick="go('settingsSupport')"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg><span>تقديم شكوى</span></div>${canNotify?`<div class="settings-btn" onclick="enableNotifications()"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><span>تفعيل الإشعارات</span></div>`:''}<div class="settings-btn" onclick="out()"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>تسجيل الخروج</span></div></div></div><input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()" style="display:none">`;
+const labPoints=labUserData?.points||0;
+return `<div class="box profile-card"><img src="${esc(photo)}" alt="صورة الملف الشخصي"><h2>${esc(U.displayName||'')}</h2><p dir="ltr">${esc(myPhone||'')}</p>${role}<div class="settings-grid"><div class="settings-btn" onclick="document.getElementById('profile-photo-input').click()"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>تغيير الصورة</span></div>${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myCodes')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>أكوادي (${Object.keys(mineVideos).length})</span></div>`:''}<div class="settings-btn" onclick="go('myFavs')"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>المفضلة (${favCount})</span></div>${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('myStats')"><svg viewBox="0 0 24 24"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 3h2v11h-2zm4-6h2v17h-2zm4 9h2v8h-2z"/></svg><span>إحصائياتي</span></div>`:''}${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('games')"><svg viewBox="0 0 24 24"><path d="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/></svg><span>المختبر (${labPoints})</span></div>`:''}${!A&&!IS_SUPERVISOR?`<div class="settings-btn" onclick="go('settingsGrade')"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg><span>تغيير الصف</span></div>`:''}<div class="settings-btn" onclick="go('settingsPass')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><span>كلمة المرور</span></div><div class="settings-btn" onclick="go('settingsSupport')"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg><span>تقديم شكوى</span></div>${canNotify?`<div class="settings-btn" onclick="enableNotifications()"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><span>تفعيل الإشعارات</span></div>`:''}<div class="settings-btn" onclick="out()"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span>تسجيل الخروج</span></div></div></div><input type="file" id="profile-photo-input" accept="image/*" onchange="updateProfilePhoto()" style="display:none">`;
 }
 async function saveStudentGrade(){if(!U||A||IS_SUPERVISOR)return toast('غير متاح');const grade=$('#student-grade')?.value||'';if(!ALL_GRADES.includes(grade))return toast('اختر صفاً صحيحاً');const btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent='جارٍ الحفظ...'}try{await update(R('users/'+U.uid),{grade});userGrade=grade;sendPresenceBeat();toast('تم حفظ الصف');go('settings')}catch(e){toast('تعذر حفظ الصف');if(btn){btn.disabled=false;btn.textContent='حفظ الصف'}}}
 async function sendSupportTicket(){if(!U)return toast('سجّل الدخول أولاً');const subject=$('#support-subject')?.value.trim()||'';const message=$('#support-message')?.value.trim()||'';if(subject.length<3)return toast('اكتب عنواناً واضحاً');if(message.length<10)return toast('اكتب تفاصيل أكثر');if(subject.length>120||message.length>3000)return toast('الرسالة أطول من الحد');const btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent='جارٍ الإرسال...'}const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);try{await set(R('supportTickets/'+id),{uid:U.uid,studentName:String(U.displayName||'طالب').slice(0,100),phone:String(myPhone||'').slice(0,20),subject,message,status:'open',createdAt:Date.now()});const sj=$('#support-subject'),ms=$('#support-message');if(sj)sj.value='';if(ms)ms.value='';toast('تم إرسال رسالتك');if(btn){btn.disabled=false;btn.textContent='إرسال للإدارة'}}catch(e){toast('تعذر إرسال الرسالة');if(btn){btn.disabled=false;btn.textContent='إرسال للإدارة'}}}
@@ -828,7 +871,7 @@ return`<div class="news-card">${item.photo?`<img src="${esc(item.photo)}" alt="�
 async function vAdmin(){
 if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
 const tab=S.tab||'videos';
-const allowedTabs=A?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['support','الشكاوى والاستفسارات'],['send_notification','إرسال إشعار'],['bans','الحظر'],['active','النشطون الآن'],['games','الألعاب'],['badge','صورة التعريف']]:[['videos','الفيديوهات'],['news','أخبار السنتر'],['exams','الامتحانات']];
+const allowedTabs=A?[['videos','الفيديوهات'],['news','أخبار السنتر'],['teachers','المدرسون'],['library','المكتبة'],['students','الطلاب'],['exams','الامتحانات'],['support','الشكاوى والاستفسارات'],['send_notification','إرسال إشعار'],['bans','الحظر'],['active','النشطون الآن'],['lab','المختبر'],['badge','صورة التعريف']]:[['videos','الفيديوهات'],['news','أخبار السنتر'],['exams','الامتحانات']];
 const effTab=allowedTabs.some(([k])=>k===tab)?tab:'videos';
 const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${effTab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
 if(effTab==='teachers')return tb+`<div class="box"><h2>إضافة مدرس</h2><label for="tn">الاسم</label><input id="tn"><label for="tp">الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><div class="card-img-wrap"><img src="${esc(x.photo||avatarOf(x.name))}" alt=""></div><div class="card-body"><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${esc(id)}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${esc(id)}')">حذف</button></div></div></div>`).join('')}</div>`;
@@ -840,7 +883,7 @@ if(effTab==='support')return tb+await vAdminSupport();
 if(effTab==='badge')return tb+`<div class="box"><h2>صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
 if(effTab==='bans')return tb+await vAdminBans();
 if(effTab==='active')return tb+await vAdminActive();
-if(effTab==='games')return tb+await vAdminGames();
+if(effTab==='lab')return tb+await vAdminLab();
 if(effTab==='news')return tb+`<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3"></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
 const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
 const vidList=Object.entries(videos).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
@@ -869,14 +912,14 @@ return note+`<h2>الطلاب المحظورون (${entries.length})</h2>`+entri
 }
 async function unban(uid){if(!A)return toast('غير مصرح');try{const u=await G('users/'+uid);const phone=normPhone(u?.phone||'');const ops=[remove(R('bans/'+uid)).catch(()=>{}),update(R('users/'+uid),{banned:false}).catch(()=>{})];if(phone)ops.push(remove(R('bansByPhone/'+phone)).catch(()=>{}));await Promise.all(ops);toast('تم فك الحظر');if(S.v==='admin'&&S.tab==='bans')renderBansLive()}catch(e){toast('تعذر فك الحظر')}}
 function keepBan(){toast('بقي محظوراً')}
-async function vAdminGames(){
+async function vAdminLab(){
 if(!A)return'<div class="mut">غير مصرح.</div>';
-const gamesSnap=await G('games');
-const allData=gamesSnap||{};
+const labSnap=await G('labGame');
+const allData=labSnap||{};
 const sorted=Object.entries(allData).map(([uid,d])=>({uid,...d})).sort((a,b)=>(b.points||0)-(a.points||0));
 const users=await G('users')||{};
-const rows=sorted.map((d,i)=>{const u=users[d.uid]||{};return `<tr><td>${i+1}</td><td><b>${esc(u.name||d.name||d.uid.slice(0,8))}</b></td><td>${esc(u.phone||'-')}</td><td>${esc(u.grade||'-')}</td><td><b class="g">${d.points||0}</b></td><td>${(d.badges||[]).length}</td><td>${d.correct||0}</td><td>${d.wrong||0}</td></tr>`}).join('');
-return `<div class="box"><h2>إحصائيات الألعاب</h2><div class="stats-summary"><div class="stat-box"><div class="stat-num">${sorted.length}</div><div class="stat-label">طالب لعب</div></div><div class="stat-box ok"><div class="stat-num">${sorted.reduce((s,d)=>s+(d.points||0),0)}</div><div class="stat-label">إجمالي النقاط</div></div><div class="stat-box warn"><div class="stat-num">${sorted.reduce((s,d)=>s+(d.correct||0),0)}</div><div class="stat-label">إجابات صحيحة</div></div></div></div><div class="box"><h2>ترتيب الطلاب</h2>${!rows?`<div class="mut">لا يوجد لاعبون بعد.</div>`:`<div class="tw"><table><thead><tr><th>#</th><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>النقاط</th><th>الشارات</th><th>صحيح</th><th>خطأ</th></tr></thead><tbody>${rows}</tbody></table></div>`}</div><div class="box"><h2>محتوى اللعبة</h2><p style="color:var(--tx2);line-height:1.8">لعبة "اختر الناتج" تحتوي على <b>30 سؤالاً</b> موزعة على 3 مستويات (سهل / متوسط / صعب). المحتوى مدمج في الكود.</p></div>`;
+const rows=sorted.map((d,i)=>{const u=users[d.uid]||{};return `<tr><td>${i+1}</td><td><b>${esc(u.name||d.name||d.uid.slice(0,8))}</b></td><td>${esc(u.phone||'-')}</td><td>${esc(u.grade||'-')}</td><td><b class="g">${d.points||0}</b></td><td>${(d.badges||[]).length}</td><td>${d.experimentsDone||0}</td><td>${d.discoveries||0}</td></tr>`}).join('');
+return `<div class="box"><h2>إحصائيات مختبر سيجما</h2><div class="stats-summary"><div class="stat-box"><div class="stat-num">${sorted.length}</div><div class="stat-label">طالب جرب</div></div><div class="stat-box ok"><div class="stat-num">${sorted.reduce((s,d)=>s+(d.points||0),0)}</div><div class="stat-label">إجمالي النقاط</div></div><div class="stat-box warn"><div class="stat-num">${sorted.reduce((s,d)=>s+(d.experimentsDone||0),0)}</div><div class="stat-label">تجارب مكتملة</div></div></div></div><div class="box"><h2>ترتيب الطلاب</h2>${!rows?`<div class="mut">لا يوجد لاعبون بعد.</div>`:`<div class="tw"><table><thead><tr><th>#</th><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>النقاط</th><th>الشارات</th><th>تجارب</th><th>اكتشافات</th></tr></thead><tbody>${rows}</tbody></table></div>`}</div><div class="box"><h2>محتوى المختبر</h2><p style="color:var(--tx2);line-height:1.8">المختبر يحتوي على <b>20 تجربة</b> موزعة على 3 مختبرات (كيمياء / فيزياء / أحياء). المحتوى مدمج في الكود.</p></div>`;
 }
 async function vAdminExams(){
 if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';
@@ -940,14 +983,14 @@ armScreenshotGuard();
 activeExamState={id:S.id,startedAt:Date.now(),violations:0,answers:{},submitted:false};
 const questions=e.questions||[];
 const preventCopy=ev=>{ev.preventDefault();return false};
-const onVis=()=>{if(document.hidden && activeExamState && !activeExamState.submitted){activeExamState.violations++;toast('تم تسجيل خروجك من التبويب — سيتم التسليم تلقائياً');submitExam(true,'visibility')}};
-const onBlur=()=>{if(activeExamState && !activeExamState.submitted){activeExamState.violations++;toast('فقدت التركيز — سيتم التسليم تلقائياً');submitExam(true,'blur')}};
+const onVis=()=>{if(document.hidden && activeExamState && !activeExamState.submitted){activeExamState.violations++;toast('تم تسجيل خروجك من التبويب');submitExam(true,'visibility')}};
+const onBlur=()=>{if(activeExamState && !activeExamState.submitted){activeExamState.violations++;toast('فقدت التركيز');submitExam(true,'blur')}};
 const onUnload=()=>{if(activeExamState && !activeExamState.submitted){activeExamState.violations++;try{submitExam(true,'unload')}catch(e){}}};
-const onScreenshotKey=(ev)=>{const k=(ev.key||'').toLowerCase();if(k==='printscreen'){ev.preventDefault();if(activeExamState && !activeExamState.submitted){activeExamState.violations++;toast('محاولة لقطة شاشة — سيتم التسليم');submitExam(true,'screenshot')}}};
+const onScreenshotKey=(ev)=>{const k=(ev.key||'').toLowerCase();if(k==='printscreen'){ev.preventDefault();if(activeExamState && !activeExamState.submitted){activeExamState.violations++;toast('محاولة لقطة شاشة');submitExam(true,'screenshot')}}};
 document.addEventListener('copy',preventCopy);document.addEventListener('cut',preventCopy);document.addEventListener('paste',preventCopy);document.addEventListener('contextmenu',preventCopy);document.addEventListener('visibilitychange',onVis);window.addEventListener('blur',onBlur);window.addEventListener('pagehide',onUnload);window.addEventListener('keydown',onScreenshotKey,true);
 examGuardCleanup=()=>{try{document.removeEventListener('copy',preventCopy)}catch(e){}try{document.removeEventListener('cut',preventCopy)}catch(e){}try{document.removeEventListener('paste',preventCopy)}catch(e){}try{document.removeEventListener('contextmenu',preventCopy)}catch(e){}try{document.removeEventListener('visibilitychange',onVis)}catch(e){}try{window.removeEventListener('blur',onBlur)}catch(e){}try{window.removeEventListener('pagehide',onUnload)}catch(e){}try{window.removeEventListener('keydown',onScreenshotKey,true)}catch(e){}disarmScreenshotGuard()};
 const startMs=Date.now();const totalMs=e.duration*60*1000;
-activeExamTimer=setInterval(()=>{if(!activeExamState||activeExamState.submitted){clearInterval(activeExamTimer);return}const left=totalMs-(Date.now()-startMs);const timerEl=document.getElementById('examTimer');if(timerEl){const big=timerEl.querySelector('.time-big');if(big)big.textContent=fmtClock(Math.max(0,left/1000));timerEl.classList.remove('warn','danger');if(left<=30000)timerEl.classList.add('danger');else if(left<=120000)timerEl.classList.add('warn')}if(left<=0){clearInterval(activeExamTimer);toast('انتهى وقت الامتحان — يتم التسليم تلقائياً');submitExam(true,'timeout')}},250);
+activeExamTimer=setInterval(()=>{if(!activeExamState||activeExamState.submitted){clearInterval(activeExamTimer);return}const left=totalMs-(Date.now()-startMs);const timerEl=document.getElementById('examTimer');if(timerEl){const big=timerEl.querySelector('.time-big');if(big)big.textContent=fmtClock(Math.max(0,left/1000));timerEl.classList.remove('warn','danger');if(left<=30000)timerEl.classList.add('danger');else if(left<=120000)timerEl.classList.add('warn')}if(left<=0){clearInterval(activeExamTimer);toast('انتهى وقت الامتحان');submitExam(true,'timeout')}},250);
 const qHTML=questions.map((q,i)=>{const num=i+1;if(q.type==='mcq'){return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div>${q.options.map((opt,idx)=>`<label class="exam-opt"><input type="radio" name="q_${i}" value="${idx}" onchange="recordAnswer(${i},${idx})"><span>${esc(opt)}</span></label>`).join('')}</div>`}if(q.type==='tf'){return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div><label class="exam-opt"><input type="radio" name="q_${i}" value="true" onchange="recordAnswer(${i},true)"><span>صح</span></label><label class="exam-opt"><input type="radio" name="q_${i}" value="false" onchange="recordAnswer(${i},false)"><span>خطأ</span></label></div>`}return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)}</div><textarea placeholder="اكتب إجابتك هنا..." oninput="recordAnswer(${i},this.value)" rows="3"></textarea></div>`}).join('');
 return `<button class="s" onclick="confirmExitExam()" style="margin-bottom:16px">← خروج</button><h2>${esc(e.title)}</h2><div class="exam-timer" id="examTimer"><span>الوقت المتبقي</span><span class="time-big">${fmtClock(e.duration*60)}</span></div><div class="exam-vio" style="display:none" id="examVioBox">المخالفات: <span id="examVioCount">0</span></div>${qHTML}<button onclick="submitExam(false)" style="width:100%;padding:16px;font-size:16px;margin-top:16px">تسليم الامتحان</button>`;
 }
@@ -1085,91 +1128,124 @@ return`<button class="s" onclick="go('admin','','videos')">← رجوع</button>
 }
 async function vGames(){
 if(A||IS_SUPERVISOR)return vSettings();
-const totalPoints=gamesUserData?.points||0;
-const badges=gamesUserData?.badges||[];
-const levels=gamesUserData?.levels||{};
-const progress=Object.keys(levels).length;
-if(quizActiveLevel)return vQuizLevelScreen();
-const topList=Object.entries(gamesLeaderData||{}).map(([uid,d])=>({uid,...d})).sort((a,b)=>(b.points||0)-(a.points||0)).slice(0,10);
-return `<div class="quiz-wrap"><div class="quiz-header"><h2>الألعاب التعليمية</h2><p>اختر الناتج الصحيح لكل تفاعل كيميائي</p><div class="quiz-stats"><span class="quiz-stat">النقاط: ${totalPoints}</span><span class="quiz-stat">المستويات المكتملة: ${progress}/3</span>${badges.length?`<span class="quiz-stat">الشارات: ${badges.map(b=>({bronze:'🥉',silver:'🥈',gold:'🥇',legend:'🏆'}[b]||'')).join(' ')}</span>`:''}</div></div><div class="quiz-levels"><div class="quiz-level ${levels.easy?'done':''}" onclick="startQuizLevel('easy')">${levels.easy?'<span class="lv-check">✓</span>':''}<div class="lv-icon">🥉</div><div class="lv-name">المستوى السهل</div><div class="lv-desc">تفاعلات أساسية — إعدادي</div></div><div class="quiz-level ${levels.medium?'done':''}" onclick="startQuizLevel('medium')">${levels.medium?'<span class="lv-check">✓</span>':''}<div class="lv-icon">🥈</div><div class="lv-name">المستوى المتوسط</div><div class="lv-desc">تفاعلات الإحلال والترسيب</div></div><div class="quiz-level ${levels.hard?'done':''}" onclick="startQuizLevel('hard')">${levels.hard?'<span class="lv-check">✓</span>':''}<div class="lv-icon">🥇</div><div class="lv-name">المستوى الصعب</div><div class="lv-desc">أكسدة واختزال — ثانوي</div></div></div><div class="quiz-leader"><h3>المتصدرون</h3>${topList.length?`<ol>${topList.map((d,i)=>`<li><span class="lname">${esc(d.name||'طالب')}</span><span class="lpoints">${d.points||0} نقطة</span></li>`).join('')}</ol>`:'<div class="mut">لا يوجد لاعبون بعد.</div>'}</div></div>`;
+if(labActiveLab)return vLabScreen();
+const totalPoints=labUserData?.points||0;
+const badges=labUserData?.badges||[];
+const labs=labUserData?.labs||{};
+const topList=Object.entries(labLeaderData||{}).map(([uid,d])=>({uid,...d})).sort((a,b)=>(b.points||0)-(a.points||0)).slice(0,10);
+return `<div class="lab-wrap"><div class="lab-header"><h2>مختبر سيجما الافتراضي</h2><p>ادخل المختبر، اختر العناصر، واستخدم الأدوات لاكتشاف النتائج بنفسك</p><div class="lab-stats"><span class="lab-stat">النقاط: ${totalPoints}</span><span class="lab-stat">المختبرات المكتملة: ${Object.keys(labs).length}/3</span>${badges.length?`<span class="lab-stat">الشارات: ${badges.map(b=>({bronze:'🥉',silver:'🥈',gold:'🥇',legend:'🏆'}[b]||'')).join(' ')}</span>`:''}</div></div><div class="lab-labs">${Object.entries(LAB_INFO).map(([key,info])=>`<div class="lab-lab ${labs[key]?'done':''}" onclick="startLab('${key}')">${labs[key]?'<span class="ll-check">✓</span>':''}<span class="ll-icon">${info.icon}</span><div class="ll-name">${info.name}</div><div class="ll-desc">${info.desc}</div><div class="ll-prog">${(labUserData.labs?.[key]?LAB_EXPERIMENTS[key].length:0)}/${LAB_EXPERIMENTS[key].length} تجربة</div></div>`).join('')}</div><div class="lab-leader"><h3>المتصدرون</h3>${topList.length?`<ol>${topList.map((d,i)=>`<li><span class="lname">${esc(d.name||'طالب')}</span><span class="lpoints">${d.points||0} نقطة</span></li>`).join('')}</ol>`:'<div class="mut">لا يوجد لاعبون بعد.</div>'}</div></div>`;
 }
-function vQuizLevelScreen(){
-const level=quizActiveLevel;
-const name={easy:'السهل',medium:'المتوسط',hard:'الصعب'}[level]||'';
-const allQuestions=QUIZ_QUESTIONS[level]||[];
-const total=allQuestions.length;
-const idx=quizCurrentIndex;
-const q=allQuestions[idx];
-if(!q)return `<div class="box"><div class="mut">اكتملت جميع أسئلة هذا المستوى!</div><button onclick="exitQuizLevel()" style="width:100%;margin-top:14px">العودة للمستويات</button></div>`;
-return `<div class="quiz-wrap"><div class="quiz-top"><button class="s" onclick="exitQuizLevel()">← رجوع</button><div class="info"><span class="b g">${name}</span><span class="b y">${idx+1}/${total}</span><span class="b">${gamesUserData.points||0} نقطة</span></div></div><div class="quiz-progress"><div class="quiz-progress-fill" style="width:${(idx/total)*100}%"></div></div><div class="quiz-arena"><div class="quiz-question">${esc(q.q)}</div><div class="quiz-options" id="quizOpts">${q.opts.map((opt,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})" id="quizOpt${i}">${esc(opt)}</button>`).join('')}</div><div id="quizFeedback"></div></div></div>`;
+function vLabScreen(){
+const lab=labActiveLab;
+const info=LAB_INFO[lab];
+const experiments=LAB_EXPERIMENTS[lab]||[];
+const exp=experiments[labCurrentExpIdx];
+if(!exp)return `<div class="box"><div class="mut">اكتملت جميع تجارب هذا المختبر!</div><button onclick="exitLab()" style="width:100%;margin-top:14px">العودة للمختبرات</button></div>`;
+const allEls=[];
+experiments.forEach(e=>e.elements.forEach(el=>{if(!allEls.includes(el))allEls.push(el)}));
+return `<div class="lab-wrap"><div class="lab-top"><button class="s" onclick="exitLab()">← رجوع</button><div class="info"><span class="b g">${info.name}</span><span class="b y">${labCurrentExpIdx+1}/${experiments.length}</span><span class="b">${labUserData.points||0} نقطة</span></div></div><div class="lab-progress"><div class="lab-progress-fill" style="width:${(labCurrentExpIdx/experiments.length)*100}%"></div></div><div class="lab-arena"><div class="lab-scenario"><div class="sc-icon">🎯</div><div class="sc-text">${esc(exp.scenario||'جرب التجربة')}</div></div><div class="lab-tube ${labSelectedEls.length?'has-liquid':''}" id="labTube">${labShowingResult?'':(labSelectedEls.length?`<div class="tube-elements">${labSelectedEls.map((el,i)=>`${i>0?'<span class="tube-plus">+</span>':''}<div class="tube-el lab-el ${el}" style="cursor:default;width:60px;height:60px;font-size:18px">${LAB_ELEMENT_LABELS[el]||el}</div>`).join('')}</div>`:'<div class="tube-hint">اختر العناصر الكيميائية من الأسفل</div>')}${labShowingResult&&labLastResult?`<div class="lab-result ${labLastResult.correct?'':'fail'}"><div class="res-formula">${esc(labLastResult.formula)}</div><div class="res-desc">${esc(labLastResult.result)}</div>${labLastResult.correct?`<div class="res-points">+${labLastResult.points} نقاط</div>`:`<div class="res-desc" style="margin-top:8px">${esc(labLastResult.desc)}</div>`}</div>`:''}</div>${labShowingResult?`<div class="lab-actions"><button onclick="nextLabExp()">${labCurrentExpIdx+1>=experiments.length?'إنهاء المختبر':'التجربة التالية'}</button></div>`:`<div class="lab-elements">${allEls.map(el=>`<div class="lab-el ${el} ${labSelectedEls.includes(el)?'selected':''}" onclick="selectLabEl('${el}')">${LAB_ELEMENT_LABELS[el]||el}</div>`).join('')}</div><div class="lab-tools">${Object.entries(LAB_TOOLS).map(([key,tool])=>`<div class="lab-tool ${labSelectedTool===key?'selected':''}" onclick="selectLabTool('${key}')">${tool.icon} ${tool.label}</div>`).join('')}</div><div class="lab-actions"><button onclick="runLabExp()" ${(!labSelectedEls.length||!labSelectedTool)?'disabled':''}>▶ تنفيذ التجربة</button><button class="s" onclick="resetLabExp()">إعادة</button></div>`}</div></div>`;
 }
-function startQuizLevel(level){
-if(!QUIZ_QUESTIONS[level])return;
-quizActiveLevel=level;
-quizCurrentIndex=0;
-quizAnswered=false;
+function startLab(lab){
+if(!LAB_EXPERIMENTS[lab])return;
+labActiveLab=lab;
+labCurrentExpIdx=0;
+labSelectedEls=[];
+labSelectedTool=null;
+labShowingResult=false;
+labLastResult=null;
 render();
 }
-function exitQuizLevel(){
-if(quizTimer){clearTimeout(quizTimer);quizTimer=null}
-quizActiveLevel=null;
-quizCurrentIndex=0;
-quizAnswered=false;
+function exitLab(){
+if(labActiveLab){
+const lab=labActiveLab;
+const experiments=LAB_EXPERIMENTS[lab]||[];
+const done=labCurrentExpIdx>=experiments.length;
+if(done){
+labUserData.labs=labUserData.labs||{};
+if(!labUserData.labs[lab]){
+labUserData.labs[lab]=true;
+labUserData.points=(labUserData.points||0)+50;
+const badgeName=LAB_INFO[lab].badge;
+labUserData.badges=labUserData.badges||[];
+if(!labUserData.badges.includes(badgeName))labUserData.badges.push(badgeName);
+if(Object.keys(labUserData.labs).length===3){
+if(!labUserData.badges.includes('legend'))labUserData.badges.push('legend');
+labUserData.points+=200;
+}
+saveLabData();
+}
+}
+}
+labActiveLab=null;
+labCurrentExpIdx=0;
+labSelectedEls=[];
+labSelectedTool=null;
+labShowingResult=false;
+labLastResult=null;
 render();
 }
-async function answerQuiz(choice){
-if(quizAnswered||!quizActiveLevel)return;
-quizAnswered=true;
-const level=quizActiveLevel;
-const q=QUIZ_QUESTIONS[level][quizCurrentIndex];
-if(!q)return;
-const correctIdx=q.correct;
-const isCorrect=choice===correctIdx;
-document.querySelectorAll('.quiz-opt').forEach((btn,i)=>{btn.disabled=true;if(i===correctIdx)btn.classList.add('correct');else if(i===choice&&!isCorrect)btn.classList.add('wrong')});
-gamesUserData.attempts=(gamesUserData.attempts||0)+1;
-if(isCorrect){gamesUserData.points=(gamesUserData.points||0)+10;gamesUserData.correct=(gamesUserData.correct||0)+1}
-else{gamesUserData.wrong=(gamesUserData.wrong||0)+1}
-await saveGamesData();
-const fb=document.getElementById('quizFeedback');
-if(fb)fb.innerHTML=`<div class="quiz-feedback ${isCorrect?'ok':'no'}">${isCorrect?'إجابة صحيحة! +10 نقاط':'إجابة خاطئة — الإجابة الصحيحة: '+esc(q.opts[correctIdx])}</div>`;
-quizTimer=setTimeout(async()=>{
-const allQ=QUIZ_QUESTIONS[level];
-quizCurrentIndex++;
-if(quizCurrentIndex>=allQ.length){
-const levelNames={easy:'bronze',medium:'silver',hard:'gold'};
-const badgeName=levelNames[level];
-gamesUserData.levels=gamesUserData.levels||{};
-if(!gamesUserData.levels[level]){
-gamesUserData.levels[level]=true;
-gamesUserData.points+=50;
-gamesUserData.badges=gamesUserData.badges||[];
-if(!gamesUserData.badges.includes(badgeName))gamesUserData.badges.push(badgeName);
-if(Object.keys(gamesUserData.levels).length===3){
-if(!gamesUserData.badges.includes('legend'))gamesUserData.badges.push('legend');
-gamesUserData.points+=200;
-}
-await saveGamesData();
-}
-quizActiveLevel=null;
-quizCurrentIndex=0;
+function selectLabEl(el){
+if(labShowingResult)return;
+const idx=labSelectedEls.indexOf(el);
+if(idx>=0){labSelectedEls.splice(idx,1)}
+else{if(labSelectedEls.length<2)labSelectedEls.push(el)}
 render();
+}
+function selectLabTool(tool){
+if(labShowingResult)return;
+labSelectedTool=tool;
+render();
+}
+function resetLabExp(){
+labSelectedEls=[];
+labSelectedTool=null;
+labShowingResult=false;
+labLastResult=null;
+render();
+}
+async function runLabExp(){
+const lab=labActiveLab;
+if(!lab)return;
+const experiments=LAB_EXPERIMENTS[lab]||[];
+const exp=experiments[labCurrentExpIdx];
+if(!exp)return;
+if(!labSelectedEls.length||!labSelectedTool)return toast('اختر العناصر والأداة أولاً');
+const isCorrect=exp.elements.every(el=>labSelectedEls.includes(el))&&labSelectedEls.length===exp.elements.length&&labSelectedTool===exp.tool;
+labUserData.experimentsDone=(labUserData.experimentsDone||0)+1;
+if(isCorrect){
+labUserData.points=(labUserData.points||0)+10;
+labUserData.discoveries=(labUserData.discoveries||0)+1;
+await saveLabData();
+labShowingResult=true;
+labLastResult={correct:true,formula:exp.formula,result:exp.result,desc:exp.desc,points:10};
 }else{
-quizAnswered=false;
+await saveLabData();
+labShowingResult=true;
+labLastResult={correct:false,formula:'لا يحدث تفاعل متوقع',result:'العناصر أو الأداة غير صحيحة لهذه التجربة',desc:'حاول مرة أخرى بالعناصر والأداة الصحيحة',points:0};
+}
 render();
 }
-},1600);
+function nextLabExp(){
+labCurrentExpIdx++;
+labSelectedEls=[];
+labSelectedTool=null;
+labShowingResult=false;
+labLastResult=null;
+const lab=labActiveLab;
+const experiments=LAB_EXPERIMENTS[lab]||[];
+if(labCurrentExpIdx>=experiments.length){exitLab();return}
+render();
 }
-async function saveGamesData(){
+async function saveLabData(){
 if(!U||A||IS_SUPERVISOR)return;
 try{
-await set(R('games/'+U.uid),{
+await set(R('labGame/'+U.uid),{
 name:U.displayName||'طالب',
-points:gamesUserData.points||0,
-badges:gamesUserData.badges||[],
-levels:gamesUserData.levels||{},
-attempts:gamesUserData.attempts||0,
-correct:gamesUserData.correct||0,
-wrong:gamesUserData.wrong||0,
+points:labUserData.points||0,
+badges:labUserData.badges||[],
+labs:labUserData.labs||{},
+experimentsDone:labUserData.experimentsDone||0,
+discoveries:labUserData.discoveries||0,
 lastPlayed:Date.now()
 });
 }catch(e){}
@@ -1186,7 +1262,7 @@ filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDis
 recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,
 banStudent,unbanStudent,outBan,toggleStudentMenu,
 sendPresenceBeat,clearPresence,
-startQuizLevel,exitQuizLevel,answerQuiz
+startLab,exitLab,selectLabEl,selectLabTool,runLabExp,resetLabExp,nextLabExp
 });
 window.__bootAfterUnban=async function(){
 try{
@@ -1207,7 +1283,7 @@ hideOverlay();
 };
 window.addEventListener('error',e=>{try{console.warn('Global error caught:',e.message)}catch(_){}});
 window.addEventListener('unhandledrejection',e=>{try{console.warn('Unhandled rejection:',e.reason)}catch(_){}});
-onValue(R('games'),snap=>{gamesLeaderData=snap.val()||{};if(S.v==='games')render()},()=>{});
+onValue(R('labGame'),snap=>{labLeaderData=snap.val()||{};if(S.v==='games')render()},()=>{});
 render();
 </script>
 </body>
