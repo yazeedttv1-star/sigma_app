@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>منصة سيجما التعليمية</title>
-<meta name="application-version" content="3.8.0">
+<meta name="application-version" content="4.0.0">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -28,6 +28,14 @@ html.dark #loading-overlay{background:rgba(11,18,32,.85)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--bd) 50%,var(--surface2) 75%);background-size:200% 100%;animation:sk 1.5s infinite;border-radius:8px}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.platform-message{position:fixed;top:0;left:0;right:0;z-index:5000;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:18px 50px 18px 20px;box-shadow:0 6px 30px rgba(124,58,237,.4);display:flex;align-items:center;gap:14px;animation:slideDown .4s ease;border-bottom-left-radius:20px;border-bottom-right-radius:20px}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.platform-message .pm-icon{font-size:32px;flex-shrink:0}
+.platform-message .pm-content{flex:1}
+.platform-message .pm-content b{display:block;font-size:14px;margin-bottom:4px;opacity:.9}
+.platform-message .pm-content p{font-size:15px;line-height:1.6;white-space:pre-wrap;font-weight:600}
+.platform-message .pm-close{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.2);border:0;color:#fff;width:32px;height:32px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.platform-message .pm-close:hover{background:rgba(255,255,255,.35);transform:none}
 .top-bar{background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);color:#fff;padding:24px 20px;border-bottom-left-radius:24px;border-bottom-right-radius:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;position:relative;box-shadow:var(--shadow)}
 .top-bar .welcome h1{font-size:22px;margin-bottom:4px;font-weight:800}
 .top-bar .welcome p{font-size:14px;opacity:.9;margin-bottom:12px}
@@ -80,6 +88,8 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .g{color:var(--ok)}.r{color:var(--er)}.y{color:var(--warn)}
 .code{font-family:'Courier New',monospace;font-size:15px;letter-spacing:2px;direction:ltr;display:inline-block;background:var(--surface2);padding:3px 10px;border-radius:6px;color:var(--ac2);font-weight:700}
 .mut{color:var(--mu);text-align:center;padding:40px 20px}
+.view-counter{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--mu);background:var(--surface2);padding:3px 8px;border-radius:99px}
+.view-counter svg{width:12px;height:12px;fill:currentColor}
 .player-wrap{width:100%;margin-bottom:16px;background:transparent}
 .pl{position:relative;background:#000;border-radius:var(--r);overflow:hidden;width:100%;height:0;padding-bottom:56.25%;margin:0 auto;box-shadow:var(--shadow-lg)}
 @supports (aspect-ratio:16/9){.pl{height:auto;padding-bottom:0;aspect-ratio:16/9}}
@@ -96,7 +106,7 @@ html.dark .b.y{background:#78350f;color:#fcd34d}
 .wm{position:absolute;pointer-events:none;z-index:22;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.45;background:rgba(0,0,0,.6);padding:4px 10px;border-radius:99px;animation:mv 24s linear infinite alternate;direction:ltr;color:#fff;white-space:nowrap}
 .wm img{width:22px;height:22px;border-radius:50%;object-fit:cover}
 @keyframes mv{0%{top:20%;left:4%}25%{top:70%;left:55%}50%{top:35%;left:70%}75%{top:80%;left:8%}100%{top:20%;left:60%}}
-.custom-player-ctrl{direction:ltr;background:#1e1e2f;padding:10px 14px;border-radius:6px;margin-top:8px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.custom-player-ctrl{direction:ltr;background:#1e1e2f;padding:10px 14px;border-radius:6px;margin-top:8px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .custom-player-ctrl .ctrl-left{display:flex;align-items:center;flex-shrink:0}
 .custom-player-ctrl .ctrl-right{display:flex;align-items:center;flex-shrink:0}
 .custom-player-ctrl .icon-btn{background:transparent;color:#fff;border:0;border-radius:0;padding:6px;margin:0 2px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:0;min-width:36px;min-height:36px;transition:transform .15s;touch-action:manipulation}
@@ -123,6 +133,15 @@ body.is-watching .player-wrap{position:fixed!important;top:0!important;right:0!i
 body.is-watching .pl{flex:1!important;min-height:0!important;height:auto!important;width:100%!important;padding-bottom:0!important;aspect-ratio:auto!important;border-radius:0!important;box-shadow:none!important;margin:0!important}
 body.is-watching .custom-player-ctrl{width:100%!important;border-radius:0!important;margin-top:0!important;padding-bottom:env(safe-area-inset-bottom)!important}
 }
+.silent-mode-btn{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:16px;z-index:60;width:48px;height:48px;border-radius:50%;background:var(--surface);color:var(--tx);box-shadow:var(--shadow-lg);border:2px solid var(--bd);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.silent-mode-btn.on{background:var(--er);color:#fff;border-color:var(--er);animation:pulse-silent 2s infinite}
+.silent-mode-btn:hover{transform:scale(1.1);background:var(--ac);color:#fff;border-color:var(--ac)}
+.silent-mode-btn.on:hover{background:#dc2626}
+@keyframes pulse-silent{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0)}}
+.silent-mode-overlay{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.85);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#fff;text-align:center;padding:20px}
+.silent-mode-overlay .sm-icon{font-size:60px}
+.silent-mode-overlay h2{color:#fff;font-size:22px}
+.silent-mode-overlay p{opacity:.8;line-height:1.8;max-width:400px;font-size:14px}
 .bottombar{position:fixed;bottom:0;left:0;right:0;z-index:40;background:var(--surface);border:1px solid var(--bd);border-bottom:0;border-radius:22px 22px 0 0;display:flex;justify-content:space-around;gap:4px;padding:8px 16px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -5px 24px rgba(0,0,0,.1)}
 .bottombar button{background:transparent;color:var(--tx2);border:0;padding:10px 4px;border-radius:25px;font-size:11px;font-weight:700;cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
 .bottombar button:hover{background:var(--surface2);color:var(--tx);box-shadow:none;transform:none}
@@ -155,11 +174,12 @@ html.dark .noti-item.unread{background:rgba(30,58,138,.35)}
 .noti-icon svg{width:22px;height:22px;fill:#fff}
 .noti-content{flex:1;min-width:0}
 .noti-text{font-size:14px;line-height:1.6;color:var(--tx);font-weight:600;margin-bottom:4px;word-break:break-word;white-space:pre-wrap}
-.noti-date{font-size:11px;color:var(--mu);font-weight:700;display:flex;align-items:center;gap:4px}
+.noti-date{font-size:11px;color:var(--mu);font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .noti-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--er);display:inline-block;margin-right:4px}
-.noti-actions{display:flex;gap:6px;flex-shrink:0}
+.noti-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
 .noti-actions button{padding:6px 10px;font-size:11px;border-radius:8px;background:var(--surface);border:1px solid var(--bd);color:var(--tx2);font-weight:700}
 .noti-actions button:hover{background:var(--er);color:#fff;border-color:var(--er)}
+.noti-actions button.edit-btn:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
 .noti-empty{text-align:center;padding:50px 20px;color:var(--mu)}
 .noti-empty svg{width:60px;height:60px;fill:var(--bd);margin-bottom:14px}
 .stats-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px}
@@ -192,9 +212,9 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
 .auth-form .error{color:var(--er);font-size:13px;margin-bottom:10px;display:none;line-height:1.6}
 .link-btn{color:var(--ac);font-weight:700;text-decoration:none;cursor:pointer}
 .admin-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;background:var(--surface2);padding:6px;border-radius:12px}
-.admin-tabs button{flex:1 1 calc(50% - 6px);padding:10px;font-size:13px;border-radius:8px;background:var(--surface);color:var(--tx2);border:1px solid var(--bd)}
+.admin-tabs button{flex:1 1 calc(33.333% - 6px);padding:10px;font-size:12px;border-radius:8px;background:var(--surface);color:var(--tx2);border:1px solid var(--bd)}
 .admin-tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 8px rgba(37,99,235,.3)}
-@media(max-width:768px){.admin-tabs button{flex:1 1 100%}}
+@media(max-width:768px){.admin-tabs button{flex:1 1 calc(50% - 6px)}}
 .code-input{font-size:26px;text-align:center;letter-spacing:8px;font-family:monospace}
 .notice{background:var(--ac-soft);border:1px solid var(--ac);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;color:var(--tx);line-height:1.7}
 .ban-screen{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;overflow-y:auto}
@@ -204,6 +224,8 @@ html.dark .stats-table .grade-chip{background:rgba(30,58,138,.5);color:#93c5fd}
 .news-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-lg);padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
 .news-card img.news-thumb{display:block;width:100%;height:auto;max-height:none;object-fit:contain;border-radius:var(--r-sm);border:1px solid var(--bd);background:var(--surface2);cursor:zoom-in;transition:.2s}
 .news-card img.news-thumb:hover{opacity:.94}
+.news-card .news-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.news-card .news-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .embed-box{position:relative;width:100%;height:0;padding-bottom:56.25%;border-radius:10px;overflow:hidden;background:#000;margin-bottom:10px}
 .embed-box iframe,.embed-box video{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;border:0}
 .news-text{font-size:15px;line-height:1.7;color:var(--tx);white-space:pre-wrap}
@@ -374,21 +396,31 @@ html.dark .err-box{background:#7f1d1d;color:#fca5a5}
 .ai-msg.assistant{background:var(--surface);color:var(--tx);margin-left:20px}
 .ai-msg b{display:block;margin-bottom:4px;font-size:12px;opacity:.85}
 .ai-msg span{white-space:pre-wrap;word-break:break-word}
+.msg-editor{background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-top:12px}
+.msg-editor textarea{min-height:100px;margin-bottom:10px}
+.news-edit-form{background:var(--surface2);border:2px solid var(--ac);border-radius:14px;padding:16px;margin-bottom:14px;animation:pop .3s}
+.news-edit-form label{margin-top:10px}
+.news-edit-form .edit-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.noti-edit-form{background:var(--surface);border:2px solid var(--ac);border-radius:12px;padding:12px;margin-bottom:10px;animation:pop .3s}
+.noti-edit-form textarea{min-height:80px;margin-bottom:8px}
+.noti-edit-form .edit-actions{display:flex;gap:6px;justify-content:flex-end}
 </style>
 </head>
 <body>
 <div id="loading-overlay"><div class="spinner"></div><p style="font-family:Cairo,sans-serif;font-weight:700;color:var(--ac)">جارٍ التحميل...</p></div>
 <div id="screenshotShield" class="screenshot-shield"><h2>المحتوى مخفي مؤقتًا</h2><p>لأسباب أمنية، المحتوى مخفي أثناء فقدان تركيز النافذة. عد إلى المنصة للمتابعة.</p></div>
+<div id="platformMessageSlot"></div>
 <div id="app"></div>
 <div id="t" role="status" aria-live="polite"></div>
-<div class="modal" id="notiModal" onclick="if(event.target===this)closeNoti()"><div class="modal-content" style="max-width:460px"><div class="modal-header"><h3>🔔 الإشعارات</h3><button class="s" onclick="closeNoti()" style="padding:6px 14px;font-size:13px;border-radius:8px">إغلاق</button></div><div class="modal-body" id="notiBody"><div class="noti-empty"><p>لا توجد إشعارات حالياً</p></div></div></div></div>
+<div id="silentModeSlot"></div>
+<div class="modal" id="notiModal" onclick="if(event.target===this)closeNoti()"><div class="modal-content" style="max-width:480px"><div class="modal-header"><h3>🔔 الإشعارات</h3><button class="s" onclick="closeNoti()" style="padding:6px 14px;font-size:13px;border-radius:8px">إغلاق</button></div><div class="modal-body" id="notiBody"><div class="noti-empty"><p>لا توجد إشعارات حالياً</p></div></div></div></div>
 <script type="module">
   import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile,updatePassword,EmailAuthProvider,reauthenticateWithCredential} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {getDatabase,ref,get,set,update,remove,runTransaction,query,orderByChild,equalTo,onValue,increment} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import {getMessaging,getToken,onMessage} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-const APP_VERSION='3.8.0';
+const APP_VERSION='4.0.0';
 const GRADES_PRIMARY=['الصف الأول الابتدائي','الصف الثاني الابتدائي','الصف الثالث الابتدائي','الصف الرابع الابتدائي','الصف الخامس الابتدائي','الصف السادس الابتدائي'];
 const GRADES_PREP=['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
 const GRADES_SEC=['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'];
@@ -401,6 +433,7 @@ const MUTE_ON_PATH='M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-
 const MUTE_OFF_PATH='M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z';
 const FS_ENTER_PATH='M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z';
 const FS_EXIT_PATH='M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z';
+const EYE_ICON='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z';
 
 const app=initializeApp({apiKey:"AIzaSyCoHGEyhlsjmB_diUNm-R8SXB0Gm0kXw0A",authDomain:"sigma-6f162.firebaseapp.com",databaseURL:"https://sigma-6f162-default-rtdb.firebaseio.com",projectId:"sigma-6f162",storageBucket:"sigma-6f162.firebasestorage.app",messagingSenderId:"420365348074",appId:"1:420365348074:web:0aaecb71ec613bb32abb93"});
 const auth=getAuth(app),db=getDatabase(app);
@@ -463,7 +496,9 @@ function img(f,maxSize=800){
 }
 
 let U=null,A=false,IS_SUPERVISOR=false,S={v:'home'};
-let teachers={},videos={},library={},news={},notifications={},ownNotifications={},broadcastNotifications={},adminNotifications={},supportTickets={};
+let teachers={},videos={},library={},news={},newsViews={},notifications={},ownNotifications={},broadcastNotifications={},adminNotifications={},supportTickets={};
+let platformMessageData=null,platformMessageDismissed='';
+let silentModeOn=false,silentModeOverlayEl=null,silentModeCountdown=null;
 let mineVideos={},myLogs={},exams={},examAttempts={},allExamAttempts={};
 let badge='',myPhoto='',myPhone='',userGrade='',hb=null,hbGuard=0,ip=null;
 let unsubs=[],showingBan=false,renderSeq=0,loadedTeachers=false,studentStatsFilter='all';
@@ -487,6 +522,10 @@ let activeExamState=null;
 let activeExamTimer=null;
 let ytQualityLevels=[],ytCurrentQuality='auto';
 let aiChatHistory=[];
+let editingNewsId=null;
+let editingNotiKey=null;
+let viewingNewsWatchers=null;
+let viewingNotiWatchers=null;
 
 const LAB_KEYS=[['quiz','اختر الناتج'],['memory','مطابقة الرموز'],['hunt','صيد الرموز'],['order','رتّب العناصر'],['balance','موازنة المعادلات'],['who','من أنا؟'],['tf','صح أم خطأ'],['speed','سرعة البرق'],['lab','المختبر الافتراضي'],['free','طلع الكيميائي اللي جواك']];
 const isLabOn=k=>labEnabled?.[k]!==false;
@@ -548,7 +587,7 @@ physics:[
 {elements:['battery','lamp','wire','wire'],tool:'connect',formula:'توصيل على التوازي',result:'المصباحان يضيئان بنفس السطوع',desc:'توصيل مصباحين على التوازي',scenario:'صلح دائرة على التوازي'},
 {elements:['magnet','wire','battery'],tool:'connect',formula:'مغناطيس كهربائي',result:'مجال مغناطيسي حول السلك',desc:'صناعة مغناطيس كهربائي',scenario:'اصنع مغناطيساً كهربائياً'},
 {elements:['mirror','light'],tool:'reflect',formula:'انعكاس الضوء',result:'الضوء يرتد بنفس الزاوية',desc:'قانون الانعكاس',scenario:'جرب انعكاس الضوء على المرآة'},
-{elements:['battery','lamp'],tool:'connect',formula:'تحويل الطاقة',result:'طاقة كيميائية → كهربائية → ضوئية',desc:'تحويلات الطاقة في الدائرة',scenario:'تتبع تحويلات الطاقة'}
+{elements:['battery','lamp'],tool:'connect',formula:'تحويل الطاقة',result:'طاقة كيميائية → كهربائية → ضوئية',desc:'تحويلات الطاقة في الدائرة',scenario:'تتبع تحولات الطاقة'}
 ],
 biology:[
 {elements:['pea_purple','pea_white'],tool:'cross',formula:'A × a → Aa',result:'نباتات بنفسجية (صفة سائدة)',desc:'قانون مندل الأول',scenario:'ازرع بذور مندل'},
@@ -664,6 +703,7 @@ const shuffle=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.
 const sameItems=(a,b)=>a.length===b.length&&[...a].sort().join('|')===[...b].sort().join('|');
 const labDone=lab=>{const v=labUserData?.labs?.[lab];const total=LAB_EXPERIMENTS[lab].length;if(v===true)return total;return typeof v==='number'?Math.min(v,total):0};
 const arcadePoints=uid=>(arcadeData?.[uid]?.points||0)+(quizLeaderData?.[uid]?.points||0);
+function eyeIcon(count){return `<span class="view-counter"><svg viewBox="0 0 24 24"><path d="${EYE_ICON}"/></svg>${count||0}</span>`}
 
 async function enableNotifications(silent){
   if(!hasNotifApi()){if(!silent)toast('الإشعارات غير مدعومة');return}
@@ -726,10 +766,14 @@ async function enforceSingleDevice(){
     if(!cur.deviceId||cur.deviceId===devId)return true;
     const rec={uid,name:userData?.name||U.displayName||'',email:userData?.email||U.email||'',photo:userData?.photo||myPhoto||'',phone,oldDevice:cur.deviceId,oldDeviceLabel:cur.deviceLabel||'',newDevice:devId,newDeviceLabel:deviceLabel(),bannedAt:now,reason:'تسجيل دخول من جهاز آخر — حظر تلقائي',auto:true};
     const incidentId='a'+now.toString(36)+Math.random().toString(36).slice(2,8);
-    const updates={['bans/'+uid]:rec,['users/'+uid+'/banned']:true,['sessions/'+uid]:null,['autoBans/'+uid+'/'+now]:rec};
-    if(phone)updates['bansByPhone/'+phone]=rec;
-    try{await update(R(''),updates)}catch(writeError){console.error('تعذر حفظ سجل الحظر التلقائي:',writeError);toast('تعذر إتمام الحظر بسبب صلاحيات قاعدة البيانات. تواصل مع الإدارة.');return true}
-    try{await set(R('adminNotifications/'+incidentId),{text:'🚨 حظر تلقائي: '+rec.name+' — تم اكتشاف تسجيل الدخول من جهازين. الهاتف: '+(phone||'-')+' — الجهاز الجديد: '+rec.newDeviceLabel,created:now,read:false,userId:uid,type:'automatic_ban',incidentId})}catch(notificationError){console.error('تعذر إرسال إشعار الإدارة:',notificationError);toast('تم تسجيل الحظر في سجل الحظر التلقائي، لكن تعذر إرسال الإشعار. راجع صلاحيات adminNotifications.')}
+    try{
+      await set(R('bans/'+uid),rec);
+      if(phone)await set(R('bansByPhone/'+phone),rec);
+      await update(R('users/'+uid),{banned:true});
+      await remove(R('sessions/'+uid)).catch(()=>{});
+      await set(R('autoBans/'+uid+'/'+now),rec).catch(()=>{});
+    }catch(writeError){console.error('تعذر حفظ سجل الحظر التلقائي:',writeError);toast('تعذر إتمام الحظر بسبب صلاحيات قاعدة البيانات. تواصل مع الإدارة.');return true}
+    try{await set(R('adminNotifications/'+incidentId),{text:'🚨 حظر تلقائي: '+rec.name+' — تم اكتشاف تسجيل الدخول من جهازين. الهاتف: '+(phone||'-')+' — الجهاز الجديد: '+rec.newDeviceLabel,created:now,read:false,userId:uid,type:'automatic_ban',incidentId,views:0,viewedBy:{}})}catch(notificationError){console.error('تعذر إرسال إشعار الإدارة:',notificationError)}
     return false;
   }catch(e){console.error('فشل فحص الجهاز الواحد:',e);toast('تعذر التحقق من جلسة الدخول. تحقق من اتصال الإنترنت وصلاحيات sessions.');return true}
 }
@@ -874,6 +918,30 @@ document.addEventListener('fullscreenchange',onFsChange);
 document.addEventListener('webkitfullscreenchange',onFsChange);
 function isPlayingForTracking(){if(P.type==='embed')return !document.hidden;if(P.type)return pIsPlaying();return false}
 
+function toggleSilentMode(){
+  silentModeOn=!silentModeOn;
+  const slot=document.getElementById('silentModeSlot');
+  if(silentModeOn){
+    slot.innerHTML=`<button class="silent-mode-btn on" onclick="toggleSilentMode()" title="إيقاف الوضع الصامت">🔕</button><div class="silent-mode-overlay"><div class="sm-icon">🤫</div><h2>الوضع الصامت مُفعّل</h2><p>تم إخفاء كل الإشعارات والرسائل مؤقتاً لمساعدتك على التركيز. اضغط الزر مرة أخرى لإلغاء الوضع الصامت.</p><button class="s" onclick="toggleSilentMode()">إلغاء الوضع الصامت</button></div>`;
+    store.set('sigma-silent','1');
+    if(hasNotifApi()&&Notification.permission==='granted'){try{new Notification('🤫 وضع الصامت','تم تفعيل الوضع الصامت. لن تصلك إشعارات حتى تلغيه.')}catch(e){}}
+  }else{
+    slot.innerHTML=`<button class="silent-mode-btn" onclick="toggleSilentMode()" title="تفعيل الوضع الصامت">🔔</button>`;
+    store.set('sigma-silent','0');
+    toast('✅ تم إلغاء الوضع الصامت');
+  }
+}
+function initSilentMode(){
+  const saved=store.get('sigma-silent');
+  const slot=document.getElementById('silentModeSlot');
+  if(saved==='1'){
+    silentModeOn=true;
+    slot.innerHTML=`<button class="silent-mode-btn on" onclick="toggleSilentMode()" title="إيقاف الوضع الصامت">🔕</button><div class="silent-mode-overlay"><div class="sm-icon">🤫</div><h2>الوضع الصامت مُفعّل</h2><p>تم إخفاء كل الإشعارات والرسائل مؤقتاً لمساعدتك على التركيز. اضغط الزر مرة أخرى لإلغاء الوضع الصامت.</p><button class="s" onclick="toggleSilentMode()">إلغاء الوضع الصامت</button></div>`;
+  }else{
+    slot.innerHTML=`<button class="silent-mode-btn" onclick="toggleSilentMode()" title="تفعيل الوضع الصامت">🔔</button>`;
+  }
+}
+
 const go=(v,id,tab,filter)=>{
   stopHB();destroyPlayer();cleanupExam();
   if(v!=='admin'&&bansLiveUnsub){try{bansLiveUnsub()}catch(e){}bansLiveUnsub=null}
@@ -895,12 +963,37 @@ function refreshNotifications(){
   if(A){Object.entries(adminNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}})}
   else{Object.entries(broadcastNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...n,_key:id}});Object.entries(ownNotifications||{}).forEach(([id,n])=>{if(n&&typeof n==='object')merged[id]={...(merged[id]||{}),...n,_key:id}})}
   notifications=Object.fromEntries(Object.entries(merged).filter(([,n])=>!n.dismissed));
+  if(silentModeOn){const dot=document.getElementById('notiBadge');if(dot)dot.style.display='none';return}
   const unread=Object.values(notifications).filter(n=>!n.read).length;
   const dot=document.getElementById('notiBadge');
   if(dot){dot.textContent=unread>99?'99+':String(unread);dot.style.display=unread?'flex':'none'}
 }
 function hideOverlay(){setTimeout(()=>{const ov=$('#loading-overlay');if(ov)ov.classList.add('hide')},300)}
 
+async function renderPlatformMessage(){
+  const slot=document.getElementById('platformMessageSlot');
+  if(!U||!slot)return;
+  if(!platformMessageData){slot.innerHTML='';return}
+  const dismissedKey='sigma-dismissed-message';
+  const dismissed=store.get(dismissedKey)||'';
+  if(platformMessageData.id===dismissed){slot.innerHTML='';return}
+  if(silentModeOn){slot.innerHTML='';return}
+  try{
+    await update(R('platformMessage/views'),{}).catch(()=>{});
+    const viewRef=R('platformMessage/viewedBy/'+U.uid);
+    await set(viewRef,Date.now()).catch(()=>{});
+    const viewsRef=R('platformMessage/views');
+    const cur=await G('platformMessage/views');
+    await set(viewsRef,(cur||0)+1).catch(()=>{});
+  }catch(e){}
+  slot.innerHTML=`<div class="platform-message"><div class="pm-icon">📢</div><div class="pm-content"><b>رسالة من منصة سيجما</b><p>${esc(platformMessageData.text||'')}</p></div><button class="pm-close" onclick="dismissPlatformMessage()" title="إغلاق">×</button></div>`;
+}
+function dismissPlatformMessage(){
+  if(!platformMessageData)return;
+  store.set('sigma-dismissed-message',platformMessageData.id||'');
+  const slot=document.getElementById('platformMessageSlot');
+  if(slot)slot.innerHTML='';
+}
 async function maybeSendWeeklyReport(){
   if(!U||A||IS_SUPERVISOR)return;
   const now=Date.now();
@@ -916,7 +1009,7 @@ async function maybeSendWeeklyReport(){
   const totalPoints=(arc.points||0)+(qz.points||0);
   const mins=Math.round(weekSeconds/60);
   const text=`📊 تقريرك الأسبوعي:\n🎬 شاهدت ${weekVideos} فيديو (${mins} دقيقة)\n📝 حللت ${weekExams} امتحان\n⭐ مجموع نقاطك: ${totalPoints}\n💪 استمر في التقدم!`;
-  try{const nid='w'+now.toString(36);await set(R('notifications/'+U.uid+'/'+nid),{text,created:now,read:false,type:'weekly_report'});store.set(lastKey,String(now))}catch(e){}
+  try{const nid='w'+now.toString(36);await set(R('notifications/'+U.uid+'/'+nid),{text,created:now,read:false,type:'weekly_report',views:0,viewedBy:{}});store.set(lastKey,String(now))}catch(e){}
 }
 async function sendMotivationIfNeeded(){
   if(!U||A||IS_SUPERVISOR)return;
@@ -925,14 +1018,14 @@ async function sendMotivationIfNeeded(){
   const now=Date.now();
   if(now-last<6*60*60*1000)return;
   const msg=MOTIVATION_MSGS[Math.floor(Math.random()*MOTIVATION_MSGS.length)];
-  try{const nid='m'+now.toString(36);await set(R('notifications/'+U.uid+'/'+nid),{text:msg,created:now,read:false,type:'motivation'});store.set(lastKey,String(now))}catch(e){}
-                                                          }
+  try{const nid='m'+now.toString(36);await set(R('notifications/'+U.uid+'/'+nid),{text:msg,created:now,read:false,type:'motivation',views:0,viewedBy:{}});store.set(lastKey,String(now))}catch(e){}
+  }
   onAuthStateChanged(auth,async u=>{
   const gen=++authGeneration;
   clearListeners();stopHB();
   U=u;myPhoto='';myPhone='';userGrade='';showingBan=false;
   if(!u){
-    teachers={};videos={};library={};news={};badge='';mineVideos={};notifications={};ownNotifications={};broadcastNotifications={};adminNotifications={};supportTickets={};allExamAttempts={};adminUsersList={};labEnabled={};
+    teachers={};videos={};library={};news={};newsViews={};badge='';mineVideos={};notifications={};ownNotifications={};broadcastNotifications={};adminNotifications={};supportTickets={};allExamAttempts={};adminUsersList={};labEnabled={};platformMessageData=null;
     IS_SUPERVISOR=false;A=false;S={v:'home'};myLogs={};exams={};examAttempts={};
     document.body.classList.remove('is-watching');
     loadedTeachers=false;render();hideOverlay();return;
@@ -966,7 +1059,9 @@ async function sendMotivationIfNeeded(){
     unsubs.push(onValue(R('teachers'),s=>{teachers=s.val()||{};loadedTeachers=true;cache.save({teachers,videos,library,news});if(S.v!=='watch'&&S.v!=='exam'&&S.v!=='takeExam'&&S.v!=='games')render()},()=>{loadedTeachers=true}));
     unsubs.push(onValue(R('videos'),s=>{videos=s.val()||{};if(S.v!=='watch'&&S.v!=='games')render()},()=>{}));
     unsubs.push(onValue(R('library'),s=>{library=s.val()||{};if(S.v!=='watch'&&S.v!=='games')render()},()=>{}));
-    unsubs.push(onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news')render()},()=>{}));
+    unsubs.push(onValue(R('news'),s=>{news=s.val()||{};if(S.v==='news'||S.v==='admin')render()},()=>{}));
+    unsubs.push(onValue(R('newsViews'),s=>{newsViews=s.val()||{};if(S.v==='news'||S.v==='admin')render()},()=>{}));
+    unsubs.push(onValue(R('platformMessage'),s=>{platformMessageData=s.val()||null;renderPlatformMessage()},()=>{}));
     unsubs.push(onValue(R('exams'),s=>{exams=s.val()||{};if(['exams','exam','admin'].includes(S.v))render()},()=>{}));
     unsubs.push(onValue(R('examAttempts/'+u.uid),s=>{examAttempts=s.val()||{};if(['exams','exam','examResult'].includes(S.v))render()},()=>{}));
     if(A||IS_SUPERVISOR)unsubs.push(onValue(R('examAttempts'),s=>{allExamAttempts=s.val()||{};if(S.v==='exam')render()},()=>{}));
@@ -1003,7 +1098,7 @@ async function sendMotivationIfNeeded(){
     }
   }catch(e){hideOverlay();render();return}
   if(gen!==authGeneration)return;
-  render();hideOverlay();
+  render();hideOverlay();initSilentMode();
 });
 
 (()=>{
@@ -1021,21 +1116,47 @@ async function sendMotivationIfNeeded(){
 })();
 
 function openNoti(){const m=$('#notiModal');if(m)m.classList.add('show');renderNoti()}
-function closeNoti(){const m=$('#notiModal');if(m)m.classList.remove('show')}
+function closeNoti(){const m=$('#notiModal');if(m)m.classList.remove('show');editingNotiKey=null;viewingNotiWatchers=null}
 function renderNoti(){
   const body=$('#notiBody');if(!body)return;
   const list=Object.values(notifications).sort((a,b)=>(b.created||0)-(a.created||0));
   if(!list.length){body.innerHTML=`<div class="noti-empty"><p style="font-weight:700">لا توجد إشعارات حالياً</p></div>`;return}
   body.innerHTML=list.map(n=>{
     const isUnread=!n.read;
-    return `<div class="noti-item ${isUnread?'unread':''}"><div class="noti-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div><div class="noti-content" style="cursor:${n.userId?'pointer':'default'}" ${n.userId?`data-uid="${esc(n.userId)}" onclick="closeNoti();go('studentProfile',this.dataset.uid)"`:''}><div class="noti-text">${isUnread?'<span class="noti-unread-dot"></span>':''}${esc(n.text||'إشعار جديد')}</div><div class="noti-date">${fd(n.created)}</div></div><div class="noti-actions"><button onclick="delNoti('${esc(n._key)}')" title="مسح">✕</button></div></div>`;
+    const nViews=(n.views||0);
+    const viewedBy=n.viewedBy||{};
+    if(A&&editingNotiKey===n._key){
+      return `<div class="noti-edit-form"><label>تعديل الإشعار</label><textarea id="edit-noti-${esc(n._key)}">${esc(n.text||'')}</textarea><div class="edit-actions"><button class="g" onclick="saveEditedNoti('${esc(n._key)}')">حفظ</button><button class="s" onclick="cancelEditNoti()">إلغاء</button></div></div>`;
+    }
+    if(A&&viewingNotiWatchers===n._key){
+      const viewers=Object.entries(viewedBy).sort((a,b)=>b[1]-a[1]);
+      return `<div class="noti-item" style="flex-direction:column;align-items:stretch"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>👁 شوهد بواسطة (${viewers.length})</b><button class="s" onclick="closeNotiWatchers()">رجوع</button></div><div style="margin-top:10px;max-height:300px;overflow-y:auto">${viewers.length?viewers.map(([uid,t])=>{const u=adminUsersList?.[uid]||studentsCache?.[uid]||{};return `<div style="padding:8px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(u.name||uid.substring(0,8))}</b><small>${fd(t)}</small></div>`}).join(''):'<div class="mut">لم يشاهده أحد بعد</div>'}</div></div>`;
+    }
+    return `<div class="noti-item ${isUnread?'unread':''}"><div class="noti-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div><div class="noti-content" style="cursor:${n.userId?'pointer':'default'}" ${n.userId?`data-uid="${esc(n.userId)}" onclick="closeNoti();go('studentProfile',this.dataset.uid)"`:''}><div class="noti-text">${isUnread?'<span class="noti-unread-dot"></span>':''}${esc(n.text||'إشعار جديد')}</div><div class="noti-date">${fd(n.created)}${A?` ${eyeIcon(nViews)}`:''}</div></div><div class="noti-actions">${A?`<button class="edit-btn" onclick="event.stopPropagation();startEditNoti('${esc(n._key)}')" title="تعديل">✏️</button><button class="edit-btn" onclick="event.stopPropagation();viewNotiWatchers('${esc(n._key)}')" title="من شاهده">👁</button>`:''}<button onclick="event.stopPropagation();delNoti('${esc(n._key)}')" title="مسح">✕</button></div></div>`;
   }).join('')+`<div style="text-align:center;padding-top:12px"><button class="s" style="font-size:12px;padding:8px 20px" onclick="clearAllMyNotis()">مسح الكل</button></div>`;
-  if(U){
+  if(U&&!A){
     const updates={};
     list.forEach(n=>{if(!n.read)updates[n._key]={text:n.text||'',created:n.created||Date.now(),read:true}});
-    if(Object.keys(updates).length){if(A)update(R('adminNotifications'),updates).catch(()=>{});else update(R('notifications/'+U.uid),updates).catch(()=>{})}
+    if(Object.keys(updates).length)update(R('notifications/'+U.uid),updates).catch(()=>{});
+    list.forEach(n=>{if(!n.viewedBy||!n.viewedBy[U.uid]){const vRef=R((A?'adminNotifications/':'notifications/'+U.uid+'/')+n._key);update(vRef,{views:increment(1),[`viewedBy/${U.uid}`]:Date.now()}).catch(()=>{})}});
   }
 }
+function startEditNoti(key){editingNotiKey=key;viewingNotiWatchers=null;renderNoti()}
+function cancelEditNoti(){editingNotiKey=null;renderNoti()}
+async function saveEditedNoti(key){
+  if(!A)return toast('غير مصرح');
+  const ta=document.getElementById('edit-noti-'+key);
+  const text=(ta?.value||'').trim();
+  if(!text)return toast('اكتب نص الإشعار');
+  try{
+    await update(R('adminNotifications/'+key),{text,updatedAt:Date.now()});
+    if(adminNotifications[key])adminNotifications[key].text=text;
+    toast('✅ تم التعديل');
+    editingNotiKey=null;renderNoti();
+  }catch(e){toast('تعذر التعديل')}
+}
+function viewNotiWatchers(key){viewingNotiWatchers=key;editingNotiKey=null;renderNoti()}
+function closeNotiWatchers(){viewingNotiWatchers=null;renderNoti()}
 async function delNoti(key){
   if(!confirm('مسح هذا الإشعار؟'))return;
   const n=notifications[key]||{};
@@ -1146,8 +1267,7 @@ function bottomBar(){
 }
 function toggleTheme(){document.documentElement.classList.toggle('dark');store.set(THEME_KEY,document.documentElement.classList.contains('dark')?'dark':'light');renderTopbar()}
 function backBtn(target){return `<button class="s" onclick="${target}" style="margin-bottom:16px">← رجوع</button>`}
-
-function vSettingsGrade(){
+  function vSettingsGrade(){
   if(A||IS_SUPERVISOR)return vSettings();
   return `${backBtn("go('settings')")}<div class="box"><h2>🎓 تغيير الصف</h2><p style="color:var(--tx2);margin-bottom:10px">اختر صفك الدراسي.</p><select id="student-grade"><option value="">اختر الصف</option>${ALL_GRADES.map(g=>`<option value="${esc(g)}" ${userGrade===g?'selected':''}>${esc(g)}</option>`).join('')}</select><button onclick="saveStudentGrade()" style="width:100%">حفظ الصف</button></div>`;
 }
@@ -1258,7 +1378,7 @@ async function replySupportTicket(id){
   const nid='n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   const text=('رد الإدارة على: '+(t.subject||'')+' — '+reply.trim()).slice(0,500);
   try{
-    await set(R('notifications/'+t.uid+'/'+nid),{text,created:Date.now(),read:false});
+    await set(R('notifications/'+t.uid+'/'+nid),{text,created:Date.now(),read:false,views:0,viewedBy:{}});
     await update(R('supportTickets/'+id),{reply:reply.trim(),repliedAt:Date.now()});
     toast('✅ تم إرسال الرد للطالب');
   }catch(e){toast('تعذر إرسال الرد')}
@@ -1484,22 +1604,63 @@ function vNews(){
       if(e.t==='yt'||e.t==='drive')embedHTML=`<div class="embed-box"><iframe src="${esc(e.s)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" title="فيديو الخبر"></iframe></div>`;
       else if(e.t==='v')embedHTML=`<div class="embed-box"><video src="${esc(e.s)}" controls playsinline preload="metadata"></video></div>`;
     }
-    return `<div class="news-card">${item.photo?`<img src="${esc(item.photo)}" alt="صورة الخبر" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}${embedHTML}${item.text?`<div class="news-text">${esc(item.text)}</div>`:''}<div class="news-date">${fd(item.created)}</div>${(A||IS_SUPERVISOR)?`<button class="d" style="padding:4px 8px;font-size:12px;width:fit-content" onclick="delNews('${esc(id)}')">حذف الخبر</button>`:''}</div>`;
+    const viewsData=newsViews[id]||{};
+    const viewsCount=viewsData.count||0;
+    const viewedBy=viewsData.viewedBy||{};
+    if(A&&viewingNewsWatchers===id){
+      const viewers=Object.entries(viewedBy).sort((a,b)=>b[1]-a[1]);
+      return `<div class="news-card"><div class="news-header"><b>👁 شوهد بواسطة (${viewers.length})</b><button class="s" onclick="closeNewsWatchers()">رجوع</button></div><div style="max-height:300px;overflow-y:auto;margin-top:10px">${viewers.length?viewers.map(([uid,t])=>{const u=adminUsersList?.[uid]||studentsCache?.[uid]||{};return `<div style="padding:8px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(u.name||uid.substring(0,8))}</b><small>${fd(t)}</small></div>`}).join(''):'<div class="mut">لم يشاهده أحد بعد</div>'}</div></div>`;
+    }
+    if(A&&editingNewsId===id){
+      return `<div class="news-card"><div class="news-edit-form"><label>تعديل الخبر</label><textarea id="edit-news-text-${esc(id)}" rows="3">${esc(item.text||'')}</textarea><label>رابط الفيديو (اختياري)</label><input id="edit-news-url-${esc(id)}" value="${esc(item.url||'')}" dir="ltr"><div class="edit-actions"><button class="g" onclick="saveEditedNews('${esc(id)}')">حفظ</button><button class="s" onclick="cancelEditNews()">إلغاء</button></div></div></div>`;
+    }
+    return `<div class="news-card">${item.photo?`<img src="${esc(item.photo)}" alt="صورة الخبر" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}${embedHTML}${item.text?`<div class="news-text">${esc(item.text)}</div>`:''}<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span class="news-date">${fd(item.created)}</span>${A?`<span class="news-meta">${eyeIcon(viewsCount)}</span>`:''}</div>${(A||IS_SUPERVISOR)?`<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="s" style="padding:4px 10px;font-size:12px" onclick="startEditNews('${esc(id)}')">✏️ تعديل</button><button class="s" style="padding:4px 10px;font-size:12px" onclick="viewNewsWatchers('${esc(id)}')">👁 من شاهده</button><button class="d" style="padding:4px 10px;font-size:12px" onclick="delNews('${esc(id)}')">🗑 حذف</button></div>`:''}</div>`;
   }).join('');
+}
+function startEditNews(id){editingNewsId=id;viewingNewsWatchers=null;render()}
+function cancelEditNews(){editingNewsId=null;render()}
+async function saveEditedNews(id){
+  if(!A&&!IS_SUPERVISOR)return toast('غير مصرح');
+  const ta=document.getElementById('edit-news-text-'+id);
+  const urlEl=document.getElementById('edit-news-url-'+id);
+  const text=(ta?.value||'').trim();
+  const url=(urlEl?.value||'').trim();
+  if(url&&!/^https?:\/\//i.test(url))return toast('رابط الفيديو يجب أن يبدأ بـ https://');
+  try{
+    await update(R('news/'+id),{text,url,updatedAt:Date.now()});
+    toast('✅ تم تعديل الخبر');
+    editingNewsId=null;render();
+  }catch(e){toast('تعذر التعديل')}
+}
+function viewNewsWatchers(id){viewingNewsWatchers=id;editingNewsId=null;render()}
+function closeNewsWatchers(){viewingNewsWatchers=null;render()}
+async function trackNewsView(id){
+  if(!U)return;
+  try{
+    const viewRef=R('newsViews/'+id+'/viewedBy/'+U.uid);
+    const cur=await G('newsViews/'+id+'/viewedBy/'+U.uid);
+    if(!cur){
+      await set(viewRef,Date.now());
+      const countRef=R('newsViews/'+id+'/count');
+      const countCur=await G('newsViews/'+id+'/count')||0;
+      await set(countRef,countCur+1);
+    }
+  }catch(e){}
 }
 
 async function vAdmin(){
   if(!A&&!IS_SUPERVISOR)return '<div class="mut">غير مصرح.</div>';
   const tab=S.tab||'videos';
   const allowedTabs=A
-    ?[['videos','🎬 الفيديوهات'],['news','📰 الأخبار'],['teachers','👨‍🏫 المدرسون'],['library','📚 المكتبة'],['students','👥 الطلاب'],['exams','📝 الامتحانات'],['support','📩 الشكاوى والاستفسارات'],['send_notification','🔔 إرسال إشعار'],['bans','🚫 الحظر'],['autobans','⚠️ حظر تلقائي'],['lab','🔬 المختبر'],['badge','🏅 صورة التعريف'],['ai','🤖 المساعد الذكي']]
-    :[['videos','🎬 الفيديوهات'],['news','📰 الأخبار'],['exams','📝 الامتحانات']];
+    ?[['videos','🎬 الفيديوهات'],['news','📰 الأخبار'],['teachers','👨‍🏫 المدرسون'],['library','📚 المكتبة'],['students','👥 الطلاب'],['exams','📝 الامتحانات'],['support','📩 الشكاوى'],['send_notification','🔔 إرسال إشعار'],['platform_message','📢 رسالة المنصة'],['bans','🚫 الحظر'],['autobans','⚠️ حظر تلقائي'],['lab','🔬 المختبر'],['badge','🏅 صورة التعريف'],['ai','🤖 المساعد']]
+    :[['videos','🎬 الفيديوهات'],['news','📰 الأخبار'],['exams','📝 الامتحانات'],['platform_message','📢 رسالة المنصة']];
   const effTab=allowedTabs.some(([k])=>k===tab)?tab:'videos';
   const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${effTab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;
   if(effTab==='teachers')return tb+vAdminTeachers();
   if(effTab==='library')return tb+vAdminLibrary();
   if(effTab==='students')return tb+await vAdminStudents();
   if(effTab==='send_notification')return tb+vSendNotification();
+  if(effTab==='platform_message')return tb+vAdminPlatformMessage();
   if(effTab==='exams')return tb+await vAdminExams();
   if(effTab==='support')return tb+await vAdminSupport();
   if(effTab==='badge')return tb+vAdminBadge();
@@ -1509,6 +1670,27 @@ async function vAdmin(){
   if(effTab==='ai')return tb+vAdminAI();
   if(effTab==='news')return tb+vAdminNews();
   return tb+vAdminVideos();
+}
+function vAdminPlatformMessage(){
+  const cur=platformMessageData;
+  return `<div class="box"><h2>📢 رسالة من منصة سيجما</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">اكتب رسالة تظهر على شاشة كل الطلاب عند دخولهم للمنصة. يمكن للطالب إغلاقها، ولن تظهر له مرة أخرى إلا إذا عدّلتها.</p>${cur?`<div class="notice" style="margin-bottom:14px"><b>الرسالة الحالية:</b><br>${esc(cur.text||'')}<br><small style="color:var(--mu)">آخر تحديث: ${fd(cur.updatedAt)}</small><br><small style="color:var(--mu)">عدد المشاهدات: ${cur.views||0}</small></div>`:''}<label for="pm-text">نص الرسالة</label><textarea id="pm-text" rows="3" placeholder="مثال: امتحان الشهر يوم الخميس القادم، استعدوا!">${esc(cur?.text||'')}</textarea><div style="display:flex;gap:8px;flex-wrap:wrap"><button onclick="savePlatformMessage()">${cur?'تحديث الرسالة':'نشر الرسالة'}</button>${cur?`<button class="d" onclick="deletePlatformMessage()">حذف الرسالة</button>`:''}</div></div>`;
+}
+async function savePlatformMessage(){
+  if(!A)return toast('غير مصرح');
+  const text=$('#pm-text')?.value.trim();
+  if(!text)return toast('اكتب نص الرسالة');
+  if(text.length>1000)return toast('الرسالة طويلة جداً (الحد 1000 حرف)');
+  try{
+    await set(R('platformMessage'),{text,id:'pm'+Date.now(),updatedAt:Date.now(),views:0,viewedBy:{}});
+    toast('✅ تم حفظ الرسالة');
+    store.set('sigma-dismissed-message','');
+    render();
+  }catch(e){toast('تعذر الحفظ')}
+}
+async function deletePlatformMessage(){
+  if(!A)return toast('غير مصرح');
+  if(!confirm('حذف رسالة المنصة؟'))return;
+  try{await remove(R('platformMessage'));platformMessageData=null;toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
 }
 function vAdminTeachers(){
   return `<div class="box"><h2>إضافة مدرس</h2><label for="tn">الاسم</label><input id="tn"><label for="tp">الصورة</label><input id="tp" type="file" accept="image/*"><button onclick="addT()">إضافة</button></div><div class="grid">${Object.entries(teachers).map(([id,x])=>`<div class="card" style="cursor:default"><div class="card-img-wrap"><img src="${esc(x.photo||avatarOf(x.name))}" alt=""></div><div class="card-body"><b>${esc(x.name)}</b><div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><button class="s" style="padding:6px 10px;font-size:12px" onclick="go('edit','${esc(id)}','teacher')">تعديل</button><button class="d" style="padding:6px 10px;font-size:12px" onclick="delT('${esc(id)}')">حذف</button></div></div></div>`).join('')}</div>`;
@@ -1520,7 +1702,7 @@ function vAdminBadge(){
   return `<div class="box"><h2>🏅 صورة التعريف</h2><p style="color:var(--tx2);margin-bottom:14px;line-height:1.7">تظهر بجانب اسم كل طالب وعلى العلامة المائية.</p>${badge?`<img src="${esc(badge)}" alt="" style="width:100px;height:100px;border-radius:50%;margin-bottom:14px;border:3px solid var(--ac-soft);object-fit:cover">`:''}<input id="bp" type="file" accept="image/*"><button onclick="setB()">حفظ</button></div>`;
 }
 function vAdminNews(){
-  return `<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3"></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>`<div class="news-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:var(--ac)">خبر منشور</b><button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">حذف</button></div>${x.photo?`<img src="${esc(x.photo)}" alt="" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`).join('')}`;
+  return `<div class="box"><h2>إضافة خبر جديد</h2><label for="newText">نص الخبر (اختياري)</label><textarea id="newText" rows="3"></textarea><label for="newVid">رابط فيديو الخبر (اختياري)</label><input id="newVid" dir="ltr" placeholder="https://youtube.com/..."><label for="newImg">صورة الخبر (اختياري)</label><input id="newImg" type="file" accept="image/*"><button onclick="addNews()">نشر الخبر</button></div><h2>الأخبار المنشورة</h2>${Object.entries(news).sort((a,b)=>(b[1].created||0)-(a[1].created||0)).map(([id,x])=>{const viewsData=newsViews[id]||{};return `<div class="news-card"><div class="news-header"><b style="color:var(--ac)">خبر منشور</b><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${A?eyeIcon(viewsData.count||0):''}<button class="s" style="padding:4px 10px;font-size:12px" onclick="startEditNews('${esc(id)}')">✏️ تعديل</button>${A?`<button class="s" style="padding:4px 10px;font-size:12px" onclick="viewNewsWatchers('${esc(id)}')">👁 من شاهده</button>`:''}<button class="d" onclick="delNews('${esc(id)}')" style="padding:4px 10px;font-size:12px">🗑 حذف</button></div></div>${x.photo?`<img src="${esc(x.photo)}" alt="" class="news-thumb" onclick="previewNewsImage(this.src)">`:''}<p style="font-size:13px;white-space:pre-wrap">${esc(x.text||'')}</p><span class="news-date">${fd(x.created)}</span></div>`}).join('')}`;
 }
 function vAdminVideos(){
   const tOpts=Object.entries(teachers).map(([id,x])=>`<option value="${esc(id)}">${esc(x.name)}</option>`).join('');
@@ -1532,7 +1714,6 @@ function toggleAccessType(){
   const box=document.getElementById('codesCountBox');
   if(box)box.style.display=type==='codes'?'':'none';
 }
-
 async function vAdminLab(){
   if(!A)return '<div class="mut">غير مصرح.</div>';
   const r=await GTry('users');
@@ -1540,8 +1721,8 @@ async function vAdminLab(){
   adminUsersList=users;
   const scores=Object.entries(arcadeData||{}).map(([uid,d])=>({uid,name:d.name||users[uid]?.name||'طالب',points:d.points||0,best:d.best||{}})).filter(x=>x.points>0).sort((a,b)=>b.points-a.points);
   const quizScores=Object.entries(quizLeaderData||{}).map(([uid,d])=>({uid,name:d.name||users[uid]?.name||'طالب',points:d.points||0})).filter(x=>x.points>0);
-  return `<div class="box"><h2>🔬 التحكم في المختبر</h2><p style="color:var(--tx2);line-height:1.7;margin-bottom:14px">يمكنك تفعيل أو إيقاف أي لعبة أو مختبر. عند الإيقاف لن يظهر للطلاب كخيار متاح.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">${LAB_KEYS.map(([k,n])=>`<div style="background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="font-size:14px">${n}</b><button class="${isLabOn(k)?'g':'d'}" style="padding:6px 12px;font-size:12px" onclick="toggleLab('${k}')">${isLabOn(k)?'مفعّل':'موقوف'}</button></div>`).join('')}</div></div>
-<div class="box"><h2>🏆 المتصدرون</h2><p style="color:var(--tx2);margin-bottom:12px">يمكنك إزالة أي طالب من المتصدرين (سيُمسح سجل نقاطه فقط، وليس حسابه).</p>${!scores.length?'<div class="mut">لا يوجد متصدرون بعد.</div>':`<div class="tw"><table><thead><tr><th>#</th><th>الطالب</th><th>النقاط</th><th>إجراء</th></tr></thead><tbody>${scores.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td><b>${s.points}</b></td><td><button class="d" style="padding:4px 10px;font-size:12px" onclick="removeFromLeaderboard('${esc(s.uid)}')">إزالة</button></td></tr>`).join('')}</tbody></table></div>`}</div>
+  return `<div class="box"><h2>🔬 التحكم في المختبر</h2><p style="color:var(--tx2);line-height:1.7;margin-bottom:14px">يمكنك تفعيل أو إيقاف أي لعبة أو مختبر.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">${LAB_KEYS.map(([k,n])=>`<div style="background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="font-size:14px">${n}</b><button class="${isLabOn(k)?'g':'d'}" style="padding:6px 12px;font-size:12px" onclick="toggleLab('${k}')">${isLabOn(k)?'مفعّل':'موقوف'}</button></div>`).join('')}</div></div>
+<div class="box"><h2>🏆 المتصدرون</h2>${!scores.length?'<div class="mut">لا يوجد متصدرون بعد.</div>':`<div class="tw"><table><thead><tr><th>#</th><th>الطالب</th><th>النقاط</th><th>إجراء</th></tr></thead><tbody>${scores.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td><b>${s.points}</b></td><td><button class="d" style="padding:4px 10px;font-size:12px" onclick="removeFromLeaderboard('${esc(s.uid)}')">إزالة</button></td></tr>`).join('')}</tbody></table></div>`}</div>
 <div class="box"><h2>🏅 متصدرو الاختبار</h2>${!quizScores.length?'<div class="mut">لا يوجد متصدرون بعد.</div>':`<div class="tw"><table><thead><tr><th>#</th><th>الطالب</th><th>النقاط</th><th>إجراء</th></tr></thead><tbody>${quizScores.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td><b>${s.points}</b></td><td><button class="d" style="padding:4px 10px;font-size:12px" onclick="removeFromQuizLeader('${esc(s.uid)}')">إزالة</button></td></tr>`).join('')}</tbody></table></div>`}</div>`;
 }
 async function toggleLab(k){
@@ -1551,7 +1732,7 @@ async function toggleLab(k){
 }
 async function removeFromLeaderboard(uid){
   if(!A)return toast('غير مصرح');
-  if(!confirm('إزالة هذا الطالب من المتصدرين؟ سيُمسح سجل نقاطه فقط.'))return;
+  if(!confirm('إزالة هذا الطالب من المتصدرين؟'))return;
   try{await remove(R('arcade/'+uid));toast('تمت الإزالة');render()}catch(e){toast('تعذر الإزالة')}
 }
 async function removeFromQuizLeader(uid){
@@ -1559,11 +1740,10 @@ async function removeFromQuizLeader(uid){
   if(!confirm('إزالة هذا الطالب من متصدري الاختبار؟'))return;
   try{await remove(R('quizGame/'+uid));toast('تمت الإزالة');render()}catch(e){toast('تعذر الإزالة')}
 }
-
 function vAdminAI(){
   const ctx=`<div class="notice" style="margin-bottom:14px;font-size:12px;line-height:1.6">💡 جرّب: "كم عدد الطلاب؟" أو "أنشئ 5 أسئلة على الأكسدة" أو "كيف أحسن المنصة؟"</div>`;
   const msgs=aiChatHistory.length?aiChatHistory.map(m=>`<div class="ai-msg ${m.role}"><b>${m.role==='user'?'👤 أنت':'🤖 المساعد'}</b><span>${esc(m.text)}</span></div>`).join(''):'<div class="mut" style="padding:30px">ابدأ بمحادثة...</div>';
-  return `<div class="box"><h2>🤖 المساعد الذكي</h2><p style="color:var(--tx2);line-height:1.7;margin-bottom:14px">مساعد إداري ذكي للإدارة فقط. اسأل عن إحصائيات المنصة، اطلب إنشاء أسئلة، أو تحليل بيانات.</p>${ctx}<div class="ai-chat-box" id="aiChatBox">${msgs}</div><textarea id="aiInput" rows="3" placeholder="اكتب رسالتك للمساعد..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI()}"></textarea><div style="display:flex;gap:8px;flex-wrap:wrap"><button onclick="sendAI()" id="aiSendBtn">إرسال</button><button class="s" onclick="aiChatHistory=[];render()">مسح المحادثة</button><button class="s" onclick="aiQuickSummary()">📊 ملخص سريع</button></div></div>`;
+  return `<div class="box"><h2>🤖 المساعد الذكي</h2><p style="color:var(--tx2);line-height:1.7;margin-bottom:14px">مساعد إداري ذكي للإدارة فقط.</p>${ctx}<div class="ai-chat-box" id="aiChatBox">${msgs}</div><textarea id="aiInput" rows="3" placeholder="اكتب رسالتك للمساعد..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI()}"></textarea><div style="display:flex;gap:8px;flex-wrap:wrap"><button onclick="sendAI()" id="aiSendBtn">إرسال</button><button class="s" onclick="aiChatHistory=[];render()">مسح المحادثة</button><button class="s" onclick="aiQuickSummary()">📊 ملخص سريع</button></div></div>`;
 }
 function aiQuickSummary(){
   const users=Object.keys(adminUsersList||{}).length;
@@ -1589,16 +1769,14 @@ async function sendAI(){
   try{
     const context={studentsCount:Object.keys(adminUsersList||{}).length,videosCount:Object.keys(videos||{}).length,examsCount:Object.keys(exams||{}).length,bannedCount:Object.keys(bansLiveData?.uid||{}).length,supportOpen:Object.values(supportTickets||{}).filter(t=>t.status==='open').length,teachers:Object.values(teachers||{}).map(t=>t.name),grades:ALL_GRADES};
     const idToken=await auth.currentUser.getIdToken();
-    const res=await fetch('/api/ai-admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+idToken},body:JSON.stringify({message:text,history:aiChatHistory.slice(-10),context})});
+    const AI_URL='https://us-central1-sigma-6f162.cloudfunctions.net/aiAdmin';
+    const res=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+idToken},body:JSON.stringify({message:text,history:aiChatHistory.slice(-10),context})});
     if(!res.ok)throw new Error('AI service unavailable');
     const data=await res.json();
     aiChatHistory.push({role:'assistant',text:data.reply||'لم أستطع الرد.'});
-  }catch(e){
-    aiChatHistory.push({role:'assistant',text:'⚠️ تعذر الاتصال بالمساعد الذكي. تأكد من إعداد Cloud Function باسم /api/ai-admin.'});
-  }
+  }catch(e){aiChatHistory.push({role:'assistant',text:'⚠️ تعذر الاتصال بالمساعد الذكي. تأكد من إعداد Cloud Function.'})}
   render();
 }
-
 async function vAdminBans(){
   if(!A)return '<div class="mut">غير مصرح.</div>';
   if(bansLiveUnsub){try{bansLiveUnsub()}catch(e){}bansLiveUnsub=null}
@@ -1620,7 +1798,7 @@ function buildBansHTML(){
   const entries=Object.values(map);
   const note=`<div class="notice"><b>ملاحظة:</b> حسابات الإدارة محمية ولا تُحظر أبداً.<br>هذه الصفحة تتحدث تلقائياً.</div>`;
   if(!entries.length)return note+`<div class="mut">لا يوجد طلاب محظورون.</div>`;
-  return note+`<h2>🚫 الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}<div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||b.phone||'')}</small></div><span class="b r">محظور</span></div><p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">السبب: ${esc(b.reason||'قرار إداري')}<br>وقت الحظر: ${fd(b.bannedAt)}<br>الجهاز السابق: <b>${esc(b.oldDeviceLabel||'-')}</b> — الجهاز الجديد: <b>${esc(b.newDeviceLabel||'-')}</b><br>مصدر الحظر: ${b._sources.includes('uid')?'UID':''}${b._sources.includes('uid')&&b._sources.includes('phone')?' + ':''}${b._sources.includes('phone')?'الهاتف':''}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button><button class="s" onclick="keepBan()">تركه محظوراً</button></div></div>`).join('');
+  return note+`<h2>🚫 الطلاب المحظورون (${entries.length})</h2>`+entries.map(b=>`<div class="box"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">${b.photo?`<img src="${esc(b.photo)}" alt="" style="width:50px;height:50px;border-radius:50%;object-fit:cover">`:''}<div style="flex:1"><b>${esc(b.name||'')}</b><br><small style="color:var(--mu)">${esc(b.email||b.phone||'')}</small></div><span class="b r">محظور</span></div><p style="color:var(--tx2);font-size:13px;line-height:1.8;margin-bottom:12px">السبب: ${esc(b.reason||'قرار إداري')}<br>وقت الحظر: ${fd(b.bannedAt)}<br>الجهاز السابق: <b>${esc(b.oldDeviceLabel||'-')}</b> — الجهاز الجديد: <b>${esc(b.newDeviceLabel||'-')}</b></p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="g" onclick="unban('${esc(b.uid)}')">فك الحظر</button><button class="s" onclick="keepBan()">تركه محظوراً</button></div></div>`).join('');
 }
 async function vAdminAutoBans(){
   if(!A)return '<div class="mut">غير مصرح.</div>';
@@ -1642,13 +1820,12 @@ async function unban(uid){
     const ops=[remove(R('bans/'+uid)).catch(()=>{}),update(R('users/'+uid),{banned:false}).catch(()=>{}),remove(R('sessions/'+uid)).catch(()=>{})];
     if(phone)ops.push(remove(R('bansByPhone/'+phone)).catch(()=>{}));
     await Promise.all(ops);
-    try{const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await set(R('adminNotifications/'+id),{text:'تم فك الحظر عن: '+(u?.name||uid),created:Date.now(),read:false,userId:uid})}catch(e){}
+    try{const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await set(R('adminNotifications/'+id),{text:'تم فك الحظر عن: '+(u?.name||uid),created:Date.now(),read:false,userId:uid,views:0,viewedBy:{}})}catch(e){}
     toast('✅ تم فك الحظر');
     if(S.v==='admin'&&S.tab==='bans')renderBansLive();
   }catch(e){toast('تعذر فك الحظر')}
 }
 function keepBan(){toast('بقي محظوراً')}
-
 async function vAdminExams(){
   if(!A&&!IS_SUPERVISOR)return '<div class="mut">غير مصرح.</div>';
   const list=Object.entries(exams).sort((a,b)=>(b[1].created||0)-(a[1].created||0));
@@ -1770,7 +1947,6 @@ async function vExams(){
     return `<div class="exam-card"><h3>${esc(e.title)}</h3><div class="exam-meta"><span class="b">${esc(e.grade)}</span><span class="b y">${e.duration} دقيقة</span><span class="b">${(e.questions||[]).length} سؤال</span>${status}</div><div style="margin-top:14px">${att?`<button class="s" onclick="go('examResult','${esc(id)}')">عرض النتيجة</button>`:`<button onclick="go('takeExam','${esc(id)}')">ابدأ الامتحان</button>`}</div></div>`;
   }).join('');
 }
-
 function vTakeExam(){
   const e=exams[S.id];if(!e)return vExams();
   const att=examAttempts[S.id];if(att)return vExamResult();
@@ -1783,27 +1959,10 @@ function vTakeExam(){
   const onBlur=()=>{if(activeExamState&&!activeExamState.submitted){activeExamState.violations++;toast('⚠️ فقدت التركيز');submitExam(true,'blur')}};
   const onUnload=()=>{if(activeExamState&&!activeExamState.submitted){activeExamState.violations++;try{submitExam(true,'unload')}catch(err){}}};
   const onScreenshotKey=ev=>{const k=(ev.key||'').toLowerCase();if(k==='printscreen'){ev.preventDefault();if(activeExamState&&!activeExamState.submitted){activeExamState.violations++;toast('⚠️ محاولة لقطة شاشة');submitExam(true,'screenshot')}}};
-  document.addEventListener('copy',preventCopy);
-  document.addEventListener('cut',preventCopy);
-  document.addEventListener('paste',preventCopy);
-  document.addEventListener('contextmenu',preventCopy);
-  document.addEventListener('visibilitychange',onVis);
-  window.addEventListener('blur',onBlur);
-  window.addEventListener('pagehide',onUnload);
-  window.addEventListener('keydown',onScreenshotKey,true);
-  examGuardCleanup=()=>{
-    document.removeEventListener('copy',preventCopy);
-    document.removeEventListener('cut',preventCopy);
-    document.removeEventListener('paste',preventCopy);
-    document.removeEventListener('contextmenu',preventCopy);
-    document.removeEventListener('visibilitychange',onVis);
-    window.removeEventListener('blur',onBlur);
-    window.removeEventListener('pagehide',onUnload);
-    window.removeEventListener('keydown',onScreenshotKey,true);
-    disarmScreenshotGuard();
-  };
-  const startMs=Date.now();
-  const totalMs=e.duration*60*1000;
+  document.addEventListener('copy',preventCopy);document.addEventListener('cut',preventCopy);document.addEventListener('paste',preventCopy);document.addEventListener('contextmenu',preventCopy);
+  document.addEventListener('visibilitychange',onVis);window.addEventListener('blur',onBlur);window.addEventListener('pagehide',onUnload);window.addEventListener('keydown',onScreenshotKey,true);
+  examGuardCleanup=()=>{document.removeEventListener('copy',preventCopy);document.removeEventListener('cut',preventCopy);document.removeEventListener('paste',preventCopy);document.removeEventListener('contextmenu',preventCopy);document.removeEventListener('visibilitychange',onVis);window.removeEventListener('blur',onBlur);window.removeEventListener('pagehide',onUnload);window.removeEventListener('keydown',onScreenshotKey,true);disarmScreenshotGuard()};
+  const startMs=Date.now();const totalMs=e.duration*60*1000;
   activeExamTimer=setInterval(()=>{
     if(!activeExamState||activeExamState.submitted){clearInterval(activeExamTimer);return}
     const left=totalMs-(Date.now()-startMs);
@@ -1811,20 +1970,11 @@ function vTakeExam(){
     if(timerEl){const big=timerEl.querySelector('.time-big');if(big)big.textContent=fmtClock(Math.max(0,left/1000));timerEl.classList.remove('warn','danger');if(left<=30000)timerEl.classList.add('danger');else if(left<=120000)timerEl.classList.add('warn')}
     if(left<=0){clearInterval(activeExamTimer);toast('انتهى وقت الامتحان');submitExam(true,'timeout')}
   },250);
-  const seedStr=`${U.uid}_${S.id}`;
-  let seed=0;for(let i=0;i<seedStr.length;i++)seed=(seed*31+seedStr.charCodeAt(i))>>>0;
+  const seedStr=`${U.uid}_${S.id}`;let seed=0;for(let i=0;i<seedStr.length;i++)seed=(seed*31+seedStr.charCodeAt(i))>>>0;
   const questionOrder=userShuffle(questions.map((_,i)=>i),seed);
-  const displayQuestions=questionOrder.map((origIdx,di)=>{
-    const q=questions[origIdx];
-    if(q.type==='mcq'){
-      const optOrder=userShuffle(q.options.map((_,j)=>j),seed+origIdx);
-      return {origIdx,q,optOrder};
-    }
-    return {origIdx,q};
-  });
+  const displayQuestions=questionOrder.map((origIdx,di)=>{const q=questions[origIdx];if(q.type==='mcq'){const optOrder=userShuffle(q.options.map((_,j)=>j),seed+origIdx);return {origIdx,q,optOrder}}return {origIdx,q}});
   const qHTML=displayQuestions.map(({origIdx,q,optOrder},di)=>{
-    const num=di+1;
-    const ptsBadge=`<span class="points-badge">${q.points||1} نقطة</span>`;
+    const num=di+1;const ptsBadge=`<span class="points-badge">${q.points||1} نقطة</span>`;
     if(q.type==='mcq')return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)} ${ptsBadge}</div>${optOrder.map(origOptIdx=>`<label class="exam-opt"><input type="radio" name="q_${origIdx}" value="${origOptIdx}" onchange="recordAnswer(${origIdx},${origOptIdx})"><span>${esc(q.options[origOptIdx])}</span></label>`).join('')}</div>`;
     if(q.type==='tf')return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)} ${ptsBadge}</div><label class="exam-opt"><input type="radio" name="q_${origIdx}" value="true" onchange="recordAnswer(${origIdx},true)"><span>صح</span></label><label class="exam-opt"><input type="radio" name="q_${origIdx}" value="false" onchange="recordAnswer(${origIdx},false)"><span>خطأ</span></label></div>`;
     return `<div class="exam-q"><div class="q-text"><span class="q-num">${num}</span> ${esc(q.text)} ${ptsBadge}</div><textarea placeholder="اكتب إجابتك هنا..." oninput="recordAnswer(${origIdx},this.value)" rows="3"></textarea></div>`;
@@ -1834,8 +1984,7 @@ function vTakeExam(){
 function recordAnswer(i,val){
   if(!activeExamState)return;
   activeExamState.answers[i]=val;
-  const box=document.getElementById('examVioBox');
-  const cnt=document.getElementById('examVioCount');
+  const box=document.getElementById('examVioBox');const cnt=document.getElementById('examVioCount');
   if(activeExamState.violations>0&&box&&cnt){box.style.display='block';cnt.textContent=String(activeExamState.violations)}
   document.querySelectorAll(`input[name="q_${i}"]`).forEach(inp=>{const opt=inp.closest('.exam-opt');if(opt)opt.classList.toggle('selected',inp.checked)});
 }
@@ -1855,16 +2004,12 @@ async function submitExam(force,reason){
   if(!st||st.submitted||submitLock)return;
   if(!force&&!confirm('هل أنت متأكد من تسليم الامتحان؟'))return;
   submitLock=true;st.submitted=true;
-  const e=exams[st.id];
-  if(!e){cleanupExam();submitLock=false;return}
+  const e=exams[st.id];if(!e){cleanupExam();submitLock=false;return}
   const questions=e.questions||[];
-  let earned=0,totalPoints=0;
-  const answers=[];
+  let earned=0,totalPoints=0;const answers=[];
   questions.forEach((q,i)=>{
-    const pts=+q.points||1;
-    totalPoints+=pts;
-    const ans=st.answers[i];
-    let isCorrect=false;
+    const pts=+q.points||1;totalPoints+=pts;
+    const ans=st.answers[i];let isCorrect=false;
     if(q.type==='mcq')isCorrect=(ans===q.correct);
     else if(q.type==='tf')isCorrect=(ans===q.correct);
     else isCorrect=(String(ans||'').trim().toLowerCase()===String(q.correct||'').trim().toLowerCase()&&!!q.correct);
@@ -1876,9 +2021,7 @@ async function submitExam(force,reason){
   const attempt={studentUid:U.uid,studentName:U.displayName||'',score,earned,totalPoints,answers,timeTaken,violations:st.violations,submittedAt:Date.now(),autoSubmit:!!force,reason:reason||''};
   const examId=st.id;
   try{await set(R('examAttempts/'+U.uid+'/'+examId),attempt)}catch(err){st.submitted=false;submitLock=false;toast('تعذر حفظ الإجابة');return}
-  cleanupExam();submitLock=false;
-  examAttempts[examId]=attempt;
-  go('examResult',examId);
+  cleanupExam();submitLock=false;examAttempts[examId]=attempt;go('examResult',examId);
 }
 function vExamResult(){
   const e=exams[S.id];if(!e)return vExams();
@@ -1895,7 +2038,6 @@ function vExamResult(){
   }).join('');
   return `${backBtn("go('exams')")}<div class="exam-result box"><h2 style="margin-bottom:8px">${esc(e.title)}</h2><div class="label">درجتك</div><div class="score">${score}%</div><div class="detail">الدرجة: ${att.earned||0} من ${att.totalPoints||0} نقطة</div><div class="detail">${correct} من ${total} إجابة صحيحة</div><div class="detail">الوقت المستغرق: ${fmtClock(att.timeTaken||0)}</div>${att.violations?`<div class="detail" style="color:var(--warn)">${att.violations} مخالفة مسجلة</div>`:''}<div class="detail">${fd(att.submittedAt)}</div></div><h2>مراجعة الإجابات</h2>${review}`;
 }
-
 function addNews(){return once('news',doAddNews)}
 async function doAddNews(){
   const text=$('#newText')?.value.trim()||'';
@@ -1915,16 +2057,13 @@ async function delNews(id){
   if(!confirm('حذف هذا الخبر؟'))return;
   try{await remove(R('news/'+id));toast('تم الحذف');render()}catch(e){toast('تعذر الحذف')}
 }
-
 async function vAdminStudents(){
   if(!A)return '<div class="mut">غير مصرح.</div>';
   if(studentsCache&&Date.now()-studentsCacheAt<30000&&!studentsLiveUnsub){studentsState.users=studentsCache}
   if(!studentsLiveUnsub){
     studentsState={users:studentsCache||{},bans:{},bansByPhone:{},usersLoaded:false,bansLoaded:false,phonesLoaded:false,error:null};
     const paint=()=>{
-      studentsCache=studentsState.users||{};
-      studentsCacheAt=Date.now();
-      adminUsersList=studentsCache;
+      studentsCache=studentsState.users||{};studentsCacheAt=Date.now();adminUsersList=studentsCache;
       const box=document.getElementById('studentsLiveBox');
       if(box&&S.v==='admin'&&S.tab==='students'){
         if(studentsState.usersLoaded){box.innerHTML=buildStudentsHTML(studentsState.users,studentsState.bans,studentsState.bansByPhone)}
@@ -1935,32 +2074,24 @@ async function vAdminStudents(){
       const unsub=onValue(R(path),snap=>{studentsState[key]=snap.val()||{};studentsState[loadedKey]=true;if(key==='users'){studentsCache=studentsState.users;adminUsersList=studentsCache}studentsState.error=null;paint()},err=>{studentsState.error=err?.message||err?.code||'تعذر قراءة '+path;console.error('Firebase students listener error:',path,err);paint()});
       studentsLiveUnsubs.push(unsub);
     };
-    subscribe('users','users','usersLoaded');
-    subscribe('bans','bans','bansLoaded');
-    subscribe('bansByPhone','bansByPhone','phonesLoaded');
+    subscribe('users','users','usersLoaded');subscribe('bans','bans','bansLoaded');subscribe('bansByPhone','bansByPhone','phonesLoaded');
     studentsLiveUnsub=()=>{studentsLiveUnsubs.forEach(fn=>{try{fn()}catch(e){}});studentsLiveUnsubs=[];studentsLiveUnsub=null};
   }
   if(!studentsState.usersLoaded){
     const first=await GTry('users');
     if(!first.ok){studentsState.error=first.error;return studentsLoadError(first.error)}
-    studentsState.users=first.val||{};
-    studentsState.usersLoaded=true;
-    studentsCache=studentsState.users;
-    adminUsersList=studentsCache;
-    studentsCacheAt=Date.now();
+    studentsState.users=first.val||{};studentsState.usersLoaded=true;studentsCache=studentsState.users;adminUsersList=studentsCache;studentsCacheAt=Date.now();
   }
   return `<div id="studentsLiveBox">${buildStudentsHTML(studentsState.users,studentsState.bans,studentsState.bansByPhone)}</div>`;
 }
 function studentsLoadError(error){
-  return `<div class="err-box"><b>تعذر تحميل قائمة الطلاب من Firebase.</b><br>التفاصيل: ${esc(error||'خطأ غير معروف')}<br><br>تحقق من اتصال الإنترنت ومن قواعد Realtime Database، خصوصاً صلاحية قراءة <code>users</code> و<code>bans</code> و<code>bansByPhone</code> لحساب الإدارة.<br><button class="s" style="margin-top:10px" onclick="reloadStudents()">إعادة المحاولة</button></div>`;
+  return `<div class="err-box"><b>تعذر تحميل قائمة الطلاب من Firebase.</b><br>التفاصيل: ${esc(error||'خطأ غير معروف')}<br><br>تحقق من اتصال الإنترنت ومن قواعد Realtime Database.<br><button class="s" style="margin-top:10px" onclick="reloadStudents()">إعادة المحاولة</button></div>`;
 }
 function reloadStudents(){
   if(typeof studentsLiveUnsub==='function'){try{studentsLiveUnsub()}catch(e){}studentsLiveUnsub=null}
-  studentsLiveUnsubs.forEach(fn=>{try{fn()}catch(e){}});
-  studentsLiveUnsubs=[];
+  studentsLiveUnsubs.forEach(fn=>{try{fn()}catch(e){}});studentsLiveUnsubs=[];
   studentsState={users:{},bans:{},bansByPhone:{},usersLoaded:false,bansLoaded:false,phonesLoaded:false,error:null};
-  studentsCache=null;studentsCacheAt=0;
-  render();
+  studentsCache=null;studentsCacheAt=0;render();
 }
 function buildStudentsHTML(users,bans,bansByPhone){
   bans=bans||{};bansByPhone=bansByPhone||{};
@@ -1968,8 +2099,7 @@ function buildStudentsHTML(users,bans,bansByPhone){
   if(!arr.length)return `<div class="students-toolbar"><span class="count-pill">0 طالب</span><button class="s" onclick="reloadStudents()">تحديث</button></div><div class="mut">لا يوجد طلاب مسجلون بعد.</div>`;
   let html=`<div class="students-toolbar"><span class="count-pill">${arr.length} طالب</span><input id="searchStudent" placeholder="بحث: الاسم / الهاتف / الكود..." oninput="filterStudents(this.value)" style="margin-bottom:0;flex:1;min-width:200px"><button class="s" onclick="reloadStudents()">تحديث</button></div><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>الصف</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>`;
   for(const u of arr){
-    const isSup=u.isSupervisor===true;
-    const isAdmin=isAdminPhone(u.phone||'');
+    const isSup=u.isSupervisor===true;const isAdmin=isAdminPhone(u.phone||'');
     const isBanned=!!(bans[u.id]||(u.phone&&bansByPhone[normPhone(u.phone)]));
     const codesStr=Object.values(u.videos||{}).join(' ');
     const menuBtn=(cls,onclick,label)=>`<button class="${cls}" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="${onclick}">${label}</button>`;
@@ -1988,8 +2118,7 @@ function toggleStudentMenu(uid,ev){
   if(!open){const close=e=>{if(!m.contains(e.target)){m.style.display='none';document.removeEventListener('click',close,true)}};setTimeout(()=>document.addEventListener('click',close,true),0)}
 }
 function filterStudents(q){
-  const query=String(q||'').toLowerCase().trim();
-  let visible=0;
+  const query=String(q||'').toLowerCase().trim();let visible=0;
   document.querySelectorAll('.student-row').forEach(row=>{const match=(row.getAttribute('data-search')||'').includes(query);row.style.display=match?'':'none';if(match)visible++});
   let empty=document.getElementById('studentsEmpty');
   if(!visible){if(!empty){empty=document.createElement('div');empty.id='studentsEmpty';empty.className='mut';empty.style.padding='20px';empty.textContent='لا نتائج مطابقة.';const table=document.getElementById('studentsTable');if(table&&table.parentElement)table.parentElement.appendChild(empty)}}
@@ -1997,8 +2126,7 @@ function filterStudents(q){
 }
 async function setGrade(uid){
   if(!A)return toast('غير مصرح');
-  const grade=prompt('اكتب صف الطالب:');
-  if(!grade)return;
+  const grade=prompt('اكتب صف الطالب:');if(!grade)return;
   if(!ALL_GRADES.includes(grade))return toast('الصف غير صحيح');
   try{await update(R('users/'+uid),{grade});toast('تم تحديد الصف');render()}catch(e){toast('تعذر الحفظ')}
 }
@@ -2007,28 +2135,25 @@ async function banStudent(uid){
   const u=await G('users/'+uid);
   if(!u||!u.phone)return toast('لا يوجد رقم هاتف لهذا الطالب');
   if(isAdminPhone(u.phone))return toast('لا يمكن حظر حساب إدارة');
-  const reason=prompt('سبب الحظر:','مخالفة قواعد المنصة');
-  if(reason===null)return;
+  const reason=prompt('سبب الحظر:','مخالفة قواعد المنصة');if(reason===null)return;
   if(!confirm('سيتم حظر الحساب بالكامل. متابعة؟'))return;
-  const phone=normPhone(u.phone);
-  const now=Date.now();
+  const phone=normPhone(u.phone);const now=Date.now();
   const rec={uid,phone,name:u.name||'',email:u.email||'',photo:u.photo||'',reason:reason||'قرار إداري',bannedAt:now,by:U.uid,manual:true};
   try{
     await Promise.all([set(R('bans/'+uid),rec),set(R('bansByPhone/'+phone),rec),set(R('autoBans/'+uid+'/'+now),rec).catch(()=>{}),update(R('users/'+uid),{banned:true}),remove(R('sessions/'+uid)).catch(()=>{})]);
-    try{const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await set(R('adminNotifications/'+id),{text:'تم حظر الطالب: '+(u.name||uid)+' — السبب: '+(reason||'قرار إداري'),created:now,read:false,userId:uid})}catch(e){}
+    try{const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await set(R('adminNotifications/'+id),{text:'تم حظر الطالب: '+(u.name||uid)+' — السبب: '+(reason||'قرار إداري'),created:now,read:false,userId:uid,views:0,viewedBy:{}})}catch(e){}
     toast('✅ تم حظر الطالب');
     if(S.v==='admin'&&S.tab==='students')render();
   }catch(e){toast('تعذر الحظر: '+(e.message||''))}
 }
 async function unbanStudent(uid){
   if(!A)return toast('غير مصرح');
-  const u=await G('users/'+uid);
-  if(!u)return toast('الطالب غير موجود');
+  const u=await G('users/'+uid);if(!u)return toast('الطالب غير موجود');
   if(!confirm('فك الحظر عن هذا الطالب؟'))return;
   try{
     const phone=normPhone(u.phone||'');
     await Promise.all([remove(R('bans/'+uid)).catch(()=>{}),phone?remove(R('bansByPhone/'+phone)).catch(()=>{}):Promise.resolve(),remove(R('sessions/'+uid)).catch(()=>{}),update(R('users/'+uid),{banned:false})]);
-    try{const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await set(R('adminNotifications/'+id),{text:'تم فك الحظر عن: '+(u.name||uid),created:Date.now(),read:false,userId:uid})}catch(e){}
+    try{const id='a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await set(R('adminNotifications/'+id),{text:'تم فك الحظر عن: '+(u.name||uid),created:Date.now(),read:false,userId:uid,views:0,viewedBy:{}})}catch(e){}
     toast('✅ تم فك الحظر');
     if(S.v==='admin'&&S.tab==='students')render();
   }catch(e){toast('تعذر فك الحظر')}
@@ -2073,20 +2198,19 @@ async function delCode(c){
   try{await remove(R('codes/'+c));toast('تم حذف الكود');render()}catch(e){toast('تعذر حذف الكود')}
 }
 function vSendNotification(){
-  return `<div class="box"><h2>🔔 إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً.</p><label for="notiText">نص الإشعار</label><textarea id="notiText" rows="3"></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات نهائياً</button></div></div>`;
+  return `<div class="box"><h2>🔔 إرسال إشعار للطلاب</h2><p style="color:var(--tx2);margin-bottom:14px">سيتم إرسال هذا الإشعار لجميع الطلاب فوراً. يمكنك تعديله لاحقاً من صندوق الإشعارات ورؤية من شاهده.</p><label for="notiText">نص الإشعار</label><textarea id="notiText" rows="3"></textarea><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="sendAdminNotification()">إرسال الإشعار</button><button class="d" onclick="clearAllNotifications()">حذف كل الإشعارات نهائياً</button></div></div>`;
 }
 function sendAdminNotification(){return once('notify',doSendNotification)}
 async function doSendNotification(){
   const text=$('#notiText')?.value.trim()||'';
   if(!text)return toast('اكتب نص الإشعار');
-  try{await set(R('notifications/all/'+Date.now()),{text,created:Date.now()});const el=$('#notiText');if(el)el.value='';toast('✅ تم إرسال الإشعار')}catch(e){toast('تعذر إرسال الإشعار: '+(e.code||e.message))}
+  try{await set(R('notifications/all/'+Date.now()),{text,created:Date.now(),views:0,viewedBy:{}});const el=$('#notiText');if(el)el.value='';toast('✅ تم إرسال الإشعار')}catch(e){toast('تعذر إرسال الإشعار: '+(e.code||e.message))}
 }
 async function clearAllNotifications(){
   if(!A)return toast('غير مصرح');
   if(!confirm('هل أنت متأكد من حذف جميع الإشعارات نهائياً للجميع؟'))return;
   try{await remove(R('notifications/all')).catch(()=>{});await remove(R('adminNotifications')).catch(()=>{});const users=(await G('users'))||{};for(const uid of Object.keys(users)){await remove(R('notifications/'+uid)).catch(()=>{})}toast('تم حذف جميع الإشعارات نهائياً')}catch(e){toast('تعذر حذف الإشعارات')}
 }
-
 function addT(){return once('addT',doAddT)}
 async function doAddT(){
   if(!A)return toast('غير مصرح');
@@ -2116,27 +2240,20 @@ async function doAddV(){
   const k='v'+Date.now();
   try{
     await set(R('videos/'+k),v);
-    if(accessType==='codes'){
-      const n=Math.min((+($('#vc')?.value))||0,500);
-      if(n>0){toast('جارٍ توليد الأكواد...');const made=await gen(k,n,v);toast(made>0?`✅ تم الحفظ وتوليد ${made} كود`:'تم الحفظ، لكن تعذّر توليد أكواد')}
-      else toast('✅ تم الحفظ');
-    }else toast('✅ تم الحفظ (بدون أكواد)');
+    if(accessType==='codes'){const n=Math.min((+($('#vc')?.value))||0,500);if(n>0){toast('جارٍ توليد الأكواد...');const made=await gen(k,n,v);toast(made>0?`✅ تم الحفظ وتوليد ${made} كود`:'تم الحفظ، لكن تعذّر توليد أكواد')}else toast('✅ تم الحفظ')}
+    else toast('✅ تم الحفظ (بدون أكواد)');
     go('vid',k);
   }catch(e){toast('تعذر الحفظ: '+(e.code||e.message))}
 }
 function syncGradeOptions(){
   const stage=$('#vs')?.value||'pri',grade=$('#vg');if(!grade)return;
   const vals=stage==='pri'?GRADES_PRIMARY:stage==='prep'?GRADES_PREP:GRADES_SEC;
-  const previous=grade.value;
-  grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
-  if(vals.includes(previous))grade.value=previous;
+  const previous=grade.value;grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');if(vals.includes(previous))grade.value=previous;
 }
 function syncEditGradeOptions(){
   const stage=$('#evs')?.value||'pri',grade=$('#evg');if(!grade)return;
   const vals=stage==='pri'?GRADES_PRIMARY:stage==='prep'?GRADES_PREP:GRADES_SEC;
-  const previous=grade.value;
-  grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');
-  if(vals.includes(previous))grade.value=previous;
+  const previous=grade.value;grade.innerHTML=vals.map(x=>`<option>${x}</option>`).join('');if(vals.includes(previous))grade.value=previous;
 }
 function vEdit(){
   if(!A)return '<div class="mut">غير مصرح.</div>';
@@ -2193,10 +2310,8 @@ async function doSaveEditLib(id){
   try{let photo=library[id]?.photo||'';if(f){photo=await img(f,600);if(!photo)return toast('تم إلغاء الصورة')}await update(R('library/'+id),{title:n,desc:d,url:u,photo});toast('✅ تم التعديل');go('admin','','library')}catch(e){toast('تعذر الحفظ: '+e.message)}
 }
 async function gen(vid,n,video){
-  const v=video||videos[vid];
-  if(!v)throw new Error('الفيديو غير موجود');
-  let ok=0,attempts=0;
-  const maxAttempts=n*10;
+  const v=video||videos[vid];if(!v)throw new Error('الفيديو غير موجود');
+  let ok=0,attempts=0;const maxAttempts=n*10;
   while(ok<n&&attempts<maxAttempts){
     const c=String(crypto.getRandomValues(new Uint32Array(1))[0]%900000+100000);
     try{const r=await runTransaction(R('codes/'+c),cur=>{if(cur!==null)return cur;return{videoId:vid,url:v.url,title:v.title||'',used:false,createdAt:Date.now()}});if(r.committed)ok++}catch(e){}
@@ -2231,11 +2346,9 @@ async function copyFree(id){
   if(!A)return toast('غير مصرح');
   try{
     const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
-    const a=[];
-    s.forEach(c=>{if(!c.val().used)a.push(c.key)});
+    const a=[];s.forEach(c=>{if(!c.val().used)a.push(c.key)});
     if(!a.length)return toast('لا توجد أكواد متاحة');
-    const v=videos[id];
-    const teacher=teachers[v?.teacherId]?.name||'-';
+    const v=videos[id];const teacher=teachers[v?.teacherId]?.name||'-';
     let text=`📌 *بيانات الفيديو*\n📚 العنوان: ${v?.title||'-'}\n👨‍🏫 المدرس: ${teacher}\n📅 الصف: ${v?.grade||'-'}\n---------------------------\n🔑 *الأكواد المتاحة (${a.length})*:\n`+a.join('\n');
     cp(text);
   }catch(e){toast('تعذر جلب الأكواد')}
@@ -2243,40 +2356,31 @@ async function copyFree(id){
 function exportPDF(vid){
   if(!A)return toast('غير مصرح');
   const v=videos[vid];if(!v)return;
-  const rows=[];
-  document.querySelectorAll('#pdf-src tbody tr').forEach(tr=>{const tds=tr.querySelectorAll('td');if(tds.length)rows.push([...tds].map(td=>td.innerText.trim()))});
+  const rows=[];document.querySelectorAll('#pdf-src tbody tr').forEach(tr=>{const tds=tr.querySelectorAll('td');if(tds.length)rows.push([...tds].map(td=>td.innerText.trim()))});
   const headers=[...document.querySelectorAll('#pdf-src thead th')].map(th=>th.innerText.trim());
-  const win=window.open('','_blank');
-  if(!win)return toast('اسمح بالنوافذ المنبثقة');
+  const win=window.open('','_blank');if(!win)return toast('اسمح بالنوافذ المنبثقة');
   win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>${esc(v.title)}</title><style>body{font-family:Cairo,sans-serif,Tahoma;padding:24px}h2{color:#2563eb}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}th,td{border:1px solid #cbd5e1;padding:8px;text-align:right}th{background:#2563eb;color:#fff}@media print{button{display:none}}</style></head><body><h2>${esc(v.title)}</h2><p>${esc(v.desc||'')}</p><p>عدد السجلات: ${rows.length}</p><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table><br><button onclick="window.print()">طباعة / حفظ PDF</button></body></html>`);
-  win.document.close();
-  setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
+  win.document.close();setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
 }
 async function exportCodesPDF(vid){
   if(!A)return toast('غير مصرح');
   const v=videos[vid];if(!v)return;
   const s=await get(query(R('codes'),orderByChild('videoId'),equalTo(vid)));
-  const codes=[];
-  s.forEach(c=>{if(!c.val().used)codes.push(c.key)});
+  const codes=[];s.forEach(c=>{if(!c.val().used)codes.push(c.key)});
   if(!codes.length)return toast('لا توجد أكواد متاحة');
   const teacher=teachers[v.teacherId]?.name||'-';
-  const win=window.open('','_blank');
-  if(!win)return toast('اسمح بالنوافذ المنبثقة');
+  const win=window.open('','_blank');if(!win)return toast('اسمح بالنوافذ المنبثقة');
   win.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>أكواد ${esc(v.title)}</title><style>body{font-family:Cairo,sans-serif,Tahoma;padding:24px;color:#0f172a}h2{color:#2563eb;margin-bottom:8px}.meta{background:#f1f5f9;padding:14px;border-radius:10px;margin-bottom:20px;font-size:14px;line-height:1.8}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px}th,td{border:1px solid #cbd5e1;padding:10px;text-align:center}th{background:#2563eb;color:#fff}td.code{font-family:'Courier New',monospace;font-size:16px;font-weight:bold;letter-spacing:2px}@media print{button{display:none}}</style></head><body><h2>أكواد: ${esc(v.title)}</h2><div class="meta"><b>المدرس:</b> ${esc(teacher)}<br><b>الصف:</b> ${esc(v.grade||'-')}<br><b>عدد الأكواد:</b> ${codes.length} كود</div><table><thead><tr><th>الكود</th><th>الفيديو</th><th>المدرس</th></tr></thead><tbody>${codes.map(c=>`<tr><td class="code">${esc(c)}</td><td>${esc(v.title)}</td><td>${esc(teacher)}</td></tr>`).join('')}</tbody></table><br><button onclick="window.print()">طباعة / حفظ PDF</button></body></html>`);
-  win.document.close();
-  setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
+  win.document.close();setTimeout(()=>{try{win.focus();win.print()}catch(e){}},600);
 }
 async function vVid(){
   if(!A)return '<div class="mut">غير مصرح.</div>';
   const id=S.id,v=videos[id];if(!v)return vAdmin();
-  const cs=[];
-  const snap=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
-  snap.forEach(c=>{cs.push({c:c.key,...c.val()})});
-  cs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  const cs=[];const snap=await get(query(R('codes'),orderByChild('videoId'),equalTo(id)));
+  snap.forEach(c=>{cs.push({c:c.key,...c.val()})});cs.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   const lg=Object.values((await G('logs/'+id))||{}).sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
   const st=l=>l.completed?'<span class="g">حضره كاملاً</span>':l.seconds>20?'<span class="y">شاهد جزءًا</span>':'<span>فتح فقط</span>';
-  const totalViews=lg.length;
-  const completedCount=lg.filter(x=>x.completed).length;
+  const totalViews=lg.length;const completedCount=lg.filter(x=>x.completed).length;
   const completionRate=totalViews?Math.round(completedCount/totalViews*100):0;
   const avgSeconds=totalViews?Math.round(lg.reduce((s,x)=>s+(x.seconds||0),0)/totalViews):0;
   return `${backBtn("go('admin','','videos')")}<h2 style="margin-top:14px">${esc(v.title)} ${v.disabled?'<span class="b r">موقوف</span>':''}${v.free?'<span class="b g">🔓 بدون أكواد</span>':''}</h2><div class="box"><p style="color:var(--mu);margin-bottom:10px">${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.desc||'')}</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px"><div class="stat-box"><div class="stat-num">${cs.length}</div><div class="stat-label">أكواد</div></div><div class="stat-box ok"><div class="stat-num">${cs.filter(x=>!x.used).length}</div><div class="stat-label">متاح</div></div><div class="stat-box"><div class="stat-num">${totalViews}</div><div class="stat-label">فتحوه</div></div><div class="stat-box ok"><div class="stat-num">${completionRate}%</div><div class="stat-label">نسبة الإكمال</div></div><div class="stat-box warn"><div class="stat-num">${Math.round(avgSeconds/60)} د</div><div class="stat-label">متوسط المشاهدة</div></div></div>${!v.free?`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end"><div style="width:110px"><label for="gn">العدد</label><input id="gn" type="number" min="1" max="500" value="10" style="margin-bottom:0"></div><button onclick="moreCodes('${esc(id)}')">توليد أكواد</button><button class="s" onclick="moreCodes('${esc(id)}',1)">كود لطالب</button><button class="s" onclick="copyFree('${esc(id)}')">نسخ المتاح</button><button class="s" onclick="exportCodesPDF('${esc(id)}')">تصدير الأكواد PDF</button></div>`:''}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="s" onclick="go('edit','${esc(id)}','video')">تعديل</button><button class="${v.disabled?'g':'d'}" onclick="toggleVid('${esc(id)}')">${v.disabled?'تفعيل':'إيقاف'}</button><button class="s" onclick="exportPDF('${esc(id)}')">تصدير سجل الطلاب PDF</button><button class="d" onclick="delV('${esc(id)}')">حذف</button></div></div><h2>سجل الطلاب</h2><div class="box tw"><table id="pdf-src"><thead><tr><th>الطالب</th><th>الهاتف</th><th>الكود المستخدم</th><th>أول فتح</th><th>آخر نشاط</th><th>المشاهدة</th><th>الحالة</th></tr></thead><tbody>${lg.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.code||'-')}</td><td>${fd(l.openedAt)}</td><td>${fd(l.lastAt)}</td><td>${Math.round((l.seconds||0)/60)} د</td><td>${st(l)}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">لم يفتحه أحد بعد.</td></tr>'}</tbody></table></div>${!v.free?`<h2>الأكواد</h2><div class="box tw"><table><thead><tr><th>الكود</th><th>الحالة</th><th>استخدمه</th><th>الوقت</th><th>إجراء</th></tr></thead><tbody>${cs.map(x=>`<tr><td><span class="code">${esc(x.c)}</span></td><td>${x.used?'<span class="b r">مستخدم</span>':'<span class="b g">متاح</span>'}</td><td>${esc(x.usedByName||'-')}</td><td>${fd(x.usedAt)}</td><td>${x.used?'':`<button class="s" style="padding:5px 12px" onclick="cp('${esc(x.c)}')">نسخ</button> `}<button class="d" style="padding:5px 12px" onclick="delCode('${esc(x.c)}')">حذف</button></td></tr>`).join('')}</tbody></table></div>`:''}`;
@@ -2309,8 +2413,7 @@ function openLab(lab){
   if(!isLabOn('lab'))return toast('المختبر موقوف حالياً');
   resetGames();
   const d=labDone(lab);
-  labActiveLab=lab;
-  labCurrentExpIdx=d>=LAB_EXPERIMENTS[lab].length?0:d;
+  labActiveLab=lab;labCurrentExpIdx=d>=LAB_EXPERIMENTS[lab].length?0:d;
   go('games','','lab');
 }
 function openFree(){if(!isLabOn('free'))return toast('هذه اللعبة موقوفة حالياً');resetGames();go('games','','free')}
@@ -2320,9 +2423,7 @@ function resultCard(title,score,again){return `<div class="box game-done"><div c
 function arcadeBoard(){const ids=new Set([...Object.keys(arcadeData),...Object.keys(quizLeaderData||{})]);const rows=[...ids].map(uid=>({name:arcadeData[uid]?.name||quizLeaderData?.[uid]?.name||'طالب',points:arcadePoints(uid)})).filter(r=>r.points>0).sort((a,b)=>b.points-a.points).slice(0,10);if(!rows.length)return '';return `<div class="box"><h3 class="game-sub">🏆 لوحة المتصدرين</h3><ol class="leader">${rows.map(r=>`<li><span>${esc(r.name)}</span><b>${r.points}</b></li>`).join('')}</ol></div>`}
 async function saveArcade(game,score){
   if(!U||!canPlayNow())return;
-  const cur=arcadeData[U.uid]||{};
-  const best={...(cur.best||{})};
-  best[game]=Math.max(best[game]||0,score);
+  const cur=arcadeData[U.uid]||{};const best={...(cur.best||{})};best[game]=Math.max(best[game]||0,score);
   const next={name:U.displayName||'طالب',best,points:Object.values(best).reduce((s,v)=>s+v,0),lastPlayed:Date.now()};
   arcadeData={...arcadeData,[U.uid]:next};
   try{await set(R('arcade/'+U.uid),next)}catch(e){toast('تعذر حفظ النتيجة')}
@@ -2334,14 +2435,9 @@ async function saveLabData(){
 async function saveQuizProgress(d){
   if(!U||!canPlayNow())return;
   const cur={...(quizLeaderData[U.uid]||{})};
-  cur.points=(cur.points||0)+(d.points||0);
-  cur.correct=(cur.correct||0)+(d.correct||0);
-  cur.wrong=(cur.wrong||0)+(d.wrong||0);
-  cur.levels={...(cur.levels||{})};
-  if(d.level&&!cur.levels[d.level]){cur.levels[d.level]=true;cur.points+=50}
-  cur.name=U.displayName||'طالب';
-  cur.lastPlayed=Date.now();
-  quizLeaderData={...quizLeaderData,[U.uid]:cur};
+  cur.points=(cur.points||0)+(d.points||0);cur.correct=(cur.correct||0)+(d.correct||0);cur.wrong=(cur.wrong||0)+(d.wrong||0);
+  cur.levels={...(cur.levels||{})};if(d.level&&!cur.levels[d.level]){cur.levels[d.level]=true;cur.points+=50}
+  cur.name=U.displayName||'طالب';cur.lastPlayed=Date.now();quizLeaderData={...quizLeaderData,[U.uid]:cur};
   try{await set(R('quizGame/'+U.uid),cur)}catch(e){}
 }
 function labPick(el){if(labShowingResult)return;if(labSelectedEls.length>=4)return toast('الحد الأقصى 4 عناصر');labSelectedEls.push(el);labLastResult=null;render()}
@@ -2569,7 +2665,11 @@ Object.assign(window,{
   freePick,freeTool,freeRun,freeReset,quizStart,quizExit,quizAnswer,memFlip,huntAnswer,orderPick,orderNext,balStep,balCheck,
   whoAnswer,tfAnswer,speedAnswer,reloadStudents,
   vGames,toggleLab,removeFromLeaderboard,removeFromQuizLeader,saveStudentName,
-  sendAI,aiQuickSummary,cycleQuality,cycleNativeQuality,toggleAccessType
+  sendAI,aiQuickSummary,cycleQuality,cycleNativeQuality,toggleAccessType,
+  toggleSilentMode,savePlatformMessage,deletePlatformMessage,dismissPlatformMessage,
+  startEditNews,cancelEditNews,saveEditedNews,viewNewsWatchers,closeNewsWatchers,
+  startEditNoti,cancelEditNoti,saveEditedNoti,viewNotiWatchers,closeNotiWatchers,
+  trackNewsView
 });
 
 window.__bootAfterUnban=async function(){
