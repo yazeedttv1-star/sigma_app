@@ -9,7 +9,7 @@
 <meta name="keywords" content="منصة سيجما, تعليم, امتحانات إلكترونية, دروس فيديو, مختبر كيمياء, تعليم تفاعلي, مصر, ابتدائي, إعدادي, ثانوي">
 <meta name="author" content="منصة سيجما التعليمية">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="application-version" content="7.4.0">
+<meta name="application-version" content="7.5.0">
 <meta name="theme-color" content="#5b5bd6">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -664,6 +664,49 @@ html.dark button.primary-glass {
 /* Stronger exam watermark */
 .exam-wm{position:fixed;pointer-events:none;z-index:99990;font-size:13px;font-weight:700;color:rgba(239,68,68,0.18);transform:rotate(-28deg);white-space:nowrap;user-select:none}
 
+
+/* ===== Sigma v7.5 New App Template ===== */
+:root{
+  --app-radius:22px;
+  --card-gap:16px;
+}
+body{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+.top-bar{
+  margin:12px 14px 18px;
+  border-radius:var(--app-radius)!important;
+  border:1px solid var(--bd)!important;
+  box-shadow:0 12px 40px -18px rgba(91,91,214,.25)!important;
+}
+main{max-width:980px}
+.hero{
+  border-radius:var(--app-radius)!important;
+  padding:28px 24px!important;
+  margin-bottom:20px!important;
+}
+.card,.box,.row,.exam-card,.news-card,.feature-card,.game-card{
+  border-radius:18px!important;
+}
+.bottombar{
+  bottom:16px!important;
+  width:calc(100% - 32px)!important;
+  max-width:540px!important;
+  border-radius:28px!important;
+  padding:10px 8px!important;
+  box-shadow:0 18px 50px -16px rgba(15,17,21,.28)!important;
+}
+.feature-grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr))!important;gap:14px!important}
+.feature-card{padding:20px 14px!important;min-height:132px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.feature-card .fc-icon{font-size:32px!important;margin-bottom:8px}
+.alpha-group{margin:18px 0 10px;padding:8px 14px;background:var(--grad-brand);color:#fff;border-radius:12px;font-weight:900;font-size:16px;display:inline-block;min-width:42px;text-align:center}
+.student-alpha-section{margin-bottom:22px}
+.exam-student-link{cursor:pointer;color:var(--brand-600);font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.exam-student-link:hover{color:var(--brand-700)}
+.detail-q{background:var(--surface-2);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px}
+.detail-q.ok{border-color:var(--ok);background:rgba(16,185,129,.08)}
+.detail-q.bad{border-color:var(--er);background:rgba(239,68,68,.08)}
+.game-hub-banner{background:linear-gradient(135deg,#5b5bd6,#7c6cf6 50%,#a78bfa);color:#fff;border-radius:22px;padding:22px;margin-bottom:18px;box-shadow:var(--sh-glow)}
+.game-hub-banner h2{color:#fff;margin:0 0 6px;font-size:22px}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
@@ -700,7 +743,7 @@ import{getMessaging,getToken,onMessage,isSupported}from"https://www.gstatic.com/
   });
 })();
 
-const APP_VERSION='7.4.0';
+const APP_VERSION='7.5.0';
 
 /* ============================================================
    RECOMMENDED FIREBASE REALTIME DATABASE RULES (apply in console)
@@ -830,7 +873,7 @@ let activityLog={},activityLogUnsub=null;
 let messageViewers={},messageViewersUnsub=null;
 let allPollVotes={},pollVotesUnsubs=[];
 let adminNewsViewers={},adminNewsViewersUnsubs=[];
-const LAB_KEYS=[['rush','مختبر التفاعلات السريع'],['builder','ركّب الجزيء'],['breaker','حلّل المركّب'],['scale','ميزان المعادلة'],['react','تفاعل أو لا؟'],['race','سباق المعرفة'],['crossword','كلمات متقاطعة'],['wheel','عجلة الحظ'],['guess','خمن من الصورة'],['sniper','السهم الدقيق'],['balance','المعادلة المفقودة'],['lab','المختبر الافتراضي'],['free','طلع الكيميائي اللي جواك']];
+const LAB_KEYS=[['steps','ترتيب الخطوات'],['toolpick','اختر الأداة الصحيحة'],['eqmatch','طابق المعادلة'],['tfquick','صح أم خطأ السريع'],['fillblank','أكمل الجملة العلمية'],['conceptmap','خريطة المفاهيم'],['gauge','ميزان الحرارة/الضغط'],['classify','تصنيف العناصر'],['foodchain','سلسلة غذائية'],['minilab','تجربة افتراضية مصغرة']];
 const isLabOn=k=>labEnabled?.[k]!==false;
 const LAB_EXPERIMENTS={chemistry:[{elements:['mg'],tool:'flame',formula:'2Mg + O₂ → 2MgO',result:'ضوء أبيض ساطع + مسحوق أبيض (أكسيد المغنيسيوم)',desc:'احتراق شريط المغنيسيوم في الهواء',scenario:'جرب احتراق المغنيسيوم في الهواء'},{elements:['na'],tool:'flame',formula:'4Na + O₂ → 2Na₂O',result:'لهب أصفر + مسحوق أبيض (أكسيد الصوديوم)',desc:'احتراق الصوديوم في الهواء',scenario:'جرب احتراق الصوديوم'},{elements:['s'],tool:'flame',formula:'S + O₂ → SO₂',result:'لهب أزرق + غاز ثاني أكسيد الكبريت',desc:'احتراق الكبريت في الهواء',scenario:'جرب احتراق الكبريت'},{elements:['c'],tool:'flame',formula:'C + O₂ → CO₂',result:'لهب أحمر + غاز ثاني أكسيد الكربون',desc:'احتراق الكربون في الهواء',scenario:'جرب احتراق الكربون'},{elements:['cu'],tool:'flame',formula:'2Cu + O₂ → 2CuO',result:'طبقة سوداء على سطح النحاس (أكسيد النحاس)',desc:'احتراق النحاس في الهواء',scenario:'جرب احتراق النحاس'},{elements:['ca'],tool:'flame',formula:'2Ca + O₂ → 2CaO',result:'لهب أحمر برتقالي + مسحوق أبيض (أكسيد الكالسيوم)',desc:'احتراق الكالسيوم في الهواء',scenario:'جرب احتراق الكالسيوم'},{elements:['fe'],tool:'water',formula:'4Fe + 3O₂ + H₂O → 2Fe₂O₃·H₂O',result:'طبقة بنية (صدأ الحديد)',desc:'صدأ الحديد في وجود الهواء والماء',scenario:'اترك الحديد في الماء والهواء'},{elements:['zn','hcl'],tool:'mix',formula:'Zn + 2HCl → ZnCl₂ + H₂',result:'فقاعات غاز الهيدروجين + كلوريد الزنك',desc:'تفاعل الزنك مع حمض الهيدروكلوريك',scenario:'أضف الزنك إلى حمض HCl'},{elements:['h','o'],tool:'spark',formula:'2H₂ + O₂ → 2H₂O',result:'انفجار خفيف + ماء',desc:'احتراق الهيدروجين في الأكسجين',scenario:'أضف شرارة لخليط الهيدروجين والأكسجين'},{elements:['n','h'],tool:'heat',formula:'N₂ + 3H₂ → 2NH₃',result:'غاز الأمونيا (رائحة نفاذة)',desc:'تحضير الأمونيا بضغط وحرارة',scenario:'اضغط الهيدروجين والنيتروجين'}],physics:[{elements:['battery','lamp','wire'],tool:'connect',formula:'دائرة كهربائية بسيطة',result:'يضيء المصباح!',desc:'توصيل البطارية بالمصباح بالسلك',scenario:'صلح الدائرة الكهربائية'},{elements:['battery','lamp','wire','wire'],tool:'connect',formula:'توصيل على التوازي',result:'المصباحان يضيئان بنفس السطوع',desc:'توصيل مصباحين على التوازي',scenario:'صلح دائرة على التوازي'},{elements:['magnet','wire','battery'],tool:'connect',formula:'مغناطيس كهربائي',result:'مجال مغناطيسي حول السلك',desc:'صناعة مغناطيس كهربائي',scenario:'اصنع مغناطيساً كهربائياً'},{elements:['mirror','light'],tool:'reflect',formula:'انعكاس الضوء',result:'الضوء يرتد بنفس الزاوية',desc:'قانون الانعكاس',scenario:'جرب انعكاس الضوء على المرآة'},{elements:['battery','lamp'],tool:'connect',formula:'تحويل الطاقة',result:'طاقة كيميائية → كهربائية → ضوئية',desc:'تحولات الطاقة في الدائرة',scenario:'تتبع تحولات الطاقة'}],biology:[{elements:['pea_purple','pea_white'],tool:'cross',formula:'A × a → Aa',result:'نباتات بنفسجية (صفة سائدة)',desc:'قانون مندل الأول',scenario:'ازرع بذور مندل'},{elements:['adrenaline'],tool:'inject',formula:'هرمون الأدرينالين',result:'زيادة سرعة ضربات القلب + اتساع حدقة العين',desc:'تأثير هرمون الأدرينالين',scenario:'جرب تأثير الأدرينالين'},{elements:['neuron','stimulus'],tool:'trigger',formula:'الجهاز العصبي',result:'استجابة سريعة للفعل المنعكس',desc:'رد الفعل المنعكس',scenario:'اثبت أن رد الفعل لا إرادي'},{elements:['flower','bee'],tool:'pollinate',formula:'التلقيح',result:'تكوين بذور جديدة',desc:'التلقيح في النبات',scenario:'ساعد النحلة في التلقيح'},{elements:['dna','rna'],tool:'transcribe',formula:'DNA → RNA → بروتين',result:'تصنيع بروتين جديد',desc:'عملية الترجمة الوراثية',scenario:'جرب نسخ DNA'}]};
 const LAB_ELEMENT_LABELS={h:'H₂',o:'O₂',na:'Na',cl:'Cl₂',c:'C',fe:'Fe',mg:'Mg',zn:'Zn',cu:'Cu',s:'S',n:'N₂',ca:'Ca',hcl:'HCl',battery:'بطارية',lamp:'مصباح',wire:'سلك',magnet:'مغناطيس',mirror:'مرآة',light:'ضوء',pea_purple:'بذرة بنفسجية',pea_white:'بذرة بيضاء',adrenaline:'أدرينالين',neuron:'عصبون',stimulus:'مؤثر',flower:'زهرة',bee:'نحلة',dna:'DNA',rna:'RNA'};
@@ -840,7 +883,84 @@ const FREE_LAB_ELEMENTS=['h','o','na','cl','c','fe','mg','zn','cu','s','n','ca',
 const FREE_LAB_REACTIONS=[{el1:'mg',el2:'o',tool:'flame',formula:'2Mg + O₂ → 2MgO',explain:'احتراق المغنيسيوم ينتج ضوء أبيض ساطع ومسحوق أبيض (أكسيد المغنيسيوم)'},{el1:'na',el2:'o',tool:'flame',formula:'4Na + O₂ → 2Na₂O',explain:'احتراق الصوديوم ينتج لهب أصفر وأكسيد الصوديوم'},{el1:'s',el2:'o',tool:'flame',formula:'S + O₂ → SO₂',explain:'احتراق الكبريت بلهب أزرق ينتج ثاني أكسيد الكبريت'},{el1:'c',el2:'o',tool:'flame',formula:'C + O₂ → CO₂',explain:'احتراق الكربون ينتج ثاني أكسيد الكربون'},{el1:'cu',el2:'o',tool:'flame',formula:'2Cu + O₂ → 2CuO',explain:'أكسدة النحاس تنتج طبقة سوداء من أكسيد النحاس'},{el1:'ca',el2:'o',tool:'flame',formula:'2Ca + O₂ → 2CaO',explain:'احتراق الكالسيوم ينتج أكسيد الكالسيوم'},{el1:'fe',el2:'o',tool:'water',formula:'4Fe + 3O₂ + H₂O → 2Fe₂O₃·H₂O',explain:'صدأ الحديد في وجود الماء والأكسجين'},{el1:'zn',el2:'hcl',tool:'mix',formula:'Zn + 2HCl → ZnCl₂ + H₂',explain:'الزنك مع حمض HCl ينتج غاز الهيدروجين'},{el1:'h',el2:'o',tool:'spark',formula:'2H₂ + O₂ → 2H₂O',explain:'احتراق الهيدروجين في الأكسجين ينتج ماء'},{el1:'n',el2:'h',tool:'heat',formula:'N₂ + 3H₂ → 2NH₃',explain:'تحضير الأمونيا بالضغط والحرارة'},{el1:'na',el2:'cl',tool:'mix',formula:'2Na + Cl₂ → 2NaCl',explain:'احتراق الصوديوم في الكلور ينتج ملح الطعام'},{el1:'fe',el2:'hcl',tool:'mix',formula:'Fe + 2HCl → FeCl₂ + H₂',explain:'الحديد مع الحمض ينتج كلوريد الحديدوز وهيدروجين'},{el1:'mg',el2:'hcl',tool:'mix',formula:'Mg + 2HCl → MgCl₂ + H₂',explain:'المغنيسيوم مع الحمض ينتج كلوريد المغنيسيوم وهيدروجين'},{el1:'cu',el2:'cl',tool:'mix',formula:'Cu + Cl₂ → CuCl₂',explain:'النحاس مع الكلور ينتج كلوريد النحاس'},{el1:'zn',el2:'o',tool:'flame',formula:'2Zn + O₂ → 2ZnO',explain:'احتراق الزنك ينتج أكسيد الزنك'}];
 const GAME_COLORS={h:'#3b82f6',o:'#ef4444',na:'#a855f7',cl:'#22c55e',c:'#64748b',fe:'#f59e0b',mg:'#14b8a6',zn:'#6366f1',cu:'#f97316',s:'#eab308',n:'#8b5cf6',ca:'#06b6d4',hcl:'#ec4899',battery:'#f59e0b',lamp:'#eab308',wire:'#78716c',magnet:'#dc2626',mirror:'#0ea5e9',light:'#facc15',pea_purple:'#7c3aed',pea_white:'#cbd5e1',adrenaline:'#ef4444',neuron:'#db2777',stimulus:'#f97316',flower:'#ec4899',bee:'#eab308',dna:'#0d9488',rna:'#16a34a'};
 const elStyle=k=>`background:${GAME_COLORS[k]||'#64748b'}`;
-const GAME_CARDS=[{k:'rush',i:'⚗️',n:'مختبر التفاعلات السريع',d:'اختر الناتج قبل 5 ثوانٍ'},{k:'builder',i:'🔬',n:'ركّب الجزيء',d:'اسحب الذرات لتكوين الجزيء'},{k:'breaker',i:'🧬',n:'حلّل المركّب',d:'فكّك المركّب لعناصره'},{k:'scale',i:'⚖️',n:'ميزان المعادلة',d:'وازن المعادلة بالميزان'},{k:'react',i:'🔥',n:'تفاعل أو لا؟',d:'قرر: يتفاعلان أم لا'},{k:'race',i:'🏎️',n:'سباق المعرفة',d:'اسبق البوت بالإجابات'},{k:'crossword',i:'🧩',n:'كلمات متقاطعة',d:'املأ الشبكة بالمصطلحات'},{k:'wheel',i:'🎲',n:'عجلة الحظ',d:'دوّر العجلة وجاوب'},{k:'guess',i:'🕵️',n:'خمن من الصورة',d:'اكشف الصورة تدريجياً'},{k:'sniper',i:'🎯',n:'السهم الدقيق',d:'أوقف السهم على الإجابة'},{k:'balance',i:'⚗️',n:'المعادلة المفقودة',d:'وازن المعادلة تحت ضغط الوقت — صعبة!'}];
+const GAME_CARDS=[
+{k:'steps',i:'🔢',n:'ترتيب الخطوات',d:'رتّب خطوات التجربة بالترتيب الصحيح'},
+{k:'toolpick',i:'🛠️',n:'اختر الأداة الصحيحة',d:'اختر الأداة المناسبة للموقف العلمي'},
+{k:'eqmatch',i:'⚗️',n:'طابق المعادلة',d:'كوّن معادلة كيميائية صحيحة'},
+{k:'tfquick',i:'⚡',n:'صح أم خطأ السريع',d:'10 أسئلة — 5 ثوانٍ لكل سؤال'},
+{k:'fillblank',i:'✍️',n:'أكمل الجملة العلمية',d:'اختر الكلمة المحورية الصحيحة'},
+{k:'conceptmap',i:'🗺️',n:'خريطة المفاهيم',d:'اربط المفاهيم ببعضها بالترتيب'},
+{k:'gauge',i:'🌡️',n:'ميزان الحرارة/الضغط',d:'حدد القيمة الصحيحة حسب الوصف'},
+{k:'classify',i:'🧪',n:'تصنيف العناصر',d:'صنّف العناصر لمجموعاتها'},
+{k:'foodchain',i:'🌿',n:'سلسلة غذائية',d:'رتّب الكائنات في السلسلة'},
+{k:'minilab',i:'🔬',n:'تجربة افتراضية مصغرة',d:'اختر المادة والأداة والنتيجة'}
+];
+
+const STEPS_DATA=[
+{title:'دورة الماء',steps:['تبخّر الماء','تكوّن السحب','هطول الأمطار','تجمّع الماء'],order:[0,1,2,3]},
+{title:'تحضير الأكسجين',steps:['سخّن كلورات البوتاسيوم','يتصاعد غاز الأكسجين','اجمع الغاز بإزاحة الماء','اختبر بالشظية المتوهجة'],order:[0,1,2,3]},
+{title:'الهضم في الإنسان',steps:['مضغ الطعام في الفم','الهضم في المعدة','امتصاص في الأمعاء','إخراج الفضلات'],order:[0,1,2,3]},
+{title:'صناعة المغناطيس الكهربائي',steps:['لف سلك نحاسي حول مسمار','وصل طرفي السلك ببطارية','يمر تيار فيتسامح المجال','يصبح المسمار مغناطيساً'],order:[0,1,2,3]}
+];
+const TOOL_DATA=[
+{q:'قياس درجة حرارة سائل',opts:['ترمومتر','مسطرة','ميزان','ساعة إيقاف'],c:0},
+{q:'قياس كتلة جسم',opts:['مسطرة','ميزان حساس','مخبار مدرج','بوصلة'],c:1},
+{q:'قياس حجم سائل',opts:['مخبار مدرج','ترمومتر','منقلة','عدسة'],c:0},
+{q:'رصد اتجاه الشمال',opts:['ساعة','بوصلة','ميزان','منظار'],c:1},
+{q:'تكبير الأجسام الدقيقة',opts:['عدسة محدبة / مجهر','مرآة مستوية','منشور','سلك'],c:0}
+];
+const EQ_MATCH=[
+{left:['H₂','O₂'],right:['H₂O'],coef:[2,1,2],name:'تكوين الماء'},
+{left:['C','O₂'],right:['CO₂'],coef:[1,1,1],name:'احتراق الكربون'},
+{left:['N₂','H₂'],right:['NH₃'],coef:[1,3,2],name:'تكوين الأمونيا'},
+{left:['Mg','O₂'],right:['MgO'],coef:[2,1,2],name:'أكسيد المغنيسيوم'}
+];
+const TF_QUICK=[
+{q:'الماء مركب من الهيدروجين والأكسجين',a:true},
+{q:'الذهب فلز قابل للطرق والسحب',a:true},
+{q:'الأكسجين غاز عديم اللون والرائحة',a:true},
+{q:'الصدأ ينتج من تفاعل الحديد مع الماء والهواء',a:true},
+{q:'الصوت ينتقل في الفراغ',a:false},
+{q:'الضوء أسرع من الصوت',a:true},
+{q:'النبات لا يقوم بعملية البناء الضوئي',a:false},
+{q:'الخلية وحدة بناء الكائن الحي',a:true},
+{q:'الملح مركب أيوني',a:true},
+{q:'الزئبق فلز سائل في درجة الحرارة العادية',a:true}
+];
+const FILL_DATA=[
+{q:'عملية تحوّل السائل إلى غاز تُسمى .....',opts:['التبخر','التكثف','التجمد','الذوبان'],c:0},
+{q:'الرمز الكيميائي للماء هو .....',opts:['H₂O','CO₂','O₂','NaCl'],c:0},
+{q:'وحدة قياس القوة هي .....',opts:['نيوتن','متر','ثانية','كجم'],c:0},
+{q:'غاز ..... ضروري لعملية التنفس',opts:['الأكسجين','النيتروجين','الهيدروجين','الهيليوم'],c:0},
+{q:'عملية صناعة الغذاء في النبات تُسمى .....',opts:['البناء الضوئي','التنفس','التخمر','الهضم'],c:0}
+];
+const CONCEPT_DATA=[
+{title:'تحوّلات المادة',items:['صلب','ينصهر','سائل','يتبخر','غاز'],order:[0,1,2,3,4]},
+{title:'دورة الصخر',items:['صخر ناري','تجوية', 'رسوبي','تحول','متحول'],order:[0,1,2,3,4]},
+{title:'مسار الضوء',items:['مصدر ضوء','سقوط','انعكاس','عين الراصد'],order:[0,1,2,3]}
+];
+const GAUGE_DATA=[
+{q:'درجة غليان الماء النقي عند الضغط الجوي',unit:'°م',min:0,max:120,answer:100,tol:3},
+{q:'درجة تجمد الماء',unit:'°م',min:-20,max:40,answer:0,tol:2},
+{q:'درجة حرارة جسم الإنسان الطبيعية تقريباً',unit:'°م',min:30,max:42,answer:37,tol:1},
+{q:'الضغط الجوي التقريبي عند سطح البحر',unit:'ملم زئبق',min:700,max:800,answer:760,tol:10}
+];
+const CLASSIFY_DATA=[
+{items:[{t:'حديد',g:'فلز'},{t:'كبريت',g:'لا فلز'},{t:'سيليكون',g:'شبه فلز'},{t:'نحاس',g:'فلز'},{t:'أكسجين',g:'لا فلز'},{t:'صوديوم',g:'فلز'}],groups:['فلز','لا فلز','شبه فلز']},
+{items:[{t:'H',g:'غاز'},{t:'Hg',g:'سائل'},{t:'Fe',g:'صلب'},{t:'Br',g:'سائل'},{t:'O',g:'غاز'},{t:'C',g:'صلب'}],groups:['صلب','سائل','غاز']}
+];
+const FOOD_DATA=[
+{title:'سلسلة الحقل',chain:['عشب','جرادة','ضفدع','ثعبان','صقر']},
+{title:'سلسلة بحرية',chain:['طحالب','سمك صغير','سمك كبير','قرش']},
+{title:'سلسلة الغابة',chain:['أوراق','يرقة','طائر','ثعلب']}
+];
+const MINILAB_DATA=[
+{q:'سخّن سكر مع حمض كبريتيك مركز',opts:['تفحم السكر (كربون)', 'لا يحدث شيء','يتبخر السكر فقط'],c:0},
+{q:'أضف قطعة ماغنسيوم إلى حمض HCl',opts:['فقاعات هيدروجين','يتحول لونه للأزرق','لا تفاعل'],c:0},
+{q:'مرّر تياراً في سلك ملفوف حول مسمار حديد',opts:['مغناطيس كهربائي','يسخن فقط','ينصهر المسمار'],c:0},
+{q:'قرّب شظية متوهجة من أنبوبة أكسجين',opts:['تشتعل بشدة','تنطفئ فوراً','لا تتغير'],c:0}
+];
+
 const REACTIONS_RUSH=[{q:'2H₂ + O₂',opts:['2H₂O','H₂O₂','HO','OH'],c:0},{q:'C + O₂',opts:['CO','CO₂','C₂O','O₂C'],c:1},{q:'Na + Cl₂',opts:['NaCl₂','Na₂Cl','2NaCl','NaCl'],c:2},{q:'4Fe + 3O₂',opts:['Fe₂O₃','2Fe₂O₃','FeO','Fe₃O₄'],c:1},{q:'2Mg + O₂',opts:['MgO','2MgO','MgO₂','Mg₂O'],c:1},{q:'S + O₂',opts:['SO₂','SO₃','S₂O','SO'],c:0},{q:'2Ca + O₂',opts:['CaO','CaO₂','2CaO','Ca₂O'],c:2},{q:'N₂ + 3H₂',opts:['NH₃','2NH₃','N₂H₄','HNO₃'],c:1},{q:'Zn + 2HCl',opts:['ZnCl₂ + H₂','ZnCl + H','ZnH₂ + Cl₂','ZnCl₃ + H₂'],c:0},{q:'CaCO₃ + 2HCl',opts:['CaCl₂ + H₂O + CO₂','CaCl + HCO₃','CaO + HCl','CaH₂ + CO₃'],c:0}];
 const MOLECULES=[{name:'ماء',formula:'H₂O',need:{H:2,O:1}},{name:'ثاني أكسيد الكربون',formula:'CO₂',need:{C:1,O:2}},{name:'أمونيا',formula:'NH₃',need:{N:1,H:3}},{name:'ميثان',formula:'CH₄',need:{C:1,H:4}},{name:'ملح الطعام',formula:'NaCl',need:{Na:1,Cl:1}},{name:'أكسيد المغنيسيوم',formula:'MgO',need:{Mg:1,O:1}}];
 const COMPOUNDS=[{f:'H₂O',parts:['H','H','O']},{f:'CO₂',parts:['C','O','O']},{f:'NH₃',parts:['N','H','H','H']},{f:'CH₄',parts:['C','H','H','H','H']},{f:'H₂SO₄',parts:['H','H','S','O','O','O','O']},{f:'CaCO₃',parts:['Ca','C','O','O','O']}];
@@ -1176,7 +1296,7 @@ async function exportCodesPDF(vid){if(!A)return;const v=videos[vid];if(!v)return
 async function vAdminStudents(){if(!A)return'<div class="mut">غير مصرح.</div>';if(studentsCache&&Date.now()-studentsCacheAt<30000&&!studentsLiveUnsub){studentsState.users=studentsCache}if(!studentsLiveUnsub){studentsState={users:studentsCache||{},bans:{},bansByPhone:{},usersLoaded:false,bansLoaded:false,phonesLoaded:false,error:null};const paint=()=>{studentsCache=studentsState.users||{};studentsCacheAt=Date.now();adminUsersList=studentsCache;const box=document.getElementById('studentsLiveBox');if(box&&S.v==='admin'&&S.tab==='students'){if(studentsState.usersLoaded){box.innerHTML=buildStudentsHTML(studentsState.users,studentsState.bans,studentsState.bansByPhone)}else if(studentsState.error){box.innerHTML=studentsCache&&Object.keys(studentsCache).length?buildStudentsHTML(studentsCache,studentsState.bans,studentsState.bansByPhone)+`<div class="err-box">تعذر التحديث: ${esc(studentsState.error)}</div>`:studentsLoadError(studentsState.error)}}};const subscribe=(path,key,loadedKey)=>{const unsub=onValue(R(path),snap=>{studentsState[key]=snap.val()||{};studentsState[loadedKey]=true;if(key==='users'){studentsCache=studentsState.users;adminUsersList=studentsCache}studentsState.error=null;paint()},err=>{studentsState.error=err?.message||err?.code||'تعذر '+path;paint()});studentsLiveUnsubs.push(unsub)};subscribe('users','users','usersLoaded');subscribe('bans','bans','bansLoaded');subscribe('bansByPhone','bansByPhone','phonesLoaded');studentsLiveUnsub=()=>{studentsLiveUnsubs.forEach(fn=>{try{fn()}catch(e){}});studentsLiveUnsubs=[];studentsLiveUnsub=null}}if(!studentsState.usersLoaded){const first=await GTry('users');if(!first.ok){studentsState.error=first.error;return studentsLoadError(first.error)}studentsState.users=first.val||{};studentsState.usersLoaded=true;studentsCache=studentsState.users;adminUsersList=studentsCache;studentsCacheAt=Date.now()}return`<div id="studentsLiveBox">${buildStudentsHTML(studentsState.users,studentsState.bans,studentsState.bansByPhone)}</div>`}
 function studentsLoadError(error){return`<div class="err-box"><b>تعذر تحميل الطلاب.</b><br>${esc(error||'خطأ')}<br><button class="s" style="margin-top:10px" onclick="reloadStudents()">إعادة المحاولة</button></div>`}
 function reloadStudents(){if(typeof studentsLiveUnsub==='function'){try{studentsLiveUnsub()}catch(e){}studentsLiveUnsub=null}studentsLiveUnsubs.forEach(fn=>{try{fn()}catch(e){}});studentsLiveUnsubs=[];studentsState={users:{},bans:{},bansByPhone:{},usersLoaded:false,bansLoaded:false,phonesLoaded:false,error:null};studentsCache=null;studentsCacheAt=0;render(true)}
-function buildStudentsHTML(users,bans,bansByPhone){bans=bans||{};bansByPhone=bansByPhone||{};const arr=Object.entries(users||{}).filter(([id,u])=>!!u&&typeof u==='object').map(([id,u])=>({id,...u})).sort((a,b)=>(Number(b.createdAt)||0)-(Number(a.createdAt)||0));if(!arr.length)return`<div class="students-toolbar"><span class="count-pill">0 طالب</span><button class="s" onclick="reloadStudents()">تحديث</button></div><div class="mut">لا يوجد طلاب.</div>`;let html=`<div class="students-toolbar"><span class="count-pill">${arr.length} طالب</span><input id="searchStudent" placeholder="بحث..." oninput="filterStudents(this.value)" style="margin-bottom:0;flex:1;min-width:200px"><button class="s" onclick="reloadStudents()">تحديث</button></div><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>`;for(const u of arr){const isSup=u.isSupervisor===true;const isAdmin=isAdminPhone(u.phone||'');const isBanned=!!(bans[u.id]||(u.phone&&bansByPhone[normPhone(u.phone)]));const codesStr=Object.values(u.videos||{}).join(' ');const menuBtn=(cls,onclick,label)=>`<button class="${cls}" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="${onclick}">${label}</button>`;const menu=!isAdmin?menuBtn('s',`setGrade('${esc(u.id)}')`,'تحديد الصف')+menuBtn('s',`toggleSupervisor('${esc(u.id)}',${isSup})`,isSup?'إلغاء الإشراف':'تعيين مشرف')+(isBanned?menuBtn('g',`unbanStudent('${esc(u.id)}')`,'فك الحظر'):menuBtn('d',`banStudent('${esc(u.id)}')`,'حظر'))+menuBtn('d',`delUser('${esc(u.id)}')`,'حذف'):`<div style="padding:8px;font-size:12px;color:var(--mu)">حساب محمي</div>`;const searchStr=normDigits([u.name,u.phone,u.email,codesStr,u.grade].filter(Boolean).join(' ')).toLowerCase();html+=`<tr class="student-row" data-search="${esc(searchStr)}"><td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--brand-600)">${esc(u.name||'-')}</b></td><td dir="ltr">${esc(u.phone||'-')}</td><td>${u.grade?`<span class="b">${esc(u.grade)}</span>`:'<span class="b y">غير محدد</span>'}</td><td>${isAdmin?'<span class="b r">أدمن</span>':isSup?'<span class="b y">مشرف</span>':isBanned?'<span class="b r">محظور</span>':'<span class="b">طالب</span>'}</td><td><div style="position:relative;display:inline-block"><button class="s" style="padding:6px 12px;font-size:12px" onclick="toggleStudentMenu('${esc(u.id)}',event)">⋯</button><div id="menu_${esc(u.id)}" style="display:none;position:absolute;top:100%;right:0;z-index:30;background:var(--surface);border:1px solid var(--bd);border-radius:10px;box-shadow:var(--sh-lg);min-width:190px;padding:6px">${menu}</div></div></td></tr>`}return html+`</tbody></table></div>`}
+function buildStudentsHTML(users,bans,bansByPhone){bans=bans||{};bansByPhone=bansByPhone||{};const arr=Object.entries(users||{}).filter(([id,u])=>!!u&&typeof u==='object').map(([id,u])=>({id,...u})).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ar'));if(!arr.length)return`<div class="students-toolbar"><span class="count-pill">0 طالب</span><button class="s" onclick="reloadStudents()">تحديث</button></div><div class="mut">لا يوجد طلاب.</div>`;let html=`<div class="students-toolbar"><span class="count-pill">${arr.length} طالب</span><input id="searchStudent" placeholder="بحث..." oninput="filterStudents(this.value)" style="margin-bottom:0;flex:1;min-width:200px"><button class="s" onclick="reloadStudents()">تحديث</button></div><div class="tw"><table id="studentsTable"><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>`;let lastLetter='';for(const u of arr){const letter=(String(u.name||'؟').trim()[0]||'؟').toUpperCase();if(letter!==lastLetter){lastLetter=letter;html+=`<tr class="student-row alpha-header-row" data-search=""><td colspan="5"><span class="alpha-group">${esc(letter)}</span></td></tr>`;}const isSup=u.isSupervisor===true;const isAdmin=isAdminPhone(u.phone||'');const isBanned=!!(bans[u.id]||(u.phone&&bansByPhone[normPhone(u.phone)]));const codesStr=Object.values(u.videos||{}).join(' ');const menuBtn=(cls,onclick,label)=>`<button class="${cls}" style="display:block;width:100%;text-align:right;padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="${onclick}">${label}</button>`;const menu=!isAdmin?menuBtn('s',`setGrade('${esc(u.id)}')`,'تحديد الصف')+menuBtn('s',`toggleSupervisor('${esc(u.id)}',${isSup})`,isSup?'إلغاء الإشراف':'تعيين مشرف')+(isBanned?menuBtn('g',`unbanStudent('${esc(u.id)}')`,'فك الحظر'):menuBtn('d',`banStudent('${esc(u.id)}')`,'حظر'))+menuBtn('d',`delUser('${esc(u.id)}')`,'حذف'):`<div style="padding:8px;font-size:12px;color:var(--mu)">حساب محمي</div>`;const searchStr=normDigits([u.name,u.phone,u.email,codesStr,u.grade].filter(Boolean).join(' ')).toLowerCase();html+=`<tr class="student-row" data-search="${esc(searchStr)}"><td><b onclick="go('studentProfile','${esc(u.id)}')" style="cursor:pointer;color:var(--brand-600)">${esc(u.name||'-')}</b></td><td dir="ltr">${esc(u.phone||'-')}</td><td>${u.grade?`<span class="b">${esc(u.grade)}</span>`:'<span class="b y">غير محدد</span>'}</td><td>${isAdmin?'<span class="b r">أدمن</span>':isSup?'<span class="b y">مشرف</span>':isBanned?'<span class="b r">محظور</span>':'<span class="b">طالب</span>'}</td><td><div style="position:relative;display:inline-block"><button class="s" style="padding:6px 12px;font-size:12px" onclick="toggleStudentMenu('${esc(u.id)}',event)">⋯</button><div id="menu_${esc(u.id)}" style="display:none;position:absolute;top:100%;right:0;z-index:30;background:var(--surface);border:1px solid var(--bd);border-radius:10px;box-shadow:var(--sh-lg);min-width:190px;padding:6px">${menu}</div></div></td></tr>`}return html+`</tbody></table></div>`}
 function toggleStudentMenu(uid,ev){if(ev)ev.stopPropagation();const m=document.getElementById('menu_'+uid);if(!m)return;const open=m.style.display==='block';document.querySelectorAll('[id^="menu_"]').forEach(x=>{x.style.display='none'});m.style.display=open?'none':'block';if(!open){const close=e=>{if(!m.contains(e.target)){m.style.display='none';document.removeEventListener('click',close,true)}};setTimeout(()=>document.addEventListener('click',close,true),0)}}
 function filterStudents(q){const query=String(q||'').toLowerCase().trim();let visible=0;document.querySelectorAll('.student-row').forEach(row=>{const match=(row.getAttribute('data-search')||'').includes(query);row.style.display=match?'':'none';if(match)visible++});let empty=document.getElementById('studentsEmpty');if(!visible){if(!empty){empty=document.createElement('div');empty.id='studentsEmpty';empty.className='mut';empty.style.padding='20px';empty.textContent='لا نتائج.';const table=document.getElementById('studentsTable');if(table&&table.parentElement)table.parentElement.appendChild(empty)}}else if(empty){empty.remove()}}
 async function setGrade(uid){if(!A)return;const grade=prompt('الصف:');if(!grade)return;if(!ALL_GRADES.includes(grade))return toast('صف غير صحيح');try{await update(R('users/'+uid),{grade});toast('تم');render(true)}catch(e){}}
@@ -1279,7 +1399,31 @@ async function doCreateExam(){if(!A&&!IS_SUPERVISOR)return;const title=document.
 async function toggleExamDisabled(id){if(!A&&!IS_SUPERVISOR)return;const e=exams[id];if(!e)return;try{await update(R('exams/'+id),{disabled:!e.disabled});toast('تم');render(true)}catch(err){}}
 async function delExam(id){if(!A&&!IS_SUPERVISOR)return;if(!confirm('حذف؟'))return;try{await remove(R('exams/'+id));toast('تم');render(true)}catch(e){}}
 async function reopenStudentExam(examId,uid){if(!A)return toast('للإدارة فقط');if(!examId||!uid)return;if(!confirm('إعادة فتح؟'))return;try{const current=await G('examAttempts/'+uid+'/'+examId);if(current){const historyId='h'+Date.now().toString(36);await set(R('examAttemptHistory/'+examId+'/'+uid+'/'+historyId),{...current,archivedAt:Date.now()})}await remove(R('examAttempts/'+uid+'/'+examId));toast('تم');render(true)}catch(e){}}
-async function vExamDetail(){if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';const e=exams[S.id];if(!e)return vAdmin();const attempts=[];Object.values(allExamAttempts||{}).forEach(byExam=>{const a=byExam?.[S.id];if(a)attempts.push(a)});attempts.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));const avg=attempts.length?Math.round(attempts.reduce((s,a)=>s+(a.score||0),0)/attempts.length):0;return`${backBtn("go('admin','','exams')")}<h2>${esc(e.title)}</h2><div class="box"><div class="stats-summary"><div class="stat-box"><div class="stat-num">${(e.questions||[]).length}</div><div class="stat-label">أسئلة</div></div><div class="stat-box ok"><div class="stat-num">${attempts.length}</div><div class="stat-label">محاولات</div></div><div class="stat-box warn"><div class="stat-num">${avg}%</div><div class="stat-label">متوسط</div></div></div><div class="tw"><table><thead><tr><th>الطالب</th><th>الدرجة</th><th>الوقت</th><th>مخالفات</th><th>التسليم</th></tr></thead><tbody>${attempts.map(a=>`<tr><td>${esc(a.studentName||'-')}</td><td><b class="${a.score>=50?'g':'r'}">${a.score||0}%</b></td><td>${fmtClock(a.timeTaken||0)}</td><td>${a.violations||0}</td><td>${fd(a.submittedAt)}${A?`<br><button class="s" style="padding:5px 9px;font-size:11px;margin-top:5px" onclick="reopenStudentExam('${esc(S.id)}','${esc(a.studentUid||'')}')">إعادة فتح</button>`:''}</td></tr>`).join('')||'<tr><td colspan="5" class="mut">لا محاولات.</td></tr>'}</tbody></table></div></div>`}
+async function vExamDetail(){if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';const e=exams[S.id];if(!e)return vAdmin();
+// Student detail mode
+if(S.filter&&String(S.filter).startsWith('stu:')){
+  const stuUid=String(S.filter).slice(4);
+  let att=null;
+  Object.values(allExamAttempts||{}).forEach(byExam=>{const a=byExam?.[S.id];if(a&&a.studentUid===stuUid)att=a});
+  if(!att)return backBtn("go('exam','"+S.id+"')")+'<div class="mut">لا توجد محاولة لهذا الطالب.</div>';
+  const questions=e.questions||[];
+  const answers=att.answers||[];
+  let correctN=0,wrongN=0;
+  const review=questions.map((q,i)=>{
+    const a=answers.find(x=>x.q===i)||{};
+    const ok=!!a.correct;if(ok)correctN++;else wrongN++;
+    const correctText=q.type==='mcq'?(q.options?.[q.correct]??'—'):q.type==='tf'?(q.correct?'صح':'خطأ'):(q.correct||'—');
+    const answerText=a.ans===null||a.ans===undefined||a.ans===''?'لم يجب':q.type==='mcq'?(q.options?.[Number(a.ans)]??String(a.ans)):q.type==='tf'?(a.ans===true||a.ans==='true'?'صح':'خطأ'):String(a.ans);
+    return`<div class="detail-q ${ok?'ok':'bad'}"><div style="font-weight:800;margin-bottom:8px"><span class="q-num">${i+1}</span> ${esc(q.text)}</div>
+      <p style="margin:4px 0;font-weight:700">إجابة الطالب: <span class="${ok?'g':'r'}">${esc(answerText)}</span> ${ok?'✅':'❌'}</p>
+      <p style="margin:4px 0;font-weight:600;color:var(--tx-2)">الإجابة الصحيحة: ${esc(correctText)}</p></div>`;
+  }).join('');
+  return`${backBtn("S.filter='';go('exam','"+esc(S.id)+"')")}<h2>مراجعة إجابات: ${esc(att.studentName||'')}</h2>
+  <div class="stats-summary"><div class="stat-box ok"><div class="stat-num">${correctN}</div><div class="stat-label">صحيحة</div></div><div class="stat-box" style="border-color:var(--er)"><div class="stat-num" style="color:var(--er)">${wrongN}</div><div class="stat-label">خاطئة</div></div><div class="stat-box"><div class="stat-num">${att.score||0}%</div><div class="stat-label">الدرجة</div></div><div class="stat-box warn"><div class="stat-num">${att.violations||0}</div><div class="stat-label">مخالفات</div></div></div>
+  <div class="box"><h3 style="margin-bottom:12px">تفاصيل الأسئلة</h3>${review}</div>`;
+}
+const attempts=[];Object.values(allExamAttempts||{}).forEach(byExam=>{const a=byExam?.[S.id];if(a)attempts.push(a)});attempts.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));const avg=attempts.length?Math.round(attempts.reduce((s,a)=>s+(a.score||0),0)/attempts.length):0;
+return`${backBtn("go('admin','','exams')")}<h2>${esc(e.title)}</h2><div class="box"><div class="stats-summary"><div class="stat-box"><div class="stat-num">${(e.questions||[]).length}</div><div class="stat-label">أسئلة</div></div><div class="stat-box ok"><div class="stat-num">${attempts.length}</div><div class="stat-label">محاولات</div></div><div class="stat-box warn"><div class="stat-num">${avg}%</div><div class="stat-label">متوسط</div></div></div><div class="tw"><table><thead><tr><th>الطالب</th><th>الدرجة</th><th>الوقت</th><th>مخالفات</th><th>التسليم</th></tr></thead><tbody>${attempts.map(a=>`<tr><td><span class="exam-student-link" onclick="S.filter='stu:${esc(a.studentUid||'')}';go('exam','${esc(S.id)}')">${esc(a.studentName||'-')}</span></td><td><b class="${a.score>=50?'g':'r'}">${a.score||0}%</b></td><td>${fmtClock(a.timeTaken||0)}</td><td>${a.violations||0}</td><td>${fd(a.submittedAt)}${A?`<br><button class="s" style="padding:5px 9px;font-size:11px;margin-top:5px" onclick="reopenStudentExam('${esc(S.id)}','${esc(a.studentUid||'')}')">إعادة فتح</button>`:''}</td></tr>`).join('')||'<tr><td colspan="5" class="mut">لا محاولات.</td></tr>'}</tbody></table></div></div>`}
 
 function showExamRules(id){const exam=exams[id];if(!exam)return toast('غير متاح');const rules=(exam.rules||'').trim()||'اقرأ كل سؤال جيداً. لا تغادر الصفحة. راجع إجاباتك ثم سلّم.';const old=document.getElementById('examRulesModal');if(old)old.remove();const modal=document.createElement('div');modal.id='examRulesModal';modal.className='exam-rules-modal';modal.innerHTML=`<div class="exam-rules-card"><h2>📋 قواعد الامتحان</h2><p class="exam-rules-text">${esc(rules)}</p><div style="display:flex;gap:10px"><button id="examRulesStart" style="flex:1">موافق، ابدأ</button><button class="s" id="examRulesCancel">إلغاء</button></div></div>`;document.body.appendChild(modal);const onKey=e=>{if(e.key==='Escape'){modal.remove();document.removeEventListener('keydown',onKey)}};document.addEventListener('keydown',onKey);modal.querySelector('#examRulesStart').onclick=()=>{modal.remove();document.removeEventListener('keydown',onKey);go('takeExam',id)};modal.querySelector('#examRulesCancel').onclick=()=>{modal.remove();document.removeEventListener('keydown',onKey)}}
 function toggleFocusMode(on){const active=!!on;document.body.classList.toggle('focus-mode',active);const exit=document.getElementById('focusExit');if(exit)exit.style.display=active?'inline-flex':'none';document.documentElement.style.overflow=active?'hidden':''}
@@ -1371,8 +1515,8 @@ async function reloadLabPlayers(){try{const a=await G('arcade');arcadeData=a||{}
 async function toggleLab(k){if(!A)return;const cur=labEnabled?.[k]!==false;try{await set(R('settings/labEnabled/'+k),!cur);toast('تم')}catch(e){}}
 async function removeFromLeaderboard(uid){if(!A)return;if(!confirm('إزالة؟'))return;try{await remove(R('arcade/'+uid));toast('تم');render(true)}catch(e){}}
 
-function resetGames(){if(quizTimer){clearTimeout(quizTimer);quizTimer=null}if(rushState&&rushState.timer){clearInterval(rushState.timer);rushState.timer=null}if(raceState&&raceState.botTimer){clearTimeout(raceState.botTimer);raceState.botTimer=null}if(sniperState&&sniperState.timer){clearInterval(sniperState.timer);sniperState.timer=null}if(balanceState&&balanceState.timer){clearInterval(balanceState.timer);balanceState.timer=null}quizActiveLevel=null;quizCurrentIndex=0;quizAnswered=false;window._quizOrder=null;labActiveLab=null;labCurrentExpIdx=0;labSelectedEls=[];labSelectedTool=null;labShowingResult=false;labLastResult=null;freeLab={els:[],tool:null,result:null};rushState=null;builderState=null;breakerState=null;scaleState=null;reactState=null;raceState=null;crosswordState=null;wheelState=null;guessState=null;sniperState=null;balanceState=null}
-function openGame(key){if(!isLabOn(key))return toast('موقوف');resetGames();if(key==='rush')rushStart();else if(key==='builder')builderStart();else if(key==='breaker')breakerStart();else if(key==='scale')scaleStart();else if(key==='react')reactStart();else if(key==='race')raceStart();else if(key==='crossword')crosswordStart();else if(key==='wheel')wheelStart();else if(key==='guess')guessStart();else if(key==='sniper')sniperStart();else if(key==='balance')balanceStart();go('games','',key);logActivity('game_play','لعب: '+key)}
+function resetGames(){if(ngState&&ngState.timer){clearInterval(ngState.timer);ngState.timer=null}ngState=null;if(quizTimer){clearTimeout(quizTimer);quizTimer=null}if(rushState&&rushState.timer){clearInterval(rushState.timer);rushState.timer=null}if(raceState&&raceState.botTimer){clearTimeout(raceState.botTimer);raceState.botTimer=null}if(sniperState&&sniperState.timer){clearInterval(sniperState.timer);sniperState.timer=null}if(balanceState&&balanceState.timer){clearInterval(balanceState.timer);balanceState.timer=null}quizActiveLevel=null;quizCurrentIndex=0;quizAnswered=false;window._quizOrder=null;labActiveLab=null;labCurrentExpIdx=0;labSelectedEls=[];labSelectedTool=null;labShowingResult=false;labLastResult=null;freeLab={els:[],tool:null,result:null};rushState=null;builderState=null;breakerState=null;scaleState=null;reactState=null;raceState=null;crosswordState=null;wheelState=null;guessState=null;sniperState=null;balanceState=null}
+function openGame_OLD_DISABLED(key){if(!isLabOn(key))return toast('موقوف');resetGames();if(key==='rush')rushStart();else if(key==='builder')builderStart();else if(key==='breaker')breakerStart();else if(key==='scale')scaleStart();else if(key==='react')reactStart();else if(key==='race')raceStart();else if(key==='crossword')crosswordStart();else if(key==='wheel')wheelStart();else if(key==='guess')guessStart();else if(key==='sniper')sniperStart();else if(key==='balance')balanceStart();go('games','',key);logActivity('game_play','لعب: '+key)}
 function gameBack(){resetGames();go('games','','hub')}
 function openLabHub(){if(!isLabOn('lab'))return toast('موقوف');resetGames();go('games','','lab')}
 function openLab(lab){if(!LAB_EXPERIMENTS[lab])return;if(!isLabOn('lab'))return toast('موقوف');resetGames();const d=labDone(lab);labActiveLab=lab;labCurrentExpIdx=d>=LAB_EXPERIMENTS[lab].length?0:d;go('games','','lab')}
@@ -1452,8 +1596,159 @@ function freePick(el){const idx=freeLab.els.indexOf(el);if(idx>=0)freeLab.els.sp
 function freeTool(t){freeLab.tool=freeLab.tool===t?null:t;freeLab.result=null;render(true)}
 function freeRun(){if(freeLab.els.length!==2)return toast('اختر عنصرين');const[a,b]=freeLab.els;const pairs=FREE_LAB_REACTIONS.filter(r=>(r.el1===a&&r.el2===b)||(r.el1===b&&r.el2===a));if(!pairs.length){freeLab.result={none:true,text:'هذان العنصران لا يتفاعلان في الظروف العادية.'};render(true);return}const withTool=freeLab.tool?pairs.find(r=>r.tool===freeLab.tool):null;if(freeLab.tool&&!withTool){freeLab.result={none:true,text:'هذه الأداة لا تنتج تفاعلاً مع هذين العنصرين.'};render(true);return}const r=withTool||pairs[0];freeLab.result={formula:r.formula,explain:r.explain};render(true)}
 function freeReset(){freeLab={els:[],tool:null,result:null};render(true)}
-function vGamesHub(){const labsProg=Object.keys(LAB_INFO).reduce((s,k)=>s+labDone(k),0);const total=Object.values(LAB_EXPERIMENTS).reduce((s,a)=>s+a.length,0);const labCard=`<button class="game-card ${!isLabOn('lab')?'disabled':''}" onclick="openLabHub()"><span class="gc-icon">🔬</span><span class="gc-name">المختبر الافتراضي</span><span class="gc-desc">3 مختبرات بتجارب تفاعلية${!isLabOn('lab')?' — موقوف':''}</span><span class="gc-meta">${labsProg}/${total} تجربة</span></button>`;const freeCard=`<button class="game-card special ${!isLabOn('free')?'disabled':''}" onclick="openFree()"><span class="gc-icon">🧑‍🔬</span><span class="gc-name">طلع الكيميائي اللي جواك</span><span class="gc-desc">اختر أي عنصرين وشوف التفاعل${!isLabOn('free')?' — موقوف':''}</span></button>`;const games=GAME_CARDS.map(g=>`<button class="game-card ${!isLabOn(g.k)?'disabled':''}" onclick="openGame('${g.k}')"><span class="gc-icon">${g.i}</span><span class="gc-name">${g.n}</span><span class="gc-desc">${g.d}${!isLabOn(g.k)?' — موقوف':''}</span></button>`).join('');return`<div class="game-wrap">${gameHeader('مختبر سيجما','اختر لعبة')}<div class="game-section">المختبر</div><div class="game-grid">${labCard}${freeCard}</div><div class="game-section">الألعاب</div><div class="game-grid">${games}</div>${arcadeBoard()}</div>`}
-function vGames(){const t=S.tab||'hub';if(t==='lab')return labActiveLab?vLabScreen():vLabHub();if(t==='free')return vFreeLab();if(t==='rush'){if(!rushState)rushStart();return vRush()}if(t==='builder'){if(!builderState)builderStart();return vBuilder()}if(t==='breaker'){if(!breakerState)breakerStart();return vBreaker()}if(t==='scale'){if(!scaleState)scaleStart();return vScale()}if(t==='react'){if(!reactState)reactStart();return vReact()}if(t==='race'){if(!raceState)raceStart();return vRace()}if(t==='crossword'){if(!crosswordState)crosswordStart();return vCrossword()}if(t==='wheel'){if(!wheelState)wheelStart();return vWheel()}if(t==='guess'){if(!guessState)guessStart();return vGuess()}if(t==='sniper'){if(!sniperState)sniperStart();return vSniper()}if(t==='balance'){if(!balanceState)balanceStart();return vBalance()}return vGamesHub()}
+
+/* ===== New Games Engine v7.5 ===== */
+let ngState=null;
+function openGame(key){
+  if(!isLabOn(key))return toast('موقوف');
+  resetGames();
+  ngState={key,i:0,score:0,done:false,picked:null,order:[],pool:[],val:50,groups:{},timeLeft:5,timer:null};
+  if(key==='steps'){const d=userShuffle(STEPS_DATA,1)[0];ngState.data=d;ngState.pool=shuffle([...d.steps.map((s,i)=>({s,i}))]);ngState.order=[];}
+  else if(key==='toolpick'){ngState.qs=userShuffle(TOOL_DATA,2).slice(0,5);}
+  else if(key==='eqmatch'){ngState.data=userShuffle(EQ_MATCH,3)[0];ngState.coefs=ngState.data.coef.map(()=>1);}
+  else if(key==='tfquick'){ngState.qs=userShuffle(TF_QUICK,4).slice(0,10);ngState.timeLeft=5;ngTick();}
+  else if(key==='fillblank'){ngState.qs=userShuffle(FILL_DATA,5).slice(0,5);}
+  else if(key==='conceptmap'){const d=userShuffle(CONCEPT_DATA,6)[0];ngState.data=d;ngState.pool=shuffle([...d.items.map((s,i)=>({s,i}))]);ngState.order=[];}
+  else if(key==='gauge'){ngState.qs=userShuffle(GAUGE_DATA,7).slice(0,4);ngState.val=ngState.qs[0].answer;}
+  else if(key==='classify'){ngState.data=userShuffle(CLASSIFY_DATA,8)[0];ngState.groups={};ngState.data.groups.forEach(g=>ngState.groups[g]=[]);ngState.pool=shuffle([...ngState.data.items]);}
+  else if(key==='foodchain'){const d=userShuffle(FOOD_DATA,9)[0];ngState.data=d;ngState.pool=shuffle(d.chain.map((s,i)=>({s,i})));ngState.order=[];}
+  else if(key==='minilab'){ngState.qs=userShuffle(MINILAB_DATA,10).slice(0,4);}
+  go('games','',key);
+  logActivity('game_play','لعب: '+key);
+}
+function ngTick(){
+  const st=ngState;if(!st||st.done||st.key!=='tfquick')return;
+  if(st.timer)clearInterval(st.timer);
+  st.timeLeft=5;
+  st.timer=setInterval(()=>{
+    if(!ngState||ngState!==st||st.done){clearInterval(st.timer);return;}
+    st.timeLeft--;
+    if(st.timeLeft<=0){ngAnswer(null);return;}
+    if(S.v==='games'&&S.tab==='tfquick')render(true);
+  },1000);
+}
+function ngAnswer(val){
+  const st=ngState;if(!st||st.done||st.picked!==null&&st.key==='tfquick')return;
+  const key=st.key;
+  if(key==='tfquick'){
+    if(st.timer){clearInterval(st.timer);st.timer=null;}
+    st.picked=val;
+    const q=st.qs[st.i];
+    if(val===q.a)st.score+=10;
+    render(true);
+    setTimeout(()=>{if(ngState!==st)return;st.i++;st.picked=null;if(st.i>=st.qs.length){st.done=true;saveArcade(key,st.score);}else ngTick();render(true);},700);
+    return;
+  }
+  if(key==='toolpick'||key==='fillblank'||key==='minilab'){
+    st.picked=val;
+    const q=st.qs[st.i];
+    if(val===q.c)st.score+=15;
+    render(true);
+    setTimeout(()=>{if(ngState!==st)return;st.i++;st.picked=null;if(st.i>=st.qs.length){st.done=true;saveArcade(key,st.score);}render(true);},800);
+    return;
+  }
+}
+function ngPickPool(idx){
+  const st=ngState;if(!st||st.done)return;
+  if(st.key==='steps'||st.key==='conceptmap'||st.key==='foodchain'){
+    const item=st.pool[idx];if(!item||item.used)return;
+    item.used=true;st.order.push(item);
+    // auto check when full
+    const need=st.key==='foodchain'?st.data.chain.length:(st.data.steps||st.data.items).length;
+    if(st.order.length>=need){
+      let ok=true;
+      st.order.forEach((it,i)=>{if(it.i!==i && it.s!==(st.data.chain||st.data.steps||st.data.items)[i])ok=false;});
+      // better compare by original index
+      const target=(st.data.chain||st.data.steps||st.data.items);ok=st.order.length===target.length&&st.order.every((it,i)=>it.s===target[i]);
+      if(ok){st.score+=25;st.done=true;saveArcade(st.key,st.score);}
+      else{toast('ترتيب غير صحيح — حاول مجدداً');st.order.forEach(it=>it.used=false);st.order=[];}
+    }
+    render(true);
+  }
+}
+function ngClassify(itemIdx,group){
+  const st=ngState;if(!st||st.done||st.key!=='classify')return;
+  const item=st.pool[itemIdx];if(!item||item.placed)return;
+  item.placed=true;item.group=group;
+  st.groups[group]=st.groups[group]||[];st.groups[group].push(item);
+  const all=st.pool.every(x=>x.placed);
+  if(all){
+    let correct=0;
+    st.pool.forEach(it=>{if(it.group===it.g)correct++;});
+    st.score=correct*10;
+    st.done=true;saveArcade('classify',st.score);
+  }
+  render(true);
+}
+function ngGaugeSet(v){if(ngState&&!ngState.done){ngState.val=+v;render(true);}}
+function ngGaugeCheck(){
+  const st=ngState;if(!st||st.done||st.key!=='gauge')return;
+  const q=st.qs[st.i];
+  if(Math.abs(st.val-q.answer)<=q.tol)st.score+=20;
+  st.i++;
+  if(st.i>=st.qs.length){st.done=true;saveArcade('gauge',st.score);}
+  else st.val=st.qs[st.i].answer;
+  render(true);
+}
+function ngEqStep(i,d){
+  const st=ngState;if(!st||st.done||st.key!=='eqmatch')return;
+  st.coefs[i]=Math.max(1,Math.min(6,(st.coefs[i]||1)+d));render(true);
+}
+function ngEqCheck(){
+  const st=ngState;if(!st||st.done||st.key!=='eqmatch')return;
+  const ok=st.coefs.every((c,i)=>c===st.data.coef[i]);
+  if(ok){st.score=30;st.done=true;saveArcade('eqmatch',st.score);toast('✅ معادلة متوازنة');}
+  else toast('❌ ليست متوازنة بعد');
+  render(true);
+}
+function vNewGame(){
+  const st=ngState;if(!st)return vGamesHub();
+  const key=st.key;
+  if(st.done)return resultCard((GAME_CARDS.find(g=>g.k===key)||{n:key}).n,st.score,key);
+  let body='';
+  if(key==='steps'||key==='conceptmap'||key==='foodchain'){
+    const title=st.data.title||'';
+    const placed=st.order.map((it,i)=>`<span class="chip" style="background:var(--brand-600);margin:4px">${i+1}. ${esc(it.s)}</span>`).join(' ');
+    const pool=st.pool.map((it,i)=>it.used?'':`<button class="quiz-opt" onclick="ngPickPool(${i})">${esc(it.s)}</button>`).join('');
+    body=`<div class="quiz-arena"><h3 style="text-align:center;margin-bottom:12px">${esc(title)}</h3><div style="min-height:50px;margin-bottom:14px;text-align:center">${placed||'<span class="mut-inline">اختر بالترتيب</span>'}</div><div class="quiz-options">${pool}</div></div>`;
+  }else if(key==='toolpick'||key==='fillblank'||key==='minilab'){
+    const q=st.qs[st.i];
+    const opts=q.opts.map((o,i)=>{const cls=st.picked===null?'':(i===q.c?'correct':i===st.picked?'wrong':'');return`<button class="quiz-opt ${cls}" ${st.picked!==null?'disabled':''} onclick="ngAnswer(${i})">${esc(o)}</button>`;}).join('');
+    body=`<div class="quiz-arena"><div class="quiz-question" style="direction:rtl">${esc(q.q)}</div><div class="quiz-options">${opts}</div><div style="text-align:center;margin-top:10px" class="b y">${st.i+1}/${st.qs.length}</div></div>`;
+  }else if(key==='tfquick'){
+    const q=st.qs[st.i];
+    const clsT=st.picked===null?'':(q.a===true?'correct':st.picked===true?'wrong':'');
+    const clsF=st.picked===null?'':(q.a===false?'correct':st.picked===false?'wrong':'');
+    body=`<div class="quiz-arena"><div class="b ${st.timeLeft<=2?'r':'g'}" style="display:block;text-align:center;margin-bottom:12px">⏱️ ${st.timeLeft} ث — ${st.i+1}/10</div><div class="quiz-question" style="direction:rtl">${esc(q.q)}</div><div class="quiz-options"><button class="quiz-opt ${clsT}" ${st.picked!==null?'disabled':''} onclick="ngAnswer(true)">✅ صح</button><button class="quiz-opt ${clsF}" ${st.picked!==null?'disabled':''} onclick="ngAnswer(false)">❌ خطأ</button></div></div>`;
+  }else if(key==='gauge'){
+    const q=st.qs[st.i];
+    body=`<div class="quiz-arena" style="text-align:center"><div class="quiz-question" style="direction:rtl">${esc(q.q)}</div><div style="font-size:42px;font-weight:900;color:var(--brand-600);margin:16px 0">${st.val} <small style="font-size:16px">${esc(q.unit)}</small></div><input type="range" min="${q.min}" max="${q.max}" value="${st.val}" oninput="ngGaugeSet(this.value)" style="width:90%"><div class="game-actions" style="margin-top:16px"><button class="btn-glass" onclick="ngGaugeCheck()">تحقق</button></div><div class="b y">${st.i+1}/${st.qs.length}</div></div>`;
+  }else if(key==='classify'){
+    const groups=st.data.groups.map(g=>`<div style="flex:1;min-width:120px"><b style="display:block;margin-bottom:6px">${esc(g)}</b><div style="min-height:60px;background:var(--surface-2);border-radius:10px;padding:8px">${(st.groups[g]||[]).map(it=>`<span class="chip" style="background:var(--brand-600);margin:2px;display:inline-block">${esc(it.t)}</span>`).join('')}</div></div>`).join('');
+    const pool=st.pool.filter(x=>!x.placed).map((it,i)=>`<div style="margin:6px 0"><b>${esc(it.t)}</b> ${st.data.groups.map(g=>`<button class="s" style="padding:4px 8px;font-size:11px;margin:2px" onclick="ngClassify(${st.pool.indexOf(it)},'${g}')">${esc(g)}</button>`).join('')}</div>`).join('');
+    body=`<div class="box"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${groups}</div><h3>العناصر المتبقية</h3>${pool||'<div class="mut">تم التصنيف</div>'}</div>`;
+  }else if(key==='eqmatch'){
+    const d=st.data;
+    const left=d.left.map((f,i)=>`<span class="balance-slot filled" style="margin:0 4px">${st.coefs[i]}</span><b>${esc(f)}</b>`).join(' + ');
+    const right=d.right.map((f,i)=>`<span class="balance-slot filled" style="margin:0 4px">${st.coefs[d.left.length+i]}</span><b>${esc(f)}</b>`).join(' + ');
+    const ctrls=st.coefs.map((c,i)=>`<div style="display:inline-flex;align-items:center;gap:4px;margin:4px"><button class="s" style="padding:4px 10px" onclick="ngEqStep(${i},-1)">−</button><b>${c}</b><button class="s" style="padding:4px 10px" onclick="ngEqStep(${i},1)">+</button></div>`).join('');
+    body=`<div class="quiz-arena" style="text-align:center"><h3>${esc(d.name)}</h3><div class="balance-equation" style="color:var(--brand-700);margin:18px 0">${left} → ${right}</div><div>${ctrls}</div><button class="btn-glass" style="margin-top:16px" onclick="ngEqCheck()">تحقق من التوازن</button></div>`;
+  }
+  return`<div class="game-wrap">${gameTop('gameBack()','الألعاب',`<span class="b g">${st.score} نقطة</span>`)}${body}</div>`;
+}
+function vGamesHub(){
+  const games=GAME_CARDS.map(g=>`<button class="game-card ${!isLabOn(g.k)?'disabled':''}" onclick="openGame('${g.k}')"><span class="gc-icon">${g.i}</span><span class="gc-name">${g.n}</span><span class="gc-desc">${g.d}${!isLabOn(g.k)?' — موقوف':''}</span></button>`).join('');
+  return`<div class="game-wrap"><div class="game-hub-banner"><h2>🎮 ألعاب سيجما التعليمية</h2><p style="opacity:.92;font-weight:600;margin:0">10 ألعاب تفاعلية للمراجعة والتدريب — اجمع النقاط وتصدر اللوحة</p></div><div class="game-grid">${games}</div>${arcadeBoard()}</div>`;
+}
+function vGames(){
+  const t=S.tab||'hub';
+  if(t==='hub')return vGamesHub();
+  if(['steps','toolpick','eqmatch','tfquick','fillblank','conceptmap','gauge','classify','foodchain','minilab'].includes(t)){
+    if(!ngState||ngState.key!==t)openGame(t);
+    return vNewGame();
+  }
+  return vGamesHub();
+}
 
 
 /* ========== FEATURES v7.3 ========== */
@@ -1712,21 +2007,45 @@ function enhanceExamResultHTML(html, att, e){
   return html;
 }
 async function vFeaturesHub(){
-  // load light data
   if(U){loadMyTimeline().catch(()=>{});loadMyPromises().catch(()=>{});}
   let liveCount=0;
   try{const lc=await G('liveChallenges')||{};liveCount=Object.values(lc).filter(c=>c&&c.status==='live'&&(!c.grade||!userGrade||c.grade===userGrade)).length}catch(e){}
-  return`${backBtn("go('home')")}<div class="hero"><div class="hero-content"><div class="hero-eyebrow">✨ مميزات سيجما</div><div class="hero-title">تعلّم بذكاء أكبر</div><div class="hero-desc">خريطة معرفتك، وعودك، إنجازاتك، والتحديات الحية في مكان واحد.</div></div></div>
+  const pts=U?arcadePoints(U.uid):0;
+  return`${backBtn("go('home')")}<div class="hero"><div class="hero-content"><div class="hero-eyebrow">✨ مميزات سيجما 7.5</div><div class="hero-title">تعلّم بذكاء أكبر</div><div class="hero-desc">كل أدواتك التعليمية في مكان واحد — راقب تقدمك، التزم بأهدافك، نافس زملاءك، وراجع بذكاء.</div></div></div>
+  <div class="stats-summary" style="margin-bottom:18px">
+    <div class="stat-box"><div class="stat-num">${pts}</div><div class="stat-label">نقاط الألعاب</div></div>
+    <div class="stat-box ok"><div class="stat-num">${Object.keys(examAttempts||{}).length}</div><div class="stat-label">امتحانات مكتملة</div></div>
+    <div class="stat-box warn"><div class="stat-num">${liveCount}</div><div class="stat-label">تحدي حي الآن</div></div>
+  </div>
+  <h3 style="margin:8px 0 12px;font-weight:900">🎯 أدوات التعلّم</h3>
   <div class="feature-grid">
-    <div class="feature-card" onclick="go('knowledgeMap')"><div class="fc-icon">🗺️</div><div class="fc-name">خريطة المعرفة</div><div class="fc-desc">نقاط قوتك وضعفك</div></div>
+    <div class="feature-card" onclick="go('knowledgeMap')"><div class="fc-icon">🗺️</div><div class="fc-name">خريطة المعرفة</div><div class="fc-desc">نقاط القوة والضعف</div></div>
     <div class="feature-card" onclick="go('timeline')"><div class="fc-icon">📅</div><div class="fc-name">سجل الإنجاز</div><div class="fc-desc">رحلتك التعليمية</div></div>
-    <div class="feature-card" onclick="go('promises')"><div class="fc-icon">🤝</div><div class="fc-name">الوعد التعليمي</div><div class="fc-desc">التزم بهدف</div></div>
-    <div class="feature-card" onclick="go('liveChallenge')"><div class="fc-icon">⚡</div><div class="fc-name">تحدي حي ${liveCount?`(${liveCount})`:''}</div><div class="fc-desc">تنافس الآن</div></div>
-    <div class="feature-card" onclick="go('exams')"><div class="fc-icon">📝</div><div class="fc-name">محاكاة امتحان</div><div class="fc-desc">من قائمة الامتحانات</div></div>
-    <div class="feature-card" onclick="go('games','','hub')"><div class="fc-icon">🔬</div><div class="fc-name">المختبر</div><div class="fc-desc">ألعاب وتجارب</div></div>
+    <div class="feature-card" onclick="go('promises')"><div class="fc-icon">🤝</div><div class="fc-name">الوعد التعليمي</div><div class="fc-desc">التزم بهدف واضح</div></div>
+    <div class="feature-card" onclick="go('liveChallenge')"><div class="fc-icon">⚡</div><div class="fc-name">تحدي حي ${liveCount?`(${liveCount})`:''}</div><div class="fc-desc">تنافس لحظي</div></div>
+    <div class="feature-card" onclick="go('exams')"><div class="fc-icon">📝</div><div class="fc-name">محاكاة امتحان</div><div class="fc-desc">تدرّب بلا خوف</div></div>
+    <div class="feature-card" onclick="go('games','','hub')"><div class="fc-icon">🎮</div><div class="fc-name">الألعاب التعليمية</div><div class="fc-desc">10 ألعاب تفاعلية</div></div>
+  </div>
+  <h3 style="margin:22px 0 12px;font-weight:900">📚 المحتوى والدراسة</h3>
+  <div class="feature-grid">
+    <div class="feature-card" onclick="go('home')"><div class="fc-icon">🎬</div><div class="fc-name">دروس الفيديو</div><div class="fc-desc">شاهد وتعلّم</div></div>
+    <div class="feature-card" onclick="go('library')"><div class="fc-icon">📖</div><div class="fc-name">المكتبة</div><div class="fc-desc">ملفات ومراجع</div></div>
+    <div class="feature-card" onclick="go('news')"><div class="fc-icon">📰</div><div class="fc-name">الأخبار والاستطلاعات</div><div class="fc-desc">آخر التحديثات</div></div>
+    <div class="feature-card" onclick="go('myStats')"><div class="fc-icon">📊</div><div class="fc-name">إحصائياتي</div><div class="fc-desc">تقدمك بالأرقام</div></div>
+    <div class="feature-card" onclick="go('myFavs')"><div class="fc-icon">⭐</div><div class="fc-name">المفضلة</div><div class="fc-desc">دروسك المحفوظة</div></div>
+    <div class="feature-card" onclick="go('myCodes')"><div class="fc-icon">🔑</div><div class="fc-name">أكوادي</div><div class="fc-desc">الأكواد المفعّلة</div></div>
+  </div>
+  <h3 style="margin:22px 0 12px;font-weight:900">🛡️ الحساب والأمان</h3>
+  <div class="feature-grid">
+    <div class="feature-card" onclick="go('settings')"><div class="fc-icon">⚙️</div><div class="fc-name">الإعدادات</div><div class="fc-desc">الملف الشخصي</div></div>
+    <div class="feature-card" onclick="go('settingsGrade')"><div class="fc-icon">🎓</div><div class="fc-name">صفي الدراسي</div><div class="fc-desc">تحديد المرحلة</div></div>
+    <div class="feature-card" onclick="go('settingsPass')"><div class="fc-icon">🔐</div><div class="fc-name">كلمة المرور</div><div class="fc-desc">طلب تغيير آمن</div></div>
+    <div class="feature-card" onclick="go('settingsSupport')"><div class="fc-icon">📩</div><div class="fc-name">الدعم الفني</div><div class="fc-desc">تواصل معنا</div></div>
+    <div class="feature-card" onclick="toggleTheme()"><div class="fc-icon">🌙</div><div class="fc-name">الوضع الليلي</div><div class="fc-desc">مريح للعين</div></div>
+    <div class="feature-card" onclick="enableNotifications()"><div class="fc-icon">🔔</div><div class="fc-name">الإشعارات</div><div class="fc-desc">فعّل التنبيهات</div></div>
   </div>`;
 }
-Object.assign(window,{go,out,approveUser,rejectUser,vAdminPending,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,exportCodesPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,sendSupportTicket,setSupportStatus,deleteSupportTicket,reopenStudentExam,replySupportTicket,updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,previewNewsImage,filterStudents,delNoti,clearAllMyNotis,enableNotifications,requestPasswordChange,setStatsFilter,filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,quickEditExam,recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,banStudent,unbanStudent,outBan,toggleStudentMenu,delCode,resetStudentProgress,openGame,openLabHub,openLab,openFree,gameBack,labBack,labPick,labUndo,labClear,labTool,labRun,labNext,freePick,freeTool,freeRun,freeReset,rushStart,rushAnswer,builderStart,builderAdd,builderUndo,builderReset,breakerStart,breakerPick,scaleStart,scaleStep,scaleCheck,reactStart,reactAnswer,raceStart,raceAnswer,crosswordStart,crosswordInput,crosswordSubmit,wheelStart,wheelSpin,wheelAnswer,guessStart,guessReveal,guessAnswer,sniperStart,sniperShoot,balanceStart,balanceSetCoef,balanceSetCoefActive,balancePromptCoef,balanceCheck,balanceNext,reloadStudents,vGames,toggleLab,removeFromLeaderboard,cycleQuality,cycleNativeQuality,toggleAccessType,savePlatformMessage,deletePlatformMessage,dismissPlatformMessage,startEditNews,cancelEditNews,saveEditedNews,votePoll,editPollForNews,deletePoll,showNewsViewers,startEditNoti,cancelEditNoti,saveEditedNoti,loadAllNotificationsForAdmin,delNotiAdmin,handleGlobalSearch,goToQuestion,selectExamOption,selectExamText,nextExamQuestion,prevExamQuestion,toggleExamFlag,launchConfetti,showExamRules,toggleFocusMode,saveGradeGate,approvePasswordChange,rejectPasswordChange,onNotiTargetChange,filterLabPlayers,reloadLabPlayers,createPromise,completePromise,failPromise,createLiveChallenge,startLiveChallenge,endLiveChallenge,deleteLiveChallenge,answerLiveChallenge,openExamSimulation,vFeaturesHub,vKnowledgeMap,vTimeline,vPromises,vLiveChallengeStudent,vLiveChallengeResults,vAdminLiveChallenge});
+Object.assign(window,{go,out,vNewGame,ngEqCheck,ngEqStep,ngGaugeCheck,ngGaugeSet,ngClassify,ngPickPool,ngAnswer,approveUser,rejectUser,vAdminPending,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,exportCodesPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,sendSupportTicket,setSupportStatus,deleteSupportTicket,reopenStudentExam,replySupportTicket,updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,previewNewsImage,filterStudents,delNoti,clearAllMyNotis,enableNotifications,requestPasswordChange,setStatsFilter,filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,quickEditExam,recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,banStudent,unbanStudent,outBan,toggleStudentMenu,delCode,resetStudentProgress,openGame,openLabHub,openLab,openFree,gameBack,labBack,labPick,labUndo,labClear,labTool,labRun,labNext,freePick,freeTool,freeRun,freeReset,rushStart,rushAnswer,builderStart,builderAdd,builderUndo,builderReset,breakerStart,breakerPick,scaleStart,scaleStep,scaleCheck,reactStart,reactAnswer,raceStart,raceAnswer,crosswordStart,crosswordInput,crosswordSubmit,wheelStart,wheelSpin,wheelAnswer,guessStart,guessReveal,guessAnswer,sniperStart,sniperShoot,balanceStart,balanceSetCoef,balanceSetCoefActive,balancePromptCoef,balanceCheck,balanceNext,reloadStudents,vGames,toggleLab,removeFromLeaderboard,cycleQuality,cycleNativeQuality,toggleAccessType,savePlatformMessage,deletePlatformMessage,dismissPlatformMessage,startEditNews,cancelEditNews,saveEditedNews,votePoll,editPollForNews,deletePoll,showNewsViewers,startEditNoti,cancelEditNoti,saveEditedNoti,loadAllNotificationsForAdmin,delNotiAdmin,handleGlobalSearch,goToQuestion,selectExamOption,selectExamText,nextExamQuestion,prevExamQuestion,toggleExamFlag,launchConfetti,showExamRules,toggleFocusMode,saveGradeGate,approvePasswordChange,rejectPasswordChange,onNotiTargetChange,filterLabPlayers,reloadLabPlayers,createPromise,completePromise,failPromise,createLiveChallenge,startLiveChallenge,endLiveChallenge,deleteLiveChallenge,answerLiveChallenge,openExamSimulation,vFeaturesHub,vKnowledgeMap,vTimeline,vPromises,vLiveChallengeStudent,vLiveChallengeResults,vAdminLiveChallenge});
 window.__bootAfterUnban=async function(){try{showingBan=false;if(U){if(!A&&!IS_SUPERVISOR){const phoneKey=normPhone(myPhone||'');const pb=phoneKey?await G('bansByPhone/'+phoneKey):null;const b=await G('bans/'+U.uid);if(pb){renderBanned(pb);return}if(b){renderBanned(b);return}}render(true);renderGradeGate()}else{render(true);renderGradeGate()}hideOverlay()}catch(e){try{render(true);renderGradeGate()}catch(_){}}};
 window.addEventListener('error',e=>{try{console.warn('Global error:',e.message)}catch(_){}});
 window.addEventListener('unhandledrejection',e=>{try{console.warn('Unhandled rejection:',e.reason)}catch(_){}});
