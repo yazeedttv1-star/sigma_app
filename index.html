@@ -9,7 +9,7 @@
 <meta name="keywords" content="منصة سيجما, تعليم, امتحانات إلكترونية, دروس فيديو, مختبر كيمياء, تعليم تفاعلي, مصر, ابتدائي, إعدادي, ثانوي">
 <meta name="author" content="منصة سيجما التعليمية">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="application-version" content="7.5.0">
+<meta name="application-version" content="7.5.1">
 <meta name="theme-color" content="#5b5bd6">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -743,7 +743,7 @@ import{getMessaging,getToken,onMessage,isSupported}from"https://www.gstatic.com/
   });
 })();
 
-const APP_VERSION='7.5.0';
+const APP_VERSION='7.5.1';
 
 /* ============================================================
    RECOMMENDED FIREBASE REALTIME DATABASE RULES (apply in console)
@@ -873,7 +873,7 @@ let activityLog={},activityLogUnsub=null;
 let messageViewers={},messageViewersUnsub=null;
 let allPollVotes={},pollVotesUnsubs=[];
 let adminNewsViewers={},adminNewsViewersUnsubs=[];
-const LAB_KEYS=[['steps','ترتيب الخطوات'],['toolpick','اختر الأداة الصحيحة'],['eqmatch','طابق المعادلة'],['tfquick','صح أم خطأ السريع'],['fillblank','أكمل الجملة العلمية'],['conceptmap','خريطة المفاهيم'],['gauge','ميزان الحرارة/الضغط'],['classify','تصنيف العناصر'],['foodchain','سلسلة غذائية'],['minilab','تجربة افتراضية مصغرة']];
+const LAB_KEYS=[['lab','المختبر الافتراضي'],['free','طلع الكيميائي اللي جواك'],['steps','ترتيب الخطوات'],['toolpick','اختر الأداة الصحيحة'],['eqmatch','طابق المعادلة'],['tfquick','صح أم خطأ السريع'],['fillblank','أكمل الجملة العلمية'],['conceptmap','خريطة المفاهيم'],['gauge','ميزان الحرارة/الضغط'],['classify','تصنيف العناصر'],['foodchain','سلسلة غذائية'],['minilab','تجربة افتراضية مصغرة']];
 const isLabOn=k=>labEnabled?.[k]!==false;
 const LAB_EXPERIMENTS={chemistry:[{elements:['mg'],tool:'flame',formula:'2Mg + O₂ → 2MgO',result:'ضوء أبيض ساطع + مسحوق أبيض (أكسيد المغنيسيوم)',desc:'احتراق شريط المغنيسيوم في الهواء',scenario:'جرب احتراق المغنيسيوم في الهواء'},{elements:['na'],tool:'flame',formula:'4Na + O₂ → 2Na₂O',result:'لهب أصفر + مسحوق أبيض (أكسيد الصوديوم)',desc:'احتراق الصوديوم في الهواء',scenario:'جرب احتراق الصوديوم'},{elements:['s'],tool:'flame',formula:'S + O₂ → SO₂',result:'لهب أزرق + غاز ثاني أكسيد الكبريت',desc:'احتراق الكبريت في الهواء',scenario:'جرب احتراق الكبريت'},{elements:['c'],tool:'flame',formula:'C + O₂ → CO₂',result:'لهب أحمر + غاز ثاني أكسيد الكربون',desc:'احتراق الكربون في الهواء',scenario:'جرب احتراق الكربون'},{elements:['cu'],tool:'flame',formula:'2Cu + O₂ → 2CuO',result:'طبقة سوداء على سطح النحاس (أكسيد النحاس)',desc:'احتراق النحاس في الهواء',scenario:'جرب احتراق النحاس'},{elements:['ca'],tool:'flame',formula:'2Ca + O₂ → 2CaO',result:'لهب أحمر برتقالي + مسحوق أبيض (أكسيد الكالسيوم)',desc:'احتراق الكالسيوم في الهواء',scenario:'جرب احتراق الكالسيوم'},{elements:['fe'],tool:'water',formula:'4Fe + 3O₂ + H₂O → 2Fe₂O₃·H₂O',result:'طبقة بنية (صدأ الحديد)',desc:'صدأ الحديد في وجود الهواء والماء',scenario:'اترك الحديد في الماء والهواء'},{elements:['zn','hcl'],tool:'mix',formula:'Zn + 2HCl → ZnCl₂ + H₂',result:'فقاعات غاز الهيدروجين + كلوريد الزنك',desc:'تفاعل الزنك مع حمض الهيدروكلوريك',scenario:'أضف الزنك إلى حمض HCl'},{elements:['h','o'],tool:'spark',formula:'2H₂ + O₂ → 2H₂O',result:'انفجار خفيف + ماء',desc:'احتراق الهيدروجين في الأكسجين',scenario:'أضف شرارة لخليط الهيدروجين والأكسجين'},{elements:['n','h'],tool:'heat',formula:'N₂ + 3H₂ → 2NH₃',result:'غاز الأمونيا (رائحة نفاذة)',desc:'تحضير الأمونيا بضغط وحرارة',scenario:'اضغط الهيدروجين والنيتروجين'}],physics:[{elements:['battery','lamp','wire'],tool:'connect',formula:'دائرة كهربائية بسيطة',result:'يضيء المصباح!',desc:'توصيل البطارية بالمصباح بالسلك',scenario:'صلح الدائرة الكهربائية'},{elements:['battery','lamp','wire','wire'],tool:'connect',formula:'توصيل على التوازي',result:'المصباحان يضيئان بنفس السطوع',desc:'توصيل مصباحين على التوازي',scenario:'صلح دائرة على التوازي'},{elements:['magnet','wire','battery'],tool:'connect',formula:'مغناطيس كهربائي',result:'مجال مغناطيسي حول السلك',desc:'صناعة مغناطيس كهربائي',scenario:'اصنع مغناطيساً كهربائياً'},{elements:['mirror','light'],tool:'reflect',formula:'انعكاس الضوء',result:'الضوء يرتد بنفس الزاوية',desc:'قانون الانعكاس',scenario:'جرب انعكاس الضوء على المرآة'},{elements:['battery','lamp'],tool:'connect',formula:'تحويل الطاقة',result:'طاقة كيميائية → كهربائية → ضوئية',desc:'تحولات الطاقة في الدائرة',scenario:'تتبع تحولات الطاقة'}],biology:[{elements:['pea_purple','pea_white'],tool:'cross',formula:'A × a → Aa',result:'نباتات بنفسجية (صفة سائدة)',desc:'قانون مندل الأول',scenario:'ازرع بذور مندل'},{elements:['adrenaline'],tool:'inject',formula:'هرمون الأدرينالين',result:'زيادة سرعة ضربات القلب + اتساع حدقة العين',desc:'تأثير هرمون الأدرينالين',scenario:'جرب تأثير الأدرينالين'},{elements:['neuron','stimulus'],tool:'trigger',formula:'الجهاز العصبي',result:'استجابة سريعة للفعل المنعكس',desc:'رد الفعل المنعكس',scenario:'اثبت أن رد الفعل لا إرادي'},{elements:['flower','bee'],tool:'pollinate',formula:'التلقيح',result:'تكوين بذور جديدة',desc:'التلقيح في النبات',scenario:'ساعد النحلة في التلقيح'},{elements:['dna','rna'],tool:'transcribe',formula:'DNA → RNA → بروتين',result:'تصنيع بروتين جديد',desc:'عملية الترجمة الوراثية',scenario:'جرب نسخ DNA'}]};
 const LAB_ELEMENT_LABELS={h:'H₂',o:'O₂',na:'Na',cl:'Cl₂',c:'C',fe:'Fe',mg:'Mg',zn:'Zn',cu:'Cu',s:'S',n:'N₂',ca:'Ca',hcl:'HCl',battery:'بطارية',lamp:'مصباح',wire:'سلك',magnet:'مغناطيس',mirror:'مرآة',light:'ضوء',pea_purple:'بذرة بنفسجية',pea_white:'بذرة بيضاء',adrenaline:'أدرينالين',neuron:'عصبون',stimulus:'مؤثر',flower:'زهرة',bee:'نحلة',dna:'DNA',rna:'RNA'};
@@ -900,20 +900,33 @@ const STEPS_DATA=[
 {title:'دورة الماء',steps:['تبخّر الماء','تكوّن السحب','هطول الأمطار','تجمّع الماء'],order:[0,1,2,3]},
 {title:'تحضير الأكسجين',steps:['سخّن كلورات البوتاسيوم','يتصاعد غاز الأكسجين','اجمع الغاز بإزاحة الماء','اختبر بالشظية المتوهجة'],order:[0,1,2,3]},
 {title:'الهضم في الإنسان',steps:['مضغ الطعام في الفم','الهضم في المعدة','امتصاص في الأمعاء','إخراج الفضلات'],order:[0,1,2,3]},
-{title:'صناعة المغناطيس الكهربائي',steps:['لف سلك نحاسي حول مسمار','وصل طرفي السلك ببطارية','يمر تيار فيتسامح المجال','يصبح المسمار مغناطيساً'],order:[0,1,2,3]}
+{title:'صناعة المغناطيس الكهربائي',steps:['لف سلك نحاسي حول مسمار','وصل طرفي السلك ببطارية','يمر تيار فيتسامح المجال','يصبح المسمار مغناطيساً'],order:[0,1,2,3]},
+{title:'البناء الضوئي',steps:['امتصاص الضوء بالكلوروفيل','أخذ CO₂ من الهواء','تحليل الماء','إنتاج الجلوكوز والأكسجين'],order:[0,1,2,3]},
+{title:'دورة الصخر',steps:['تكوين صخر ناري','تجوية وتعرية','ترسّب','تحول بالضغط والحرارة'],order:[0,1,2,3]},
+{title:'تجربة فصل مخلوط',steps:['ضع المخلوط في ورق ترشيح','صب ماء','اجمع الراشح','جفف المتبقي'],order:[0,1,2,3]},
+{title:'انعكاس الضوء',steps:['وجّه شعاعاً على مرآة','قس زاوية السقوط','قس زاوية الانعكاس','قارن الزاويتين'],order:[0,1,2,3]}
 ];
 const TOOL_DATA=[
 {q:'قياس درجة حرارة سائل',opts:['ترمومتر','مسطرة','ميزان','ساعة إيقاف'],c:0},
 {q:'قياس كتلة جسم',opts:['مسطرة','ميزان حساس','مخبار مدرج','بوصلة'],c:1},
 {q:'قياس حجم سائل',opts:['مخبار مدرج','ترمومتر','منقلة','عدسة'],c:0},
 {q:'رصد اتجاه الشمال',opts:['ساعة','بوصلة','ميزان','منظار'],c:1},
-{q:'تكبير الأجسام الدقيقة',opts:['عدسة محدبة / مجهر','مرآة مستوية','منشور','سلك'],c:0}
+{q:'تكبير الأجسام الدقيقة',opts:['عدسة محدبة / مجهر','مرآة مستوية','منشور','سلك'],c:0},
+{q:'قياس الزمن بدقة',opts:['ساعة إيقاف','ميزان','مسطرة','ترمومتر'],c:0},
+{q:'فصل برادة الحديد من الرمل',opts:['مغناطيس','مصفاة','ورق ترشيح','سخان'],c:0},
+{q:'قياس طول سلك',opts:['مسطرة أو متر','ميزان','مخبار','بوصلة'],c:0},
+{q:'الكشف عن وجود تيار كهربائي',opts:['مصباح أو أميتر','ميزان','مرآة','عدسة'],c:0},
+{q:'قياس زاوية',opts:['منقلة','مسطرة','ميزان','ترمومتر'],c:0}
 ];
 const EQ_MATCH=[
 {left:['H₂','O₂'],right:['H₂O'],coef:[2,1,2],name:'تكوين الماء'},
 {left:['C','O₂'],right:['CO₂'],coef:[1,1,1],name:'احتراق الكربون'},
 {left:['N₂','H₂'],right:['NH₃'],coef:[1,3,2],name:'تكوين الأمونيا'},
-{left:['Mg','O₂'],right:['MgO'],coef:[2,1,2],name:'أكسيد المغنيسيوم'}
+{left:['Mg','O₂'],right:['MgO'],coef:[2,1,2],name:'أكسيد المغنيسيوم'},
+{left:['Fe','O₂'],right:['Fe₂O₃'],coef:[4,3,2],name:'أكسيد الحديد'},
+{left:['S','O₂'],right:['SO₂'],coef:[1,1,1],name:'ثاني أكسيد الكبريت'},
+{left:['Zn','HCl'],right:['ZnCl₂','H₂'],coef:[1,2,1,1],name:'زنك مع حمض'},
+{left:['Na','Cl₂'],right:['NaCl'],coef:[2,1,2],name:'ملح الطعام'}
 ];
 const TF_QUICK=[
 {q:'الماء مركب من الهيدروجين والأكسجين',a:true},
@@ -925,41 +938,67 @@ const TF_QUICK=[
 {q:'النبات لا يقوم بعملية البناء الضوئي',a:false},
 {q:'الخلية وحدة بناء الكائن الحي',a:true},
 {q:'الملح مركب أيوني',a:true},
-{q:'الزئبق فلز سائل في درجة الحرارة العادية',a:true}
+{q:'الزئبق فلز سائل في درجة الحرارة العادية',a:true},
+{q:'النيتروجين يكون حوالي 78% من الهواء',a:true},
+{q:'الحرارة شكل من أشكال الطاقة',a:true},
+{q:'الفلزات رديئة التوصيل للكهرباء',a:false},
+{q:'التكثف هو تحول الغاز إلى سائل',a:true},
+{q:'الشمس مصدر الطاقة الرئيسي للأرض',a:true},
+{q:'البروتون شحنته سالبة',a:false},
+{q:'الماء يغلي عند 100°م عند الضغط الجوي العادي',a:true},
+{q:'العدسة المحدبة تجمّع الأشعة',a:true},
+{q:'الأميبا كائن وحيد الخلية',a:true},
+{q:'ثاني أكسيد الكربون يدعم الاشتعال',a:false}
 ];
 const FILL_DATA=[
 {q:'عملية تحوّل السائل إلى غاز تُسمى .....',opts:['التبخر','التكثف','التجمد','الذوبان'],c:0},
 {q:'الرمز الكيميائي للماء هو .....',opts:['H₂O','CO₂','O₂','NaCl'],c:0},
 {q:'وحدة قياس القوة هي .....',opts:['نيوتن','متر','ثانية','كجم'],c:0},
 {q:'غاز ..... ضروري لعملية التنفس',opts:['الأكسجين','النيتروجين','الهيدروجين','الهيليوم'],c:0},
-{q:'عملية صناعة الغذاء في النبات تُسمى .....',opts:['البناء الضوئي','التنفس','التخمر','الهضم'],c:0}
+{q:'عملية صناعة الغذاء في النبات تُسمى .....',opts:['البناء الضوئي','التنفس','التخمر','الهضم'],c:0},
+{q:'الرمز الكيميائي لثاني أكسيد الكربون .....',opts:['CO₂','CO','C₂O','O₂C'],c:0},
+{q:'وحدة قياس الطاقة الكهربائية المستهلكة .....',opts:['كيلو وات ساعة','نيوتن','أمبير','فولت'],c:0},
+{q:'المادة التي لها شكل وحجم ثابتان هي في الحالة .....',opts:['الصلبة','السائلة','الغازية','البلازما'],c:0},
+{q:'الجهاز المسؤول عن نقل الدم هو .....',opts:['القلب','الرئة','الكبد','المعدة'],c:0},
+{q:'أصغر جزء من العنصر يحمل خصائصه هو .....',opts:['الذرة','الجزيء','الأيون','المخلوط'],c:0}
 ];
 const CONCEPT_DATA=[
 {title:'تحوّلات المادة',items:['صلب','ينصهر','سائل','يتبخر','غاز'],order:[0,1,2,3,4]},
-{title:'دورة الصخر',items:['صخر ناري','تجوية', 'رسوبي','تحول','متحول'],order:[0,1,2,3,4]},
-{title:'مسار الضوء',items:['مصدر ضوء','سقوط','انعكاس','عين الراصد'],order:[0,1,2,3]}
+{title:'دورة الصخر',items:['صخر ناري','تجوية','رسوبي','تحول','متحول'],order:[0,1,2,3,4]},
+{title:'مسار الضوء',items:['مصدر ضوء','سقوط','انعكاس','عين الراصد'],order:[0,1,2,3]},
+{title:'دورة الماء',items:['تبخر','تكثف','هطول','جريان'],order:[0,1,2,3]},
+{title:'سلسلة الطاقة',items:['الشمس','نبات','حيوان آكل عشب','حيوان مفترس'],order:[0,1,2,3]}
 ];
 const GAUGE_DATA=[
 {q:'درجة غليان الماء النقي عند الضغط الجوي',unit:'°م',min:0,max:120,answer:100,tol:3},
 {q:'درجة تجمد الماء',unit:'°م',min:-20,max:40,answer:0,tol:2},
 {q:'درجة حرارة جسم الإنسان الطبيعية تقريباً',unit:'°م',min:30,max:42,answer:37,tol:1},
-{q:'الضغط الجوي التقريبي عند سطح البحر',unit:'ملم زئبق',min:700,max:800,answer:760,tol:10}
+{q:'الضغط الجوي التقريبي عند سطح البحر',unit:'ملم زئبق',min:700,max:800,answer:760,tol:10},
+{q:'سرعة الضوء تقريباً (×100000 كم/ث)',unit:'',min:1,max:5,answer:3,tol:0},
+{q:'نسبة الأكسجين في الهواء تقريباً',unit:'%',min:10,max:40,answer:21,tol:2}
 ];
 const CLASSIFY_DATA=[
-{items:[{t:'حديد',g:'فلز'},{t:'كبريت',g:'لا فلز'},{t:'سيليكون',g:'شبه فلز'},{t:'نحاس',g:'فلز'},{t:'أكسجين',g:'لا فلز'},{t:'صوديوم',g:'فلز'}],groups:['فلز','لا فلز','شبه فلز']},
-{items:[{t:'H',g:'غاز'},{t:'Hg',g:'سائل'},{t:'Fe',g:'صلب'},{t:'Br',g:'سائل'},{t:'O',g:'غاز'},{t:'C',g:'صلب'}],groups:['صلب','سائل','غاز']}
+{items:[{t:'حديد',g:'فلز'},{t:'كبريت',g:'لا فلز'},{t:'سيليكون',g:'شبه فلز'},{t:'نحاس',g:'فلز'},{t:'أكسجين',g:'لا فلز'},{t:'صوديوم',g:'فلز'},{t:'كربون',g:'لا فلز'},{t:'ذهب',g:'فلز'}],groups:['فلز','لا فلز','شبه فلز']},
+{items:[{t:'H',g:'غاز'},{t:'Hg',g:'سائل'},{t:'Fe',g:'صلب'},{t:'Br',g:'سائل'},{t:'O',g:'غاز'},{t:'C',g:'صلب'},{t:'N',g:'غاز'},{t:'Na',g:'صلب'}],groups:['صلب','سائل','غاز']},
+{items:[{t:'قلب',g:'جهاز دوري'},{t:'رئة',g:'جهاز تنفسي'},{t:'معدة',g:'جهاز هضمي'},{t:'شرايين',g:'جهاز دوري'},{t:'قصبة هوائية',g:'جهاز تنفسي'},{t:'أمعاء',g:'جهاز هضمي'}],groups:['جهاز دوري','جهاز تنفسي','جهاز هضمي']}
 ];
 const FOOD_DATA=[
 {title:'سلسلة الحقل',chain:['عشب','جرادة','ضفدع','ثعبان','صقر']},
 {title:'سلسلة بحرية',chain:['طحالب','سمك صغير','سمك كبير','قرش']},
-{title:'سلسلة الغابة',chain:['أوراق','يرقة','طائر','ثعلب']}
+{title:'سلسلة الغابة',chain:['أوراق','يرقة','طائر','ثعلب']},
+{title:'سلسلة الصحراء',chain:['نبات صحراوي','حشرة','سحلية','ثعبان']}
 ];
 const MINILAB_DATA=[
-{q:'سخّن سكر مع حمض كبريتيك مركز',opts:['تفحم السكر (كربون)', 'لا يحدث شيء','يتبخر السكر فقط'],c:0},
-{q:'أضف قطعة ماغنسيوم إلى حمض HCl',opts:['فقاعات هيدروجين','يتحول لونه للأزرق','لا تفاعل'],c:0},
-{q:'مرّر تياراً في سلك ملفوف حول مسمار حديد',opts:['مغناطيس كهربائي','يسخن فقط','ينصهر المسمار'],c:0},
-{q:'قرّب شظية متوهجة من أنبوبة أكسجين',opts:['تشتعل بشدة','تنطفئ فوراً','لا تتغير'],c:0}
+{q:'سخّن سكر مع حمض كبريتيك مركز',opts:['تفحم السكر (كربون)','لا يحدث شيء','يتبخر السكر فقط','يتحول لماء'],c:0},
+{q:'أضف قطعة ماغنسيوم إلى حمض HCl',opts:['فقاعات هيدروجين','يتحول لونه للأزرق','لا تفاعل','يتجمد الحمض'],c:0},
+{q:'مرّر تياراً في سلك ملفوف حول مسمار حديد',opts:['مغناطيس كهربائي','يسخن فقط','ينصهر المسمار','لا تأثير'],c:0},
+{q:'قرّب شظية متوهجة من أنبوبة أكسجين',opts:['تشتعل بشدة','تنطفئ فوراً','لا تتغير','تتحول لونها أخضر'],c:0},
+{q:'أضف يود إلى نشا',opts:['لون أزرق داكن','لون أحمر','لا تغير','فقاعات'],c:0},
+{q:'امزج خل مع بيكربونات صوديوم',opts:['فوران وغاز CO₂','لا تفاعل','يتجمد','لهب'],c:0},
+{q:'سخّن كبريت في الهواء',opts:['لهب أزرق وغاز SO₂','ينصهر فقط','لا يتغير','ينفجر'],c:0},
+{q:'صل مصباحاً ببطارية بسلكين',opts:['يضيء المصباح','لا يضيء','ينفجر','يسخن السلك فقط'],c:0}
 ];
+
 
 const REACTIONS_RUSH=[{q:'2H₂ + O₂',opts:['2H₂O','H₂O₂','HO','OH'],c:0},{q:'C + O₂',opts:['CO','CO₂','C₂O','O₂C'],c:1},{q:'Na + Cl₂',opts:['NaCl₂','Na₂Cl','2NaCl','NaCl'],c:2},{q:'4Fe + 3O₂',opts:['Fe₂O₃','2Fe₂O₃','FeO','Fe₃O₄'],c:1},{q:'2Mg + O₂',opts:['MgO','2MgO','MgO₂','Mg₂O'],c:1},{q:'S + O₂',opts:['SO₂','SO₃','S₂O','SO'],c:0},{q:'2Ca + O₂',opts:['CaO','CaO₂','2CaO','Ca₂O'],c:2},{q:'N₂ + 3H₂',opts:['NH₃','2NH₃','N₂H₄','HNO₃'],c:1},{q:'Zn + 2HCl',opts:['ZnCl₂ + H₂','ZnCl + H','ZnH₂ + Cl₂','ZnCl₃ + H₂'],c:0},{q:'CaCO₃ + 2HCl',opts:['CaCl₂ + H₂O + CO₂','CaCl + HCO₃','CaO + HCl','CaH₂ + CO₃'],c:0}];
 const MOLECULES=[{name:'ماء',formula:'H₂O',need:{H:2,O:1}},{name:'ثاني أكسيد الكربون',formula:'CO₂',need:{C:1,O:2}},{name:'أمونيا',formula:'NH₃',need:{N:1,H:3}},{name:'ميثان',formula:'CH₄',need:{C:1,H:4}},{name:'ملح الطعام',formula:'NaCl',need:{Na:1,Cl:1}},{name:'أكسيد المغنيسيوم',formula:'MgO',need:{Mg:1,O:1}}];
@@ -1189,7 +1228,26 @@ function bottomBar(){const on=k=>S.v===k||(k==='home'&&['teacher','code','watch'
 function toggleTheme(){document.documentElement.classList.toggle('dark');store.set(THEME_KEY,document.documentElement.classList.contains('dark')?'dark':'light');render(true)}
 function backBtn(target){return`<button class="s" onclick="${target}" style="margin-bottom:16px">← رجوع</button>`}
 function vSettingsGrade(){if(A||IS_SUPERVISOR)return vSettings();return`${backBtn("go('settings')")}<div class="box"><h2>🎓 تغيير الصف</h2><p style="color:var(--tx2);margin-bottom:10px;font-weight:600">اختر صفك الدراسي.</p><select id="student-grade"><option value="">اختر الصف</option>${ALL_GRADES.map(g=>`<option value="${esc(g)}" ${userGrade===g?'selected':''}>${esc(g)}</option>`).join('')}</select><button onclick="saveStudentGrade()" style="width:100%">حفظ الصف</button></div>`}
-function vSettingsPass(){return`${backBtn("go('settings')")}<div class="box"><h2>🔐 تغيير كلمة المرور</h2><div class="notice">لأسباب أمنية، سيتم إرسال طلب تغيير كلمة المرور للإدارة للموافقة عليه. ستصلك رسالة عند الموافقة.</div><label for="new-pass">كلمة المرور الجديدة</label><input type="password" id="new-pass" autocomplete="new-password" placeholder="••••••••"><label for="confirm-pass">تأكيد كلمة المرور</label><input type="password" id="confirm-pass" autocomplete="new-password" placeholder="••••••••"><button onclick="requestPasswordChange()" style="width:100%">إرسال طلب التغيير</button></div>`}
+async function vSettingsPass(){
+  let req=null;
+  try{req=await G('passwordChangeRequests/'+U.uid)}catch(e){}
+  let applyBox='';
+  if(req&&req.status==='approved'&&req.newPass){
+    applyBox=`<div class="box" style="border:2px solid var(--ok);margin-bottom:16px"><h2 style="color:var(--ok)">✅ طلبك موافق عليه</h2>
+      <p style="font-weight:600;margin-bottom:12px;color:var(--tx-2)">أدخل كلمة المرور <b>الحالية</b> لتفعيل كلمة المرور الجديدة التي طلبتها.</p>
+      <label for="current-pass-apply">كلمة المرور الحالية</label>
+      <input type="password" id="current-pass-apply" autocomplete="current-password" placeholder="••••••••">
+      <button class="g btn-glass" style="width:100%" onclick="applyApprovedPassword()">تفعيل كلمة المرور الجديدة</button>
+    </div>`;
+  }else if(req&&req.status==='pending'){
+    applyBox=`<div class="notice" style="margin-bottom:14px">⏳ طلبك قيد مراجعة الإدارة منذ ${fd(req.requestedAt)}</div>`;
+  }else if(req&&req.status==='applied'){
+    applyBox=`<div class="notice" style="margin-bottom:14px;border-color:var(--ok)">✅ تم تطبيق آخر تغيير لكلمة المرور بنجاح.</div>`;
+  }else if(req&&req.status==='rejected'){
+    applyBox=`<div class="err-box" style="margin-bottom:14px">تم رفض الطلب السابق${req.rejectReason?' — '+esc(req.rejectReason):''}. يمكنك إرسال طلب جديد.</div>`;
+  }
+  return`${backBtn("go('settings')")}${applyBox}<div class="box"><h2>🔐 تغيير كلمة المرور</h2><div class="notice">لأسباب أمنية، يُرسل الطلب للإدارة أولاً. بعد الموافقة ستظهر لك هنا خانة لتفعيل كلمة المرور الجديدة.</div><label for="new-pass">كلمة المرور الجديدة</label><input type="password" id="new-pass" autocomplete="new-password" placeholder="••••••••"><label for="confirm-pass">تأكيد كلمة المرور</label><input type="password" id="confirm-pass" autocomplete="new-password" placeholder="••••••••"><button class="btn-glass" onclick="requestPasswordChange()" style="width:100%">إرسال طلب التغيير</button></div>`;
+}
 function vSettingsSupport(){return`${backBtn("go('settings')")}<div class="box"><h2>📩 شكاوى واستفسارات</h2><p style="color:var(--tx2);margin-bottom:12px;font-weight:600">اكتب رسالتك وستصل مباشرة إلى إدارة المنصة.</p><label for="support-subject">عنوان الرسالة</label><input id="support-subject" maxlength="120"><label for="support-message">تفاصيل الرسالة</label><textarea id="support-message" rows="4" maxlength="3000"></textarea><button onclick="sendSupportTicket()" style="width:100%">إرسال للإدارة</button></div>`}
 async function vMyCodes(){if(A||IS_SUPERVISOR)return vSettings();const entries=Object.entries(mineVideos);if(!entries.length)return`${backBtn("go('settings')")}<h2>🔑 أكوادي</h2><div class="mut">لم تستخدم أي كود بعد.</div>`;const rows=[];for(const[vid,code]of entries){const v=videos[vid];if(!v)continue;const log=myLogs[vid]||{};const pct=v.duration?Math.min(100,Math.round((log.seconds||0)/(v.duration*60)*100)):0;rows.push(`<div class="row" style="cursor:default"><div><b>${esc(v.title)}</b><small>${esc(teachers[v.teacherId]?.name||'')} — ${esc(v.grade||'')}</small><div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="font-weight:800;color:var(--brand-700);font-size:13px">الكود المستخدم:</span><span class="code">${esc(code)}</span>${log.completed?'<span class="b g">أكملت المشاهدة</span>':`<span class="b y">${pct}% مشاهدة</span>`}</div></div><button class="s" style="padding:6px 12px;font-size:12px;background:var(--brand-600);color:#fff" onclick="go('watch','${esc(vid)}')">مشاهدة</button></div>`)}return`${backBtn("go('settings')")}<h2>🔑 أكوادي (${entries.length})</h2>${rows.join('')}`}
 function vMyFavs(){const f=favs.get();const ids=Object.keys(f);if(!ids.length)return`${backBtn("go('settings')")}<h2>❤️ المفضلة</h2><div class="mut">لم تضف أي فيديو للمفضلة بعد.</div>`;const list=ids.filter(id=>videos[id]).map(id=>{const v=videos[id];const teacher=teachers[v.teacherId]?.name||'';return`<div class="row"><div onclick="go('${mineVideos[id]||v.free?'watch':'code'}','${esc(id)}')" style="cursor:pointer"><b>${esc(v.title)}</b><small>${esc(teacher)} — ${esc(v.grade||'')}</small></div><button class="s" style="padding:6px 10px;font-size:12px" onclick="event.stopPropagation();toggleFav('${esc(id)}')">إزالة</button></div>`});return`${backBtn("go('settings')")}<h2>❤️ المفضلة (${list.length})</h2>${list.join('')}`}
@@ -1232,10 +1290,101 @@ async function delNews(id){if(!A&&!IS_SUPERVISOR)return toast('غير مصرح')
 async function vAdmin(){if(!A&&!IS_SUPERVISOR)return'<div class="mut">غير مصرح.</div>';const tab=S.tab||'dashboard';const allowedTabs=A?[['dashboard','📊 الرئيسية'],['pending','🆕 طلبات التسجيل'],['videos','🎬 الفيديوهات'],['news','📰 الأخبار'],['teachers','👨‍🏫 المدرسون'],['library','📚 المكتبة'],['students','👥 الطلاب'],['exams','📝 الامتحانات'],['support','📩 الشكاوى'],['send_notification','🔔 إرسال إشعار'],['platform_message','📢 رسالة المنصة'],['bans','🚫 الحظر'],['autobans','⚠️ حظر تلقائي'],['lab','🔬 المختبر'],['live_challenge','⚡ تحدي حي'],['badge','🏅 صورة التعريف'],['password_requests','🔐 طلبات كلمة المرور'],['notifications_hub','📨 مركز الإشعارات'],['activity','📈 نشاط الطلاب']]:[['dashboard','📊 الرئيسية'],['videos','🎬 الفيديوهات'],['news','📰 الأخبار'],['exams','📝 الامتحانات'],['live_challenge','⚡ تحدي حي'],['platform_message','📢 رسالة المنصة']];const effTab=allowedTabs.some(([k])=>k===tab)?tab:'dashboard';const tb=`<div class="admin-tabs">${allowedTabs.map(([k,n])=>`<button class="${effTab===k?'on':''}" onclick="go('admin','','${k}')">${n}</button>`).join('')}</div>`;if(effTab==='dashboard'){if(!Object.keys(adminUsersList||{}).length)adminUsersList=(await G('users'))||{};return tb+vAdminDashboard()}if(effTab==='teachers')return tb+vAdminTeachers();if(effTab==='library')return tb+vAdminLibrary();if(effTab==='students')return tb+await vAdminStudents();if(effTab==='send_notification')return tb+vSendNotification();if(effTab==='platform_message')return tb+await vAdminPlatformMessage();if(effTab==='exams')return tb+await vAdminExams();if(effTab==='support')return tb+await vAdminSupport();if(effTab==='badge')return tb+vAdminBadge();if(effTab==='bans')return tb+await vAdminBans();if(effTab==='autobans')return tb+await vAdminAutoBans();if(effTab==='lab')return tb+await vAdminLab();if(effTab==='live_challenge')return tb+await vAdminLiveChallenge();if(effTab==='news')return tb+vAdminNews();if(effTab==='pending')return tb+await vAdminPending();if(effTab==='password_requests')return tb+await vAdminPasswordRequests();if(effTab==='notifications_hub')return tb+await vAdminNotificationsHub();if(effTab==='activity')return tb+await vAdminActivity();return tb+vAdminVideos()}
 function vAdminDashboard(){const totalStudents=Object.keys(adminUsersList||{}).length||0;const pendingCount=Object.values(adminUsersList||{}).filter(u=>u&&(u.status==='pending'||u.approved===false)&&!isAdminPhone(u.phone||'')).length;const totalVideos=Object.keys(videos||{}).length||0;const totalExams=Object.keys(exams||{}).length||0;const pendingRequests=Object.values(passwordChangeRequests||{}).filter(r=>r.status==='pending').length;return`${pendingCount?`<div class="notice" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center"><b>🆕 ${pendingCount} طلب تسجيل بانتظار الموافقة</b><button class="g btn-glass" style="padding:6px 14px;font-size:12px" onclick="go('admin','','pending')">مراجعة</button></div>`:''}<div class="stats-summary"><div class="stat-box"><div class="stat-num">${totalStudents}</div><div class="stat-label">إجمالي الطلاب</div></div><div class="stat-box ok"><div class="stat-num">${totalVideos}</div><div class="stat-label">الفيديوهات</div></div><div class="stat-box warn"><div class="stat-num">${totalExams}</div><div class="stat-label">الامتحانات</div></div>${pendingRequests?`<div class="stat-box warn"><div class="stat-num">${pendingRequests}</div><div class="stat-label">طلبات كلمة المرور</div></div>`:''}</div><div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px"><div class="box" style="margin:0;padding:15px;display:flex;justify-content:space-between;align-items:center"><div><b>آخر الأخبار</b></div><button class="s" style="padding:5px 10px;font-size:12px" onclick="go('admin','','news')">عرض الكل</button></div><div class="box" style="margin:0;padding:15px;display:flex;justify-content:space-between;align-items:center"><div><b>أحدث الشكاوى</b></div><button class="s" style="padding:5px 10px;font-size:12px" onclick="go('admin','','support')">عرض الكل</button></div><div class="box" style="margin:0;padding:15px;display:flex;justify-content:space-between;align-items:center"><div><b>مركز الإشعارات</b></div><button class="s" style="padding:5px 10px;font-size:12px" onclick="go('admin','','notifications_hub')">عرض الكل</button></div><div class="box" style="margin:0;padding:15px;display:flex;justify-content:space-between;align-items:center"><div><b>📈 نشاط الطلاب</b></div><button class="s" style="padding:5px 10px;font-size:12px" onclick="go('admin','','activity')">عرض</button></div><div class="box" style="margin:0;padding:15px;display:flex;justify-content:space-between;align-items:center"><div><b>إحصائيات المختبر</b></div><button class="s" style="padding:5px 10px;font-size:12px" onclick="go('admin','','lab')">عرض الكل</button></div>${pendingRequests?`<div class="box" style="margin:0;padding:15px;display:flex;justify-content:space-between;align-items:center;background:var(--warn)"><div><b style="color:#fff">🔐 طلبات كلمة مرور معلقة (${pendingRequests})</b></div><button class="s" style="padding:5px 10px;font-size:12px" onclick="go('admin','','password_requests')">عرض</button></div>`:''}</div>`}
 async function vAdminNotificationsHub(){if(!A)return'<div class="mut">غير مصرح.</div>';await loadAllNotificationsForAdmin();const list=[...adminAllNotifications].sort((a,b)=>(b.created||0)-(a.created||0));const grouped={all:[],personal:[],admin:[]};list.forEach(n=>{if(grouped[n._src])grouped[n._src].push(n)});const renderList=(items,label,src)=>{if(!items.length)return`<div class="mut" style="padding:16px">لا يوجد</div>`;return items.slice(0,200).map(n=>`<div class="noti-item" style="padding:10px"><div class="noti-content"><div class="noti-text" style="font-size:13px">${esc(n.text||'')}</div><div class="noti-date">${fd(n.created)}${n._uid?` · إلى: ${esc(adminUsersList[n._uid]?.name||n._uid.slice(0,8))}`:''}${n.views?` · 👁 ${n.views}`:''}</div></div><div class="noti-actions"><button class="edit-btn" onclick="startEditNoti('${esc(n._key)}','${src}','${esc(n._uid||'')}')">✏️</button><button onclick="delNotiAdmin('${esc(n._key)}','${src}','${esc(n._uid||'')}')">✕</button></div></div>`).join('')};return`<div class="box"><h2>📨 مركز الإشعارات — كل الإشعارات</h2><div class="stats-summary"><div class="stat-box"><div class="stat-num">${grouped.all.length}</div><div class="stat-label">إشعارات عامة</div></div><div class="stat-box ok"><div class="stat-num">${grouped.personal.length}</div><div class="stat-label">إشعارات شخصية</div></div><div class="stat-box warn"><div class="stat-num">${grouped.admin.length}</div><div class="stat-label">إشعارات إدارية</div></div></div><button class="s" style="margin-bottom:14px" onclick="loadAllNotificationsForAdmin().then(()=>render(true))">🔄 تحديث</button><h3 style="color:var(--brand-700);margin:16px 0 10px">📢 إشعارات عامة (لكل الطلاب)</h3>${renderList(grouped.all,'عام','all')}<h3 style="color:var(--brand-700);margin:16px 0 10px">👤 إشعارات شخصية</h3>${renderList(grouped.personal,'شخصي','personal')}<h3 style="color:var(--brand-700);margin:16px 0 10px">🚨 إشعارات إدارية</h3>${renderList(grouped.admin,'إداري','admin')}</div>`}
-async function vAdminActivity(){if(!A)return'<div class="mut">غير مصرح.</div>';const r=await GTry('activityLog');if(!r.ok)return`<div class="err-box">${esc(r.error)}</div>`;const data=r.val||{};const rows=[];Object.entries(data).forEach(([uid,byDay])=>{Object.entries(byDay||{}).forEach(([day,byType])=>{Object.entries(byType||{}).forEach(([type,rec])=>{if(rec)rows.push({uid,day,type,...rec})})})});rows.sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));const byType={};rows.forEach(r=>{byType[r.type]=(byType[r.type]||0)+(r.count||1)});const typeLabels={login:'تسجيل دخول',code_redeem:'فتح كود',watch_video:'مشاهدة فيديو',exam_submit:'تسليم امتحان',poll_vote:'تصويت',platform_message_view:'مشاهدة رسالة المنصة',game_play:'لعب لعبة',lab_done:'إتمام تجربة'};const typeSummary=Object.entries(byType).map(([t,c])=>`<div class="stat-box"><div class="stat-num">${c}</div><div class="stat-label">${typeLabels[t]||t}</div></div>`).join('');const recent=rows.slice(0,100).map(r=>`<tr><td>${esc(r.name||'-')}</td><td dir="ltr">${esc(r.phone||'-')}</td><td>${typeLabels[r.type]||r.type}</td><td>${r.count||1}</td><td>${fd(r.lastAt)}</td></tr>`).join('');return`<div class="box"><h2>📈 نشاط الطلاب</h2><div class="stats-summary">${typeSummary||'<div class="mut">لا نشاط بعد</div>'}</div><h3 style="margin:20px 0 10px">آخر 100 نشاط</h3><div class="tw"><table><thead><tr><th>الطالب</th><th>الهاتف</th><th>النوع</th><th>العدد</th><th>آخر مرة</th></tr></thead><tbody>${recent||'<tr><td colspan="5" class="mut">لا يوجد</td></tr>'}</tbody></table></div></div>`}
+async function vAdminActivity(){
+  if(!A)return'<div class="mut">غير مصرح.</div>';
+  const r=await GTry('activityLog');
+  if(!r.ok)return`<div class="err-box">${esc(r.error)}</div>`;
+  const data=r.val||{};
+  const rows=[];
+  Object.entries(data).forEach(([uid,byDay])=>{
+    Object.entries(byDay||{}).forEach(([day,byType])=>{
+      Object.entries(byType||{}).forEach(([type,rec])=>{
+        if(rec)rows.push({uid,day,type,...rec,path:`activityLog/${uid}/${day}/${type}`});
+      });
+    });
+  });
+  rows.sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));
+  const byType={};
+  rows.forEach(r=>{byType[r.type]=(byType[r.type]||0)+(r.count||1)});
+  const typeLabels={login:'تسجيل دخول',code_redeem:'فتح كود',watch_video:'مشاهدة فيديو',exam_submit:'تسليم امتحان',poll_vote:'تصويت',platform_message_view:'مشاهدة رسالة المنصة',game_play:'لعب لعبة',lab_done:'إتمام تجربة'};
+  const typeSummary=Object.entries(byType).map(([t,c])=>`<div class="stat-box"><div class="stat-num">${c}</div><div class="stat-label">${typeLabels[t]||t}</div></div>`).join('');
+  const recent=rows.slice(0,100).map(r=>`<tr>
+    <td>${esc(r.name||'-')}</td>
+    <td dir="ltr">${esc(r.phone||'-')}</td>
+    <td>${typeLabels[r.type]||r.type}</td>
+    <td>${r.count||1}</td>
+    <td>${fd(r.lastAt)}</td>
+    <td><button class="d" style="padding:4px 10px;font-size:11px" onclick="deleteActivityLog('${esc(r.uid)}','${esc(r.day)}','${esc(r.type)}')">🗑 حذف</button></td>
+  </tr>`).join('');
+  return`<div class="box"><h2>📈 نشاط الطلاب</h2>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+    <button class="d" onclick="clearAllActivityLog()">🗑 مسح كل النشاط</button>
+    <button class="s" onclick="render(true)">🔄 تحديث</button>
+  </div>
+  <div class="stats-summary">${typeSummary||'<div class="mut">لا نشاط بعد</div>'}</div>
+  <h3 style="margin:20px 0 10px">آخر 100 نشاط</h3>
+  <div class="tw"><table><thead><tr><th>الطالب</th><th>الهاتف</th><th>النوع</th><th>العدد</th><th>آخر مرة</th><th>حذف</th></tr></thead>
+  <tbody>${recent||'<tr><td colspan="6" class="mut">لا يوجد</td></tr>'}</tbody></table></div></div>`;
+}
+async function deleteActivityLog(uid,day,type){
+  if(!A)return;
+  if(!confirm('حذف هذا السجل؟'))return;
+  try{
+    await remove(R('activityLog/'+uid+'/'+day+'/'+type));
+    toast('تم الحذف');
+    render(true);
+  }catch(e){toast('تعذر الحذف: '+(e.message||''))}
+}
+async function clearAllActivityLog(){
+  if(!A)return;
+  if(!confirm('مسح كل سجلات النشاط نهائياً؟'))return;
+  try{
+    await remove(R('activityLog'));
+    toast('تم مسح كل النشاط');
+    render(true);
+  }catch(e){toast('تعذر: '+(e.message||''))}
+}
 
 async function vAdminPasswordRequests(){if(!A)return'<div class="mut">غير مصرح.</div>';const pending=Object.values(passwordChangeRequests||{}).filter(r=>r.status==='pending');if(!pending.length)return'<h2>🔐 طلبات تغيير كلمة المرور</h2><div class="mut">لا توجد طلبات معلقة.</div>';return'<h2>🔐 طلبات تغيير كلمة المرور ('+pending.length+')</h2>'+pending.map(r=>`<div class="box"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>${esc(r.name||'طالب')}</b><span class="b y">${r.status==='pending'?'قيد المراجعة':r.status}</span></div><p style="margin:8px 0;color:var(--tx2);font-weight:600"><b>الهاتف:</b> <span dir="ltr">${esc(r.phone||'-')}</span><br><b>الوقت:</b> ${fd(r.requestedAt)}</p><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="g" onclick="approvePasswordChange('${esc(r.uid)}')">✅ موافقة</button><button class="d" onclick="rejectPasswordChange('${esc(r.uid)}')">❌ رفض</button></div></div>`).join('')}
-async function approvePasswordChange(uid){if(!A)return toast('غير مصرح');if(!confirm('الموافقة على طلب تغيير كلمة المرور؟'))return;try{const req=passwordChangeRequests[uid];if(!req)return;await set(R('notifications/'+uid+'/'+'pc'+Date.now().toString(36)),{text:'✅ تمت الموافقة على طلب تغيير كلمة المرور. يرجى الآن تغييرها من الإعدادات.',created:Date.now(),read:false,views:0,viewedBy:{}});await update(R('passwordChangeRequests/'+uid),{status:'approved',approvedAt:Date.now(),approvedBy:U.uid});toast('✅ تمت الموافقة');render(true)}catch(e){toast('تعذر الموافقة')}}
+async function approvePasswordChange(uid){
+  if(!A)return toast('غير مصرح');
+  if(!confirm('الموافقة على طلب تغيير كلمة المرور؟ سيتم إشعار الطالب لتأكيدها.'))return;
+  try{
+    const req=passwordChangeRequests[uid]||await G('passwordChangeRequests/'+uid);
+    if(!req)return toast('الطلب غير موجود');
+    await update(R('passwordChangeRequests/'+uid),{status:'approved',approvedAt:Date.now(),approvedBy:U.uid});
+    await set(R('users/'+uid+'/passwordChangeApproved'),{approved:true,at:Date.now(),reqId:req.reqId||''});
+    await set(R('notifications/'+uid+'/'+('pc'+Date.now().toString(36))),{
+      text:'✅ تمت الموافقة على طلب تغيير كلمة المرور.\nادخل إلى الإعدادات → كلمة المرور واضغط «تفعيل كلمة المرور الجديدة» ثم أدخل كلمة المرور الحالية للتأكيد.',
+      created:Date.now(),read:false,views:0,viewedBy:{},type:'password_approved'
+    });
+    toast('✅ تمت الموافقة وإشعار الطالب');
+    render(true);
+  }catch(e){console.warn(e);toast('تعذر الموافقة: '+(e.message||''))}
+}
+
+async function applyApprovedPassword(){
+  if(!U)return;
+  const req=await G('passwordChangeRequests/'+U.uid);
+  if(!req||req.status!=='approved'||!req.newPass)return toast('لا يوجد طلب موافق عليه');
+  const current=$('#current-pass-apply')?.value||'';
+  if(!current)return toast('أدخل كلمة المرور الحالية للتأكيد');
+  try{
+    const cred=EmailAuthProvider.credential(U.email||(myPhone+'@sigma.user'),current);
+    await reauthenticateWithCredential(U,cred);
+    await updatePassword(U,req.newPass);
+    await update(R('passwordChangeRequests/'+U.uid),{status:'applied',appliedAt:Date.now()});
+    await remove(R('users/'+U.uid+'/passwordChangeApproved')).catch(()=>{});
+    toast('✅ تم تغيير كلمة المرور بنجاح');
+    go('settings');
+  }catch(e){
+    const code=e.code||'';
+    if(code.includes('wrong-password')||code.includes('invalid-credential'))toast('كلمة المرور الحالية غير صحيحة');
+    else if(code.includes('requires-recent-login'))toast('أعد تسجيل الدخول ثم حاول مرة أخرى');
+    else toast('تعذر التغيير: '+(e.message||code));
+  }
+}
+
 async function rejectPasswordChange(uid){if(!A)return toast('غير مصرح');const reason=prompt('سبب الرفض:','غير محدد');if(reason===null)return;try{await set(R('notifications/'+uid+'/'+'pc'+Date.now().toString(36)),{text:'❌ تم رفض طلب تغيير كلمة المرور. السبب: '+(reason||'غير محدد'),created:Date.now(),read:false,views:0,viewedBy:{}});await update(R('passwordChangeRequests/'+uid),{status:'rejected',rejectedAt:Date.now(),rejectedBy:U.uid,rejectReason:reason});toast('تم الرفض');render(true)}catch(e){toast('تعذر الرفض')}}
 
 async function vAdminPlatformMessage(){
@@ -1305,7 +1454,18 @@ async function unbanStudent(uid){if(!A)return;const u=await G('users/'+uid);if(!
 async function vStudentProfile(){if(!A)return'<div class="mut">غير مصرح.</div>';const uid=S.id;const user=(adminUsersList&&adminUsersList[uid])||(await G('users/'+uid));if(!user)return'<div class="mut">الطالب غير موجود.</div>';const allLogs=(await G('logs'))||{};const studentVideos=[];for(const[vid,byUser]of Object.entries(allLogs)){const rec=byUser?.[uid];if(rec)studentVideos.push({vid,title:videos[vid]?.title||'محذوف',...rec})}studentVideos.sort((a,b)=>(b.lastAt||0)-(a.lastAt||0));const isBanned=!!(await G('bans/'+uid))||!!(user.phone&&(await G('bansByPhone/'+normPhone(user.phone))));return`${backBtn("go('admin','','students')")}<div class="box"><div style="display:flex;gap:16px;align-items:center;margin-bottom:20px;flex-wrap:wrap"><img src="${esc(user.photo||avatarOf(user.name))}" alt="" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--brand-500);object-fit:cover"><div style="flex:1;min-width:200px"><h2 style="margin:0">${esc(user.name)}</h2><p style="margin:4px 0;color:var(--mu);direction:ltr">${esc(user.phone)}</p><span class="b ${user.isSupervisor?'y':'g'}">${user.isSupervisor?'مشرف':'طالب'}</span>${user.grade?`<span class="b">${esc(user.grade)}</span>`:''}${isBanned?'<span class="b r">محظور</span>':''}</div></div><h3>سجل المشاهدة (${studentVideos.length})</h3><div class="tw"><table><thead><tr><th>الفيديو</th><th>الكود</th><th>آخر</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>${studentVideos.map(v=>`<tr><td>${esc(v.title)}</td><td><span class="code">${esc(v.code||'-')}</span></td><td>${fd(v.lastAt)}</td><td>${v.completed?'<span class="g">أكمل</span>':'<span class="y">لم يكمل</span>'}</td><td><button class="d" style="padding:5px 10px;font-size:12px" onclick="resetStudentProgress('${esc(v.vid)}','${esc(uid)}')">تصفير</button></td></tr>`).join('')||'<tr><td colspan="5" class="mut">لا يوجد سجل.</td></tr>'}</tbody></table></div></div>`}
 async function resetStudentProgress(vid,uid){if(!A)return;if(!confirm('تصفير؟'))return;try{await remove(R(`logs/${vid}/${uid}`));toast('تم');render(true)}catch(e){}}
 async function toggleSupervisor(uid,isSup){if(!A)return;if(!confirm(isSup?'إلغاء الإشراف؟':'تعيين مشرف؟'))return;try{await update(R('users/'+uid),{isSupervisor:!isSup});toast('تم');render(true)}catch(e){}}
-async function delUser(uid){if(!A)return;if(!confirm('حذف نهائي؟'))return;try{const u=await G('users/'+uid);if(u&&isAdminPhone(u.phone||''))return toast('حساب إدارة');await remove(R('users/'+uid));if(adminUsersList[uid])delete adminUsersList[uid];toast('تم');render(true)}catch(e){}}
+async function delUser(uid){if(!A)return;if(!confirm('حذف نهائي للطالب وكل بياناته المرتبطة؟'))return;try{const u=await G('users/'+uid);if(u&&isAdminPhone(u.phone||''))return toast('حساب إدارة محمي');const phone=normPhone(u?.phone||'');await Promise.all([
+  remove(R('users/'+uid)).catch(()=>{}),
+  remove(R('sessions/'+uid)).catch(()=>{}),
+  remove(R('bans/'+uid)).catch(()=>{}),
+  phone?remove(R('bansByPhone/'+phone)).catch(()=>{}):Promise.resolve(),
+  remove(R('arcade/'+uid)).catch(()=>{}),
+  remove(R('examAttempts/'+uid)).catch(()=>{}),
+  remove(R('notifications/'+uid)).catch(()=>{}),
+  remove(R('passwordChangeRequests/'+uid)).catch(()=>{}),
+  remove(R('labGame/'+uid)).catch(()=>{}),
+  remove(R('activityLog/'+uid)).catch(()=>{})
+]);if(adminUsersList[uid])delete adminUsersList[uid];toast('تم الحذف');render(true)}catch(e){toast('تعذر الحذف: '+(e.message||''))}}
 function vSendNotification(){
   const gradesOpts=ALL_GRADES.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('');
   const stageOpts=`<option value="primary">المرحلة الابتدائية</option><option value="prep">المرحلة الإعدادية</option><option value="sec">المرحلة الثانوية</option>`;
@@ -1524,8 +1684,31 @@ function openFree(){if(!isLabOn('free'))return toast('موقوف');resetGames();
 function gameTop(action,label,badges=''){return`<div class="game-top"><button class="s" onclick="${action}">← ${label}</button><div class="game-badges">${badges}</div></div>`}
 function gameHeader(title,sub){const pts=U?arcadePoints(U.uid):0;return`<div class="game-head"><div class="gh-row"><div><h2>${esc(title)}</h2><p>${esc(sub)}</p></div><span class="gh-pts">⭐ ${pts} نقطة</span></div>${canPlayNow()?'':'<p class="gh-note">وضع المشاهدة: النتائج لا تُحفظ</p>'}</div>`}
 function resultCard(title,score,again){return`<div class="box game-done"><div class="gd-icon">🎉</div><h2>${esc(title)}</h2><div class="gd-score">النتيجة: ${score}</div><div class="game-actions"><button onclick="openGame('${again}')">العب مجدداً</button><button class="s" onclick="gameBack()">الألعاب</button></div></div>`}
-function arcadeBoard(){const ids=new Set([...Object.keys(arcadeData),...Object.keys(quizLeaderData||{})]);const rows=[...ids].map(uid=>({name:arcadeData[uid]?.name||quizLeaderData?.[uid]?.name||'طالب',points:arcadePoints(uid)})).filter(r=>r.points>0).sort((a,b)=>b.points-a.points).slice(0,10);if(!rows.length)return'';return`<div class="box"><h3 class="game-sub">🏆 لوحة المتصدرين</h3><ol class="leader">${rows.map(r=>`<li><span>${esc(r.name)}</span><b>${r.points}</b></li>`).join('')}</ol></div>`}
-async function saveArcade(game,score){if(!U||!canPlayNow())return;const cur=arcadeData[U.uid]||{};const best={...(cur.best||{})};best[game]=Math.max(best[game]||0,score);const next={name:U.displayName||'طالب',best,points:Object.values(best).reduce((s,v)=>s+v,0),lastPlayed:Date.now()};arcadeData={...arcadeData,[U.uid]:next};try{await set(R('arcade/'+U.uid),next)}catch(e){}}
+function arcadeBoard(){
+  const ids=new Set([...Object.keys(arcadeData||{}),...Object.keys(quizLeaderData||{})]);
+  const rows=[...ids].map(uid=>{
+    const ad=arcadeData[uid]||{};
+    const name=(ad.name||quizLeaderData?.[uid]?.name||adminUsersList?.[uid]?.name||'طالب').trim();
+    return{uid,name,points:arcadePoints(uid)};
+  }).filter(r=>r.points>0).sort((a,b)=>b.points-a.points).slice(0,15);
+  if(!rows.length)return'<div class="box"><h3 class="game-sub">🏆 لوحة المتصدرين</h3><div class="mut">لا نقاط بعد — العب الآن!</div></div>';
+  return`<div class="box"><h3 class="game-sub">🏆 لوحة المتصدرين</h3><ol class="leader">${rows.map((r,i)=>`<li><span>${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)} ${esc(r.name)}</span><b>${r.points}</b></li>`).join('')}</ol></div>`;
+}
+async function saveArcade(game,score){
+  if(!U||!canPlayNow())return;
+  const cur=arcadeData[U.uid]||{};
+  const best={...(cur.best||{})};
+  best[game]=Math.max(Number(best[game])||0,Number(score)||0);
+  const points=Object.values(best).reduce((s,v)=>s+(Number(v)||0),0);
+  const studentName=(U.displayName||'').trim()||myPhone||('طالب '+U.uid.slice(0,6));
+  const next={name:studentName,best,points,lastPlayed:Date.now(),uid:U.uid,grade:userGrade||''};
+  arcadeData={...arcadeData,[U.uid]:next};
+  try{
+    await set(R('arcade/'+U.uid),next);
+    // also mirror name on user profile for leaderboard consistency
+    try{await update(R('users/'+U.uid),{name:studentName})}catch(_e){}
+  }catch(e){console.warn('saveArcade failed',e);toast('تعذر حفظ النقاط — تحقق من الاتصال');}
+}
 async function saveLabData(){if(!U||!canPlayNow())return;try{await set(R('labGame/'+U.uid),{name:U.displayName||'طالب',labs:labUserData.labs||{},discoveries:labUserData.discoveries||0,lastPlayed:Date.now()})}catch(e){}}
 
 function rushStart(){if(!isLabOn('rush'))return toast('موقوف');const qs=userShuffle(REACTIONS_RUSH,500).slice(0,8);rushState={qs,i:0,score:0,picked:null,timer:null,timeLeft:5,done:false};rushTick()}
@@ -1603,16 +1786,24 @@ function openGame(key){
   if(!isLabOn(key))return toast('موقوف');
   resetGames();
   ngState={key,i:0,score:0,done:false,picked:null,order:[],pool:[],val:50,groups:{},timeLeft:5,timer:null};
+  const shuffleQs=(arr,n)=>{
+    return userShuffle(arr,Date.now()%999).slice(0,n).map(q=>{
+      if(!q.opts)return q;
+      const indexed=q.opts.map((o,i)=>({o,i}));
+      const sh=shuffle(indexed);
+      return {...q,opts:sh.map(x=>x.o),c:sh.findIndex(x=>x.i===q.c)};
+    });
+  };
   if(key==='steps'){const d=userShuffle(STEPS_DATA,1)[0];ngState.data=d;ngState.pool=shuffle([...d.steps.map((s,i)=>({s,i}))]);ngState.order=[];}
-  else if(key==='toolpick'){ngState.qs=userShuffle(TOOL_DATA,2).slice(0,5);}
+  else if(key==='toolpick'){ngState.qs=shuffleQs(TOOL_DATA,8);}
   else if(key==='eqmatch'){ngState.data=userShuffle(EQ_MATCH,3)[0];ngState.coefs=ngState.data.coef.map(()=>1);}
-  else if(key==='tfquick'){ngState.qs=userShuffle(TF_QUICK,4).slice(0,10);ngState.timeLeft=5;ngTick();}
-  else if(key==='fillblank'){ngState.qs=userShuffle(FILL_DATA,5).slice(0,5);}
+  else if(key==='tfquick'){ngState.qs=userShuffle(TF_QUICK,4).slice(0,12);ngState.timeLeft=5;ngTick();}
+  else if(key==='fillblank'){ngState.qs=shuffleQs(FILL_DATA,8);}
   else if(key==='conceptmap'){const d=userShuffle(CONCEPT_DATA,6)[0];ngState.data=d;ngState.pool=shuffle([...d.items.map((s,i)=>({s,i}))]);ngState.order=[];}
-  else if(key==='gauge'){ngState.qs=userShuffle(GAUGE_DATA,7).slice(0,4);ngState.val=ngState.qs[0].answer;}
+  else if(key==='gauge'){ngState.qs=userShuffle(GAUGE_DATA,7).slice(0,5);ngState.val=ngState.qs[0].answer;}
   else if(key==='classify'){ngState.data=userShuffle(CLASSIFY_DATA,8)[0];ngState.groups={};ngState.data.groups.forEach(g=>ngState.groups[g]=[]);ngState.pool=shuffle([...ngState.data.items]);}
   else if(key==='foodchain'){const d=userShuffle(FOOD_DATA,9)[0];ngState.data=d;ngState.pool=shuffle(d.chain.map((s,i)=>({s,i})));ngState.order=[];}
-  else if(key==='minilab'){ngState.qs=userShuffle(MINILAB_DATA,10).slice(0,4);}
+  else if(key==='minilab'){ngState.qs=shuffleQs(MINILAB_DATA,6);}
   go('games','',key);
   logActivity('game_play','لعب: '+key);
 }
@@ -1737,11 +1928,19 @@ function vNewGame(){
   return`<div class="game-wrap">${gameTop('gameBack()','الألعاب',`<span class="b g">${st.score} نقطة</span>`)}${body}</div>`;
 }
 function vGamesHub(){
+  const labsProg=Object.keys(LAB_INFO||{}).reduce((s,k)=>s+(typeof labDone==='function'?labDone(k):0),0);
+  const total=Object.values(LAB_EXPERIMENTS||{}).reduce((s,a)=>s+(a?a.length:0),0);
+  const labCard=`<button class="game-card ${!isLabOn('lab')?'disabled':''}" onclick="openLabHub()"><span class="gc-icon">🔬</span><span class="gc-name">المختبر الافتراضي</span><span class="gc-desc">كيمياء · فيزياء · أحياء${!isLabOn('lab')?' — موقوف':''}</span><span class="gc-meta">${labsProg}/${total||0} تجربة</span></button>`;
+  const freeCard=`<button class="game-card special ${!isLabOn('free')?'disabled':''}" onclick="openFree()"><span class="gc-icon">🧑‍🔬</span><span class="gc-name">طلع الكيميائي اللي جواك</span><span class="gc-desc">اختر عنصرين وشوف التفاعل${!isLabOn('free')?' — موقوف':''}</span></button>`;
   const games=GAME_CARDS.map(g=>`<button class="game-card ${!isLabOn(g.k)?'disabled':''}" onclick="openGame('${g.k}')"><span class="gc-icon">${g.i}</span><span class="gc-name">${g.n}</span><span class="gc-desc">${g.d}${!isLabOn(g.k)?' — موقوف':''}</span></button>`).join('');
-  return`<div class="game-wrap"><div class="game-hub-banner"><h2>🎮 ألعاب سيجما التعليمية</h2><p style="opacity:.92;font-weight:600;margin:0">10 ألعاب تفاعلية للمراجعة والتدريب — اجمع النقاط وتصدر اللوحة</p></div><div class="game-grid">${games}</div>${arcadeBoard()}</div>`;
+  return`<div class="game-wrap"><div class="game-hub-banner"><h2>🎮 ألعاب ومختبر سيجما</h2><p style="opacity:.92;font-weight:600;margin:0">مختبرات تفاعلية + ألعاب تعليمية — اجمع النقاط وتصدر لوحة المتصدرين</p></div>
+  <div class="game-section">المختبر</div><div class="game-grid">${labCard}${freeCard}</div>
+  <div class="game-section">الألعاب</div><div class="game-grid">${games}</div>${arcadeBoard()}</div>`;
 }
 function vGames(){
   const t=S.tab||'hub';
+  if(t==='lab')return labActiveLab?vLabScreen():vLabHub();
+  if(t==='free')return vFreeLab();
   if(t==='hub')return vGamesHub();
   if(['steps','toolpick','eqmatch','tfquick','fillblank','conceptmap','gauge','classify','foodchain','minilab'].includes(t)){
     if(!ngState||ngState.key!==t)openGame(t);
@@ -2045,7 +2244,7 @@ async function vFeaturesHub(){
     <div class="feature-card" onclick="enableNotifications()"><div class="fc-icon">🔔</div><div class="fc-name">الإشعارات</div><div class="fc-desc">فعّل التنبيهات</div></div>
   </div>`;
 }
-Object.assign(window,{go,out,vNewGame,ngEqCheck,ngEqStep,ngGaugeCheck,ngGaugeSet,ngClassify,ngPickPool,ngAnswer,approveUser,rejectUser,vAdminPending,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,exportCodesPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,sendSupportTicket,setSupportStatus,deleteSupportTicket,reopenStudentExam,replySupportTicket,updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,previewNewsImage,filterStudents,delNoti,clearAllMyNotis,enableNotifications,requestPasswordChange,setStatsFilter,filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,quickEditExam,recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,banStudent,unbanStudent,outBan,toggleStudentMenu,delCode,resetStudentProgress,openGame,openLabHub,openLab,openFree,gameBack,labBack,labPick,labUndo,labClear,labTool,labRun,labNext,freePick,freeTool,freeRun,freeReset,rushStart,rushAnswer,builderStart,builderAdd,builderUndo,builderReset,breakerStart,breakerPick,scaleStart,scaleStep,scaleCheck,reactStart,reactAnswer,raceStart,raceAnswer,crosswordStart,crosswordInput,crosswordSubmit,wheelStart,wheelSpin,wheelAnswer,guessStart,guessReveal,guessAnswer,sniperStart,sniperShoot,balanceStart,balanceSetCoef,balanceSetCoefActive,balancePromptCoef,balanceCheck,balanceNext,reloadStudents,vGames,toggleLab,removeFromLeaderboard,cycleQuality,cycleNativeQuality,toggleAccessType,savePlatformMessage,deletePlatformMessage,dismissPlatformMessage,startEditNews,cancelEditNews,saveEditedNews,votePoll,editPollForNews,deletePoll,showNewsViewers,startEditNoti,cancelEditNoti,saveEditedNoti,loadAllNotificationsForAdmin,delNotiAdmin,handleGlobalSearch,goToQuestion,selectExamOption,selectExamText,nextExamQuestion,prevExamQuestion,toggleExamFlag,launchConfetti,showExamRules,toggleFocusMode,saveGradeGate,approvePasswordChange,rejectPasswordChange,onNotiTargetChange,filterLabPlayers,reloadLabPlayers,createPromise,completePromise,failPromise,createLiveChallenge,startLiveChallenge,endLiveChallenge,deleteLiveChallenge,answerLiveChallenge,openExamSimulation,vFeaturesHub,vKnowledgeMap,vTimeline,vPromises,vLiveChallengeStudent,vLiveChallengeResults,vAdminLiveChallenge});
+Object.assign(window,{go,out,applyApprovedPassword,deleteActivityLog,clearAllActivityLog,vNewGame,ngEqCheck,ngEqStep,ngGaugeCheck,ngGaugeSet,ngClassify,ngPickPool,ngAnswer,approveUser,rejectUser,vAdminPending,inst,redeem,addT,delT,setB,addV,moreCodes,delV,cp,copyFree,toggleVid,exportPDF,exportCodesPDF,toggleTheme,unban,keepBan,saveEditT,saveEditV,togglePlay,seekRel,toggleMute,toggleFullscreen,replayYT,addLib,delLib,saveEditLib,openNoti,closeNoti,syncGradeOptions,syncEditGradeOptions,openLibraryItem,sendAdminNotification,clearAllNotifications,registerPhone,loginPhone,switchPhoneMode,sendSupportTicket,setSupportStatus,deleteSupportTicket,reopenStudentExam,replySupportTicket,updateProfilePhoto,toggleSupervisor,delUser,addNews,delNews,previewNewsImage,filterStudents,delNoti,clearAllMyNotis,enableNotifications,requestPasswordChange,setStatsFilter,filterTeacherVideos,toggleFav,addQuestion,onQTypeChange,createExam,toggleExamDisabled,delExam,quickEditExam,recordAnswer,submitExam,confirmExitExam,setGrade,saveStudentGrade,banStudent,unbanStudent,outBan,toggleStudentMenu,delCode,resetStudentProgress,openGame,openLabHub,openLab,openFree,gameBack,labBack,labPick,labUndo,labClear,labTool,labRun,labNext,freePick,freeTool,freeRun,freeReset,rushStart,rushAnswer,builderStart,builderAdd,builderUndo,builderReset,breakerStart,breakerPick,scaleStart,scaleStep,scaleCheck,reactStart,reactAnswer,raceStart,raceAnswer,crosswordStart,crosswordInput,crosswordSubmit,wheelStart,wheelSpin,wheelAnswer,guessStart,guessReveal,guessAnswer,sniperStart,sniperShoot,balanceStart,balanceSetCoef,balanceSetCoefActive,balancePromptCoef,balanceCheck,balanceNext,reloadStudents,vGames,toggleLab,removeFromLeaderboard,cycleQuality,cycleNativeQuality,toggleAccessType,savePlatformMessage,deletePlatformMessage,dismissPlatformMessage,startEditNews,cancelEditNews,saveEditedNews,votePoll,editPollForNews,deletePoll,showNewsViewers,startEditNoti,cancelEditNoti,saveEditedNoti,loadAllNotificationsForAdmin,delNotiAdmin,handleGlobalSearch,goToQuestion,selectExamOption,selectExamText,nextExamQuestion,prevExamQuestion,toggleExamFlag,launchConfetti,showExamRules,toggleFocusMode,saveGradeGate,approvePasswordChange,rejectPasswordChange,onNotiTargetChange,filterLabPlayers,reloadLabPlayers,createPromise,completePromise,failPromise,createLiveChallenge,startLiveChallenge,endLiveChallenge,deleteLiveChallenge,answerLiveChallenge,openExamSimulation,vFeaturesHub,vKnowledgeMap,vTimeline,vPromises,vLiveChallengeStudent,vLiveChallengeResults,vAdminLiveChallenge});
 window.__bootAfterUnban=async function(){try{showingBan=false;if(U){if(!A&&!IS_SUPERVISOR){const phoneKey=normPhone(myPhone||'');const pb=phoneKey?await G('bansByPhone/'+phoneKey):null;const b=await G('bans/'+U.uid);if(pb){renderBanned(pb);return}if(b){renderBanned(b);return}}render(true);renderGradeGate()}else{render(true);renderGradeGate()}hideOverlay()}catch(e){try{render(true);renderGradeGate()}catch(_){}}};
 window.addEventListener('error',e=>{try{console.warn('Global error:',e.message)}catch(_){}});
 window.addEventListener('unhandledrejection',e=>{try{console.warn('Unhandled rejection:',e.reason)}catch(_){}});
