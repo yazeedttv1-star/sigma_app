@@ -1,0 +1,19 @@
+# robots.txt — منصة سيجما التعليمية
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /*?tab=admin
+Disallow: /api/
+Disallow: /*.json$
+
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+
+# Block bad bots (optional soft)
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+Sitemap: https://sigma-edu.web.app/sitemap.xml
+Host: https://sigma-edu.web.app
